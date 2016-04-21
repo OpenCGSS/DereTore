@@ -1,0 +1,12 @@
+
+.idea
+*.sln.iml
+.vs
+_ReSharper*
+
+[Bb]in
+[Oo]bj
+*.user
+
+Cgss*
+/DereTore.Combined.Test
