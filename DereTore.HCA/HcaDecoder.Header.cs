@@ -224,6 +224,10 @@ namespace DereTore.HCA {
                 _channels[i].Value3 = _info.CompR06 + _info.CompR07;
                 _channels[i].Count = _info.CompR06 + (r[i] != 2 ? _info.CompR07 : 0);
             }
+
+            _lengthInSamples = (int)_info.BlockCount * (int)_info.ChannelCount * 0x80 * 8;
+            _lengthInSecs = _lengthInSamples / (float)_info.SamplingRate;
+
             return true;
         }
 

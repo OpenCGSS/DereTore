@@ -26,7 +26,7 @@ namespace DereTore.HCA {
         }
 
         public int GetWaveDataBlockNeededLength() {
-            return 0x80 * GetSampleBitSizeFromParams() * (int)_info.ChannelCount;
+            return 0x80 * GetSampleBitsFromParams() * (int)_info.ChannelCount;
         }
 
         public int WriteWaveHeader(byte[] stream) {
@@ -47,14 +47,14 @@ namespace DereTore.HCA {
             var wavSmpl = WaveSampleSection.CreateDefault();
             var wavNote = WaveNoteSection.CreateDefault();
             var wavData = WaveDataSection.CreateDefault();
-            wavRiff.FmtType = (ushort)(sampleBits > 0 ? 1 : 3);
+            wavRiff.FmtType = (ushort)(_decodeParam.Mode != SamplingMode.Float ? 1 : 3);
             wavRiff.FmtChannels = (ushort)_info.ChannelCount;
             wavRiff.FmtBitCount = (ushort)(sampleBits > 0 ? sampleBits : sizeof(float));
             wavRiff.FmtSamplingRate = _info.SamplingRate;
             wavRiff.FmtSamplingSize = (ushort)(wavRiff.FmtBitCount / 8 * wavRiff.FmtChannels);
             wavRiff.FmtSamplesPerSec = wavRiff.FmtSamplingRate * wavRiff.FmtSamplingSize;
             if (_info.LoopFlag) {
-                wavSmpl.SamplePeriod = (uint)(1 / (double)wavRiff.FmtSamplingRate * 1000000000);
+                wavSmpl.SamplePeriod = (uint)(1000000000 / (double)wavRiff.FmtSamplingRate);
                 wavSmpl.LoopStart = _info.LoopStart * 0x80 * 8 * wavRiff.FmtSamplingSize;
                 wavSmpl.LoopEnd = _info.LoopR01 == 0x80 ? 0 : _info.LoopR01;
             } else if (_decodeParam.EnableLoop) {
@@ -91,7 +91,7 @@ namespace DereTore.HCA {
             if (_status.DataCursor < _info.DataOffset) {
                 _status.DataCursor = _info.DataOffset;
             }
-            uint waveBlockSize = 0x80 * (uint)GetSampleBitSizeFromParams() * _info.ChannelCount;
+            uint waveBlockSize = 0x80 * (uint)GetSampleBitsFromParams() * _info.ChannelCount;
             uint blockProcessableThisRound = (uint)buffer.Length / waveBlockSize;
             if (!_decodeParam.EnableLoop && !_info.LoopFlag) {
                 int bufferCursor;
@@ -116,6 +116,14 @@ namespace DereTore.HCA {
             get {
                 return _info;
             }
+        }
+
+        public float LengthInSecs {
+            get { return _lengthInSecs; }
+        }
+
+        public int LengthInSamples {
+            get { return _lengthInSamples; }
         }
 
         internal bool HasMore() {

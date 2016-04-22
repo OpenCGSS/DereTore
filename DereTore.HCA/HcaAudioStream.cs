@@ -32,7 +32,7 @@ namespace DereTore.HCA {
                 return 0;
             }
             var loopControl = false;
-            int writeLengthLimit = Math.Min(count, buffer.Length);
+            var writeLengthLimit = Math.Min(count, buffer.Length);
             do {
                 int maxToCopy;
                 bool hasMore;
@@ -51,11 +51,7 @@ namespace DereTore.HCA {
                         maxToCopy = Math.Min(writeLengthLimit, _waveHeaderSizeLeft);
                         Array.Copy(_waveHeaderBuffer, _waveHeaderSize - _waveHeaderSizeLeft, buffer, offset, maxToCopy);
                         _waveHeaderSizeLeft -= maxToCopy;
-                        if (_waveHeaderSizeLeft <= 0) {
-                            _state = DecodeState.WaveHeaderTransmitted;
-                        } else {
-                            _state = DecodeState.WaveHeaderTransmitting;
-                        }
+                        _state = _waveHeaderSizeLeft <= 0 ? DecodeState.WaveHeaderTransmitted : DecodeState.WaveHeaderTransmitting;
                         return maxToCopy;
                     case DecodeState.WaveHeaderTransmitting:
                         if (!OutputWaveHeader) {
@@ -81,11 +77,7 @@ namespace DereTore.HCA {
                         Array.Copy(_waveDataBuffer, _waveDataSize - _waveDataSizeLeft, buffer, offset, maxToCopy);
                         _waveDataSizeLeft -= maxToCopy;
                         if (_waveDataSizeLeft <= 0) {
-                            if (hasMore) {
-                                _state = DecodeState.DataTransmitting;
-                            } else {
-                                _state = DecodeState.WaveHeaderTransmitted;
-                            }
+                            _state = hasMore ? DecodeState.DataTransmitting : DecodeState.WaveHeaderTransmitted;
                         } else {
                             _state = DecodeState.DataTransmitting;
                         }
@@ -154,6 +146,18 @@ namespace DereTore.HCA {
 
         public int BlockBatchSize {
             get { return 10; }
+        }
+
+        public HcaInfo HcaInfo {
+            get { return _decoder.HcaInfo; }
+        }
+
+        public float LengthInSecs {
+            get { return _decoder.LengthInSecs; }
+        }
+
+        public int LengthInSamples {
+            get { return _decoder.LengthInSamples; }
         }
 
         protected override void Dispose(bool disposing) {

@@ -104,23 +104,6 @@ namespace DereTore.HCA {
         private int GetSampleBitsFromParams() {
             switch (_decodeParam.Mode) {
                 case SamplingMode.Float:
-                    return 0;
-                case SamplingMode.S16:
-                    return 16;
-                case SamplingMode.S24:
-                    return 24;
-                case SamplingMode.S32:
-                    return 32;
-                case SamplingMode.U8:
-                    return 8;
-                default:
-                    throw new ArgumentOutOfRangeException("_decodeParam.Mode");
-            }
-        }
-
-        private int GetSampleBitSizeFromParams() {
-            switch (_decodeParam.Mode) {
-                case SamplingMode.Float:
                     return 32;
                 case SamplingMode.S16:
                     return 16;
@@ -139,6 +122,8 @@ namespace DereTore.HCA {
         private readonly Ath _ath;
         private readonly Cipher _cipher;
         private HcaInfo _info;
+        private float _lengthInSecs;
+        private int _lengthInSamples;
         private Channel[] _channels;
         private readonly DecodeParam _decodeParam;
         private readonly Stream _sourceStream;
