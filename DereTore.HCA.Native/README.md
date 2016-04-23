@@ -1,4 +1,4 @@
-﻿# DereTore.HCA.PInvoke
+﻿# DereTore.HCA.Native
 
 This is a C# P/Invoke wrapper for [kawashima](https://github.com/Hozuki/kawashima). This class library
 **is platform-dependent**, so please refer to the notes in `NativeMethods.cs`.
