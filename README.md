@@ -26,7 +26,7 @@ The console test application for DereTore.HCA.Native.
 
 ### DereTore.ACB
 
-CRI ACB/AWB package extraction library. Only neccessary parts are implemented. Here is its [readme](DereTore.ACB/README.md).
+CRI ACB/AWB package extraction library. Only necessary parts are implemented. Here is its [readme](DereTore.ACB/README.md).
 
 ### DereTore.ACB.Test
 
