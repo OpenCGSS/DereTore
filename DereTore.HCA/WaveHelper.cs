@@ -2,21 +2,20 @@
 using System.IO;
 
 namespace DereTore.HCA {
-    public partial class HcaDecoder {
-
-        private static int DecodeToStreamInR32(float f, Stream stream) {
+    internal class WaveHelper {
+        public static int DecodeToStreamInR32(float f, Stream stream) {
             return stream.Write(f);
         }
 
-        private static int DecodeToStreamInS16(float f, Stream stream) {
-            return stream.Write((short)(f * 0x7fff));
+        public static int DecodeToStreamInS16(float f, Stream stream) {
+            return stream.Write((short) (f * 0x7fff));
         }
 
-        private static int DecodeToStreamInS32(float f, Stream stream) {
-            return stream.Write((int)(f * 0x7fffffff));
+        public static int DecodeToStreamInS32(float f, Stream stream) {
+            return stream.Write((int) (f * 0x7fffffff));
         }
 
-        private static int DecodeToBufferInR32(float f, byte[] buffer, int startIndex) {
+        public static int DecodeToBufferInR32(float f, byte[] buffer, int startIndex) {
             if (!BitConverter.IsLittleEndian) {
                 f = HcaHelper.SwapEndian(f);
             }
@@ -27,8 +26,8 @@ namespace DereTore.HCA {
             return 4;
         }
 
-        private static int DecodeToBufferInS16(float f, byte[] buffer, int startIndex) {
-            var value = (short)(f * 0x7fff);
+        public static int DecodeToBufferInS16(float f, byte[] buffer, int startIndex) {
+            var value = (short) (f * 0x7fff);
             if (!BitConverter.IsLittleEndian) {
                 value = HcaHelper.SwapEndian(value);
             }
@@ -38,6 +37,5 @@ namespace DereTore.HCA {
             }
             return 2;
         }
-
     }
 }

@@ -157,7 +157,7 @@ namespace DereTore.HCA {
             if (!_ath.Initialize(_info.AthType, _info.SamplingRate)) {
                 return false;
             }
-            if (!_cipher.Initialize(_info.CiphType, _decodeParam.Key1, _decodeParam.Key2)) {
+            if (!_cipher.Initialize(_info.CiphType, _decodeParams.Key1, _decodeParams.Key2)) {
                 return false;
             }
             if (_info.CompR03 == 0) {

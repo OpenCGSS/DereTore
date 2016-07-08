@@ -42,12 +42,12 @@ namespace DereTore.HCA {
                 Debug.WriteLine(ex.Message);
             }
             var sampleBits = GetSampleBitsFromParams();
-            var loopCount = _decodeParam.Loop;
+            var loopCount = _decodeParams.Loop;
             var wavRiff = WaveRiffSection.CreateDefault();
             var wavSmpl = WaveSampleSection.CreateDefault();
             var wavNote = WaveNoteSection.CreateDefault();
             var wavData = WaveDataSection.CreateDefault();
-            wavRiff.FmtType = (ushort)(_decodeParam.Mode != SamplingMode.Float ? 1 : 3);
+            wavRiff.FmtType = (ushort)(_decodeParams.Mode != SamplingMode.Float ? 1 : 3);
             wavRiff.FmtChannels = (ushort)_info.ChannelCount;
             wavRiff.FmtBitCount = (ushort)(sampleBits > 0 ? sampleBits : sizeof(float));
             wavRiff.FmtSamplingRate = _info.SamplingRate;
@@ -57,7 +57,7 @@ namespace DereTore.HCA {
                 wavSmpl.SamplePeriod = (uint)(1000000000 / (double)wavRiff.FmtSamplingRate);
                 wavSmpl.LoopStart = _info.LoopStart * 0x80 * 8 * wavRiff.FmtSamplingSize;
                 wavSmpl.LoopEnd = _info.LoopR01 == 0x80 ? 0 : _info.LoopR01;
-            } else if (_decodeParam.EnableLoop) {
+            } else if (_decodeParams.EnableLoop) {
                 wavSmpl.LoopStart = 0;
                 wavSmpl.LoopEnd = _info.BlockCount * 0x80 * 8 * wavRiff.FmtSamplingSize;
                 _info.LoopStart = 0;
@@ -70,10 +70,10 @@ namespace DereTore.HCA {
                 }
             }
             wavData.DataSize = (uint)(_info.BlockCount * 0x80 * 8 * wavRiff.FmtSamplingSize + (wavSmpl.LoopEnd - wavSmpl.LoopStart) * loopCount);
-            wavRiff.RiffSize = (uint)(0x1c + ((_info.LoopFlag && !_decodeParam.EnableLoop) ? Marshal.SizeOf(wavSmpl) : 0) + (_info.Comment != null ? wavNote.NoteSize : 0) + Marshal.SizeOf(wavData) + wavData.DataSize);
+            wavRiff.RiffSize = (uint)(0x1c + ((_info.LoopFlag && !_decodeParams.EnableLoop) ? Marshal.SizeOf(wavSmpl) : 0) + (_info.Comment != null ? wavNote.NoteSize : 0) + Marshal.SizeOf(wavData) + wavData.DataSize);
 
             var bytesWritten = stream.Write(wavRiff, 0);
-            if (_info.LoopFlag && !_decodeParam.EnableLoop) {
+            if (_info.LoopFlag && !_decodeParams.EnableLoop) {
                 bytesWritten += stream.Write(wavSmpl, bytesWritten);
             }
             if (_info.Comment != null) {
@@ -93,7 +93,7 @@ namespace DereTore.HCA {
             }
             uint waveBlockSize = 0x80 * (uint)GetSampleBitsFromParams() * _info.ChannelCount;
             uint blockProcessableThisRound = (uint)buffer.Length / waveBlockSize;
-            if (!_decodeParam.EnableLoop && !_info.LoopFlag) {
+            if (!_decodeParams.EnableLoop && !_info.LoopFlag) {
                 int bufferCursor;
                 if (_status.BlockIndex + blockProcessableThisRound >= _info.BlockCount) {
                     blockProcessableThisRound = _info.BlockCount - _status.BlockIndex;

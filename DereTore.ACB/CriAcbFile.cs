@@ -16,7 +16,7 @@ namespace DereTore.ACB {
 
             // initialize internal AWB
             if (InternalAwbFileSize > 0) {
-                _internalAwb = new CriAfs2Archive(fileName, stream, (long)InternalAwbFileOffset);
+                _internalAwb = new CriAfs2Archive(fileName, stream, (long) InternalAwbFileOffset);
             }
 
             // initialize external AWB
@@ -114,13 +114,13 @@ namespace DereTore.ACB {
                         if (cueItem.IsStreaming) {
                             if (ExternalAwb != null) {
                                 using (fs = File.Open(ExternalAwb.SourceFile, FileMode.Open, FileAccess.Read)) {
-                                    return AcbHelper.ExtractChunkToStream(fs, (ulong)ExternalAwb.Files[cueItem.WaveformId].FileOffsetByteAligned, (ulong)ExternalAwb.Files[cueItem.WaveformId].FileLength);
+                                    return AcbHelper.ExtractChunkToStream(fs, (ulong) ExternalAwb.Files[cueItem.WaveformId].FileOffsetByteAligned, (ulong) ExternalAwb.Files[cueItem.WaveformId].FileLength);
                                 }
                             }
                         } else {
                             if (InternalAwb != null) {
                                 using (fs = File.Open(InternalAwb.SourceFile, FileMode.Open, FileAccess.Read)) {
-                                    return AcbHelper.ExtractChunkToStream(fs, (ulong)InternalAwb.Files[cueItem.WaveformId].FileOffsetByteAligned, (ulong)InternalAwb.Files[cueItem.WaveformId].FileLength);
+                                    return AcbHelper.ExtractChunkToStream(fs, (ulong) InternalAwb.Files[cueItem.WaveformId].FileOffsetByteAligned, (ulong) InternalAwb.Files[cueItem.WaveformId].FileLength);
                                 }
                             }
                         }
@@ -143,7 +143,7 @@ namespace DereTore.ACB {
 
         private void InitializeCueNameToWaveformMap(string fileName, Stream stream, bool includeCueIdInFileName) {
             var cueNameTableUtf = new CriUtfTable();
-            cueNameTableUtf.Initialize(fileName, stream, (long)CueNameTableOffset);
+            cueNameTableUtf.Initialize(fileName, stream, (long) CueNameTableOffset);
 
             for (var i = 0; i < cueNameTableUtf.NumberOfRows; i++) {
                 var cueIndex = GetUtfFieldForRow<ushort>(cueNameTableUtf, i, "CueIndex");
@@ -173,13 +173,13 @@ namespace DereTore.ACB {
             ulong referenceCorrection = 0;
 
             var cueTableUtf = new CriUtfTable();
-            cueTableUtf.Initialize(fileName, stream, (long)CueTableOffset);
+            cueTableUtf.Initialize(fileName, stream, (long) CueTableOffset);
 
             var waveformTableUtf = new CriUtfTable();
-            waveformTableUtf.Initialize(fileName, stream, (long)WaveformTableOffset);
+            waveformTableUtf.Initialize(fileName, stream, (long) WaveformTableOffset);
 
             var synthTableUtf = new CriUtfTable();
-            synthTableUtf.Initialize(fileName, stream, (long)SynthTableOffset);
+            synthTableUtf.Initialize(fileName, stream, (long) SynthTableOffset);
 
             _cueList = new CriAcbCueRecord[cueTableUtf.NumberOfRows];
 
@@ -206,11 +206,11 @@ namespace DereTore.ACB {
                             referenceCorrection = referenceItemsSize - 2; // samples found have only had a '01 00' record => Always Waveform[0]?.                       
                         } else {
                             referenceCorrection += 4; // relative to previous offset, do not lookup
-                                                      // @TODO: Should this do a referenceItemsSize - 2 for the ReferenceIndex?  Need to find 
-                                                      //    one where size > 4.
-                                                      //referenceItemsOffset = (ulong)CriUtfTable.GetOffsetForUtfFieldForRow(synthTableUtf, this.CueList[i].ReferenceIndex, "ReferenceItems");
-                                                      //referenceItemsSize = CriUtfTable.GetSizeForUtfFieldForRow(synthTableUtf, this.CueList[i].ReferenceIndex, "ReferenceItems");
-                                                      //referenceCorrection = referenceItemsSize - 2;
+                            // @TODO: Should this do a referenceItemsSize - 2 for the ReferenceIndex?  Need to find
+                            //    one where size > 4.
+                            //referenceItemsOffset = (ulong)CriUtfTable.GetOffsetForUtfFieldForRow(synthTableUtf, this.CueList[i].ReferenceIndex, "ReferenceItems");
+                            //referenceItemsSize = CriUtfTable.GetSizeForUtfFieldForRow(synthTableUtf, this.CueList[i].ReferenceIndex, "ReferenceItems");
+                            //referenceCorrection = referenceItemsSize - 2;
                         }
                         break;
                     default:
@@ -219,10 +219,15 @@ namespace DereTore.ACB {
 
                 if (referenceItemsSize != 0) {
                     // get wave form info
-                    cueItem.WaveformIndex = stream.ReadUInt16BE((long)(referenceItemsOffset + referenceCorrection));
+                    cueItem.WaveformIndex = stream.ReadUInt16BE((long) (referenceItemsOffset + referenceCorrection));
 
                     // get waveform id and encode type from corresponding waveform
-                    cueItem.WaveformId = GetUtfFieldForRow<ushort>(waveformTableUtf, cueItem.WaveformIndex, "Id");
+                    ushort? waveformId = GetUtfFieldForRow<ushort?>(waveformTableUtf, cueItem.WaveformIndex, "Id");
+                    if (!waveformId.HasValue) {
+                        // MemoryAwbId is for ADX2LE encoder.
+                        waveformId = GetUtfFieldForRow<ushort?>(waveformTableUtf, cueItem.WaveformIndex, "MemoryAwbId");
+                    }
+                    cueItem.WaveformId = waveformId.GetValueOrDefault();
                     cueItem.EncodeType = GetUtfFieldForRow<byte>(waveformTableUtf, cueItem.WaveformIndex, "EncodeType");
 
                     // get Streaming flag, 0 = in ACB files, 1 = in AWB file
@@ -287,7 +292,7 @@ namespace DereTore.ACB {
             for (var i = 0; i < utfTable.NumberOfRows; i++) {
                 var tempId = GetUtfFieldForRow<ushort>(utfTable, i, "Id");
                 if (tempId == waveformId) {
-                    ret = (ushort)i;
+                    ret = (ushort) i;
                 }
             }
             return ret;
@@ -295,7 +300,7 @@ namespace DereTore.ACB {
 
         private static string GetFileExtensionForEncodeType(byte encodeType) {
             string ext;
-            switch ((WaveformEncodeType)encodeType) {
+            switch ((WaveformEncodeType) encodeType) {
                 case WaveformEncodeType.Adx:
                     ext = ".adx";
                     break;

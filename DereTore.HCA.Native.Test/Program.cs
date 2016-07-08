@@ -6,14 +6,14 @@ namespace DereTore.HCA.Native.Test {
         public static void Main(string[] args) {
             uint key1 = 0, key2 = 0;
             string fileName = null;
-            if (args.Length < 2) {
+            if (args.Length < 1) {
                 Console.WriteLine("Usage: <EXE> <File to play> [key1] [key2]");
                 //return;
             }
-            //fileName = args[1];
-            if (args.Length >= 4) {
-                key1 = uint.Parse(args[2]);
-                key2 = uint.Parse(args[3]);
+            //fileName = args[0];
+            if (args.Length >= 3) {
+                key1 = uint.Parse(args[1]);
+                key2 = uint.Parse(args[2]);
             }
             fileName = CgssHcaConfig.FileName;
             key1 = CgssHcaConfig.Key1;

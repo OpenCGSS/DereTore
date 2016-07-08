@@ -6,16 +6,16 @@ namespace DereTore.HCA {
     public sealed partial class HcaDecoder {
 
         public HcaDecoder(Stream sourceStream)
-            : this(sourceStream, new DecodeParam()) {
+            : this(sourceStream, new DecodeParams()) {
         }
 
-        public HcaDecoder(Stream sourceStream, DecodeParam decodeParam) {
+        public HcaDecoder(Stream sourceStream, DecodeParams decodeParam) {
             HcaHelper.TranslateTables();
             _info = new HcaInfo() {
                 CiphKey1 = decodeParam.Key1,
                 CiphKey2 = decodeParam.Key2
             };
-            _decodeParam = decodeParam.Clone();
+            _decodeParams = decodeParam.Clone();
             _sourceStream = sourceStream;
             _status = new DecodeStatus();
             _ath = new Ath();
@@ -34,7 +34,7 @@ namespace DereTore.HCA {
                 for (int i = 0; i < 8; ++i) {
                     for (int j = 0; j < 0x80; ++j) {
                         for (uint k = 0; k < _info.ChannelCount; ++k) {
-                            var f = _channels[k].Wave[i * 0x80 + j] * _decodeParam.Volume * _info.RvaVolume;
+                            var f = _channels[k].Wave[i * 0x80 + j] * _decodeParams.Volume * _info.RvaVolume;
                             HcaHelper.Clamp(ref f, -1f, 1f);
                             cursor += modeFunc(f, destination, cursor);
                         }
@@ -49,10 +49,11 @@ namespace DereTore.HCA {
             if (blockData.Length < _info.BlockSize) {
                 return false;
             }
-            if (HcaHelper.CheckSum(blockData, 0) != 0) {
+            var checksum = HcaHelper.Checksum(blockData, 0);
+            if (checksum != 0) {
                 return false;
             }
-            _cipher.Mask(blockData);
+            _cipher.Decrypt(blockData);
             var d = new Data(blockData, _info.BlockSize);
             int magic = d.GetBit(16);
             if (magic == 0xffff) {
@@ -87,22 +88,22 @@ namespace DereTore.HCA {
         }
 
         private DecodeToBufferFunc GetDecodeToBufferFunc() {
-            switch (_decodeParam.Mode) {
+            switch (_decodeParams.Mode) {
                 case SamplingMode.S16:
-                    return DecodeToBufferInS16;
+                    return WaveHelper.DecodeToBufferInS16;
                 case SamplingMode.Float:
-                    return DecodeToBufferInR32;
+                    return WaveHelper.DecodeToBufferInR32;
                 case SamplingMode.S32:
                 case SamplingMode.U8:
                 case SamplingMode.S24:
                     throw new NotImplementedException();
                 default:
-                    throw new ArgumentOutOfRangeException("_decodeParam.Mode");
+                    throw new ArgumentOutOfRangeException("_decodeParams.Mode");
             }
         }
 
         private int GetSampleBitsFromParams() {
-            switch (_decodeParam.Mode) {
+            switch (_decodeParams.Mode) {
                 case SamplingMode.Float:
                     return 32;
                 case SamplingMode.S16:
@@ -114,7 +115,7 @@ namespace DereTore.HCA {
                 case SamplingMode.U8:
                     return 8;
                 default:
-                    throw new ArgumentOutOfRangeException("_decodeParam.Mode");
+                    throw new ArgumentOutOfRangeException("_decodeParams.Mode");
             }
         }
 
@@ -125,7 +126,7 @@ namespace DereTore.HCA {
         private float _lengthInSecs;
         private int _lengthInSamples;
         private Channel[] _channels;
-        private readonly DecodeParam _decodeParam;
+        private readonly DecodeParams _decodeParams;
         private readonly Stream _sourceStream;
         private DecodeStatus _status;
 

@@ -1,19 +1,47 @@
 ﻿using System;
+using System.IO;
 
 namespace DereTore.ACB.Test {
     internal static class Program {
-
         public static void Main(string[] args) {
-            if (args.Length < 2) {
+            if (args.Length < 1) {
                 Console.WriteLine("Usage: <EXE> <Input ACB File>");
                 return;
             }
-            var fileName = args[1];
+            var fileName = args[0];
             var acb = CriAcbFile.FromFile(fileName);
-            foreach (var s in acb.GetFileNames()) {
+            var fileNames = acb.GetFileNames();
+            var fileInfo = new FileInfo(fileName);
+
+            var fullDirPath = Path.Combine(fileInfo.DirectoryName, string.Format(DirTemplate, fileInfo.Name));
+            fullDirPath = Path.Combine(fullDirPath, "acb");
+            fullDirPath = Path.Combine(fullDirPath, "awb");
+            if (!Directory.Exists(fullDirPath)) {
+                Directory.CreateDirectory(fullDirPath);
+            }
+
+            foreach (var s in fileNames) {
+                var extractName = Path.Combine(fullDirPath, s);
+                using (var fs = new FileStream(extractName, FileMode.Create, FileAccess.Write)) {
+                    using (var source = acb.OpenReadStream(s)) {
+                        WriteFile(source, fs);
+                    }
+                }
                 Console.WriteLine(s);
             }
         }
 
+        private static void WriteFile(Stream sourceStream, FileStream outputStream) {
+            var buffer = new byte[4096];
+            int read = 0;
+            do {
+                if (sourceStream.CanRead) {
+                    read = sourceStream.Read(buffer, 0, buffer.Length);
+                    outputStream.Write(buffer, 0, read);
+                }
+            } while (read == buffer.Length);
+        }
+
+        private static readonly string DirTemplate = "_deretore_acb_extract_{0}";
     }
 }

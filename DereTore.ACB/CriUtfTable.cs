@@ -365,7 +365,7 @@ namespace DereTore.ACB {
 
         private static object GetUtfFieldForRow(CriUtfTable utfTable, int rowIndex, string key) {
             object ret = null;
-            if (utfTable.Rows.GetLength(0) > rowIndex) {
+            if (utfTable.Rows.Length > rowIndex) {
                 if (utfTable.Rows[rowIndex].ContainsKey(key)) {
                     ret = utfTable.Rows[rowIndex][key].Value;
                 }

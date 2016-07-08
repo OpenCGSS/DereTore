@@ -4,31 +4,19 @@ using System.Runtime.InteropServices;
 namespace DereTore.HCA {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     internal struct Channel {
-
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)]
-        public float[] Block;
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)]
-        public float[] Base;
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 0x80)]
-        public byte[] Value;
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 0x80)]
-        public byte[] Scale;
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 8)]
-        public byte[] Value2;
-        [MarshalAs(UnmanagedType.I4)]
-        public int Type;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)] public float[] Block;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)] public float[] Base;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 0x80)] public byte[] Value;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 0x80)] public byte[] Scale;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.U1, SizeConst = 8)] public byte[] Value2;
+        [MarshalAs(UnmanagedType.I4)] public int Type;
         // Original type: public char *
-        [MarshalAs(UnmanagedType.U4)]
-        public uint Value3;
+        [MarshalAs(UnmanagedType.U4)] public uint Value3;
         public uint Count;
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)]
-        public float[] Wav1;
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)]
-        public float[] Wav2;
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)]
-        public float[] Wav3;
-        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 8 * 0x80)]
-        public float[] Wave;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)] public float[] Wav1;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)] public float[] Wav2;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 0x80)] public float[] Wav3;
+        [MarshalAs(UnmanagedType.ByValArray, ArraySubType = UnmanagedType.R8, SizeConst = 8 * 0x80)] public float[] Wave;
 
         public static Channel CreateDefault() {
             var v = default(Channel);
@@ -51,13 +39,13 @@ namespace DereTore.HCA {
             int v = data.GetBit(3);
             if (v >= 6) {
                 for (uint i = 0; i < Count; ++i) {
-                    Value[i] = (byte)data.GetBit(6);
+                    Value[i] = (byte) data.GetBit(6);
                 }
             } else if (v != 0) {
                 int v1 = data.GetBit(6);
                 int v2 = (1 << v) - 1;
                 int v3 = v2 >> 1;
-                Value[0] = (byte)v1;
+                Value[0] = (byte) v1;
                 for (uint i = 1; i < Count; ++i) {
                     int v4 = data.GetBit(v);
                     if (v4 != v2) {
@@ -65,29 +53,29 @@ namespace DereTore.HCA {
                     } else {
                         v1 = data.GetBit(6);
                     }
-                    Value[i] = (byte)v1;
+                    Value[i] = (byte) v1;
                 }
             } else {
                 Value.ZeroMem();
             }
             if (Type == 2) {
                 v = data.CheckBit(4);
-                Value2[0] = (byte)v;
+                Value2[0] = (byte) v;
                 if (v < 15) {
                     for (var i = 0; i < 8; ++i) {
-                        Value2[i] = (byte)data.GetBit(4);
+                        Value2[i] = (byte) data.GetBit(4);
                     }
                 }
             } else {
                 for (uint i = 0; i < a; ++i) {
                     //Value3[i] = (byte)data.GetBit(6);
-                    SetValue3(i, (byte)data.GetBit(6));
+                    SetValue3(i, (byte) data.GetBit(6));
                 }
             }
             for (uint i = 0; i < Count; ++i) {
                 v = Value[i];
                 if (v != 0) {
-                    v = (int)(ath[i] + ((b + i) >> 8) - ((v * 5) >> 1) + 1);
+                    v = (int) (ath[i] + ((b + i) >> 8) - ((v * 5) >> 1) + 1);
                     if (v < 0) {
                         v = 15;
                     } else if (v >= 0x39) {
@@ -96,7 +84,7 @@ namespace DereTore.HCA {
                         v = ChannelTables.Decode1ScaleList[v];
                     }
                 }
-                Scale[i] = (byte)v;
+                Scale[i] = (byte) v;
             }
             for (var i = Count; i < Scale.Length; ++i) {
                 Scale[i] = 0;
@@ -149,8 +137,8 @@ namespace DereTore.HCA {
                 float[] s = @this.Block;
                 float[] d = next.Block;
                 int sIndex, dIndex;
-                sIndex = (int)b;
-                dIndex = (int)b;
+                sIndex = (int) b;
+                dIndex = (int) b;
                 for (uint i = 0; i < a; ++i) {
                     d[dIndex++] = s[sIndex] * f2;
                     s[sIndex++] = s[sIndex] * f1;
@@ -242,7 +230,7 @@ namespace DereTore.HCA {
         }
 
         private byte GetValue3(int refIndex) {
-            int index = (int)(refIndex + Value3);
+            int index = (int) (refIndex + Value3);
             if (0 <= index && index < 0x80) {
                 return Value[index];
             } else if (0x80 <= index && index < 0x80 + 0x80) {
@@ -274,6 +262,5 @@ namespace DereTore.HCA {
         private void SetValue3(byte value) {
             Value[Value3] = value;
         }
-
     }
 }

@@ -2,7 +2,6 @@
 
 namespace DereTore.HCA {
     internal static class HcaHelper {
-
         static HcaHelper() {
             SyncObject = new object();
         }
@@ -18,17 +17,17 @@ namespace DereTore.HCA {
         }
 
         public static ushort SwapEndian(ushort v) {
-            ushort r = (ushort)(v & 0xff);
+            ushort r = (ushort) (v & 0xff);
             r <<= 8;
             v >>= 8;
-            r |= (ushort)(v & 0xff);
+            r |= (ushort) (v & 0xff);
             return r;
         }
 
         public static short SwapEndian(short v) {
             unchecked {
-                ushort s = (ushort)v;
-                return (short)SwapEndian(s);
+                ushort s = (ushort) v;
+                return (short) SwapEndian(s);
             }
         }
 
@@ -48,8 +47,8 @@ namespace DereTore.HCA {
 
         public static int SwapEndian(int v) {
             unchecked {
-                uint s = (uint)v;
-                return (int)SwapEndian(s);
+                uint s = (uint) v;
+                return (int) SwapEndian(s);
             }
         }
 
@@ -81,8 +80,8 @@ namespace DereTore.HCA {
 
         public static long SwapEndian(long v) {
             unchecked {
-                ulong s = (ulong)v;
-                return (long)SwapEndian(s);
+                ulong s = (ulong) v;
+                return (long) SwapEndian(s);
             }
         }
 
@@ -99,12 +98,25 @@ namespace DereTore.HCA {
         }
 
         public static uint Ceil2(uint a, uint b) {
-            return (b > 0) ? (uint)(a / b + ((a % b) != 0 ? 1 : 0)) : 0;
+            return (b > 0) ? (uint) (a / b + ((a % b) != 0 ? 1 : 0)) : 0;
         }
 
-        public static ushort CheckSum(byte[] data, ushort sum) {
-            for (var i = 0; i < data.Length; ++i) {
-                sum = (ushort)((sum << 8) ^ ChecksumTable[(sum >> 8) ^ data[i]]);
+        public static ushort Checksum(byte[] data, ushort sum) {
+            return Checksum(data, sum, data.Length);
+        }
+
+        /// <summary></summary>
+        /// <example>
+        /// var headerChecksum = HcaHelper.Checksum(headerBytes, 0, headerBytes.Length - 2);
+        /// headerChecksum = HcaHelper.SwapEndian(headerChecksum);
+        /// headerBytes[headerBytes.Length - 2] = HIBYTE(headerChecksum);
+        /// headerBytes[headerBytes.Length - 1] = LOBYTE(headerChecksum);
+        /// </example>
+        public static ushort Checksum(byte[] data, ushort sum, int length) {
+            var dataLength = data.Length;
+            dataLength = Math.Min(dataLength, length);
+            for (var i = 0; i < dataLength; ++i) {
+                sum = (ushort) ((sum << 8) ^ ChecksumTable[(sum >> 8) ^ data[i]]);
             }
             return sum;
         }
@@ -112,7 +124,7 @@ namespace DereTore.HCA {
         public static void SetString(out byte[] p, string value) {
             p = new byte[value.Length];
             for (var i = 0; i < value.Length; ++i) {
-                p[i] = (byte)value[i];
+                p[i] = (byte) value[i];
             }
         }
 
@@ -179,6 +191,5 @@ namespace DereTore.HCA {
 
         private static bool _tablesTranslated;
         private static readonly object SyncObject;
-
     }
 }

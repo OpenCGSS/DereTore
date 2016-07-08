@@ -1,5 +1,6 @@
 
-.idea
+.idea/
+.idea.*
 *.sln.iml
 .vs
 _ReSharper*

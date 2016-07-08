@@ -1,9 +1,9 @@
 ﻿using System;
 
 namespace DereTore.HCA {
-    public sealed class DecodeParam : ICloneable {
+    public sealed class DecodeParams : ICloneable {
 
-        public DecodeParam() {
+        public DecodeParams() {
             Key1 = 0;
             Key2 = 0;
             Mode = SamplingMode.S16;
@@ -19,8 +19,8 @@ namespace DereTore.HCA {
         public int Loop { get; set; }
         public bool EnableLoop { get; set; }
 
-        public DecodeParam Clone() {
-            return new DecodeParam() {
+        public DecodeParams Clone() {
+            return new DecodeParams() {
                 Key1 = Key1,
                 Key2 = Key2,
                 Loop = Loop,

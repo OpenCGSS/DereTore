@@ -5,10 +5,10 @@ namespace DereTore.HCA {
     public sealed class HcaAudioStream : Stream {
 
         public HcaAudioStream(Stream sourceStream)
-            : this(sourceStream, new DecodeParam()) {
+            : this(sourceStream, new DecodeParams()) {
         }
 
-        public HcaAudioStream(Stream sourceStream, DecodeParam decodeParam) {
+        public HcaAudioStream(Stream sourceStream, DecodeParams decodeParam) {
             _decoder = new HcaDecoder(sourceStream, decodeParam);
             OutputWaveHeader = true;
             _state = DecodeState.Initialized;
@@ -180,6 +180,7 @@ namespace DereTore.HCA {
         private bool _isDisposed;
         private DecodeState _state;
 
+        [Flags]
         private enum DecodeState {
             Initialized = 0,
             WaveHeaderTransmitting = 1,
