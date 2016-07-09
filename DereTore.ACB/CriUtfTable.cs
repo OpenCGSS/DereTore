@@ -394,5 +394,6 @@ namespace DereTore.ACB {
         private ushort _numberOfFields;
         private ushort _rowSize;
         private uint _numberOfRows;
+
     }
 }

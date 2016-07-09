@@ -13,6 +13,7 @@ namespace DereTore.HCA {
             OutputWaveHeader = true;
             _state = DecodeState.Initialized;
             _decoder.ParseHeaders();
+            _decoder.InitializeDecodeComponents();
         }
 
         public override void Flush() {
@@ -153,7 +154,7 @@ namespace DereTore.HCA {
         }
 
         public float LengthInSecs {
-            get { return _decoder.LengthInSecs; }
+            get { return _decoder.LengthInSeconds; }
         }
 
         public int LengthInSamples {
@@ -189,5 +190,6 @@ namespace DereTore.HCA {
             DataTransmitted = 8,
             CanDoHasMoreCheck = WaveHeaderTransmitting | WaveHeaderTransmitted | DataTransmitting,
         }
+
     }
 }

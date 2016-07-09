@@ -3,23 +3,27 @@ using System.Diagnostics;
 using System.IO;
 
 namespace DereTore.HCA {
-    public sealed partial class HcaDecoder {
+    public sealed partial class HcaDecoder : HcaReader {
 
         public HcaDecoder(Stream sourceStream)
             : this(sourceStream, new DecodeParams()) {
         }
 
-        public HcaDecoder(Stream sourceStream, DecodeParams decodeParam) {
+        public HcaDecoder(Stream sourceStream, DecodeParams decodeParam)
+            : base(sourceStream) {
             HcaHelper.TranslateTables();
-            _info = new HcaInfo() {
+            _hcaInfo = new HcaInfo() {
                 CiphKey1 = decodeParam.Key1,
                 CiphKey2 = decodeParam.Key2
             };
             _decodeParams = decodeParam.Clone();
-            _sourceStream = sourceStream;
             _status = new DecodeStatus();
             _ath = new Ath();
             _cipher = new Cipher();
+        }
+
+        internal bool HasMore() {
+            return _status.BlockIndex < _hcaInfo.BlockCount;
         }
 
         private bool GenerateWaveData(Stream source, byte[] destination, uint count, byte[] buffer, DecodeToBufferFunc modeFunc, out int bytesDecoded) {
@@ -33,8 +37,8 @@ namespace DereTore.HCA {
                 }
                 for (int i = 0; i < 8; ++i) {
                     for (int j = 0; j < 0x80; ++j) {
-                        for (uint k = 0; k < _info.ChannelCount; ++k) {
-                            var f = _channels[k].Wave[i * 0x80 + j] * _decodeParams.Volume * _info.RvaVolume;
+                        for (uint k = 0; k < _hcaInfo.ChannelCount; ++k) {
+                            var f = _channels[k].Wave[i * 0x80 + j] * _decodeParams.Volume * _hcaInfo.RvaVolume;
                             HcaHelper.Clamp(ref f, -1f, 1f);
                             cursor += modeFunc(f, destination, cursor);
                         }
@@ -46,7 +50,7 @@ namespace DereTore.HCA {
         }
 
         private bool DecodeBlock(byte[] blockData) {
-            if (blockData.Length < _info.BlockSize) {
+            if (blockData.Length < _hcaInfo.BlockSize) {
                 return false;
             }
             var checksum = HcaHelper.Checksum(blockData, 0);
@@ -54,24 +58,24 @@ namespace DereTore.HCA {
                 return false;
             }
             _cipher.Decrypt(blockData);
-            var d = new Data(blockData, _info.BlockSize);
+            var d = new DataBits(blockData, _hcaInfo.BlockSize);
             int magic = d.GetBit(16);
             if (magic == 0xffff) {
                 int a = (d.GetBit(9) << 8) - d.GetBit(7);
-                for (uint i = 0; i < _info.ChannelCount; ++i) {
-                    _channels[i].Decode1(d, _info.CompR09, a, _ath.Table);
+                for (uint i = 0; i < _hcaInfo.ChannelCount; ++i) {
+                    _channels[i].Decode1(d, _hcaInfo.CompR09, a, _ath.Table);
                 }
                 for (int i = 0; i < 8; ++i) {
-                    for (uint j = 0; j < _info.ChannelCount; ++j) {
+                    for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
                         _channels[j].Decode2(d);
                     }
-                    for (uint j = 0; j < _info.ChannelCount; ++j) {
-                        _channels[j].Decode3(_info.CompR09, _info.CompR08, _info.CompR07 + _info.CompR06, _info.CompR05);
+                    for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
+                        _channels[j].Decode3(_hcaInfo.CompR09, _hcaInfo.CompR08, _hcaInfo.CompR07 + _hcaInfo.CompR06, _hcaInfo.CompR05);
                     }
-                    for (uint j = 0; j < _info.ChannelCount - 1; ++j) {
-                        Channel.Decode4(ref _channels[j], ref _channels[j + 1], i, _info.CompR05 - _info.CompR06, _info.CompR06, _info.CompR07);
+                    for (uint j = 0; j < _hcaInfo.ChannelCount - 1; ++j) {
+                        Channel.Decode4(ref _channels[j], ref _channels[j + 1], i, _hcaInfo.CompR05 - _hcaInfo.CompR06, _hcaInfo.CompR06, _hcaInfo.CompR07);
                     }
-                    for (uint j = 0; j < _info.ChannelCount; ++j) {
+                    for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
                         _channels[j].Decode5(i);
                     }
                 }
@@ -84,7 +88,7 @@ namespace DereTore.HCA {
         }
 
         private byte[] GetHcaBlockBuffer() {
-            return _hcaBlockBuffer ?? (_hcaBlockBuffer = new byte[_info.BlockSize]);
+            return _hcaBlockBuffer ?? (_hcaBlockBuffer = new byte[_hcaInfo.BlockSize]);
         }
 
         private DecodeToBufferFunc GetDecodeToBufferFunc() {
@@ -122,12 +126,8 @@ namespace DereTore.HCA {
         private byte[] _hcaBlockBuffer;
         private readonly Ath _ath;
         private readonly Cipher _cipher;
-        private HcaInfo _info;
-        private float _lengthInSecs;
-        private int _lengthInSamples;
         private Channel[] _channels;
         private readonly DecodeParams _decodeParams;
-        private readonly Stream _sourceStream;
         private DecodeStatus _status;
 
     }

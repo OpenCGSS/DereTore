@@ -35,7 +35,7 @@ namespace DereTore.ACB {
                         CueId = stream.ReadUInt16LE(offset + (0x10 + (2 * i))),
                         FileOffsetRaw = stream.ReadUInt32LE(offset + (0x10 + (FileCount * 2) + (offsetFieldSize * i)))
                     };
-                    
+
                     // mask off unneeded info
                     dummy.FileOffsetRaw &= offsetMask;
 
@@ -77,8 +77,8 @@ namespace DereTore.ACB {
 
         private static readonly byte[] Signature = { 0x41, 0x46, 0x53, 0x32 };
 
-        public string SourceFile {  get; private set; }
-        public byte[] MagicBytes {  get; private set; }
+        public string SourceFile { get; private set; }
+        public byte[] MagicBytes { get; private set; }
         private byte[] Version { set; get; }
         public uint FileCount { private set; get; }
         public uint ByteAlignment { private set; get; }

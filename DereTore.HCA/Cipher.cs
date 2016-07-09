@@ -49,7 +49,7 @@ namespace DereTore.HCA {
 
         private void Init0() {
             for (var i = 0; i < _decryptTable.Length; ++i) {
-                _decryptTable[i] = (byte) i;
+                _decryptTable[i] = (byte)i;
             }
         }
 
@@ -59,7 +59,7 @@ namespace DereTore.HCA {
                 if (v == 0 || v == 0xff) {
                     v = (v * 13 + 11) & 0xff;
                 }
-                _decryptTable[i] = (byte) v;
+                _decryptTable[i] = (byte)v;
             }
             _decryptTable[0] = 0;
             _decryptTable[_decryptTable.Length - 1] = 0xff;
@@ -72,19 +72,19 @@ namespace DereTore.HCA {
             }
             --key1;
             for (int i = 0; i < 7; ++i) {
-                t1[i] = (byte) key1;
+                t1[i] = (byte)key1;
                 key1 = (key1 >> 8) | (key2 << 24);
                 key2 >>= 8;
             }
             byte[] t2 = new byte[0x10] {
-                t1[1], (byte) (t1[1] ^ t1[6]),
-                (byte) (t1[2] ^ t1[3]), t1[2],
-                (byte) (t1[2] ^ t1[1]), (byte) (t1[3] ^ t1[4]),
-                t1[3], (byte) (t1[3] ^ t1[2]),
-                (byte) (t1[4] ^ t1[5]), t1[4],
-                (byte) (t1[4] ^ t1[3]), (byte) (t1[5] ^ t1[6]),
-                t1[5], (byte) (t1[5] ^ t1[4]),
-                (byte) (t1[6] ^ t1[1]), t1[6],
+                t1[1], (byte)(t1[1] ^ t1[6]),
+                (byte)(t1[2] ^ t1[3]), t1[2],
+                (byte)(t1[2] ^ t1[1]), (byte)(t1[3] ^ t1[4]),
+                t1[3], (byte)(t1[3] ^ t1[2]),
+                (byte)(t1[4] ^ t1[5]), t1[4],
+                (byte)(t1[4] ^ t1[3]), (byte)(t1[5] ^ t1[6]),
+                t1[5], (byte)(t1[5] ^ t1[4]),
+                (byte)(t1[6] ^ t1[1]), t1[6],
             };
             byte[] t3 = new byte[0x100];
             byte[] t31 = new byte[0x10];
@@ -93,9 +93,9 @@ namespace DereTore.HCA {
             Init56CreateTable(t31, t1[0]);
             for (int i = 0; i < t31.Length; ++i) {
                 Init56CreateTable(t32, t2[i]);
-                byte v = (byte) (t31[i] << 4);
+                byte v = (byte)(t31[i] << 4);
                 for (int j = 0; j < t32.Length; ++j) {
-                    t3[c] = (byte) (v | t32[j]);
+                    t3[c] = (byte)(v | t32[j]);
                     ++c;
                 }
             }
@@ -117,7 +117,7 @@ namespace DereTore.HCA {
             int add = (key & 0xe) | 1;
             key >>= 4;
             for (int i = 0; i < 0x10; ++i) {
-                key = (byte) ((key * mul + add) & 0xf);
+                key = (byte)((key * mul + add) & 0xf);
                 r[i] = key;
             }
         }
@@ -126,7 +126,7 @@ namespace DereTore.HCA {
             for (var i = 0; i < 0x100; ++i) {
                 for (var j = 0; j < 0x100; ++j) {
                     if (_decryptTable[j] == i) {
-                        _encryptTable[i] = (byte) (j & 0xff);
+                        _encryptTable[i] = (byte)(j & 0xff);
                         break;
                     }
                 }

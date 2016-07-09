@@ -79,5 +79,10 @@ namespace DereTore.HCA {
             return BitConverter.ToUInt32(bytes, 0);
         }
 
+        public static int Skip(this Stream stream, int length) {
+            var buffer = new byte[length];
+            return stream.Read(buffer, 0, buffer.Length);
+        }
+
     }
 }

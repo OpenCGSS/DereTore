@@ -2,7 +2,7 @@
 .idea/
 .idea.*
 *.sln.iml
-.vs
+.vs/
 _ReSharper*
 
 [Bb]in
@@ -10,4 +10,4 @@ _ReSharper*
 *.user
 
 Cgss*
-/DereTore.Combined.Test
+/DereTore.Combined.Test/

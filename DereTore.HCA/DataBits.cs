@@ -1,7 +1,7 @@
 ﻿namespace DereTore.HCA {
-    internal sealed class Data {
+    internal sealed class DataBits {
 
-        public Data(byte[] data, uint size) {
+        public DataBits(byte[] data, uint size) {
             _data = data;
             _size = size * 8 - 16;
             _bit = 0;

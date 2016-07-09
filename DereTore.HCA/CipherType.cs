@@ -1,4 +1,4 @@
-﻿namespace DereTore.HCA.Interop {
+﻿namespace DereTore.HCA {
     public enum CipherType : ushort {
 
         NoChipher = 0,
