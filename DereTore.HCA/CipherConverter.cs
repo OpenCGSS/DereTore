@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 using DereTore.HCA.Interop;
 
 namespace DereTore.HCA {
-    public sealed class HcaCipherConverter : HcaReader {
+    public sealed class CipherConverter : HcaReader {
 
-        public HcaCipherConverter(Stream sourceStream, Stream outputStream, CipherConfig ccFrom, CipherConfig ccTo)
+        public CipherConverter(Stream sourceStream, Stream outputStream, CipherConfig ccFrom, CipherConfig ccTo)
             : base(sourceStream) {
             _outputStream = outputStream;
             _ccFrom = ccFrom;

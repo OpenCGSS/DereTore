@@ -92,7 +92,7 @@
     <Compile Include="DecodeParams.cs" />
     <Compile Include="DecodeStatus.cs" />
     <Compile Include="HcaAudioStream.cs" />
-    <Compile Include="HcaCipherConverter.cs" />
+    <Compile Include="CipherConverter.cs" />
     <Compile Include="HcaDecoder.cs" />
     <Compile Include="HcaException.cs" />
     <Compile Include="HcaReader.cs" />

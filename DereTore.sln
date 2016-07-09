@@ -24,6 +24,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.ACB.Test", "DereTo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Combined.Test", "DereTore.Combined.Test\DereTore.Combined.Test.csproj", "{AC13C3E0-517B-45BD-AF95-D54FE572F777}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.CipherConverter", "DereTore.Application.CipherConverter\DereTore.Application.CipherConverter.csproj", "{22DA9276-BAE2-4328-9B74-522D5333E09C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.Encoder", "DereTore.Application.Encoder\DereTore.Application.Encoder.csproj", "{5B8FCABB-7663-4047-997C-BD14C06EF301}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -130,6 +134,27 @@ Global
 		{AC13C3E0-517B-45BD-AF95-D54FE572F777}.Release|x64.Build.0 = Release|x64
 		{AC13C3E0-517B-45BD-AF95-D54FE572F777}.Release|x86.ActiveCfg = Release|x86
 		{AC13C3E0-517B-45BD-AF95-D54FE572F777}.Release|x86.Build.0 = Release|x86
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Debug|x64.ActiveCfg = Debug|x64
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Debug|x64.Build.0 = Debug|x64
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Debug|x86.ActiveCfg = Debug|x86
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Debug|x86.Build.0 = Debug|x86
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Release|x64.ActiveCfg = Release|x64
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Release|x64.Build.0 = Release|x64
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Release|x86.ActiveCfg = Release|x86
+		{22DA9276-BAE2-4328-9B74-522D5333E09C}.Release|x86.Build.0 = Release|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Debug|AnyCPU.ActiveCfg = Debug|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Debug|AnyCPU.Build.0 = Debug|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Debug|x64.ActiveCfg = Debug|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Debug|x86.ActiveCfg = Debug|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Debug|x86.Build.0 = Debug|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Release|AnyCPU.ActiveCfg = Release|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Release|x64.ActiveCfg = Release|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Release|x86.ActiveCfg = Release|x86
+		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
