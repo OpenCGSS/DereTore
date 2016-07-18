@@ -1,5 +1,6 @@
-﻿namespace DereTore.HCA.Native {
-    internal enum KsResult {
+﻿namespace DereTore.HCA {
+    public enum ActionResult {
+
         HasMoreData = 1,
         Ok = 0,
         InvalidHandle = -1,
@@ -19,5 +20,6 @@
         StateOutOfRange = -15,
         NotImplemented = -16,
         DecodeAlreadyCompleted = -17,
+
     }
 }

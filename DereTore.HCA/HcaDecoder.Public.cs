@@ -1,10 +1,28 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using DereTore.HCA.Interop;
 
 namespace DereTore.HCA {
     public partial class HcaDecoder {
+
+        public HcaDecoder(Stream sourceStream)
+           : this(sourceStream, new DecodeParams()) {
+        }
+
+        public HcaDecoder(Stream sourceStream, DecodeParams decodeParam)
+            : base(sourceStream) {
+            HcaHelper.TranslateTables();
+            _hcaInfo = new HcaInfo() {
+                CiphKey1 = decodeParam.Key1,
+                CiphKey2 = decodeParam.Key2
+            };
+            _decodeParams = decodeParam.Clone();
+            _status = new DecodeStatus();
+            _ath = new Ath();
+            _cipher = new Cipher();
+        }
 
         public int GetWaveHeaderNeededLength() {
             var wavNoteSize = 0;
@@ -34,12 +52,8 @@ namespace DereTore.HCA {
                 throw new ArgumentNullException("stream");
             }
             var minimumSize = GetWaveHeaderNeededLength();
-            try {
-                if (stream.Length < minimumSize) {
-                    throw new ArgumentException(string.Format("Buffer length is not enough. Expected minum: {0}, received: {1}", minimumSize, stream.Length));
-                }
-            } catch (InvalidOperationException ex) {
-                Debug.WriteLine(ex.Message);
+            if (stream.Length < minimumSize) {
+                throw new HcaException(ErrorMessages.GetBufferTooSmall(minimumSize, stream.Length), ActionResult.BufferTooSmall);
             }
             var sampleBits = GetSampleBitsFromParams();
             var loopCount = _decodeParams.Loop;
@@ -88,6 +102,9 @@ namespace DereTore.HCA {
         }
 
         public int DecodeData(byte[] buffer, out bool hasMore) {
+            if (buffer == null) {
+                throw new ArgumentNullException("buffer");
+            }
             if (_status.DataCursor < _hcaInfo.DataOffset) {
                 _status.DataCursor = _hcaInfo.DataOffset;
             }
@@ -102,9 +119,7 @@ namespace DereTore.HCA {
                     hasMore = true;
                 }
                 var streamBuffer = GetHcaBlockBuffer();
-                if (!GenerateWaveData(SourceStream, buffer, blockProcessableThisRound, streamBuffer, GetDecodeToBufferFunc(), out bufferCursor)) {
-                    throw new HcaException();
-                }
+                GenerateWaveDataBlocks(SourceStream, buffer, blockProcessableThisRound, streamBuffer, GetDecodeToBufferFunc(), out bufferCursor);
                 _status.BlockIndex += blockProcessableThisRound;
                 return bufferCursor;
             } else {
@@ -112,12 +127,12 @@ namespace DereTore.HCA {
             }
         }
 
-        public bool InitializeDecodeComponents() {
+        public void InitializeDecodeComponents() {
             if (!_ath.Initialize(_hcaInfo.AthType, _hcaInfo.SamplingRate)) {
-                return false;
+                throw new HcaException(ErrorMessages.GetAthInitializationFailed(), ActionResult.AthInitFailed);
             }
             if (!_cipher.Initialize(_hcaInfo.CiphType, _decodeParams.Key1, _decodeParams.Key2)) {
-                return false;
+                throw new HcaException(ErrorMessages.GetCiphInitializationFailed(), ActionResult.CiphInitFailed);
             }
             _channels = new Channel[0x10];
             for (var i = 0; i < _channels.Length; ++i) {
@@ -175,7 +190,6 @@ namespace DereTore.HCA {
                 _channels[i].Value3 = _hcaInfo.CompR06 + _hcaInfo.CompR07;
                 _channels[i].Count = _hcaInfo.CompR06 + (r[i] != 2 ? _hcaInfo.CompR07 : 0);
             }
-            return true;
         }
 
     }

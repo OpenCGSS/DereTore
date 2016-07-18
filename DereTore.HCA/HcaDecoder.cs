@@ -5,36 +5,28 @@ using System.IO;
 namespace DereTore.HCA {
     public sealed partial class HcaDecoder : HcaReader {
 
-        public HcaDecoder(Stream sourceStream)
-            : this(sourceStream, new DecodeParams()) {
-        }
-
-        public HcaDecoder(Stream sourceStream, DecodeParams decodeParam)
-            : base(sourceStream) {
-            HcaHelper.TranslateTables();
-            _hcaInfo = new HcaInfo() {
-                CiphKey1 = decodeParam.Key1,
-                CiphKey2 = decodeParam.Key2
-            };
-            _decodeParams = decodeParam.Clone();
-            _status = new DecodeStatus();
-            _ath = new Ath();
-            _cipher = new Cipher();
-        }
-
         internal bool HasMore() {
             return _status.BlockIndex < _hcaInfo.BlockCount;
         }
 
-        private bool GenerateWaveData(Stream source, byte[] destination, uint count, byte[] buffer, DecodeToBufferFunc modeFunc, out int bytesDecoded) {
+        private void GenerateWaveDataBlocks(Stream source, byte[] destination, uint count, byte[] buffer, DecodeToBufferFunc modeFunc, out int bytesDecoded) {
+            if (source == null) {
+                throw new ArgumentNullException("source");
+            }
+            if (destination == null) {
+                throw new ArgumentNullException("destination");
+            }
+            if (buffer == null) {
+                throw new ArgumentNullException("buffer");
+            }
+            if (modeFunc == null) {
+                throw new ArgumentNullException("modeFunc");
+            }
             source.Seek(_status.DataCursor, SeekOrigin.Begin);
             var cursor = 0;
             for (uint l = 0; l < count; ++l) {
                 source.Read(buffer, 0, buffer.Length);
-                if (!DecodeBlock(buffer)) {
-                    bytesDecoded = 0;
-                    return false;
-                }
+                DecodeBlock(buffer);
                 for (int i = 0; i < 8; ++i) {
                     for (int j = 0; j < 0x80; ++j) {
                         for (uint k = 0; k < _hcaInfo.ChannelCount; ++k) {
@@ -46,45 +38,44 @@ namespace DereTore.HCA {
                 }
             }
             bytesDecoded = cursor;
-            return true;
         }
 
-        private bool DecodeBlock(byte[] blockData) {
+        private void DecodeBlock(byte[] blockData) {
+            if (blockData == null) {
+                throw new ArgumentNullException("blockData");
+            }
             if (blockData.Length < _hcaInfo.BlockSize) {
-                return false;
+                throw new HcaException(ErrorMessages.GetInvalidParameter("blockData.Length"), ActionResult.InvalidParameter);
             }
             var checksum = HcaHelper.Checksum(blockData, 0);
             if (checksum != 0) {
-                return false;
+                throw new HcaException(ErrorMessages.GetChecksumNotMatch(0, checksum), ActionResult.ChecksumNotMatch);
             }
             _cipher.Decrypt(blockData);
             var d = new DataBits(blockData, _hcaInfo.BlockSize);
             int magic = d.GetBit(16);
-            if (magic == 0xffff) {
-                int a = (d.GetBit(9) << 8) - d.GetBit(7);
-                for (uint i = 0; i < _hcaInfo.ChannelCount; ++i) {
-                    _channels[i].Decode1(d, _hcaInfo.CompR09, a, _ath.Table);
+            if (magic != 0xffff) {
+                throw new HcaException(ErrorMessages.GetMagicNotMatch(0xffff, magic), ActionResult.MagicNotMatch);
+            }
+            int a = (d.GetBit(9) << 8) - d.GetBit(7);
+            for (uint i = 0; i < _hcaInfo.ChannelCount; ++i) {
+                _channels[i].Decode1(d, _hcaInfo.CompR09, a, _ath.Table);
+            }
+            for (int i = 0; i < 8; ++i) {
+                for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
+                    _channels[j].Decode2(d);
                 }
-                for (int i = 0; i < 8; ++i) {
-                    for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
-                        _channels[j].Decode2(d);
-                    }
-                    for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
-                        _channels[j].Decode3(_hcaInfo.CompR09, _hcaInfo.CompR08, _hcaInfo.CompR07 + _hcaInfo.CompR06, _hcaInfo.CompR05);
-                    }
-                    for (uint j = 0; j < _hcaInfo.ChannelCount - 1; ++j) {
-                        Channel.Decode4(ref _channels[j], ref _channels[j + 1], i, _hcaInfo.CompR05 - _hcaInfo.CompR06, _hcaInfo.CompR06, _hcaInfo.CompR07);
-                    }
-                    for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
-                        _channels[j].Decode5(i);
-                    }
+                for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
+                    _channels[j].Decode3(_hcaInfo.CompR09, _hcaInfo.CompR08, _hcaInfo.CompR07 + _hcaInfo.CompR06, _hcaInfo.CompR05);
                 }
-            } else {
-                Debug.Print("Warning: magic is {0}, expected 0xffff(65535).", magic);
-                return false;
+                for (uint j = 0; j < _hcaInfo.ChannelCount - 1; ++j) {
+                    Channel.Decode4(ref _channels[j], ref _channels[j + 1], i, _hcaInfo.CompR05 - _hcaInfo.CompR06, _hcaInfo.CompR06, _hcaInfo.CompR07);
+                }
+                for (uint j = 0; j < _hcaInfo.ChannelCount; ++j) {
+                    _channels[j].Decode5(i);
+                }
             }
             _status.DataCursor += (uint)blockData.Length;
-            return true;
         }
 
         private byte[] GetHcaBlockBuffer() {
