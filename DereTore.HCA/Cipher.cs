@@ -1,5 +1,4 @@
 ﻿using System;
-using DereTore.HCA.Interop;
 
 namespace DereTore.HCA {
     internal sealed class Cipher {

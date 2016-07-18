@@ -1,6 +1,4 @@
-﻿using DereTore.HCA.Interop;
-
-namespace DereTore.HCA {
+﻿namespace DereTore.HCA {
     public struct HcaInfo {
 
         public uint Version;
