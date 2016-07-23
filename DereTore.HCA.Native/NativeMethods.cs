@@ -1,5 +1,5 @@
 ﻿//#define NOT_WINDOWS
-#define CROSS_USE_CYGWIN
+#define CC_USE_CYGWIN
 #define ARCH_X86
 
 using System;
@@ -14,9 +14,9 @@ namespace DereTore.HCA.Native {
         private const string PathSep = "\\";
 #endif
         // Cross-platform compiling directive. To compromise with *nix systems, you may use Cygwin or MinGW environments to compile kawashima.
-#if CROSS_USE_CYGWIN
+#if CC_USE_CYGWIN
         private const string LibCrossPrefix = "cyg";
-#elif CROSS_USE_MINGW
+#elif CC_USE_MINGW
         private const string LibCrossPrefix = "lib";
 #else
         private const string LibCrossPrefix = "";
