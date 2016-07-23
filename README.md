@@ -54,8 +54,9 @@ official abbreviation of CGSS, DereSute (デレステ, アイドルマスター 
 ### The History
 
 DereTore was at first targetted to Unity3D, creating a mini game that can play live music as in CGSS. That's why the language levels
-in `DereTore.HCA` and `DereTore.ACB` are C# 4.0, the latest C# version supported by Unity3D. Other projects serve as utilities
-or tests, therefore restrictions on those projects are fewer.
+in `DereTore.HCA` and `DereTore.ACB` were C# 4.0, the last C# version supported by Unity3D. Other projects serve as utilities
+or tests, therefore restrictions on those projects are fewer. Now that the solution targets Windows PC, all the projects use the
+latest C# version.
 
 Its new goal is to improve the gaming experience, adding features to the original game. Now, the projects are more like a CGSS toolkit
 written in C#.

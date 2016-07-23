@@ -15,9 +15,7 @@ namespace DereTore.ACB {
             _isDisposed = true;
         }
 
-        public bool IsDisposed {
-            get { return _isDisposed; }
-        }
+        public bool IsDisposed => _isDisposed;
 
         protected abstract void Dispose(bool disposing);
 

@@ -10,16 +10,16 @@ namespace DereTore.HCA {
 
         private void GenerateWaveDataBlocks(Stream source, byte[] destination, uint count, byte[] buffer, DecodeToBufferFunc modeFunc, out int bytesDecoded) {
             if (source == null) {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
             if (destination == null) {
-                throw new ArgumentNullException("destination");
+                throw new ArgumentNullException(nameof(destination));
             }
             if (buffer == null) {
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             }
             if (modeFunc == null) {
-                throw new ArgumentNullException("modeFunc");
+                throw new ArgumentNullException(nameof(modeFunc));
             }
             source.Seek(_status.DataCursor, SeekOrigin.Begin);
             var cursor = 0;
@@ -41,7 +41,7 @@ namespace DereTore.HCA {
 
         private void DecodeBlock(byte[] blockData) {
             if (blockData == null) {
-                throw new ArgumentNullException("blockData");
+                throw new ArgumentNullException(nameof(blockData));
             }
             if (blockData.Length < _hcaInfo.BlockSize) {
                 throw new HcaException(ErrorMessages.GetInvalidParameter("blockData.Length"), ActionResult.InvalidParameter);
@@ -147,7 +147,8 @@ namespace DereTore.HCA {
         }
 
         private DecodeToBufferFunc GetDecodeToBufferFunc() {
-            switch (_decodeParams.Mode) {
+            var mode = _decodeParams.Mode;
+            switch (mode) {
                 case SamplingMode.S16:
                     return WaveHelper.DecodeToBufferInS16;
                 case SamplingMode.Float:
@@ -157,12 +158,13 @@ namespace DereTore.HCA {
                 case SamplingMode.S24:
                     throw new NotImplementedException();
                 default:
-                    throw new ArgumentOutOfRangeException("_decodeParams.Mode");
+                    throw new ArgumentOutOfRangeException(nameof(mode));
             }
         }
 
         private int GetSampleBitsFromParams() {
-            switch (_decodeParams.Mode) {
+            var mode = _decodeParams.Mode;
+            switch (mode) {
                 case SamplingMode.Float:
                     return 32;
                 case SamplingMode.S16:
@@ -174,7 +176,7 @@ namespace DereTore.HCA {
                 case SamplingMode.U8:
                     return 8;
                 default:
-                    throw new ArgumentOutOfRangeException("_decodeParams.Mode");
+                    throw new ArgumentOutOfRangeException(nameof(mode));
             }
         }
 

@@ -53,7 +53,7 @@ namespace DereTore.HCA {
 
         public int WriteWaveHeader(byte[] stream) {
             if (stream == null) {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
             var minimumSize = GetWaveHeaderNeededLength();
             if (stream.Length < minimumSize) {
@@ -107,7 +107,7 @@ namespace DereTore.HCA {
 
         public int DecodeData(byte[] buffer, out bool hasMore) {
             if (buffer == null) {
-                throw new ArgumentNullException("buffer");
+                throw new ArgumentNullException(nameof(buffer));
             }
             if (_status.DataCursor < _hcaInfo.DataOffset) {
                 _status.DataCursor = _hcaInfo.DataOffset;

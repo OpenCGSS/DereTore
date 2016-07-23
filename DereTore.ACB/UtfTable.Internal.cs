@@ -66,7 +66,7 @@ namespace DereTore.ACB {
                 _isEncrypted = true;
                 var lcgKeys = GetKeysForEncryptedUtfTable(magicBytes);
                 if (lcgKeys.Count != 2) {
-                    throw new FormatException(string.Format("Unable to decrypt UTF table at offset 0x{0}", _offset.ToString("x8")));
+                    throw new FormatException($"Unable to decrypt UTF table at offset 0x{_offset.ToString("x8")}");
                 } else {
                     _utfReader = new UtfReader(lcgKeys[LcgSeedKey], lcgKeys[LcgIncrementKey], IsEncrypted);
                 }
@@ -169,7 +169,7 @@ namespace DereTore.ACB {
                                     field.Offset = baseOffset + header.DataOffset + dataOffset;
                                     field.Size = dataSize;
                                     // don't think this is encrypted, need to check
-                                    field.DataValue = sourceStream.PeekBytes((long)field.Offset, (int)dataSize);
+                                    field.DataValue = sourceStream.PeekBytes(field.Offset, (int)dataSize);
                                     currentOffset += 8;
                                     break;
                                 case ColumnType.Double:
@@ -205,7 +205,7 @@ namespace DereTore.ACB {
                                     currentOffset += 1;
                                     break;
                                 default:
-                                    throw new FormatException(string.Format("Unknown column type at offset: 0x{0}", currentOffset.ToString("x8")));
+                                    throw new FormatException($"Unknown column type at offset: 0x{currentOffset.ToString("x8")}");
                             }
                             break;
                         case ColumnStorage.PerRow:
@@ -231,7 +231,7 @@ namespace DereTore.ACB {
                                     field.Offset = baseOffset + header.DataOffset + rowDataOffset;
                                     field.Size = rowDataSize;
                                     // don't think this is encrypted
-                                    field.DataValue = sourceStream.PeekBytes((long)field.Offset, (int)rowDataSize);
+                                    field.DataValue = sourceStream.PeekBytes(field.Offset, (int)rowDataSize);
                                     currentRowOffset += 8;
                                     break;
                                 case ColumnType.Double:
@@ -267,12 +267,12 @@ namespace DereTore.ACB {
                                     currentRowOffset += 1;
                                     break;
                                 default:
-                                    throw new FormatException(string.Format("Unknown column type at offset: 0x{0}", currentOffset.ToString("x8")));
+                                    throw new FormatException($"Unknown column type at offset: 0x{currentOffset.ToString("x8")}");
                             }
                             field.ConstrainedType = (ColumnType)field.Type;
                             break;
                         default:
-                            throw new FormatException(string.Format("Unknown column storage at offset: 0x{0}", currentOffset.ToString("x8")));
+                            throw new FormatException($"Unknown column storage at offset: 0x{currentOffset.ToString("x8")}");
                     }
                     // Union polyfill
                     field.ConstrainedType = constrainedType;

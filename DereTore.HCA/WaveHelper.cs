@@ -2,7 +2,7 @@
 using System.IO;
 
 namespace DereTore.HCA {
-    internal class WaveHelper {
+    internal static class WaveHelper {
 
         public static int DecodeToStreamInR32(float f, Stream stream) {
             return stream.Write(f);

@@ -15,9 +15,7 @@
             return true;
         }
 
-        public byte[] Table {
-            get { return _table; }
-        }
+        public byte[] Table => _table;
 
         private void Init0() {
             _table.ZeroMem();

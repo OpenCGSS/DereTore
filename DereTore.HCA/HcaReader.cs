@@ -5,21 +5,13 @@ using DereTore.HCA.Interop;
 namespace DereTore.HCA {
     public abstract class HcaReader {
 
-        public Stream SourceStream {
-            get { return _sourceStream; }
-        }
+        public Stream SourceStream => _sourceStream;
 
-        public HcaInfo HcaInfo {
-            get { return _hcaInfo; }
-        }
+        public HcaInfo HcaInfo => _hcaInfo;
 
-        public float LengthInSeconds {
-            get { return _lengthInSeconds; }
-        }
+        public float LengthInSeconds => _lengthInSeconds;
 
-        public int LengthInSamples {
-            get { return _lengthInSamples; }
-        }
+        public int LengthInSamples => _lengthInSamples;
 
         internal bool ParseHeaders() {
             var stream = SourceStream;

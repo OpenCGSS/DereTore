@@ -248,7 +248,7 @@ namespace DereTore.HCA {
             } else if (0x80 <= index && index < 0x80 + 0x80) {
                 return Scale[index - 0x80];
             } else {
-                throw new ArgumentOutOfRangeException("refIndex");
+                throw new ArgumentOutOfRangeException(nameof(refIndex));
             }
         }
 
@@ -259,7 +259,7 @@ namespace DereTore.HCA {
             } else if (index < 0x80 + 0x80) {
                 return Scale[index - 0x80];
             } else {
-                throw new ArgumentOutOfRangeException("refIndex");
+                throw new ArgumentOutOfRangeException(nameof(refIndex));
             }
         }
 

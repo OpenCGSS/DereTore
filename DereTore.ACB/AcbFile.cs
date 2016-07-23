@@ -50,25 +50,15 @@ namespace DereTore.ACB {
             InitializeAwbArchive();
         }
 
-        public Dictionary<string, UtfTable> Tables {
-            get { return _tables; }
-        }
+        public Dictionary<string, UtfTable> Tables => _tables;
 
-        public AcbCueRecord[] Cues {
-            get { return _cues; }
-        }
+        public AcbCueRecord[] Cues => _cues;
 
-        public Afs2Archive InternalAwb {
-            get { return _internalAwb; }
-        }
+        public Afs2Archive InternalAwb => _internalAwb;
 
-        public Afs2Archive ExternalAwb {
-            get { return _externalAwb; }
-        }
+        public Afs2Archive ExternalAwb => _externalAwb;
 
-        public AcbInfo Info {
-            get { return _acbInfo; }
-        }
+        public AcbInfo Info => _acbInfo;
 
         public UtfTable GetTable(string tableName) {
             if (_tables == null) {
@@ -88,7 +78,7 @@ namespace DereTore.ACB {
         }
 
         public string[] GetFileNames() {
-            return _fileNames ?? (_fileNames = _cues == null ? null : _cues.Select(cue => cue.CueName).ToArray());
+            return _fileNames ?? (_fileNames = _cues?.Select(cue => cue.CueName).ToArray());
         }
 
         public bool FileExists(string fileName) {
@@ -100,18 +90,18 @@ namespace DereTore.ACB {
             try {
                 cue = Cues.Single(c => c.CueName == fileName);
             } catch (InvalidOperationException ex) {
-                throw new InvalidOperationException(string.Format("File '{0}' is not found or it has multiple entries.", fileName), ex);
+                throw new InvalidOperationException($"File '{fileName}' is not found or it has multiple entries.", ex);
             }
             if (!cue.IsWaveformIdentified) {
-                throw new InvalidOperationException(string.Format("File '{0}' is not identified.", fileName));
+                throw new InvalidOperationException($"File '{fileName}' is not identified.");
             }
             if (cue.IsStreaming) {
                 var externalAwb = ExternalAwb;
                 if (externalAwb == null) {
-                    throw new InvalidOperationException(string.Format("External AWB does not exist for streaming file '{0}'.", fileName));
+                    throw new InvalidOperationException($"External AWB does not exist for streaming file '{fileName}'.");
                 }
                 if (!externalAwb.Files.ContainsKey(cue.WaveformId)) {
-                    throw new InvalidOperationException(string.Format("Waveform ID {0} is not found in AWB file {1}.", cue.WaveformId, externalAwb.FileName));
+                    throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in AWB file {externalAwb.FileName}.");
                 }
                 var targetExternalFile = externalAwb.Files[cue.WaveformId];
                 using (var fs = File.Open(externalAwb.FileName, FileMode.Open, FileAccess.Read)) {
@@ -120,10 +110,10 @@ namespace DereTore.ACB {
             } else {
                 var internalAwb = InternalAwb;
                 if (internalAwb == null) {
-                    throw new InvalidOperationException(string.Format("Internal AWB is not found for memory file '{0}' in '{1}'.", fileName, AcbFileName));
+                    throw new InvalidOperationException($"Internal AWB is not found for memory file '{fileName}' in '{AcbFileName}'.");
                 }
                 if (!internalAwb.Files.ContainsKey(cue.WaveformId)) {
-                    throw new InvalidOperationException(string.Format("Waveform ID {0} is not found in internal AWB in {1}.", cue.WaveformId, AcbFileName));
+                    throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in internal AWB in {AcbFileName}.");
                 }
                 var targetInternalFile = internalAwb.Files[cue.WaveformId];
                 return AcbHelper.ExtractToNewStream(Stream, targetInternalFile.FileOffsetAligned, (int)targetInternalFile.FileLength);

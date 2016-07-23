@@ -16,8 +16,9 @@ namespace DereTore.ACB {
         public long Size { get; set; }
 
         public object GetValue() {
+            var constrainedType = ConstrainedType;
             object ret;
-            switch (ConstrainedType) {
+            switch (constrainedType) {
                 case ColumnType.Byte:
                     ret = NumericValue.U8;
                     break;
@@ -55,7 +56,7 @@ namespace DereTore.ACB {
                     ret = DataValue;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("ConstrainedType");
+                    throw new ArgumentOutOfRangeException(nameof(constrainedType));
             }
             return ret;
         }

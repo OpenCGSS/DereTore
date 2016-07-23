@@ -2,19 +2,19 @@
     internal static class ErrorMessages {
 
         public static string GetBufferTooSmall(int minimum, int actual) {
-            return string.Format("Buffer too small. Required minimum: {0}, actual: {1}", minimum, actual);
+            return $"Buffer too small. Required minimum: {minimum}, actual: {actual}";
         }
 
         public static string GetInvalidParameter(string paramName) {
-            return string.Format("Parameter '{0}' is invalid.", paramName);
+            return $"Parameter '{paramName}' is invalid.";
         }
 
         public static string GetChecksumNotMatch(int expected, int actual) {
-            return string.Format("Checksum does not match. Expected: {0}({1}), actual: {2}({3}).", expected, expected.ToString("x8"), actual, actual.ToString("x8"));
+            return $"Checksum does not match. Expected: {expected}({expected.ToString("x8")}), actual: {actual}({actual.ToString("x8")}).";
         }
 
         public static string GetMagicNotMatch(int expected, int actual) {
-            return string.Format("Magic does not match. Expected: {0}({1}), actual: {2}({3}).", expected, expected.ToString("x8"), actual, actual.ToString("x8"));
+            return $"Magic does not match. Expected: {expected}({expected.ToString("x8")}), actual: {actual}({actual.ToString("x8")}).";
         }
 
         public static string GetAthInitializationFailed() {

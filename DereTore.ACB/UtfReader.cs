@@ -15,9 +15,7 @@ namespace DereTore.ACB {
             _isEncrypted = isEncrypted;
         }
 
-        public bool IsEncrypted {
-            get { return _isEncrypted; }
-        }
+        public bool IsEncrypted => _isEncrypted;
 
         /// <summary>
         /// 

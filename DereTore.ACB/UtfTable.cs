@@ -11,7 +11,7 @@ namespace DereTore.ACB {
 
             var magic = stream.PeekBytes(offset, 4);
             if (!AcbHelper.AreDataIdentical(magic, UtfSignature)) {
-                throw new FormatException(string.Format("'@UTF' signature is not found in '{0}' at offset 0x{1}.", _acbFileName, offset.ToString("x8")));
+                throw new FormatException($"'@UTF' signature is not found in '{_acbFileName}' at offset 0x{offset.ToString("x8")}.");
             }
             CheckEncryption(stream, magic);
             using (var tableDataStream = GetTableDataStream(stream, offset)) {
@@ -24,33 +24,18 @@ namespace DereTore.ACB {
             }
         }
 
-        public Stream Stream {
-            get { return _stream; }
-        }
+        public Stream Stream => _stream;
 
-        public string AcbFileName {
-            get { return _acbFileName; }
-        }
+        public string AcbFileName => _acbFileName;
 
-        public long Offset {
-            get { return _offset; }
-        }
+        public long Offset => _offset;
 
-        public long Size {
-            get { return _size; }
-        }
+        public long Size => _size;
 
-        public bool IsEncrypted {
-            get { return _isEncrypted; }
-        }
+        public bool IsEncrypted => _isEncrypted;
 
-        public UtfHeader Header {
-            get { return _utfHeader; }
-        }
+        public UtfHeader Header => _utfHeader;
 
-        public Dictionary<string, UtfField>[] Rows {
-            get { return _rows; }
-        }
-
+        public Dictionary<string, UtfField>[] Rows => _rows;
     }
 }

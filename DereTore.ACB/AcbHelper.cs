@@ -7,13 +7,13 @@ namespace DereTore.ACB {
 
         public static bool AreDataIdentical(byte[] array1, long offset1, byte[] array2, long offset2, long length) {
             if (length <= 0) {
-                throw new ArgumentOutOfRangeException("length");
+                throw new ArgumentOutOfRangeException(nameof(length));
             }
             if (offset1 < 0) {
-                throw new ArgumentOutOfRangeException("offset1");
+                throw new ArgumentOutOfRangeException(nameof(offset1));
             }
             if (offset2 < 0) {
-                throw new ArgumentOutOfRangeException("offset2");
+                throw new ArgumentOutOfRangeException(nameof(offset2));
             }
             long end1 = offset1 + length, end2 = offset2 + length;
             if (end1 > array1.LongLength) {

@@ -17,11 +17,11 @@ namespace DereTore.ACB {
             var offset = _streamOffset;
             var acbFileName = _fileName;
             if (!IsAfs2Archive(stream, offset)) {
-                throw new FormatException(string.Format("File '{0}' does not contain a valid AFS2 archive at offset {1}.", acbFileName, offset));
+                throw new FormatException($"File '{acbFileName}' does not contain a valid AFS2 archive at offset {offset}.");
             }
             var fileCount = (int)stream.PeekUInt32LE(offset + 8);
             if (fileCount > ushort.MaxValue) {
-                throw new IndexOutOfRangeException(string.Format("File count {0} exceeds maximum possible value (65535).", fileCount));
+                throw new IndexOutOfRangeException($"File count {fileCount} exceeds maximum possible value (65535).");
             }
             var files = new Dictionary<int, Afs2FileRecord>(fileCount);
             _files = files;
@@ -61,21 +61,13 @@ namespace DereTore.ACB {
             return AcbHelper.AreDataIdentical(fileSignature, Afs2Signature);
         }
 
-        public string FileName {
-            get { return _fileName; }
-        }
+        public string FileName => _fileName;
 
-        public uint ByteAlignment {
-            get { return _byteAlignment; }
-        }
+        public uint ByteAlignment => _byteAlignment;
 
-        public Dictionary<int, Afs2FileRecord> Files {
-            get { return _files; }
-        }
+        public Dictionary<int, Afs2FileRecord> Files => _files;
 
-        public uint Version {
-            get { return _version; }
-        }
+        public uint Version => _version;
 
         protected override void Dispose(bool disposing) {
             if (_disposeStream) {

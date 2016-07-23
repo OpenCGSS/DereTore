@@ -35,49 +35,27 @@
             }
         }
 
-        public static byte[] Decode1ScaleList {
-            get { return _decode1ScaleList; }
-        }
+        public static byte[] Decode1ScaleList => _decode1ScaleList;
 
-        public static float[] Decode1ValueSingle {
-            get { return _decode1ValueSingle; }
-        }
+        public static float[] Decode1ValueSingle => _decode1ValueSingle;
 
-        public static float[] Decode1ScaleSingle {
-            get { return _decode1ScaleSingle; }
-        }
+        public static float[] Decode1ScaleSingle => _decode1ScaleSingle;
 
-        public static byte[] Decode2List1 {
-            get { return _decode2List1; }
-        }
+        public static byte[] Decode2List1 => _decode2List1;
 
-        public static byte[] Decode2List2 {
-            get { return _decode2List2; }
-        }
+        public static byte[] Decode2List2 => _decode2List2;
 
-        public static float[] Decode2List3 {
-            get { return _decode2List3; }
-        }
+        public static float[] Decode2List3 => _decode2List3;
 
-        public static float[][] Decode3ListSingle {
-            get { return _decode3ListSingle; }
-        }
+        public static float[][] Decode3ListSingle => _decode3ListSingle;
 
-        public static float[] Decode4ListSingle {
-            get { return _decode4ListSingle; }
-        }
+        public static float[] Decode4ListSingle => _decode4ListSingle;
 
-        public static float[] Decode5List1Single {
-            get { return _decode5List1Single; }
-        }
+        public static float[] Decode5List1Single => _decode5List1Single;
 
-        public static float[] Decode5List2Single {
-            get { return _decode5List2Single; }
-        }
+        public static float[] Decode5List2Single => _decode5List2Single;
 
-        public static float[] Decode5List3Single {
-            get { return _decode5List3Single; }
-        }
+        public static float[] Decode5List3Single => _decode5List3Single;
 
         private static readonly byte[] _decode1ScaleList = {
             // v2.0

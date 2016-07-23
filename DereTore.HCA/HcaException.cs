@@ -8,9 +8,7 @@ namespace DereTore.HCA {
             _actionResult = actionResult;
         }
 
-        public ActionResult ActionResult {
-            get { return _actionResult; }
-        }
+        public ActionResult ActionResult => _actionResult;
 
         private readonly ActionResult _actionResult;
 

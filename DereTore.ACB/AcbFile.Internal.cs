@@ -15,12 +15,8 @@ namespace DereTore.ACB {
         }
 
         protected override void Dispose(bool disposing) {
-            if (_internalAwb != null) {
-                _internalAwb.Dispose();
-            }
-            if (_externalAwb != null) {
-                _externalAwb.Dispose();
-            }
+            _internalAwb?.Dispose();
+            _externalAwb?.Dispose();
             base.Dispose(disposing);
         }
 
@@ -70,7 +66,7 @@ namespace DereTore.ACB {
                         }
                         break;
                     default:
-                        throw new FormatException(string.Format("Unexpected ReferenceType '{0}' for CueIndex: '{1}.'", cues[i].ReferenceType, i));
+                        throw new FormatException($"Unexpected ReferenceType '{cues[i].ReferenceType}' for CueIndex: '{i}.'");
                 }
 
                 if (refItemSize > 0) {
@@ -149,12 +145,10 @@ namespace DereTore.ACB {
                 awbFiles = Directory.GetFiles(awbDirPath, awbMask3, SearchOption.TopDirectoryOnly);
             }
             if (awbFiles.Length < 1) {
-                throw new FileNotFoundException(string.Format("Cannot find AWB file. Please verify corresponding AWB file is named '{0}', '{1}', or '{2}'.",
-                    awbMask1, awbMask2, awbMask3));
+                throw new FileNotFoundException($"Cannot find AWB file. Please verify corresponding AWB file is named '{awbMask1}', '{awbMask2}', or '{awbMask3}'.");
             }
             if (awbFiles.Length > 1) {
-                throw new FileNotFoundException(string.Format("More than one matching AWB file for this ACB. Please verify only one AWB file is named '{0}', '{1}' or '{2}'.",
-                    awbMask1, awbMask2, awbMask3));
+                throw new FileNotFoundException($"More than one matching AWB file for this ACB. Please verify only one AWB file is named '{awbMask1}', '{awbMask2}' or '{awbMask3}'.");
             }
 
             var externalAwbHash = GetFieldValueAsData(0, "StreamAwbHash");
@@ -166,8 +160,7 @@ namespace DereTore.ACB {
                 archive.Initialize();
             } else {
                 fs.Dispose();
-                throw new FormatException(string.Format("Checksum of AWB file '{0}' ({1}) does not match MD5 checksum inside ACB file '{2}' ({3}).",
-                    fs.Name, BitConverter.ToString(awbHash), acbFileName, BitConverter.ToString(externalAwbHash)));
+                throw new FormatException($"Checksum of AWB file '{fs.Name}' ({BitConverter.ToString(awbHash)}) does not match MD5 checksum inside ACB file '{acbFileName}' ({BitConverter.ToString(externalAwbHash)}).");
             }
             return archive;
         }
@@ -208,7 +201,7 @@ namespace DereTore.ACB {
                     ext = ".dsp";
                     break;
                 default:
-                    ext = string.Format(".et-{0}.bin", encodeType.ToString("D2"));
+                    ext = $".et-{encodeType.ToString("D2")}.bin";
                     break;
             }
             return ext;

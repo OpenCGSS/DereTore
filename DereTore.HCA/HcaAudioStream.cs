@@ -37,7 +37,8 @@ namespace DereTore.HCA {
                 int maxToCopy;
                 bool hasMore;
                 int decodedLength;
-                switch (_state) {
+                var state = _state;
+                switch (state) {
                     case DecodeState.Initialized:
                         if (!OutputWaveHeader) {
                             _state = DecodeState.WaveHeaderTransmitted;
@@ -104,7 +105,7 @@ namespace DereTore.HCA {
                     case DecodeState.DataTransmitted:
                         return 0;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(state));
                 }
             } while (loopControl);
             return 0;
@@ -125,13 +126,9 @@ namespace DereTore.HCA {
             }
         }
 
-        public override bool CanSeek {
-            get { return false; }
-        }
+        public override bool CanSeek => false;
 
-        public override bool CanWrite {
-            get { return false; }
-        }
+        public override bool CanWrite => false;
 
         public override long Length {
             get { throw new NotSupportedException(); }
@@ -144,21 +141,13 @@ namespace DereTore.HCA {
 
         public bool OutputWaveHeader { get; set; }
 
-        public int BlockBatchSize {
-            get { return 10; }
-        }
+        public int BlockBatchSize => 10;
 
-        public HcaInfo HcaInfo {
-            get { return _decoder.HcaInfo; }
-        }
+        public HcaInfo HcaInfo => _decoder.HcaInfo;
 
-        public float LengthInSecs {
-            get { return _decoder.LengthInSeconds; }
-        }
+        public float LengthInSecs => _decoder.LengthInSeconds;
 
-        public int LengthInSamples {
-            get { return _decoder.LengthInSamples; }
-        }
+        public int LengthInSamples => _decoder.LengthInSamples;
 
         protected override void Dispose(bool disposing) {
             if (!_isDisposed) {
