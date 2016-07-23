@@ -23,6 +23,11 @@ namespace DereTore.HCA {
             _cipher = new Cipher();
         }
 
+        public void Initialize() {
+            ParseHeaders();
+            InitializeDecodeComponents();
+        }
+
         public int GetWaveHeaderNeededLength() {
             var wavNoteSize = 0;
             if (_hcaInfo.Comment != null) {
@@ -123,71 +128,6 @@ namespace DereTore.HCA {
                 return bufferCursor;
             } else {
                 throw new NotImplementedException();
-            }
-        }
-
-        public void InitializeDecodeComponents() {
-            if (!_ath.Initialize(_hcaInfo.AthType, _hcaInfo.SamplingRate)) {
-                throw new HcaException(ErrorMessages.GetAthInitializationFailed(), ActionResult.AthInitFailed);
-            }
-            if (!_cipher.Initialize(_hcaInfo.CiphType, _decodeParams.Key1, _decodeParams.Key2)) {
-                throw new HcaException(ErrorMessages.GetCiphInitializationFailed(), ActionResult.CiphInitFailed);
-            }
-            _channels = new Channel[0x10];
-            for (var i = 0; i < _channels.Length; ++i) {
-                _channels[i] = Channel.CreateDefault();
-            }
-            var r = new byte[10];
-            uint b = _hcaInfo.ChannelCount / _hcaInfo.CompR03;
-            if (_hcaInfo.CompR07 != 0 && b > 1) {
-                uint rIndex = 0;
-                for (uint i = 0; i < _hcaInfo.CompR03; ++i, rIndex += b) {
-                    switch (b) {
-                        case 2:
-                        case 3:
-                            r[rIndex] = 1;
-                            r[rIndex + 1] = 2;
-                            break;
-                        case 4:
-                            r[rIndex] = 1;
-                            r[rIndex + 1] = 2;
-                            if (_hcaInfo.CompR04 == 0) {
-                                r[rIndex + 2] = 1;
-                                r[rIndex + 3] = 2;
-                            }
-                            break;
-                        case 5:
-                            r[rIndex] = 1;
-                            r[rIndex + 1] = 2;
-                            if (_hcaInfo.CompR04 <= 2) {
-                                r[rIndex + 3] = 1;
-                                r[rIndex + 4] = 2;
-                            }
-                            break;
-                        case 6:
-                        case 7:
-                            r[rIndex] = 1;
-                            r[rIndex + 1] = 2;
-                            r[rIndex + 4] = 1;
-                            r[rIndex + 5] = 2;
-                            break;
-                        case 8:
-                            r[rIndex] = 1;
-                            r[rIndex + 1] = 2;
-                            r[rIndex + 4] = 1;
-                            r[rIndex + 5] = 2;
-                            r[rIndex + 6] = 1;
-                            r[rIndex + 7] = 2;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException("b");
-                    }
-                }
-            }
-            for (uint i = 0; i < _hcaInfo.ChannelCount; ++i) {
-                _channels[i].Type = r[i];
-                _channels[i].Value3 = _hcaInfo.CompR06 + _hcaInfo.CompR07;
-                _channels[i].Count = _hcaInfo.CompR06 + (r[i] != 2 ? _hcaInfo.CompR07 : 0);
             }
         }
 
