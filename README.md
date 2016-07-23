@@ -42,11 +42,7 @@ The C# version of HCA encoding utility. See **hcaenc** in [hcatools](https://git
 
 ## License
 
-The project uses [WTFPL](http://www.wtfpl.net/) if not specifically noted.
-
-![WTFPL](http://www.wtfpl.net/wp-content/uploads/2012/12/wtfpl-badge-2.png)
-
-*DereTore.ACB uses [MIT License](http://mit-license.org/), which is derived from its source project.*
+This project uses [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).
 
 ## Notes
 
@@ -63,3 +59,5 @@ or tests, therefore restrictions on those projects are fewer.
 
 Its new goal is to improve the gaming experience, adding features to the original game. Now, the projects are more like a CGSS toolkit
 written in C#.
+
+Early versions of DereTore apply [WTFPL](http://www.wtfpl.net/) for most of the components. However, newer versions embrace MIT License.
