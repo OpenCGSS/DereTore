@@ -170,6 +170,11 @@ namespace DereTore.HCA {
                 _hcaInfo.CommentLength = 0;
                 _hcaInfo.Comment = null;
             }
+            // PAD (undocumented)
+            v = stream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.PAD)) {
+                stream.Skip(4); // Length of 'pad '
+            }
 
             if (_hcaInfo.CompR03 == 0) {
                 _hcaInfo.CompR03 = 1;

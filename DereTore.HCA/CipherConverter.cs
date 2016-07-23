@@ -16,29 +16,101 @@ namespace DereTore.HCA {
         public void Convert() {
             ParseHeaders();
             InitializeCiphers();
-            SetNewCipherType();
+            UpdateHeader();
             ConvertData();
         }
+        
+        /// <summary>
+        /// Whether to encrypt the header signatures ('HCA ', 'fmt ', 'ciph', etc.). Usually decoders recognize both types of header signatures.
+        /// </summary>
+        public bool EncryptHeaderSignatures { get; set; }
 
-        private void SetNewCipherType() {
+        private void UpdateHeader() {
             var dataOffset = _hcaInfo.DataOffset;
             var buffer = new byte[dataOffset];
             var sourceStream = SourceStream;
             var outputStream = _outputStream;
 
-            var cipherOffset = LocateCipherFieldOffset(sourceStream, 0);
-            if (cipherOffset <= 0) {
-                throw new InvalidOperationException("Cipher segment is not found.");
-            }
             sourceStream.Seek(0, SeekOrigin.Begin);
             sourceStream.Read(buffer, 0, buffer.Length);
-            var u = (ushort)_ccTo.CipherType;
-            if (BitConverter.IsLittleEndian) {
-                u = HcaHelper.SwapEndian(u);
+            sourceStream.Seek(0, SeekOrigin.Begin);
+
+            uint v;
+            // HCA
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.HCA)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(HcaHeader)));
             }
-            var cipherTypeBytes = BitConverter.GetBytes(u);
-            buffer[cipherOffset] = cipherTypeBytes[0];
-            buffer[cipherOffset + 1] = cipherTypeBytes[1];
+            // FMT
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.FMT)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(FormatHeader)));
+            }
+            // COMP / DEC
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.COMP)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(CompressHeader)));
+            } else if (MagicValues.IsMagicMatch(v, MagicValues.DEC)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(DecodeHeader)));
+            }
+            // VBR
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.VBR)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(VbrHeader)));
+            }
+            // ATH
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.ATH)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(AthHeader)));
+            }
+            // LOOP
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.LOOP)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(LoopHeader)));
+            }
+            // CIPH
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.CIPH)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                var cipherOffset = (int)(sourceStream.Position + 4);
+                var u = (ushort)_ccTo.CipherType;
+                if (BitConverter.IsLittleEndian) {
+                    u = HcaHelper.SwapEndian(u);
+                }
+                var cipherTypeBytes = BitConverter.GetBytes(u);
+                buffer[cipherOffset] = cipherTypeBytes[0];
+                buffer[cipherOffset + 1] = cipherTypeBytes[1];
+            }
+            // RVA
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.RVA)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(RvaHeader)));
+            }
+            // COMM
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.COMM)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(Marshal.SizeOf(typeof(CommentHeader)));
+                byte tmpByte;
+                do {
+                    tmpByte = (byte)sourceStream.ReadByte();
+                } while (tmpByte != 0);
+            }
+            // PAD (undocumented)
+            v = sourceStream.PeekUInt32();
+            if (MagicValues.IsMagicMatch(v, MagicValues.PAD)) {
+                ProcessHeaderSignature(sourceStream, buffer);
+                sourceStream.Skip(4);
+            }
+
             FixDataBlock(buffer);
             outputStream.Write(buffer, 0, buffer.Length);
         }
@@ -98,53 +170,19 @@ namespace DereTore.HCA {
             blockData[length - 1] = sumBytes[1];
         }
 
-        private static int LocateCipherFieldOffset(Stream stream, int startOffset) {
-            stream.Seek(startOffset, SeekOrigin.Begin);
-            uint v;
-            // HCA
-            v = stream.PeekUInt32();
-            if (MagicValues.IsMagicMatch(v, MagicValues.HCA)) {
-                stream.Skip(Marshal.SizeOf(typeof(HcaHeader)));
-            } else {
-                return -1;
+        private static void OrBytes(byte[] blockData, int offset, int length) {
+            var end = offset + length;
+            for (var i = offset; i < blockData.Length && i < end; ++i) {
+                blockData[i] = (byte)(blockData[i] & 0xf0);
             }
-            // FMT
-            v = stream.PeekUInt32();
-            if (MagicValues.IsMagicMatch(v, MagicValues.FMT)) {
-                stream.Skip(Marshal.SizeOf(typeof(FormatHeader)));
-            } else {
-                return -1;
+        }
+
+        private void ProcessHeaderSignature(Stream stream, byte[] headerData) {
+            if (!EncryptHeaderSignatures) {
+                return;
             }
-            // COMP / DEC
-            v = stream.PeekUInt32();
-            if (MagicValues.IsMagicMatch(v, MagicValues.COMP)) {
-                stream.Skip(Marshal.SizeOf(typeof(CompressHeader)));
-            } else if (MagicValues.IsMagicMatch(v, MagicValues.DEC)) {
-                stream.Skip(Marshal.SizeOf(typeof(DecodeHeader)));
-            } else {
-                return -1;
-            }
-            // VBR
-            v = stream.PeekUInt32();
-            if (MagicValues.IsMagicMatch(v, MagicValues.VBR)) {
-                stream.Skip(Marshal.SizeOf(typeof(VbrHeader)));
-            }
-            // ATH
-            v = stream.PeekUInt32();
-            if (MagicValues.IsMagicMatch(v, MagicValues.ATH)) {
-                stream.Skip(Marshal.SizeOf(typeof(AthHeader)));
-            }
-            // LOOP
-            v = stream.PeekUInt32();
-            if (MagicValues.IsMagicMatch(v, MagicValues.LOOP)) {
-                stream.Skip(Marshal.SizeOf(typeof(LoopHeader)));
-            }
-            // CIPH
-            v = stream.PeekUInt32();
-            if (MagicValues.IsMagicMatch(v, MagicValues.CIPH)) {
-                return (int)(stream.Position + 4);
-            }
-            return 0;
+            var position = (int)stream.Position;
+            OrBytes(headerData, position, 4);
         }
 
         private readonly Stream _outputStream;

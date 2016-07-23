@@ -21,6 +21,8 @@
 
         public static readonly uint COMM = 0x6d6d6f63;
 
+        public static readonly uint PAD = 0x00646170;
+
         public static bool IsMagicMatch(uint valueRead, uint valueToCheck) {
             return (valueRead & 0x7f7f7f7f) == valueToCheck;
         }
