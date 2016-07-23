@@ -1,101 +1,91 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 
 namespace DereTore.ACB {
     internal static class AcbHelper {
 
-        public static bool CompareSegment(byte[] sourceArray, int offset, byte[] target) {
-            var ret = true;
-            uint j = 0;
-            if (sourceArray.Length > 0) {
-                for (var i = offset; i < target.Length; i++) {
-                    if (sourceArray[i] != target[j]) {
-                        ret = false;
-                        break;
-                    }
-                    j++;
-                }
-            } else {
-                ret = false;
+        public static bool AreDataIdentical(byte[] array1, long offset1, byte[] array2, long offset2, long length) {
+            if (length <= 0) {
+                throw new ArgumentOutOfRangeException("length");
             }
-            return ret;
+            if (offset1 < 0) {
+                throw new ArgumentOutOfRangeException("offset1");
+            }
+            if (offset2 < 0) {
+                throw new ArgumentOutOfRangeException("offset2");
+            }
+            long end1 = offset1 + length, end2 = offset2 + length;
+            if (end1 > array1.LongLength) {
+                throw new IndexOutOfRangeException("Length of array 1 is not enough.");
+            }
+            if (end2 > array2.LongLength) {
+                throw new IndexOutOfRangeException("Length of array 2 is not enough.");
+            }
+            for (; offset1 < end1; ++offset1, ++offset2) {
+                if (array1[offset1] != array2[offset2]) {
+                    return false;
+                }
+            }
+            return true;
         }
 
-        public static bool CompareSegment(byte[] sourceArray, long offset, byte[] target) {
-            var ret = true;
-            uint j = 0;
-            for (var i = offset; i < target.Length; i++) {
-                if (sourceArray[i] != target[j]) {
-                    ret = false;
-                    break;
-                }
-                j++;
-            }
-            return ret;
+        public static bool AreDataIdentical(byte[] array1, int offset1, byte[] array2, int offset2, int length) {
+            return AreDataIdentical(array1, offset1, array2, offset2, (long)length);
         }
 
-        public static long RoundUpToByteAlignment(long valueToRound, long byteAlignment) {
+        public static bool AreDataIdentical(byte[] array1, byte[] array2, long length) {
+            return AreDataIdentical(array1, 0, array2, 0, length);
+        }
+
+        public static bool AreDataIdentical(byte[] array1, byte[] array2, int length) {
+            return AreDataIdentical(array1, 0, array2, 0, (long)length);
+        }
+
+        public static bool AreDataIdentical(byte[] array1, byte[] array2) {
+            return AreDataIdentical(array1, 0, array2, 0, array1.LongLength);
+        }
+
+        public static long RoundUpToAlignment(long valueToRound, long byteAlignment) {
             var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
             return roundedValue;
         }
 
-        public static ulong RoundUpToByteAlignment(ulong valueToRound, ulong byteAlignment) {
+        public static ulong RoundUpToAlignment(ulong valueToRound, ulong byteAlignment) {
             var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
             return roundedValue;
-        }
-
-        public static MemoryStream ExtractChunkToStream(Stream inStream, ulong startingOffset, ulong length) {
-            var memory = new MemoryStream();
-            // Do not dispose?
-            var writer = new BinaryWriter(memory);
-            int read;
-            ulong totalBytes = 0;
-            var bytes = new byte[Constants.FileChunkSize];
-
-            inStream.Seek(0, SeekOrigin.Begin);
-
-            while (startingOffset > long.MaxValue) {
-                inStream.Seek(long.MaxValue, SeekOrigin.Current);
-                startingOffset -= long.MaxValue;
-            }
-
-            inStream.Seek((long)startingOffset, SeekOrigin.Current);
-
-            var maxRead = length > (ulong)bytes.Length ? bytes.Length : (int)length;
-
-            while ((read = inStream.Read(bytes, 0, maxRead)) > 0) {
-                writer.Write(bytes, 0, read);
-                totalBytes += (ulong)read;
-                maxRead = (length - totalBytes) > (ulong)bytes.Length ? bytes.Length : (int)(length - totalBytes);
-            }
-            memory.Seek(0, SeekOrigin.Begin);
-            memory.Capacity = (int)memory.Length;
-            return memory;
         }
 
         public static byte[] GetMd5Checksum(Stream stream) {
-            var position = stream.Position;
-            stream.Seek(0, SeekOrigin.Begin);
-
-            byte[] checksum;
-            using (var ms = new MemoryStream()) {
-                var buffer = new byte[Constants.FileChunkSize];
-                int read;
-                do {
-                    read = stream.Read(buffer, 0, buffer.Length);
-                    if (read > 0) {
-                        ms.Write(buffer, 0, read);
-                    }
-                } while (read > 0);
-                ms.Capacity = (int)ms.Length;
-                var bytes = ms.GetBuffer();
-                checksum = _md5.ComputeHash(bytes);
-            }
-            stream.Position = position;
-            return checksum;
+            return Md5.ComputeHash(stream);
         }
 
-        private static MD5 _md5 = new MD5CryptoServiceProvider();
+        public static byte[] GetMd5Checksum(byte[] data) {
+            return Md5.ComputeHash(data);
+        }
+
+        public static Stream ExtractToNewStream(Stream stream, long offset, int length) {
+            var originalPosition = stream.Position;
+            stream.Seek(offset, SeekOrigin.Begin);
+            var buffer = new byte[length];
+            var memory = new byte[length];
+            long currentIndex = 0;
+            var bytesLeft = length;
+            do {
+                var read = stream.Read(buffer, 0, bytesLeft);
+                Array.Copy(buffer, 0, memory, currentIndex, read);
+                currentIndex += read;
+                bytesLeft -= read;
+            } while (bytesLeft > 0);
+            stream.Position = originalPosition;
+            var memoryStream = new MemoryStream(memory, false) {
+                Capacity = length
+            };
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream;
+        }
+
+        private static readonly MD5 Md5 = new MD5CryptoServiceProvider();
 
     }
 }

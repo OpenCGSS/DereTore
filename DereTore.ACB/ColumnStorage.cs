@@ -1,5 +1,5 @@
 ﻿namespace DereTore.ACB {
-    internal enum ColumnStorage : byte {
+    public enum ColumnStorage : byte {
 
         Zero = 0x10,
         Constant = 0x30,

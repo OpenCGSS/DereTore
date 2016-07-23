@@ -9,8 +9,6 @@ namespace DereTore.ACB.Test {
                 return;
             }
             var fileName = args[0];
-            var acb = CriAcbFile.FromFile(fileName);
-            var fileNames = acb.GetFileNames();
             var fileInfo = new FileInfo(fileName);
 
             var fullDirPath = Path.Combine(fileInfo.DirectoryName, string.Format(DirTemplate, fileInfo.Name));
@@ -20,10 +18,13 @@ namespace DereTore.ACB.Test {
                 Directory.CreateDirectory(fullDirPath);
             }
 
+            var acb = AcbFile.FromFile(fileName);
+            acb.Initialize();
+            var fileNames = acb.GetFileNames();
             foreach (var s in fileNames) {
                 var extractName = Path.Combine(fullDirPath, s);
                 using (var fs = new FileStream(extractName, FileMode.Create, FileAccess.Write)) {
-                    using (var source = acb.OpenReadStream(s)) {
+                    using (var source = acb.OpenDataStream(s)) {
                         WriteFile(source, fs);
                     }
                 }

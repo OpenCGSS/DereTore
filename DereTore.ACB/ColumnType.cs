@@ -1,5 +1,5 @@
 ﻿namespace DereTore.ACB {
-    internal enum ColumnType : byte {
+    public enum ColumnType : byte {
 
         Byte = 0x00,
         SByte = 0x01,

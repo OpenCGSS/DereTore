@@ -79,22 +79,28 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AwbFormat.cs" />
-    <Compile Include="AwbToExtract.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="CriAcbCueRecord.cs" />
-    <Compile Include="CriAcbFile.cs" />
-    <Compile Include="CriAfs2Archive.cs" />
-    <Compile Include="CriAfs2File.cs" />
-    <Compile Include="CriField.cs" />
-    <Compile Include="CriUtfReader.cs" />
-    <Compile Include="CriUtfTable.cs" />
-    <Compile Include="ColumnType.cs" />
+    <Compile Include="DisposableBase.cs" />
+    <Compile Include="AcbFile.cs" />
+    <Compile Include="AcbFile.Internal.cs" />
+    <Compile Include="AcbHelper.cs" />
+    <Compile Include="AcbInfo.cs" />
+    <Compile Include="AcbTables.cs" />
+    <Compile Include="Afs2Archive.cs" />
+    <Compile Include="Afs2FileRecord.cs" />
+    <Compile Include="AwbLocation.cs" />
     <Compile Include="ColumnStorage.cs" />
+    <Compile Include="ColumnType.cs" />
+    <Compile Include="AwbFileNameFormats.cs" />
+    <Compile Include="AcbCueRecord.cs" />
+    <Compile Include="NumericUnion.cs" />
+    <Compile Include="UtfField.cs" />
+    <Compile Include="UtfReader.cs" />
+    <Compile Include="UtfTable.cs" />
+    <Compile Include="UtfTable.Internal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StreamExtensions.cs" />
-    <Compile Include="AcbHelper.cs" />
     <Compile Include="WaveformEncodeType.cs" />
+    <Compile Include="UtfHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

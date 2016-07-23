@@ -5,17 +5,13 @@ using System.Text;
 namespace DereTore.ACB {
     internal static class StreamExtensions {
 
-        public static sbyte ReadSByte(this Stream stream, long offset) {
-            var position = stream.Position;
-            stream.Seek(offset, SeekOrigin.Begin);
-            var value = stream.ReadByte();
-            stream.Position = position;
+        public static sbyte PeekSByte(this Stream stream, long offset) {
             unchecked {
-                return (sbyte)value;
+                return (sbyte)PeekByte(stream, offset);
             }
         }
 
-        public static byte ReadByte(this Stream stream, long offset) {
+        public static byte PeekByte(this Stream stream, long offset) {
             var position = stream.Position;
             stream.Seek(offset, SeekOrigin.Begin);
             var value = stream.ReadByte();
@@ -23,146 +19,146 @@ namespace DereTore.ACB {
             return (byte)value;
         }
 
-        public static short ReadInt16BE(this Stream stream, long offset) {
-            return (short)stream.ReadNumber(offset, 2, false, false);
+        public static short PeekInt16BE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(short), false);
+            return BitConverter.ToInt16(bytes, 0);
         }
 
-        public static short ReadInt16LE(this Stream stream, long offset) {
-            return (short)stream.ReadNumber(offset, 2, false, true);
+        public static short PeekInt16LE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(short), true);
+            return BitConverter.ToInt16(bytes, 0);
         }
 
-        public static ushort ReadUInt16BE(this Stream stream, long offset) {
-            return (ushort)stream.ReadNumber(offset, 2, true, false);
+        public static ushort PeekUInt16BE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(ushort), false);
+            return BitConverter.ToUInt16(bytes, 0);
         }
 
-        public static ushort ReadUInt16LE(this Stream stream, long offset) {
-            return (ushort)stream.ReadNumber(offset, 2, true, true);
+        public static ushort PeekUInt16LE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(ushort), true);
+            return BitConverter.ToUInt16(bytes, 0);
         }
 
-        public static int ReadInt32BE(this Stream stream, long offset) {
-            return (int)stream.ReadNumber(offset, 4, false, false);
+        public static int PeekInt32BE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(int), false);
+            return BitConverter.ToInt32(bytes, 0);
         }
 
-        public static int ReadInt32LE(this Stream stream, long offset) {
-            return (int)stream.ReadNumber(offset, 4, false, true);
+        public static int PeekInt32LE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(int), true);
+            return BitConverter.ToInt32(bytes, 0);
         }
 
-        public static uint ReadUInt32BE(this Stream stream, long offset) {
-            return (uint)stream.ReadNumber(offset, 4, true, false);
+        public static uint PeekUInt32BE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(uint), false);
+            return BitConverter.ToUInt32(bytes, 0);
         }
 
-        public static uint ReadUInt32LE(this Stream stream, long offset) {
-            return (uint)stream.ReadNumber(offset, 4, true, true);
+        public static uint PeekUInt32LE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(uint), true);
+            return BitConverter.ToUInt32(bytes, 0);
         }
 
-        public static long ReadInt64BE(this Stream stream, long offset) {
-            return (long)stream.ReadNumber(offset, 8, false, false);
+        public static long PeekInt64BE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(long), false);
+            return BitConverter.ToInt64(bytes, 0);
         }
 
-        public static long ReadInt64LE(this Stream stream, long offset) {
-            return (long)stream.ReadNumber(offset, 8, false, true);
+        public static long PeekInt64LE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(long), true);
+            return BitConverter.ToInt64(bytes, 0);
         }
 
-        public static ulong ReadUInt64BE(this Stream stream, long offset) {
-            return (ulong)stream.ReadNumber(offset, 8, true, false);
+        public static ulong PeekUInt64BE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(ulong), false);
+            return BitConverter.ToUInt64(bytes, 0);
         }
 
-        public static ulong ReadUInt64LE(this Stream stream, long offset) {
-            return (ulong)stream.ReadNumber(offset, 8, true, true);
+        public static ulong PeekUInt64LE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(ulong), true);
+            return BitConverter.ToUInt64(bytes, 0);
         }
 
-        public static float ReadSingleBE(this Stream stream, long offset) {
-            return (ulong)stream.ReadNumber(offset, -1, false, false);
+        public static float PeekSingleBE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(float), false);
+            return BitConverter.ToSingle(bytes, 0);
         }
 
-        public static float ReadSingleLE(this Stream stream, long offset) {
-            return (ulong)stream.ReadNumber(offset, -1, false, true);
+        public static float PeekSingleLE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(float), true);
+            return BitConverter.ToSingle(bytes, 0);
         }
 
-        public static double ReadDoubleBE(this Stream stream, long offset) {
-            return (ulong)stream.ReadNumber(offset, -2, false, false);
+        public static double PeekDoubleBE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(double), false);
+            return BitConverter.ToDouble(bytes, 0);
         }
 
-        public static double ReadDoubleLE(this Stream stream, long offset) {
-            return (ulong)stream.ReadNumber(offset, -2, false, true);
+        public static double PeekDoubleLE(this Stream stream, long offset) {
+            var bytes = GetNumberBytes(stream, offset, sizeof(double), true);
+            return BitConverter.ToDouble(bytes, 0);
         }
 
-        public static string ReadAsciiString(this Stream inStream, long offset) {
-            var streamLength = inStream.Length;
+        public static string PeekZeroEndedString(this Stream stream, long offset, Encoding encoding) {
+            var streamLength = stream.Length;
             var stringLength = 0;
-
-            // move pointer
-            inStream.Position = offset;
-
-            // read until NULL
+            var originalPosition = stream.Position;
+            stream.Seek(offset, SeekOrigin.Begin);
             for (var i = offset; i <= streamLength; i++) {
-                var dummy = inStream.ReadByte();
+                var dummy = stream.ReadByte();
                 if (dummy > 0) {
                     stringLength++;
                 } else {
                     break;
                 }
             }
-
-            var stringBytes = inStream.ParseSimpleOffset(offset, stringLength);
-            var ret = Encoding.ASCII.GetString(stringBytes);
+            var stringBytes = PeekBytes(stream, offset, stringLength);
+            var ret = encoding.GetString(stringBytes);
+            stream.Position = originalPosition;
             return ret;
         }
 
-        public static byte[] ParseSimpleOffset(this byte[] sourceArray, int startingOffset, int lengthToCut) {
-            var ret = new byte[lengthToCut];
-            uint j = 0;
-            for (var i = startingOffset; i < startingOffset + lengthToCut; i++) {
-                ret[j] = sourceArray[i];
-                j++;
-            }
+        public static string PeekZeroEndedStringAsAscii(this Stream stream, long offset) {
+            return PeekZeroEndedString(stream, offset, Encoding.ASCII);
+        }
+
+        public static string PeekZeroEndedStringAsUtf8(this Stream stream, long offset) {
+            return PeekZeroEndedString(stream, offset, Encoding.UTF8);
+        }
+
+        public static byte[] ReadBytes(byte[] array, int offset, int length) {
+            var ret = new byte[length];
+            Array.Copy(array, offset, ret, 0, length);
             return ret;
         }
 
-        public static byte[] ParseSimpleOffset(this Stream stream, int startingOffset, int lengthToCut) {
-            var currentStreamPosition = stream.Position;
-            stream.Seek(startingOffset, SeekOrigin.Begin);
-            // TODO: Do not dispose?
-            var reader = new BinaryReader(stream);
-            var ret = reader.ReadBytes(lengthToCut);
-            stream.Position = currentStreamPosition;
-            return ret;
+        public static byte[] PeekBytes(this Stream stream, int offset, int length) {
+            return PeekBytes(stream, (long)offset, length);
         }
 
-        public static byte[] ParseSimpleOffset(this Stream stream, long startingOffset, int lengthToCut) {
-            var currentStreamPosition = stream.Position;
-            stream.Seek(startingOffset, SeekOrigin.Begin);
-            // Do not dispose?
-            var reader = new BinaryReader(stream);
-            var ret = reader.ReadBytes(lengthToCut);
-            stream.Position = currentStreamPosition;
-            return ret;
+        public static byte[] PeekBytes(this Stream stream, long offset, int length) {
+            var originalPosition = stream.Position;
+            stream.Seek(offset, SeekOrigin.Begin);
+            var finalBuffer = new byte[length];
+            var secondBuffer = new byte[length];
+            var bytesLeft = length;
+            var currentIndex = 0;
+            do {
+                var read = stream.Read(secondBuffer, 0, bytesLeft);
+                Array.Copy(secondBuffer, 0, finalBuffer, currentIndex, read);
+                bytesLeft -= read;
+                currentIndex += read;
+            } while (bytesLeft > 0);
+            stream.Position = originalPosition;
+            return finalBuffer;
         }
 
-        private static decimal ReadNumber(this Stream stream, long offset, int byteCount, bool isUnsigned, bool isLittleEndian) {
-            if (byteCount == 1) {
-                stream.Seek(offset, SeekOrigin.Begin);
-                return stream.ReadByte();
-            }
-            var realByteCount = byteCount == -1 ? 4 : (byteCount == -2 ? 8 : byteCount);
-            var data = stream.ParseSimpleOffset(offset, realByteCount);
+        private static byte[] GetNumberBytes(Stream stream, long offset, int byteCount, bool isLittleEndian) {
+            var data = PeekBytes(stream, offset, byteCount);
             if (BitConverter.IsLittleEndian != isLittleEndian) {
                 Array.Reverse(data);
             }
-            switch (byteCount) {
-                case 2:
-                    return isUnsigned ? (decimal)BitConverter.ToUInt16(data, 0) : BitConverter.ToInt16(data, 0);
-                case 4:
-                    return isUnsigned ? (decimal)BitConverter.ToUInt32(data, 0) : BitConverter.ToInt32(data, 0);
-                case 8:
-                    return isUnsigned ? (decimal)BitConverter.ToUInt64(data, 0) : BitConverter.ToInt64(data, 0);
-                case -1:
-                    return (decimal)BitConverter.ToSingle(data, 0);
-                case -2:
-                    return (decimal)BitConverter.ToDouble(data, 0);
-                default:
-                    throw new ArgumentOutOfRangeException("byteCount");
-            }
+            return data;
         }
 
     }
