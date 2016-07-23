@@ -21,7 +21,7 @@ namespace DereTore.HCA {
             get { return _lengthInSamples; }
         }
 
-        public bool ParseHeaders() {
+        internal bool ParseHeaders() {
             var stream = SourceStream;
             uint v;
             // HCA

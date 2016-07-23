@@ -53,10 +53,7 @@ namespace DereTore.Application.CipherConverter {
                 using (var inputStream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read)) {
                     using (var outputStream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write)) {
                         var converter = new HCA.CipherConverter(inputStream, outputStream, ccFrom, ccTo);
-                        converter.ParseHeaders();
-                        converter.InitializeCiphers();
-                        converter.SetNewCipherType();
-                        converter.ConvertData();
+                        converter.Convert();
                     }
                 }
             }

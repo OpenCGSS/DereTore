@@ -13,7 +13,14 @@ namespace DereTore.HCA {
             _ccTo = ccTo;
         }
 
-        public bool SetNewCipherType() {
+        public void Convert() {
+            ParseHeaders();
+            InitializeCiphers();
+            SetNewCipherType();
+            ConvertData();
+        }
+
+        private void SetNewCipherType() {
             var dataOffset = _hcaInfo.DataOffset;
             var buffer = new byte[dataOffset];
             var sourceStream = SourceStream;
@@ -21,7 +28,7 @@ namespace DereTore.HCA {
 
             var cipherOffset = LocateCipherFieldOffset(sourceStream, 0);
             if (cipherOffset <= 0) {
-                return false;
+                throw new InvalidOperationException("Cipher segment is not found.");
             }
             sourceStream.Seek(0, SeekOrigin.Begin);
             sourceStream.Read(buffer, 0, buffer.Length);
@@ -34,10 +41,9 @@ namespace DereTore.HCA {
             buffer[cipherOffset + 1] = cipherTypeBytes[1];
             FixDataBlock(buffer);
             outputStream.Write(buffer, 0, buffer.Length);
-            return true;
         }
 
-        public bool ConvertData() {
+        private void ConvertData() {
             var sourceStream = SourceStream;
             var outputStream = _outputStream;
             var dataOffset = _hcaInfo.DataOffset;
@@ -48,17 +54,16 @@ namespace DereTore.HCA {
             for (var i = 0; i < totalBlockCount; ++i) {
                 var read = sourceStream.Read(buffer, 0, buffer.Length);
                 if (read < buffer.Length) {
-                    return false;
+                    throw new IOException("Something went wrong while trying to read data.");
                 }
                 var r = ConvertBlock(buffer, outputStream);
                 if (!r) {
-                    return false;
+                    throw new HcaException("Block conversion failed.", ActionResult.DecodeFailed);
                 }
             }
-            return true;
         }
 
-        public void InitializeCiphers() {
+        private void InitializeCiphers() {
             _cipherFrom = new Cipher();
             _cipherFrom.Initialize(_hcaInfo.CiphType, _ccFrom.Key1, _ccFrom.Key2);
             _cipherTo = new Cipher();
@@ -93,7 +98,7 @@ namespace DereTore.HCA {
             blockData[length - 1] = sumBytes[1];
         }
 
-        private int LocateCipherFieldOffset(Stream stream, int startOffset) {
+        private static int LocateCipherFieldOffset(Stream stream, int startOffset) {
             stream.Seek(startOffset, SeekOrigin.Begin);
             uint v;
             // HCA
