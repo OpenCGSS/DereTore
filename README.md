@@ -18,7 +18,7 @@ The C# wrapper of [kawashima](https://github.com/Hozuki/kawashima). Here is its 
 
 **DereTore.HCA.Test**
 
-The console test application for DereTore.HCA.
+The console test application for DereTore.HCA. It starts an audio preview for HCA files.
 
 **DereTore.HCA.Native.Test**
 
@@ -39,6 +39,12 @@ The C# version of HCA cipher conversion utility. See **hcacc** in [hcatools](htt
 **DereTore.Application.Encoder**
 
 The C# version of HCA encoding utility. See **hcaenc** in [hcatools](https://github.com/Hozuki/hcatools).
+
+**DereTore.Application.Hca2Wav**
+
+An console appilcation that converts HCA audio to WAVE audio. It is similar to DereTore.HCA.Test,
+but it outputs to a stream, in fixed linear sequence. It can be used as a clearer demo to integrate
+DereTore.HCA.
 
 ## License
 

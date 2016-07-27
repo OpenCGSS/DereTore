@@ -11,7 +11,6 @@ namespace DereTore.HCA {
         public HcaAudioStream(Stream sourceStream, DecodeParams decodeParam) {
             _decoder = new HcaDecoder(sourceStream, decodeParam);
             OutputWaveHeader = true;
-            _decoder.Initialize();
             _state = DecodeState.Initialized;
         }
 

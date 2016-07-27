@@ -75,7 +75,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -95,7 +94,7 @@
     <Compile Include="ErrorMessages.cs" />
     <Compile Include="HcaAudioStream.cs" />
     <Compile Include="CipherConverter.cs" />
-    <Compile Include="HcaDecoder.cs" />
+    <Compile Include="HcaDecoder.Internal.cs" />
     <Compile Include="HcaException.cs" />
     <Compile Include="HcaReader.cs" />
     <Compile Include="HcaInfo.cs" />
@@ -106,7 +105,7 @@
     <Compile Include="Interop\CompressHeader.cs" />
     <Compile Include="Interop\DecodeHeader.cs" />
     <Compile Include="Interop\FormatHeader.cs" />
-    <Compile Include="HcaDecoder.Public.cs" />
+    <Compile Include="HcaDecoder.cs" />
     <Compile Include="Interop\HcaHeader.cs" />
     <Compile Include="Interop\LoopHeader.cs" />
     <Compile Include="Interop\RvaHeader.cs" />

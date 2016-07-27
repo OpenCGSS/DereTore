@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.Cipher
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.Encoder", "DereTore.Application.Encoder\DereTore.Application.Encoder.csproj", "{5B8FCABB-7663-4047-997C-BD14C06EF301}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.Hca2Wav", "DereTore.Application.Hca2Wav\DereTore.Application.Hca2Wav.csproj", "{87D41A40-A33F-499F-8635-22C6D99475A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -155,6 +157,18 @@ Global
 		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Release|x64.ActiveCfg = Release|x86
 		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Release|x86.ActiveCfg = Release|x86
 		{5B8FCABB-7663-4047-997C-BD14C06EF301}.Release|x86.Build.0 = Release|x86
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Debug|x64.ActiveCfg = Debug|x64
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Debug|x64.Build.0 = Debug|x64
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Debug|x86.ActiveCfg = Debug|x86
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Debug|x86.Build.0 = Debug|x86
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|x64.ActiveCfg = Release|x64
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|x64.Build.0 = Release|x64
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|x86.ActiveCfg = Release|x86
+		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
