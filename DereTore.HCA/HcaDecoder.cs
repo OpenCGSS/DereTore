@@ -104,6 +104,10 @@ namespace DereTore.HCA {
             if (buffer == null) {
                 throw new ArgumentNullException(nameof(buffer));
             }
+            var minimumSize = GetWaveHeaderNeededLength();
+            if (buffer.Length < minimumSize) {
+                throw new HcaException(ErrorMessages.GetBufferTooSmall(minimumSize, buffer.Length), ActionResult.BufferTooSmall);
+            }
             if (_status.DataCursor < _hcaInfo.DataOffset) {
                 _status.DataCursor = _hcaInfo.DataOffset;
             }
