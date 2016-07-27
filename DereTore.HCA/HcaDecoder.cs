@@ -104,7 +104,7 @@ namespace DereTore.HCA {
             if (buffer == null) {
                 throw new ArgumentNullException(nameof(buffer));
             }
-            var minimumSize = GetWaveHeaderNeededLength();
+            var minimumSize = GetWaveDataBlockNeededLength();
             if (buffer.Length < minimumSize) {
                 throw new HcaException(ErrorMessages.GetBufferTooSmall(minimumSize, buffer.Length), ActionResult.BufferTooSmall);
             }
