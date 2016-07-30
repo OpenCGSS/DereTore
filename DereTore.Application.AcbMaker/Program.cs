@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using DereTore.ACB.Serialization;
 using DereTore.Application.AcbMaker.Cgss;
+using DereTore.HCA;
 
 namespace DereTore.Application.AcbMaker {
     internal static class Program {
@@ -18,6 +19,17 @@ namespace DereTore.Application.AcbMaker {
         }
 
         private static HeaderTable GetFullTable() {
+            var musicName = "song_1001";
+            var musicFileName = "song_1001a.hca";
+            HcaInfo info;
+            int lengthInSamples;
+            float lengthInSeconds;
+            using (var fileStream = File.Open(musicFileName, FileMode.Open, FileAccess.Read)) {
+                var decoder = new HcaDecoder(fileStream);
+                info = decoder.HcaInfo;
+                lengthInSamples = decoder.LengthInSamples;
+                lengthInSeconds = decoder.LengthInSeconds;
+            }
             var cue = new[] {
                 new CueTable {
                     CueId = 0,
@@ -26,7 +38,7 @@ namespace DereTore.Application.AcbMaker {
                     UserData = string.Empty,
                     WorkSize = 0,
                     AisacControlMap = null,
-                    Length = 126171,
+                    Length = (uint)(lengthInSeconds * 1000),
                     NumAisacControlMaps = 0,
                     HeaderVisibility = 1
                }
@@ -34,18 +46,18 @@ namespace DereTore.Application.AcbMaker {
             var cueName = new[] {
                 new CueNameTable {
                     CueIndex = 0,
-                    CueName = "song_1001"
+                    CueName = musicName
                 }
             };
             var waveform = new[] {
                 new WaveformTable {
                     Id = 0,
-                    EncodeType = 2,
+                    EncodeType = 2, // HCA
                     Streaming = 0,
-                    NumChannels = 2,
+                    NumChannels = (byte)info.ChannelCount,
                     LoopFlag = 1,
-                    SamplingRate = 22050,
-                    NumSamples = 2782079,
+                    SamplingRate = (ushort)info.SamplingRate,
+                    NumSamples = (uint)lengthInSamples,
                     ExtensionData = ushort.MaxValue
                }
             };
@@ -54,7 +66,7 @@ namespace DereTore.Application.AcbMaker {
                     Type = 0,
                     VoiceLimitGroupName = string.Empty,
                     CommandIndex = ushort.MaxValue,
-                    ReferenceItems = new byte[4],
+                    ReferenceItems = new byte[] {0x00, 0x01, 0x00, 0x00},
                     LocalAisacs = null,
                     GlobalAisacStartIndex = ushort.MaxValue,
                     GlobalAisacNumRefs = 0,
@@ -68,10 +80,10 @@ namespace DereTore.Application.AcbMaker {
             };
             var command = new[] {
                 new CommandTable {
-                    Command = new byte[0x0a]
+                    Command = new byte[0x0a] {0x07, 0xd0, 0x04, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00 }
                 },
                 new CommandTable {
-                    Command = new byte[0x10]
+                    Command = new byte[0x10] {0x00, 0x41, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x57, 0x02, 0x00, 0x32 }
                 }
             };
             var track = new[] {
@@ -94,7 +106,7 @@ namespace DereTore.Application.AcbMaker {
                 new SequenceTable {
                     PlaybackRatio = 100,
                     NumTracks = 1,
-                    TrackIndex = new byte[] {0x01, 0x00},
+                    TrackIndex = new byte[] {0x00, 0x00}, // {0x01, 0x00}
                     CommandIndex = 1,
                     LocalAisacs = null,
                     GlobalAisacStartIndex = ushort.MaxValue,
@@ -121,10 +133,11 @@ namespace DereTore.Application.AcbMaker {
                 }
             };
             var acbGuid = Guid.NewGuid();
+            var hcaData = File.ReadAllBytes(musicFileName);
             var header = new HeaderTable {
                 FileIdentifier = 0,
                 Size = 0,
-                Version = 19071232,
+                Version = 0x01230100,
                 Type = 0,
                 Target = 0,
                 AcfMd5Hash = new byte[0x10] { 0x0e, 0xf7, 0x50, 0x41, 0x55, 0x0d, 0xda, 0xda, 0x89, 0xd0, 0x4e, 0x74, 0xbc, 0x91, 0x32, 0x2c },
@@ -143,8 +156,8 @@ namespace DereTore.Application.AcbMaker {
                 AisacControlNameTable = null,
                 AutoModulationTable = null,
                 StreamAwbTocWorkOld = null,
-                AwbFile = null,
-                VersionString = "\nACB Format/PC ver.1.23.01 Build:\n",
+                AwbFile = hcaData,
+                VersionString = StandardAcbVersionString,
                 CueLimitWorkTable = null,
                 NumCueLimitListWorks = 0,
                 NumCueLimitNodeWorks = 0,
@@ -171,6 +184,8 @@ namespace DereTore.Application.AcbMaker {
             };
             return header;
         }
+
+        private static readonly string StandardAcbVersionString = "\nACB Format/PC ver.1.23.01 Build:\n";
 
     }
 }

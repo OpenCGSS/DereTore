@@ -89,6 +89,10 @@
       <Project>{eecf4baa-9c9e-4687-a616-0f5c65c5f14b}</Project>
       <Name>DereTore.ACB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DereTore.HCA\DereTore.HCA.csproj">
+      <Project>{7c6fadd7-a0bb-4bf3-8992-3d89ace1cc69}</Project>
+      <Name>DereTore.HCA</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -12,9 +12,10 @@ namespace DereTore.ACB.Serialization {
             byte[] buffer;
             using (var memory = new MemoryStream()) {
                 tableImage.WriteTo(memory);
-                memory.Capacity = (int)AcbHelper.RoundUpToAlignment((int)memory.Length, Alignment);
-                buffer = new byte[memory.Capacity];
-                memory.GetBuffer().CopyTo(buffer, 0);
+                //memory.Capacity = (int)AcbHelper.RoundUpToAlignment((int)memory.Length, Alignment);
+                buffer = new byte[memory.Length];
+                //memory.GetBuffer().CopyTo(buffer, 0);
+                Array.Copy(memory.GetBuffer(), buffer, buffer.Length);
             }
             return buffer;
         }
@@ -42,6 +43,13 @@ namespace DereTore.ACB.Serialization {
                     if (IsTypeRowList(fieldType) && fieldValue != null && ((UtfRowBase[])fieldValue).Length > 0) {
                         var tableBytes = GetTableBytes((UtfRowBase[])fieldValue);
                         fieldImage.SetValue(tableBytes);
+                        fieldImage.IsTable = true;
+                    } else if (fieldType == typeof(byte[]) && member.ArchiveAttribute != null) {
+                        var files = new List<byte[]> {
+                            (byte[])fieldValue
+                        };
+                        var archiveBytes = SerializationHelper.GetAfs2ArchiveBytes(files.AsReadOnly(), Alignment);
+                        fieldImage.SetValue(archiveBytes);
                         fieldImage.IsTable = true;
                     } else {
                         if (fieldValue == null) {
@@ -101,6 +109,5 @@ namespace DereTore.ACB.Serialization {
             typeof(string),
             typeof(byte[])
         };
-
     }
 }

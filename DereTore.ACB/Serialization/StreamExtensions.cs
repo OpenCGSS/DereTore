@@ -26,6 +26,13 @@ namespace DereTore.ACB.Serialization {
             return buffer;
         }
 
+        public static byte[] RoundUpTo(this byte[] data, uint alignment) {
+            var newLength = AcbHelper.RoundUpToAlignment(data.Length, alignment);
+            var buffer = new byte[newLength];
+            data.CopyTo(buffer, 0);
+            return buffer;
+        }
+
         public static void SeekAndWriteBytes(this Stream stream, byte[] data, long offset) {
             stream.Seek(offset, SeekOrigin.Begin);
             WriteBytes(stream, data);

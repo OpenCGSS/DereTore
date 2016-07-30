@@ -10,7 +10,7 @@ namespace DereTore.Application.AcbMaker.Cgss {
         [UtfField(2)]
         public byte Streaming;
         [UtfField(3)]
-        public ushort NumChannels;
+        public byte NumChannels;
         [UtfField(4)]
         public byte LoopFlag;
         [UtfField(5)]

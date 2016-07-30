@@ -47,7 +47,7 @@ namespace DereTore.ACB {
             base.Initialize();
             InitializeAcbTables();
             InitializeCueNameToWaveformTable();
-            InitializeAwbArchive();
+            InitializeAwbArchives();
         }
 
         public Dictionary<string, UtfTable> Tables => _tables;
@@ -57,8 +57,6 @@ namespace DereTore.ACB {
         public Afs2Archive InternalAwb => _internalAwb;
 
         public Afs2Archive ExternalAwb => _externalAwb;
-
-        public AcbInfo Info => _acbInfo;
 
         public UtfTable GetTable(string tableName) {
             if (_tables == null) {

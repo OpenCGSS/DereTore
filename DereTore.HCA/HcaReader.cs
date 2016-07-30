@@ -178,7 +178,7 @@ namespace DereTore.HCA {
             _hcaInfo.CompR09 = HcaHelper.Ceil2(_hcaInfo.CompR05 - (_hcaInfo.CompR06 + _hcaInfo.CompR07), _hcaInfo.CompR08);
 
             _lengthInSamples = (int)_hcaInfo.BlockCount * (int)_hcaInfo.ChannelCount * 0x80 * 8;
-            _lengthInSeconds = _lengthInSamples / (float)_hcaInfo.SamplingRate;
+            _lengthInSeconds = _lengthInSamples / (float)_hcaInfo.SamplingRate / (int)_hcaInfo.ChannelCount;
 
             return true;
         }

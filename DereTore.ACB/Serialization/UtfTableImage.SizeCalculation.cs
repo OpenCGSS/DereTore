@@ -167,7 +167,7 @@ namespace DereTore.ACB.Serialization {
 
             // If the first field is a table, rebase the whole data field.
             if (firstTableDataFieldIndex == 0) {
-                baseOffset = AcbHelper.RoundUpToAlignment(baseOffset, Alignment);
+                baseOffset = SerializationHelper.RoundUpAsTable(baseOffset, Alignment);
                 header.ExtraDataOffset = baseOffset;
             }
             orderedDataFieldImages = fieldImagesInNewOrder.ToArray();
@@ -175,7 +175,7 @@ namespace DereTore.ACB.Serialization {
             foreach (var fieldImage in orderedDataFieldImages) {
                 var rawOffset = baseOffset;
                 if (fieldImage.IsTable) {
-                    baseOffset = AcbHelper.RoundUpToAlignment(baseOffset, Alignment);
+                    baseOffset = SerializationHelper.RoundUpAsTable(baseOffset, Alignment);
                 }
                 totalSize += (uint)fieldImage.DataValue.Length + (baseOffset - rawOffset);
             }

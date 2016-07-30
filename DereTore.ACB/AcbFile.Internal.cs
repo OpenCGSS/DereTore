@@ -19,15 +19,7 @@ namespace DereTore.ACB {
             _externalAwb?.Dispose();
             base.Dispose(disposing);
         }
-
-        private void InitializeBasicAcbInfo() {
-            var acbInfo = new AcbInfo {
-                Name = GetFieldValueAsString(0, "Name"),
-                VersionString = GetFieldValueAsString(0, "VersionString").Trim()
-            };
-            _acbInfo = acbInfo;
-        }
-
+        
         private void InitializeAcbTables() {
             var stream = Stream;
             long refItemOffset = 0, refItemSize = 0, refCorrection = 0;
@@ -107,7 +99,7 @@ namespace DereTore.ACB {
             }
         }
 
-        private void InitializeAwbArchive() {
+        private void InitializeAwbArchives() {
             var internalAwbSize = GetFieldSize(0, "AwbFile");
             if (internalAwbSize.HasValue && internalAwbSize.Value > 0) {
                 _internalAwb = GetInternalAwbArchive();
@@ -214,7 +206,6 @@ namespace DereTore.ACB {
         private AcbCueRecord[] _cues;
         private Afs2Archive _internalAwb;
         private Afs2Archive _externalAwb;
-        private AcbInfo _acbInfo;
         private string[] _fileNames;
 
     }

@@ -12,7 +12,7 @@ namespace DereTore.ACB.Serialization {
             if (tableRows == null) {
                 throw new ArgumentNullException(nameof(tableRows));
             }
-            var tableData = GetTableBytes(tableRows);
+            var tableData = GetTableBytes(tableRows).RoundUpTo(Alignment);
             serializationStream.WriteBytes(tableData);
         }
 

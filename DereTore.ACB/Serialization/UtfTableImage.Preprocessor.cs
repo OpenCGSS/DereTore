@@ -164,7 +164,7 @@ namespace DereTore.ACB.Serialization {
                 if (fieldImage.DataValue.Length > 0) {
                     // For priority, see AddToNewOrderedDataFieldList().
                     if (fieldImage.IsTable) {
-                        currentOffset = AcbHelper.RoundUpToAlignment(currentOffset, Alignment);
+                        currentOffset = SerializationHelper.RoundUpAsTable(currentOffset, Alignment);
                     }
                     fieldImage.DataOffset = currentOffset - baseOffset;
                     currentOffset += (uint)fieldImage.DataValue.Length;

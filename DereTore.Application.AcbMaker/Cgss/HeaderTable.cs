@@ -47,6 +47,7 @@ namespace DereTore.Application.AcbMaker.Cgss {
         [UtfField(20)]
         public byte[] StreamAwbTocWorkOld;
         [UtfField(21)]
+        [Afs2Archive]
         public byte[] AwbFile;
         [UtfField(22)]
         public string VersionString;
