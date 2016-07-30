@@ -48,10 +48,7 @@ DereTore.HCA.
 
 **DereTore.Application.AcbMaker**
 
-A tool for creating CGSS-compatible ACB archives. ACBs are used to store audio and images in CGSS.
-
-Inspired by hcs64's *utf_view* utility in his extraordinary [stream stripping tools](https://www.hcs64.com/vgm_ripping.html)
-(which is also referenced by [VGMtoolbox](https://sourceforge.net/projects/vgmtoolbox/)).
+A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.Application.AcbMaker/README.md).
 
 ## License
 

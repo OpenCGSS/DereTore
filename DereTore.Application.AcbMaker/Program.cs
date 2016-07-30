@@ -10,21 +10,43 @@ namespace DereTore.Application.AcbMaker {
     internal static class Program {
 
         private static void Main(string[] args) {
-            var header = GetFullTable();
+            if (args.Length < 2) {
+                Console.WriteLine(HelpMessage);
+                return;
+            }
+
+            var outputFileName = args[0];
+            var inputHcaFileName = args[1];
+            var songName = "song_1001";
+
+            for (var i = 2; i < args.Length; ++i) {
+                var arg = args[i];
+                if (arg[0] == '-' || arg[0] == '/') {
+                    switch (arg.Substring(1)) {
+                        case "n":
+                            if (i < args.Length - 1) {
+                                songName = args[++i];
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            var header = GetFullTable(inputHcaFileName, songName);
             var table = new[] { header };
             var serializer = new AcbSerializer();
-            using (var fs = File.Open("sample.acb", FileMode.Create, FileAccess.Write)) {
+            using (var fs = File.Open(outputFileName, FileMode.Create, FileAccess.Write)) {
                 serializer.Serialize(table, fs);
             }
         }
 
-        private static HeaderTable GetFullTable() {
-            var musicName = "song_1001";
-            var musicFileName = "song_1001a.hca";
+        private static HeaderTable GetFullTable(string hcaFileName, string songName) {
             HcaInfo info;
             int lengthInSamples;
             float lengthInSeconds;
-            using (var fileStream = File.Open(musicFileName, FileMode.Open, FileAccess.Read)) {
+            using (var fileStream = File.Open(hcaFileName, FileMode.Open, FileAccess.Read)) {
                 var decoder = new HcaDecoder(fileStream);
                 info = decoder.HcaInfo;
                 lengthInSamples = decoder.LengthInSamples;
@@ -46,7 +68,7 @@ namespace DereTore.Application.AcbMaker {
             var cueName = new[] {
                 new CueNameTable {
                     CueIndex = 0,
-                    CueName = musicName
+                    CueName = songName
                 }
             };
             var waveform = new[] {
@@ -133,7 +155,7 @@ namespace DereTore.Application.AcbMaker {
                 }
             };
             var acbGuid = Guid.NewGuid();
-            var hcaData = File.ReadAllBytes(musicFileName);
+            var hcaData = File.ReadAllBytes(hcaFileName);
             var header = new HeaderTable {
                 FileIdentifier = 0,
                 Size = 0,
@@ -169,7 +191,7 @@ namespace DereTore.Application.AcbMaker {
                 OutsideLinkTable = null,
                 BlockSequenceTable = null,
                 BlockTable = null,
-                Name = "song_1001",
+                Name = songName,
                 CharacterEncodingType = 0,
                 EventTable = null,
                 ActionTrackTable = null,
@@ -186,6 +208,8 @@ namespace DereTore.Application.AcbMaker {
         }
 
         private static readonly string StandardAcbVersionString = "\nACB Format/PC ver.1.23.01 Build:\n";
+
+        private static readonly string HelpMessage = "Usage: AcbMaker.exe <output ACB> <HCA live music file> [-n <song name>]";
 
     }
 }
