@@ -46,6 +46,16 @@ namespace DereTore.ACB {
             return AreDataIdentical(array1, 0, array2, 0, array1.LongLength);
         }
 
+        public static int RoundUpToAlignment(int valueToRound, int byteAlignment) {
+            var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
+            return roundedValue;
+        }
+
+        public static uint RoundUpToAlignment(uint valueToRound, uint byteAlignment) {
+            var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
+            return roundedValue;
+        }
+
         public static long RoundUpToAlignment(long valueToRound, long byteAlignment) {
             var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
             return roundedValue;

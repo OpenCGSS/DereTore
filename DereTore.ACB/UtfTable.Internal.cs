@@ -58,7 +58,7 @@ namespace DereTore.ACB {
             return keys;
         }
 
-        private void CheckEncryption(Stream stream, byte[] magicBytes) {
+        private void CheckEncryption(byte[] magicBytes) {
             if (AcbHelper.AreDataIdentical(magicBytes, UtfSignature)) {
                 _isEncrypted = false;
                 _utfReader = new UtfReader();
@@ -110,9 +110,9 @@ namespace DereTore.ACB {
             var header = new UtfHeader {
                 TableSize = stream.PeekUInt32BE(4),
                 Unknown1 = stream.PeekUInt16BE(8),
-                RowOffset = (uint)stream.PeekUInt16BE(10) + 8,
+                PerRowDataOffset = (uint)stream.PeekUInt16BE(10) + 8,
                 StringTableOffset = stream.PeekUInt32BE(12) + 8,
-                DataOffset = stream.PeekUInt32BE(16) + 8,
+                ExtraDataOffset = stream.PeekUInt32BE(16) + 8,
                 TableNameOffset = stream.PeekUInt32BE(20),
                 FieldCount = stream.PeekUInt16BE(24),
                 RowSize = stream.PeekUInt16BE(26),
@@ -128,7 +128,7 @@ namespace DereTore.ACB {
             var baseOffset = _offset;
             for (uint i = 0; i < header.RowCount; i++) {
                 var currentOffset = schemaOffset;
-                long currentRowBase = header.RowOffset + header.RowSize * i;
+                long currentRowBase = header.PerRowDataOffset + header.RowSize * i;
                 long currentRowOffset = 0;
                 var row = new Dictionary<string, UtfField>();
                 rows[i] = row;
@@ -166,7 +166,7 @@ namespace DereTore.ACB {
                                 case ColumnType.Data:
                                     dataOffset = tableDataStream.PeekUInt32BE(constantOffset);
                                     long dataSize = tableDataStream.PeekUInt32BE(constantOffset + 4);
-                                    field.Offset = baseOffset + header.DataOffset + dataOffset;
+                                    field.Offset = baseOffset + header.ExtraDataOffset + dataOffset;
                                     field.Size = dataSize;
                                     // don't think this is encrypted, need to check
                                     field.DataValue = sourceStream.PeekBytes(field.Offset, (int)dataSize);
@@ -228,7 +228,7 @@ namespace DereTore.ACB {
                                 case ColumnType.Data:
                                     rowDataOffset = tableDataStream.PeekUInt32BE(currentRowBase + currentRowOffset);
                                     long rowDataSize = tableDataStream.PeekUInt32BE(currentRowBase + currentRowOffset + 4);
-                                    field.Offset = baseOffset + header.DataOffset + rowDataOffset;
+                                    field.Offset = baseOffset + header.ExtraDataOffset + rowDataOffset;
                                     field.Size = rowDataSize;
                                     // don't think this is encrypted
                                     field.DataValue = sourceStream.PeekBytes(field.Offset, (int)rowDataSize);
@@ -335,7 +335,7 @@ namespace DereTore.ACB {
             return null;
         }
 
-        private static readonly byte[] UtfSignature = { 0x40, 0x55, 0x54, 0x46 }; // '@UTF'
+        internal static readonly byte[] UtfSignature = { 0x40, 0x55, 0x54, 0x46 }; // '@UTF'
         private static readonly string LcgSeedKey = "SEED";
         private static readonly string LcgIncrementKey = "INC";
 

@@ -75,6 +75,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +93,21 @@
     <Compile Include="AwbFileNameFormats.cs" />
     <Compile Include="AcbCueRecord.cs" />
     <Compile Include="NumericUnion.cs" />
+    <Compile Include="Serialization\AcbSerializer.cs" />
+    <Compile Include="Serialization\AcbSerializer.Internal.cs" />
+    <Compile Include="Serialization\AcbSerializerPrivateUtilities.cs" />
+    <Compile Include="Serialization\Afs2ArchiveAttribute.cs" />
+    <Compile Include="Serialization\MemberAbstract.cs" />
+    <Compile Include="Serialization\SerializationHelper.cs" />
+    <Compile Include="Serialization\StreamExtensions.cs" />
+    <Compile Include="Serialization\UtfFieldAttribute.cs" />
+    <Compile Include="Serialization\UtfFieldImage.cs" />
+    <Compile Include="Serialization\UtfTableAttribute.cs" />
+    <Compile Include="Serialization\UtfRowBase.cs" />
+    <Compile Include="Serialization\UtfTableImage.cs" />
+    <Compile Include="Serialization\UtfTableImage.Output.cs" />
+    <Compile Include="Serialization\UtfTableImage.Preprocessor.cs" />
+    <Compile Include="Serialization\UtfTableImage.SizeCalculation.cs" />
     <Compile Include="UtfField.cs" />
     <Compile Include="UtfReader.cs" />
     <Compile Include="UtfTable.cs" />

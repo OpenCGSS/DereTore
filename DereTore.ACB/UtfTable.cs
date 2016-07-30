@@ -13,7 +13,7 @@ namespace DereTore.ACB {
             if (!AcbHelper.AreDataIdentical(magic, UtfSignature)) {
                 throw new FormatException($"'@UTF' signature is not found in '{_acbFileName}' at offset 0x{offset.ToString("x8")}.");
             }
-            CheckEncryption(stream, magic);
+            CheckEncryption(magic);
             using (var tableDataStream = GetTableDataStream(stream, offset)) {
                 var header = GetUtfHeader(tableDataStream);
                 _utfHeader = header;
@@ -37,5 +37,6 @@ namespace DereTore.ACB {
         public UtfHeader Header => _utfHeader;
 
         public Dictionary<string, UtfField>[] Rows => _rows;
+
     }
 }

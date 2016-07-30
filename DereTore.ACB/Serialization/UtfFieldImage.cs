@@ -1,19 +1,29 @@
 ﻿using System;
+using System.IO;
 
-namespace DereTore.ACB {
-    public sealed class UtfField {
+namespace DereTore.ACB.Serialization {
+    internal sealed class UtfFieldImage : IComparable<UtfFieldImage> {
 
-        internal UtfField() {
+        internal UtfFieldImage() {
         }
 
-        public byte Type { get; set; }
+        public ColumnStorage Storage { get; set; }
+        public ColumnType Type { get; set; }
         public string Name { get; set; }
-        public ColumnType ConstrainedType { get; set; }
         public NumericUnion NumericValue { get; set; }
         public byte[] DataValue { get; set; }
         public string StringValue { get; set; }
-        public long Offset { get; set; }
-        public long Size { get; set; }
+        public int Order { get; set; }
+        /// <summary>
+        /// Table is a subtype of 'data' type. It requires strict byte alignment.
+        /// </summary>
+        public bool IsTable { get; set; }
+
+        public byte[] StringValueBytesCache { get; set; }
+        public byte[] NameBytesCache { get; set; }
+        public uint NameOffset { get; set; }
+        public uint StringOffset { get; set; }
+        public uint DataOffset { get; set; }
 
         public void SetValue(object value) {
             ColumnType type;
@@ -42,6 +52,12 @@ namespace DereTore.ACB {
             } else if (value is long) {
                 type = ColumnType.Int64;
                 union.S64 = (long)value;
+            } else if (value is float) {
+                type = ColumnType.Single;
+                union.R32 = (float)value;
+            } else if (value is double) {
+                type = ColumnType.Double;
+                union.R64 = (double)value;
             } else if (value is string) {
                 type = ColumnType.String;
                 StringValue = (string)value;
@@ -51,8 +67,7 @@ namespace DereTore.ACB {
             } else {
                 throw new ArgumentException("Unsupported argument type.", nameof(value));
             }
-            ConstrainedType = type;
-            Type = (byte)type;
+            Type = type;
             switch (type) {
                 case ColumnType.String:
                 case ColumnType.Data:
@@ -63,50 +78,71 @@ namespace DereTore.ACB {
             }
         }
 
-        public object GetValue() {
-            var constrainedType = ConstrainedType;
-            object ret;
-            switch (constrainedType) {
-                case ColumnType.Byte:
-                    ret = NumericValue.U8;
-                    break;
-                case ColumnType.SByte:
-                    ret = NumericValue.S8;
-                    break;
-                case ColumnType.UInt16:
-                    ret = NumericValue.U16;
-                    break;
-                case ColumnType.Int16:
-                    ret = NumericValue.S16;
-                    break;
-                case ColumnType.UInt32:
-                    ret = NumericValue.U32;
-                    break;
-                case ColumnType.Int32:
-                    ret = NumericValue.S32;
-                    break;
-                case ColumnType.UInt64:
-                    ret = NumericValue.U64;
-                    break;
-                case ColumnType.Int64:
-                    ret = NumericValue.S64;
-                    break;
-                case ColumnType.Single:
-                    ret = NumericValue.R32;
-                    break;
-                case ColumnType.Double:
-                    ret = NumericValue.R64;
-                    break;
+        public void SetNullValue(ColumnType type) {
+            switch (type) {
                 case ColumnType.String:
-                    ret = StringValue;
+                    StringValue = null;
+                    Type = ColumnType.String;
                     break;
                 case ColumnType.Data:
-                    ret = DataValue;
+                    DataValue = null;
+                    Type = ColumnType.Data;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(constrainedType));
+                    throw new ArgumentException($"Cannot set null value with type {type}.", nameof(type));
             }
-            return ret;
+        }
+
+        public void WriteValueTo(Stream stream) {
+            switch (Type) {
+                case ColumnType.Byte:
+                    stream.WriteByte(NumericValue.U8);
+                    break;
+                case ColumnType.SByte:
+                    stream.WriteSByte(NumericValue.S8);
+                    break;
+                case ColumnType.UInt16:
+                    stream.WriteUInt16BE(NumericValue.U16);
+                    break;
+                case ColumnType.Int16:
+                    stream.WriteInt16BE(NumericValue.S16);
+                    break;
+                case ColumnType.UInt32:
+                    stream.WriteUInt32BE(NumericValue.U32);
+                    break;
+                case ColumnType.Int32:
+                    stream.WriteInt32BE(NumericValue.S32);
+                    break;
+                case ColumnType.UInt64:
+                    stream.WriteUInt64BE(NumericValue.U64);
+                    break;
+                case ColumnType.Int64:
+                    stream.WriteInt64BE(NumericValue.S64);
+                    break;
+                case ColumnType.Single:
+                    stream.WriteSingleBE(NumericValue.R32);
+                    break;
+                case ColumnType.Double:
+                    stream.WriteDoubleBE(NumericValue.R64);
+                    break;
+                case ColumnType.String:
+                    stream.WriteUInt32BE(StringOffset);
+                    break;
+                case ColumnType.Data:
+                    stream.WriteUInt32BE(DataOffset);
+                    stream.WriteUInt32BE((uint)DataValue.Length);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Type));
+            }
+        }
+
+        public int CompareTo(UtfFieldImage other) {
+            return this.Order - other.Order;
+        }
+
+        public override string ToString() {
+            return $"UtfFieldImage {{{Name}}}";
         }
     }
 }

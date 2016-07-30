@@ -1,13 +1,13 @@
 
-.idea/
-.idea.*
-*.sln.iml
-.vs/
-_ReSharper*
+/.idea/
+/.idea.*
+/*.sln.iml
+/.vs/
+/_ReSharper*
 
-[Bb]in
-[Oo]bj
+[Bb]in/
+[Oo]bj/
 *.user
 
-Cgss*
+Cgss*Config*
 /DereTore.Combined.Test/

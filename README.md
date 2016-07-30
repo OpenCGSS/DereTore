@@ -46,9 +46,16 @@ An console appilcation that converts HCA audio to WAVE audio. It is similar to D
 but it outputs to a stream, in fixed linear sequence. It can be used as a clearer demo to integrate
 DereTore.HCA.
 
+**DereTore.Application.AcbMaker**
+
+A tool for creating CGSS-compatible ACB archives. ACBs are used to store audio and images in CGSS.
+
+Inspired by hcs64's *utf_view* utility in his extraordinary [stream stripping tools](https://www.hcs64.com/vgm_ripping.html)
+(which is also referenced by [VGMtoolbox](https://sourceforge.net/projects/vgmtoolbox/)).
+
 ## License
 
-This project uses [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).
+This solution uses [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).
 
 ## Notes
 

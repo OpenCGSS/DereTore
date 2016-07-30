@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.Encode
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.Hca2Wav", "DereTore.Application.Hca2Wav\DereTore.Application.Hca2Wav.csproj", "{87D41A40-A33F-499F-8635-22C6D99475A6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.AcbMaker", "DereTore.Application.AcbMaker\DereTore.Application.AcbMaker.csproj", "{7516898D-66CC-4084-A218-29F19A503673}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -169,6 +171,18 @@ Global
 		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|x64.Build.0 = Release|x64
 		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|x86.ActiveCfg = Release|x86
 		{87D41A40-A33F-499F-8635-22C6D99475A6}.Release|x86.Build.0 = Release|x86
+		{7516898D-66CC-4084-A218-29F19A503673}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{7516898D-66CC-4084-A218-29F19A503673}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{7516898D-66CC-4084-A218-29F19A503673}.Debug|x64.ActiveCfg = Debug|x64
+		{7516898D-66CC-4084-A218-29F19A503673}.Debug|x64.Build.0 = Debug|x64
+		{7516898D-66CC-4084-A218-29F19A503673}.Debug|x86.ActiveCfg = Debug|x86
+		{7516898D-66CC-4084-A218-29F19A503673}.Debug|x86.Build.0 = Debug|x86
+		{7516898D-66CC-4084-A218-29F19A503673}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{7516898D-66CC-4084-A218-29F19A503673}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{7516898D-66CC-4084-A218-29F19A503673}.Release|x64.ActiveCfg = Release|x64
+		{7516898D-66CC-4084-A218-29F19A503673}.Release|x64.Build.0 = Release|x64
+		{7516898D-66CC-4084-A218-29F19A503673}.Release|x86.ActiveCfg = Release|x86
+		{7516898D-66CC-4084-A218-29F19A503673}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
