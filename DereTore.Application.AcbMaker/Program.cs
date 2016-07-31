@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
 using DereTore.ACB.Serialization;
 using DereTore.Application.AcbMaker.Cgss;
 using DereTore.HCA;
@@ -9,15 +7,15 @@ using DereTore.HCA;
 namespace DereTore.Application.AcbMaker {
     internal static class Program {
 
-        private static void Main(string[] args) {
+        private static int Main(string[] args) {
             if (args.Length < 2) {
                 Console.WriteLine(HelpMessage);
-                return;
+                return -1;
             }
 
-            var outputFileName = args[0];
-            var inputHcaFileName = args[1];
-            var songName = "song_1001";
+            var inputHcaFileName = args[0];
+            var outputFileName = args[1];
+            var songName = DefaultSongName;
 
             for (var i = 2; i < args.Length; ++i) {
                 var arg = args[i];
@@ -34,12 +32,17 @@ namespace DereTore.Application.AcbMaker {
                 }
             }
 
-            var header = GetFullTable(inputHcaFileName, songName);
-            var table = new[] { header };
-            var serializer = new AcbSerializer();
-            using (var fs = File.Open(outputFileName, FileMode.Create, FileAccess.Write)) {
-                serializer.Serialize(table, fs);
+            try {
+                var header = GetFullTable(inputHcaFileName, songName);
+                var table = new[] { header };
+                var serializer = new AcbSerializer();
+                using (var fs = File.Open(outputFileName, FileMode.Create, FileAccess.Write)) {
+                    serializer.Serialize(table, fs);
+                }
+            } catch (Exception) {
+                return -2;
             }
+            return 0;
         }
 
         private static HeaderTable GetFullTable(string hcaFileName, string songName) {
@@ -208,8 +211,9 @@ namespace DereTore.Application.AcbMaker {
         }
 
         private static readonly string StandardAcbVersionString = "\nACB Format/PC ver.1.23.01 Build:\n";
+        private static readonly string DefaultSongName = "song_1001";
 
-        private static readonly string HelpMessage = "Usage: AcbMaker.exe <output ACB> <HCA live music file> [-n <song name>]";
+        private static readonly string HelpMessage = "Usage: AcbMaker.exe <HCA live music file> <output ACB> [-n <song name>]";
 
     }
 }

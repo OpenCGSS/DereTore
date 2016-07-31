@@ -7,7 +7,7 @@ CGSS-compatible ACB files. Currently it only supports single live music file
 Usage:
 
 ```cmd
-AcbMaker <output ACB> <HCA live music file> [-n <song name>]
+AcbMaker <HCA live music file> <output ACB> [-n <song name>]
 ```
 
 The default value of `<song name>` is `"song_1001"`.
@@ -15,7 +15,7 @@ The default value of `<song name>` is `"song_1001"`.
 Example:
 
 ```cmd
-AcbMaker output.acb song_1004_conv.hca -n song_1004
+AcbMaker song_1004_conv.hca output.acb -n song_1004
 ```
 
 ------

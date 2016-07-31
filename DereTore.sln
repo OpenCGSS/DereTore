@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.Hca2Wa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.AcbMaker", "DereTore.Application.AcbMaker\DereTore.Application.AcbMaker.csproj", "{7516898D-66CC-4084-A218-29F19A503673}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.Toolchain", "DereTore.Application.Toolchain\DereTore.Application.Toolchain.csproj", "{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -183,6 +185,15 @@ Global
 		{7516898D-66CC-4084-A218-29F19A503673}.Release|x64.Build.0 = Release|x64
 		{7516898D-66CC-4084-A218-29F19A503673}.Release|x86.ActiveCfg = Release|x86
 		{7516898D-66CC-4084-A218-29F19A503673}.Release|x86.Build.0 = Release|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Debug|AnyCPU.ActiveCfg = Debug|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Debug|AnyCPU.Build.0 = Debug|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Debug|x64.ActiveCfg = Debug|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Debug|x86.ActiveCfg = Debug|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Debug|x86.Build.0 = Debug|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Release|AnyCPU.ActiveCfg = Release|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Release|x64.ActiveCfg = Release|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Release|x86.ActiveCfg = Release|x86
+		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

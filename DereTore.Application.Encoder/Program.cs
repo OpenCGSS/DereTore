@@ -7,7 +7,7 @@ namespace DereTore.Application.Encoder {
         private static int Main(string[] args) {
             if (args.Length != 2) {
                 Console.WriteLine(HelpMessage);
-                return 0;
+                return -1;
             }
             int quality = 1, cutoff = 0;
             ulong key = 0;

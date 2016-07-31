@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace DereTore.ACB.Serialization {
     internal sealed partial class UtfTableImage {
