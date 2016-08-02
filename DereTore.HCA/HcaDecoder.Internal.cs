@@ -2,7 +2,7 @@
 using System.IO;
 
 namespace DereTore.HCA {
-    public sealed partial class HcaDecoder : HcaReader {
+    public sealed partial class HcaDecoder {
 
         internal bool HasMore() {
             return _status.BlockIndex < _hcaInfo.BlockCount;

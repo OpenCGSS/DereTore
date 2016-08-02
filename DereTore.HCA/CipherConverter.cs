@@ -19,7 +19,7 @@ namespace DereTore.HCA {
             UpdateHeader();
             ConvertData();
         }
-        
+
         /// <summary>
         /// Whether to encrypt the header signatures ('HCA ', 'fmt ', 'ciph', etc.). Usually decoders recognize both types of header signatures.
         /// </summary>
@@ -37,19 +37,19 @@ namespace DereTore.HCA {
 
             uint v;
             // HCA
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.HCA)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(Marshal.SizeOf(typeof(HcaHeader)));
             }
             // FMT
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.FMT)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(Marshal.SizeOf(typeof(FormatHeader)));
             }
             // COMP / DEC
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.COMP)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(Marshal.SizeOf(typeof(CompressHeader)));
@@ -58,44 +58,44 @@ namespace DereTore.HCA {
                 sourceStream.Skip(Marshal.SizeOf(typeof(DecodeHeader)));
             }
             // VBR
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.VBR)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(Marshal.SizeOf(typeof(VbrHeader)));
             }
             // ATH
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.ATH)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(Marshal.SizeOf(typeof(AthHeader)));
             }
             // LOOP
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.LOOP)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(Marshal.SizeOf(typeof(LoopHeader)));
             }
             // CIPH
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.CIPH)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 var cipherOffset = (int)(sourceStream.Position + 4);
                 var u = (ushort)_ccTo.CipherType;
                 if (BitConverter.IsLittleEndian) {
-                    u = HcaHelper.SwapEndian(u);
+                    u = DereToreHelper.SwapEndian(u);
                 }
                 var cipherTypeBytes = BitConverter.GetBytes(u);
                 buffer[cipherOffset] = cipherTypeBytes[0];
                 buffer[cipherOffset + 1] = cipherTypeBytes[1];
             }
             // RVA
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.RVA)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(Marshal.SizeOf(typeof(RvaHeader)));
             }
             // COMM
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.COMM)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(Marshal.SizeOf(typeof(CommentHeader)));
@@ -105,7 +105,7 @@ namespace DereTore.HCA {
                 } while (tmpByte != 0);
             }
             // PAD (undocumented)
-            v = sourceStream.PeekUInt32();
+            v = sourceStream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.PAD)) {
                 ProcessHeaderSignature(sourceStream, buffer);
                 sourceStream.Skip(4);
@@ -163,7 +163,7 @@ namespace DereTore.HCA {
             var length = blockData.Length;
             var sum = HcaHelper.Checksum(blockData, 0, length - 2);
             if (BitConverter.IsLittleEndian) {
-                sum = HcaHelper.SwapEndian(sum);
+                sum = DereToreHelper.SwapEndian(sum);
             }
             var sumBytes = BitConverter.GetBytes(sum);
             blockData[length - 2] = sumBytes[0];

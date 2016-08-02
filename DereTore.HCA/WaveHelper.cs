@@ -18,7 +18,7 @@ namespace DereTore.HCA {
 
         public static int DecodeToBufferInR32(float f, byte[] buffer, int startIndex) {
             if (!BitConverter.IsLittleEndian) {
-                f = HcaHelper.SwapEndian(f);
+                f = DereToreHelper.SwapEndian(f);
             }
             var bytes = BitConverter.GetBytes(f);
             for (var i = 0; i < 4; ++i) {
@@ -30,7 +30,7 @@ namespace DereTore.HCA {
         public static int DecodeToBufferInS16(float f, byte[] buffer, int startIndex) {
             var value = (short)(f * 0x7fff);
             if (!BitConverter.IsLittleEndian) {
-                value = HcaHelper.SwapEndian(value);
+                value = DereToreHelper.SwapEndian(value);
             }
             var bytes = BitConverter.GetBytes(value);
             for (var i = 0; i < 2; ++i) {

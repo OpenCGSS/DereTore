@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DereTore.ACB {
+namespace DereTore {
     public abstract class DisposableBase : IDisposable {
 
         protected DisposableBase() {

@@ -20,6 +20,7 @@
         StateOutOfRange = -15,
         NotImplemented = -16,
         DecodeAlreadyCompleted = -17,
+        InvalidFieldValue = -18
 
     }
 }

@@ -5,11 +5,11 @@ namespace DereTore.HCA {
     public sealed class HcaAudioStream : Stream {
 
         public HcaAudioStream(Stream sourceStream)
-            : this(sourceStream, new DecodeParams()) {
+            : this(sourceStream, DecodeParams.Default) {
         }
 
-        public HcaAudioStream(Stream sourceStream, DecodeParams decodeParam) {
-            _decoder = new HcaDecoder(sourceStream, decodeParam);
+        public HcaAudioStream(Stream sourceStream, DecodeParams decodeParams) {
+            _decoder = new HcaDecoder(sourceStream, decodeParams);
             OutputWaveHeader = true;
             _state = DecodeState.Initialized;
         }
@@ -144,7 +144,7 @@ namespace DereTore.HCA {
 
         public HcaInfo HcaInfo => _decoder.HcaInfo;
 
-        public float LengthInSecs => _decoder.LengthInSeconds;
+        public float LengthInSeconds => _decoder.LengthInSeconds;
 
         public int LengthInSamples => _decoder.LengthInSamples;
 

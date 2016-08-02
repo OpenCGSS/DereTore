@@ -75,15 +75,14 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DisposableBase.cs" />
     <Compile Include="AcbFile.cs" />
     <Compile Include="AcbFile.Internal.cs" />
     <Compile Include="AcbHelper.cs" />
     <Compile Include="AcbInfo.cs" />
-    <Compile Include="AcbTables.cs" />
     <Compile Include="Afs2Archive.cs" />
     <Compile Include="Afs2FileRecord.cs" />
     <Compile Include="AwbLocation.cs" />
@@ -96,9 +95,9 @@
     <Compile Include="Serialization\AcbSerializer.Internal.cs" />
     <Compile Include="Serialization\AcbSerializerPrivateUtilities.cs" />
     <Compile Include="Serialization\Afs2ArchiveAttribute.cs" />
+    <Compile Include="Serialization\ArrayExtensions.cs" />
     <Compile Include="Serialization\MemberAbstract.cs" />
     <Compile Include="Serialization\SerializationHelper.cs" />
-    <Compile Include="Serialization\StreamExtensions.cs" />
     <Compile Include="Serialization\UtfFieldAttribute.cs" />
     <Compile Include="Serialization\UtfFieldImage.cs" />
     <Compile Include="Serialization\UtfTableAttribute.cs" />
@@ -112,14 +111,18 @@
     <Compile Include="UtfTable.cs" />
     <Compile Include="UtfTable.Internal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StreamExtensions.cs" />
     <Compile Include="WaveformEncodeType.cs" />
     <Compile Include="UtfHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\DereTore.Common\DereTore.Common.csproj">
+      <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
+      <Name>DereTore.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

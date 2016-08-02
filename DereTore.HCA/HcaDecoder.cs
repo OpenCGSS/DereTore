@@ -4,23 +4,37 @@ using System.Runtime.InteropServices;
 using DereTore.HCA.Interop;
 
 namespace DereTore.HCA {
-    public partial class HcaDecoder {
+    public sealed partial class HcaDecoder : HcaReader {
 
         public HcaDecoder(Stream sourceStream)
-           : this(sourceStream, new DecodeParams()) {
+           : this(sourceStream, DecodeParams.Default) {
         }
 
-        public HcaDecoder(Stream sourceStream, DecodeParams decodeParam)
+        public HcaDecoder(Stream sourceStream, DecodeParams decodeParams)
             : base(sourceStream) {
-            _decodeParams = decodeParam.Clone();
+            _decodeParams = decodeParams.Clone();
             HcaHelper.TranslateTables();
-            _hcaInfo = new HcaInfo() {
-                CiphKey1 = decodeParam.Key1,
-                CiphKey2 = decodeParam.Key2
+            _hcaInfo = new HcaInfo {
+                CiphKey1 = decodeParams.Key1,
+                CiphKey2 = decodeParams.Key2
             };
             _ath = new Ath();
             _cipher = new Cipher();
             Initialize();
+        }
+
+        public static bool IsHcaStream(Stream stream) {
+            var position = stream.Position;
+            bool result;
+            try {
+                // The cipher keys do nothing to validating HCA files.
+                var decoder = new HcaDecoder(stream, DecodeParams.Default);
+                result = true;
+            } catch (HcaException) {
+                result = false;
+            }
+            stream.Seek(position, SeekOrigin.Begin);
+            return result;
         }
 
         public int GetWaveHeaderNeededLength() {

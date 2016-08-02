@@ -13,44 +13,44 @@ namespace DereTore.HCA {
 
         public int LengthInSamples => _lengthInSamples;
 
-        internal bool ParseHeaders() {
+        internal void ParseHeaders() {
             var stream = SourceStream;
             uint v;
             // HCA
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.HCA)) {
                 HcaHeader header;
                 stream.Read(out header);
-                _hcaInfo.Version = HcaHelper.SwapEndian(header.Version);
-                _hcaInfo.DataOffset = HcaHelper.SwapEndian(header.DataOffset);
+                _hcaInfo.Version = DereToreHelper.SwapEndian(header.Version);
+                _hcaInfo.DataOffset = DereToreHelper.SwapEndian(header.DataOffset);
             } else {
-                return false;
+                throw new HcaException("Missing HCA signature.", ActionResult.MagicNotMatch);
             }
             // FMT
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.FMT)) {
                 FormatHeader header;
                 stream.Read(out header);
                 _hcaInfo.ChannelCount = header.Channels;
-                _hcaInfo.SamplingRate = HcaHelper.SwapEndian(header.SamplingRate << 8);
-                _hcaInfo.BlockCount = HcaHelper.SwapEndian(header.Blocks);
-                _hcaInfo.FmtR01 = HcaHelper.SwapEndian(header.R01);
-                _hcaInfo.FmtR02 = HcaHelper.SwapEndian(header.R02);
+                _hcaInfo.SamplingRate = DereToreHelper.SwapEndian(header.SamplingRate << 8);
+                _hcaInfo.BlockCount = DereToreHelper.SwapEndian(header.Blocks);
+                _hcaInfo.FmtR01 = DereToreHelper.SwapEndian(header.R01);
+                _hcaInfo.FmtR02 = DereToreHelper.SwapEndian(header.R02);
                 if (_hcaInfo.ChannelCount < 1 || _hcaInfo.ChannelCount > 16) {
-                    return false;
+                    throw new HcaException($"Channel count should be between 1 and 16, read {_hcaInfo.ChannelCount}.", ActionResult.InvalidFieldValue);
                 }
                 if (_hcaInfo.SamplingRate < 1 || _hcaInfo.SamplingRate > 0x7fffff) {
-                    return false;
+                    throw new HcaException($"Sampling rate should be between 1 and {0x7fffffff}, read {_hcaInfo.SamplingRate}.", ActionResult.InvalidFieldValue);
                 }
             } else {
-                return false;
+                throw new HcaException("Missing FMT signature.", ActionResult.MagicNotMatch);
             }
             // COMP / DEC
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.COMP)) {
                 CompressHeader header;
                 stream.Read(out header);
-                _hcaInfo.BlockSize = HcaHelper.SwapEndian(header.BlockSize);
+                _hcaInfo.BlockSize = DereToreHelper.SwapEndian(header.BlockSize);
                 _hcaInfo.CompR01 = header.R01;
                 _hcaInfo.CompR02 = header.R02;
                 _hcaInfo.CompR03 = header.R03;
@@ -60,10 +60,10 @@ namespace DereTore.HCA {
                 _hcaInfo.CompR07 = header.R07;
                 _hcaInfo.CompR08 = header.R08;
                 if ((_hcaInfo.BlockSize < 8 || _hcaInfo.BlockSize > 0xffff) && _hcaInfo.BlockSize != 0) {
-                    return false;
+                    throw new HcaException($"Block size should be between 8 and {0xffff}, read {_hcaInfo.BlockSize}.", ActionResult.InvalidFieldValue);
                 }
                 if (!(_hcaInfo.CompR01 <= _hcaInfo.CompR02 && _hcaInfo.CompR02 <= 0x1f)) {
-                    return false;
+                    throw new HcaException($"CompR01 should be less than or equal to CompR02, and CompR02 should be less than or equal to {0x1f}, read {_hcaInfo.CompR01} and {_hcaInfo.CompR02}.", ActionResult.InvalidFieldValue);
                 }
             } else if (MagicValues.IsMagicMatch(v, MagicValues.DEC)) {
                 DecodeHeader header;
@@ -77,32 +77,32 @@ namespace DereTore.HCA {
                 _hcaInfo.CompR07 = _hcaInfo.CompR05 - _hcaInfo.CompR06;
                 _hcaInfo.CompR08 = 0;
                 if ((_hcaInfo.BlockSize < 8 || _hcaInfo.BlockSize > 0xffff) && _hcaInfo.BlockSize != 0) {
-                    return false;
+                    throw new HcaException($"Block size should be between 8 and {0xffff}, read {_hcaInfo.BlockSize}.", ActionResult.InvalidFieldValue);
                 }
                 if (!(_hcaInfo.CompR01 <= _hcaInfo.CompR02 && _hcaInfo.CompR02 <= 0x1f)) {
-                    return false;
+                    throw new HcaException($"CompR01 should be less than or equal to CompR02, and CompR02 should be less than or equal to {0x1f}, read {_hcaInfo.CompR01} and {_hcaInfo.CompR02}.", ActionResult.InvalidFieldValue);
                 }
                 if (_hcaInfo.CompR03 == 0) {
                     _hcaInfo.CompR03 = 1;
                 }
             } else {
-                return false;
+                throw new HcaException("Missing COMP/DEC signature.", ActionResult.MagicNotMatch);
             }
             // VBR
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.VBR)) {
                 VbrHeader header;
                 stream.Read(out header);
-                _hcaInfo.VbrR01 = HcaHelper.SwapEndian(header.R01);
-                _hcaInfo.VbrR02 = HcaHelper.SwapEndian(header.R02);
+                _hcaInfo.VbrR01 = DereToreHelper.SwapEndian(header.R01);
+                _hcaInfo.VbrR02 = DereToreHelper.SwapEndian(header.R02);
                 if (!(_hcaInfo.BlockSize == 0 && _hcaInfo.VbrR01 < 0x01ff)) {
-                    return false;
+                    throw new HcaException($"VbrR01 should be less than {0x01ff} in VBR HCA.", ActionResult.InvalidFieldValue);
                 }
             } else {
                 _hcaInfo.VbrR01 = _hcaInfo.VbrR02 = 0;
             }
             // ATH
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.ATH)) {
                 AthHeader header;
                 stream.Read(out header);
@@ -111,14 +111,14 @@ namespace DereTore.HCA {
                 _hcaInfo.AthType = (uint)(_hcaInfo.Version < 0x0200 ? 1 : 0);
             }
             // LOOP
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.LOOP)) {
                 LoopHeader header;
                 stream.Read(out header);
-                _hcaInfo.LoopStart = HcaHelper.SwapEndian(header.LoopStart);
-                _hcaInfo.LoopEnd = HcaHelper.SwapEndian(header.LoopEnd);
-                _hcaInfo.LoopR01 = HcaHelper.SwapEndian(header.R01);
-                _hcaInfo.LoopR02 = HcaHelper.SwapEndian(header.R02);
+                _hcaInfo.LoopStart = DereToreHelper.SwapEndian(header.LoopStart);
+                _hcaInfo.LoopEnd = DereToreHelper.SwapEndian(header.LoopEnd);
+                _hcaInfo.LoopR01 = DereToreHelper.SwapEndian(header.R01);
+                _hcaInfo.LoopR02 = DereToreHelper.SwapEndian(header.R02);
                 _hcaInfo.LoopFlag = true;
             } else {
                 _hcaInfo.LoopStart = 0;
@@ -128,25 +128,25 @@ namespace DereTore.HCA {
                 _hcaInfo.LoopFlag = false;
             }
             // CIPH
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.CIPH)) {
                 CipherHeader header;
                 stream.Read(out header);
-                _hcaInfo.CiphType = (CipherType)HcaHelper.SwapEndian(header.Type);
+                _hcaInfo.CiphType = (CipherType)DereToreHelper.SwapEndian(header.Type);
             } else {
                 _hcaInfo.CiphType = CipherType.NoChipher;
             }
             // RVA
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.RVA)) {
                 RvaHeader header;
                 stream.Read(out header);
-                _hcaInfo.RvaVolume = HcaHelper.SwapEndian(header.Volume);
+                _hcaInfo.RvaVolume = DereToreHelper.SwapEndian(header.Volume);
             } else {
                 _hcaInfo.RvaVolume = 1;
             }
             // COMM
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.COMM)) {
                 CommentHeader header;
                 stream.Read(out header);
@@ -163,7 +163,7 @@ namespace DereTore.HCA {
                 _hcaInfo.Comment = null;
             }
             // PAD (undocumented)
-            v = stream.PeekUInt32();
+            v = stream.PeekUInt32LE();
             if (MagicValues.IsMagicMatch(v, MagicValues.PAD)) {
                 stream.Skip(4); // Length of 'pad '
             }
@@ -173,14 +173,12 @@ namespace DereTore.HCA {
             }
 
             if (_hcaInfo.CompR01 != 1 || _hcaInfo.CompR02 != 0xf) {
-                return false;
+                throw new HcaException($"Expected CompR01=1, CompR02=15, read {_hcaInfo.CompR01}, {_hcaInfo.CompR02}.", ActionResult.InvalidFieldValue);
             }
             _hcaInfo.CompR09 = HcaHelper.Ceil2(_hcaInfo.CompR05 - (_hcaInfo.CompR06 + _hcaInfo.CompR07), _hcaInfo.CompR08);
 
             _lengthInSamples = (int)_hcaInfo.BlockCount * (int)_hcaInfo.ChannelCount * 0x80 * 8;
             _lengthInSeconds = _lengthInSamples / (float)_hcaInfo.SamplingRate / (int)_hcaInfo.ChannelCount;
-
-            return true;
         }
 
         protected HcaReader(Stream sourceStream) {

@@ -19,6 +19,8 @@ namespace DereTore.HCA {
         public int Loop { get; set; }
         public bool EnableLoop { get; set; }
 
+        public static DecodeParams Default => DefaultParams.Clone();
+
         public DecodeParams Clone() {
             return new DecodeParams() {
                 Key1 = Key1,
@@ -32,6 +34,8 @@ namespace DereTore.HCA {
         object ICloneable.Clone() {
             return Clone();
         }
+
+        private static readonly DecodeParams DefaultParams = new DecodeParams();
 
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace DereTore.HCA {
-    internal static class ArrayExtensions {
+namespace DereTore {
+    public static class ArrayExtensions {
 
         public static void ZeroMem(this int[] array) {
             if (array == null) {
@@ -42,7 +42,7 @@ namespace DereTore.HCA {
 
         public static int Write(this byte[] array, uint value, int index) {
             if (!BitConverter.IsLittleEndian) {
-                value = HcaHelper.SwapEndian(value);
+                value = DereToreHelper.SwapEndian(value);
             }
             var bytes = BitConverter.GetBytes(value);
             for (var i = 0; i < 4; ++i) {
@@ -66,6 +66,20 @@ namespace DereTore.HCA {
             var length = value.Length;
             Array.Copy(value, 0, array, index, length);
             return length;
+        }
+
+        public static byte[] Append(this byte[] data, byte[] toAppend) {
+            var buffer = new byte[data.Length + toAppend.Length];
+            data.CopyTo(buffer, 0);
+            toAppend.CopyTo(buffer, data.Length);
+            return buffer;
+        }
+
+        public static byte[] Append(this byte[] data, byte toAppend) {
+            var buffer = new byte[data.Length + 1];
+            data.CopyTo(buffer, 0);
+            buffer[buffer.Length - 1] = toAppend;
+            return buffer;
         }
 
     }
