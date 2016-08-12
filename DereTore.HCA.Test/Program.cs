@@ -10,19 +10,17 @@ namespace DereTore.HCA.Test {
         }
 
         private static void TestPlayHca(string[] args) {
-            string fileName;
+            var fileName = args[0];
             uint key1, key2;
-
-#if false
-            key1 = CgssHcaConfig.Key1;
-            key2 = CgssHcaConfig.Key2;
-            fileName = CgssHcaConfig.FileName;
-#else
             if (args.Length < 1) {
                 Console.WriteLine("Usage: <EXE> <hca file> <key1> <key2>");
                 return;
             }
 
+#if false
+            key1 = CgssCipher.Key1;
+            key2 = CgssCipher.Key2;
+#else
             if (args.Length < 3) {
                 key1 = 0;
                 key2 = 0;
@@ -30,10 +28,9 @@ namespace DereTore.HCA.Test {
                 key1 = uint.Parse(args[1]);
                 key2 = uint.Parse(args[2]);
             }
-            fileName = args[0];
 #endif
 
-            var param = new DecodeParams() { Key1 = key1, Key2 = key2 };
+            var param = new DecodeParams { Key1 = key1, Key2 = key2 };
             using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
                 using (var hca = new HcaAudioStream(fs, param)) {
                     using (var sp = new SoundPlayer(hca)) {

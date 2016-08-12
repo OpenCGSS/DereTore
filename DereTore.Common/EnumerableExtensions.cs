@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace DereTore {
     public static class EnumerableExtensions {
@@ -20,6 +21,27 @@ namespace DereTore {
         public static int FirstIndexOf<T>(this IEnumerable<T> enumerable, Predicate<T> predicate) {
             return FirstIndexOf(enumerable, predicate, 0);
         }
+
+        public static string BuildString<T>(this IEnumerable<T> enumerable) {
+            return BuildString(enumerable, DefaultEnumerableStringSeparator);
+        }
+
+        public static string BuildString<T>(this IEnumerable<T> enumerable, string separator) {
+            var stringBuilder = new StringBuilder();
+            var processedItemCount = 0;
+            using (var enumerator = enumerable.GetEnumerator()) {
+                while (enumerator.MoveNext()) {
+                    if (processedItemCount > 0) {
+                        stringBuilder.Append(separator);
+                    }
+                    stringBuilder.Append(enumerator.Current);
+                    ++processedItemCount;
+                }
+            }
+            return stringBuilder.ToString();
+        }
+
+        private static readonly string DefaultEnumerableStringSeparator = ", ";
 
     }
 }

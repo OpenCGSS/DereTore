@@ -9,9 +9,4 @@
 [Oo]bj/
 *.user
 
-Cgss*Config*
-/DereTore.Combined.Test/
-/DereTore.Application.Toolchain/
-/DereTore.Application.ScoreViewer/
-
 /packages/

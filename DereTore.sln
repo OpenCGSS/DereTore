@@ -36,6 +36,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Application.ScoreV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Common", "DereTore.Common\DereTore.Common.csproj", "{DBD0DA4A-0057-4D04-AD69-0E7267D72793}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.StarlightStage", "DereTore.StarlightStage\DereTore.StarlightStage.csproj", "{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -208,6 +210,18 @@ Global
 		{DBD0DA4A-0057-4D04-AD69-0E7267D72793}.Release|x64.Build.0 = Release|x64
 		{DBD0DA4A-0057-4D04-AD69-0E7267D72793}.Release|x86.ActiveCfg = Release|x86
 		{DBD0DA4A-0057-4D04-AD69-0E7267D72793}.Release|x86.Build.0 = Release|x86
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Debug|x64.Build.0 = Debug|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Debug|x86.Build.0 = Debug|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Release|x64.ActiveCfg = Release|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Release|x64.Build.0 = Release|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Release|x86.ActiveCfg = Release|Any CPU
+		{ABD7F1B5-C4E3-4200-8E44-98B183DFEE2C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

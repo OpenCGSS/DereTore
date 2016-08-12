@@ -86,7 +86,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CgssHcaConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -97,6 +96,10 @@
     <ProjectReference Include="..\DereTore.HCA\DereTore.HCA.csproj">
       <Project>{7c6fadd7-a0bb-4bf3-8992-3d89ace1cc69}</Project>
       <Name>DereTore.HCA</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.StarlightStage\DereTore.StarlightStage.csproj">
+      <Project>{abd7f1b5-c4e3-4200-8e44-98b183dfee2c}</Project>
+      <Name>DereTore.StarlightStage</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

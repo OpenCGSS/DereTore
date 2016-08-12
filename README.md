@@ -5,7 +5,25 @@ The open-source components of DereTore. The goal of DereTore is to improve exper
 
 Wonder [how this name comes from](#the-name)?
 
+## Installing
+
+1. Clone from [GitHub](https://github.com/hozuki/DereTore.git): `git clone https://github.com/hozuki/DereTore.git`
+2. Install missing NuGet packages: `nuget restore DereTore.sln`
+3. Have fun.
+
 ## Projects
+
+### Common Libraries
+
+**DereTore.Common**
+
+Common code.
+
+**DereTore.StarlightStage**
+
+See it for yourself.
+
+### Main Libraries and Tests
 
 **DereTore.HCA**
 
@@ -32,6 +50,8 @@ CRI ACB/AWB package extraction library. Only necessary parts are implemented. He
 
 The console test application for DereTore.ACB.
 
+### Applications
+
 **DereTore.Application.CipherConverter**
 
 The C# version of HCA cipher conversion utility. See **hcacc** in [hcatools](https://github.com/Hozuki/hcatools).
@@ -49,6 +69,15 @@ DereTore.HCA.
 **DereTore.Application.AcbMaker**
 
 A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.Application.AcbMaker/README.md).
+
+**DereTore.Application.Toolchain**
+
+The utility that integrates **Encoder**, **CipherConverter** and **AcbMaker** into a streamline. Here
+is its [readme](DereTore.Application.Toolchain/README.md).
+
+**DereTore.Application.ScoreViewer**
+
+Viewing scores (the collection of notes) of live music. Here is its [readme](DereTore.Application.ScoreViewer/README.md).
 
 ## License
 
