@@ -152,6 +152,9 @@ namespace DereTore.Application.ScoreViewer.Model {
                         }
                         note.NextHoldingIndex = endHoldingIndex;
                         notes[endHoldingIndex].PrevHoldingIndex = i;
+                        // The end holding note always follows the trail of start holding note, so the literal value of its 'start' field is ignored.
+                        // See song_1001, 'Master' difficulty, #189-#192, #479-#483.
+                        notes[endHoldingIndex].StartPosition = note.StartPosition;
                         holdingNotesToBeMatched.Add(notes[endHoldingIndex]);
                         break;
                 }
