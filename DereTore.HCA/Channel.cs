@@ -152,8 +152,21 @@ namespace DereTore.HCA {
                 sIndex = (int)b;
                 dIndex = (int)b;
                 for (uint i = 0; i < a; ++i) {
-                    d[dIndex++] = s[sIndex] * f2;
-                    s[sIndex++] = s[sIndex] * f1;
+                    // Don't know why, but it just happened.
+                    // See se_live_flic_perfect.hca
+                    // original:
+                    /*
+                     * (no 'break')
+                     * d[dIndex++] = s[sIndex] * f2;
+                     * s[sIndex++] = s[sIndex] * f1;
+                     */
+                    if (sIndex >= s.Length || dIndex >= d.Length) {
+                        break;
+                    }
+                    d[dIndex] = s[sIndex] * f2;
+                    dIndex++;
+                    s[sIndex] = s[sIndex] * f1;
+                    sIndex++;
                 }
             }
         }

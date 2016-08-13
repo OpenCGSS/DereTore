@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Media;
 
@@ -10,13 +11,13 @@ namespace DereTore.HCA.Test {
         }
 
         private static void TestPlayHca(string[] args) {
-            var fileName = args[0];
-            uint key1, key2;
             if (args.Length < 1) {
                 Console.WriteLine("Usage: <EXE> <hca file> <key1> <key2>");
                 return;
             }
 
+            var fileName = args[0];
+            uint key1, key2;
 #if false
             key1 = CgssCipher.Key1;
             key2 = CgssCipher.Key2;
@@ -25,8 +26,8 @@ namespace DereTore.HCA.Test {
                 key1 = 0;
                 key2 = 0;
             } else {
-                key1 = uint.Parse(args[1]);
-                key2 = uint.Parse(args[2]);
+                key1 = uint.Parse(args[1], NumberStyles.HexNumber);
+                key2 = uint.Parse(args[2], NumberStyles.HexNumber);
             }
 #endif
 

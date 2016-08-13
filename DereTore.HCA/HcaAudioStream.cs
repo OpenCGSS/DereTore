@@ -2,7 +2,7 @@
 using System.IO;
 
 namespace DereTore.HCA {
-    public sealed class HcaAudioStream : Stream {
+    public class HcaAudioStream : Stream {
 
         public HcaAudioStream(Stream sourceStream)
             : this(sourceStream, DecodeParams.Default) {
@@ -147,6 +147,10 @@ namespace DereTore.HCA {
         public float LengthInSeconds => _decoder.LengthInSeconds;
 
         public int LengthInSamples => _decoder.LengthInSamples;
+
+        public void SeekToStart() {
+            _decoder.SeekToStart();
+        }
 
         protected override void Dispose(bool disposing) {
             if (!_isDisposed) {

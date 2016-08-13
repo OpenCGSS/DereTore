@@ -1,7 +1,7 @@
-﻿namespace DereTore.Application.ScoreViewer.Model {
+﻿namespace DereTore.Application.ScoreEditor.Model {
     public enum NoteStatus {
 
-        NoSwipe = 0,
+        Tap = 0,
         SwipeLeft = 1,
         SwipeRight = 2
 

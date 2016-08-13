@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using CsvHelper;
 using CsvHelper.Configuration;
 
-namespace DereTore.Application.ScoreViewer.Model {
+namespace DereTore.Application.ScoreEditor.Model {
     public sealed class Score {
 
         public static Score FromFile(string fileName, Difficulty difficulty) {
@@ -110,7 +110,7 @@ namespace DereTore.Application.ScoreViewer.Model {
             for (var i = 0; i < notes.Length; ++i) {
                 var note = notes[i];
                 switch (note.Type) {
-                    case NoteType.PressOrSwipe:
+                    case NoteType.TapOrSwipe:
                         if (note.Sync) {
                             var syncPairIndex = notes.FirstIndexOf(n => n != note && n.Second.Equals(note.Second) && n.Sync);
                             if (syncPairIndex < 0) {
@@ -175,9 +175,8 @@ namespace DereTore.Application.ScoreViewer.Model {
             }
             return shouldCoverWithQuotes ? "\"" + s + "\"" : s;
         }
-
-        private SQLiteConnection _connection;
-        private Note[] _items;
+        
+        private readonly Note[] _items;
 
         private static readonly char[] CommandlineEscapeChars = { ' ', '&', '%', '#', '@', '!', ',', '~', '+', '=', '(', ')' };
 

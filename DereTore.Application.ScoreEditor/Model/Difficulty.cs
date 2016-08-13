@@ -1,4 +1,4 @@
-﻿namespace DereTore.Application.ScoreViewer.Model {
+﻿namespace DereTore.Application.ScoreEditor.Model {
     public enum Difficulty {
 
         Invalid,

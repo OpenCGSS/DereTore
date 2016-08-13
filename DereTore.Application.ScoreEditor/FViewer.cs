@@ -1,47 +1,68 @@
-﻿using App = System.Windows.Forms.Application;
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using DereTore.Application.ScoreViewer.Model;
+using DereTore.Application.ScoreEditor.Model;
 using DereTore.HCA;
 using DereTore.StarlightStage;
+using App = System.Windows.Forms.Application;
+using Timer = System.Timers.Timer;
 
-namespace DereTore.Application.ScoreViewer {
-    public partial class FMain : Form {
+namespace DereTore.Application.ScoreEditor {
+    public partial class FViewer : Form {
 
-        public FMain() {
+        public FViewer() {
             InitializeComponent();
             RegisterEventHandlers();
+            CheckForIllegalCrossThreadCalls = false;
         }
 
-        ~FMain() {
+        ~FViewer() {
             BtnStop_Click(this, EventArgs.Empty);
+            ClosePlayers();
             UnregisterEventHandlers();
         }
 
+        private void ClosePlayers() {
+            SoundManager.Instance.Dispose();
+        }
+
         private void UnregisterEventHandlers() {
-            timer.Tick -= Timer_Tick;
+            timer.Elapsed -= Timer_Tick;
             btnPlay.Click -= BtnPlay_Click;
             btnStop.Click -= BtnStop_Click;
             btnSelectAcb.Click -= BtnSelectAcb_Click;
             btnSelectScore.Click -= BtnSelectScore_Click;
             pictureBox1.Paint -= PictureBox1_Paint;
+            Renderer.Instance.NoteUpdated -= RendererInstance_NoteUpdated;
             Load -= FMain_Load;
         }
 
         private void RegisterEventHandlers() {
-            timer.Tick += Timer_Tick;
+            timer.Elapsed += Timer_Tick;
             btnPlay.Click += BtnPlay_Click;
             btnStop.Click += BtnStop_Click;
             btnSelectAcb.Click += BtnSelectAcb_Click;
             btnSelectScore.Click += BtnSelectScore_Click;
             pictureBox1.Paint += PictureBox1_Paint;
+            Renderer.Instance.NoteUpdated += RendererInstance_NoteUpdated;
             Load += FMain_Load;
         }
 
+        private void RendererInstance_NoteUpdated(object sender, NoteUpdatedEventArgs e) {
+            var note = e.Note;
+            if (!note.Visible) {
+                return;
+            }
+            if (note.IsSwipe) {
+                SoundManager.Instance.PlayHca(SwipeSoundFileName);
+            } else if (note.IsTap || note.IsHold) {
+                SoundManager.Instance.PlayHca(TapSoundFileName);
+            }
+        }
+
         private void PictureBox1_Paint(object sender, PaintEventArgs e) {
-            if (_shouldPaint && !Renderer.Instance.IsRendering) {
+            if (_shouldPaint && !Renderer.Instance.IsRendering && _player != null) {
                 e.Graphics.Clear(Color.Black);
                 Renderer.Instance.RenderFrame(e.Graphics, pictureBox1.ClientSize, _player.Elapsed, _score);
                 _shouldPaint = false;
@@ -86,8 +107,10 @@ namespace DereTore.Application.ScoreViewer {
             btnSelectScore.Enabled = true;
             lblSong.Text = string.Empty;
             lblTime.Text = string.Empty;
-            using (var graphics = pictureBox1.CreateGraphics()) {
-                graphics.Clear(Color.Black);
+            if (!(pictureBox1.Disposing || pictureBox1.IsDisposed)) {
+                using (var graphics = pictureBox1.CreateGraphics()) {
+                    graphics.Clear(Color.Black);
+                }
             }
         }
 
@@ -122,6 +145,7 @@ namespace DereTore.Application.ScoreViewer {
             lblTime.Text = $"{elapsed}/{_player.TotalLength}";
             _shouldPaint = true;
             pictureBox1.Invalidate();
+            Renderer.Instance.UpdateNotes(_score, elapsed);
         }
 
         private bool CheckPlayEnvironment() {
@@ -166,7 +190,12 @@ namespace DereTore.Application.ScoreViewer {
         private static readonly string ScoreFilter = "Score|*";
         private static readonly string DefaultSongName = "song_1001";
 
-        private const string SongTipFormat = "Song: {0}";
+        private static readonly string SongTipFormat = "Song: {0}";
+
+        private static readonly string SwipeSoundFileName = "Resources/se_live_flic_perfect.hca";
+        private static readonly string TapSoundFileName = "Resources/se_live_tap_perfect.hca";
+
+        private Timer timer = new Timer(10);
 
         private Player _player;
         private Score _score;

@@ -1,4 +1,4 @@
-﻿namespace DereTore.Application.ScoreViewer.Model {
+﻿namespace DereTore.Application.ScoreEditor.Model {
     public sealed class Note {
 
         public int Id { get; set; }
@@ -20,8 +20,11 @@
         public bool HasNextSwipe => NextSwipeIndex >= 0;
         public bool HasPrevHolding => PrevHoldingIndex >= 0;
         public bool HasPrevSwipe => PrevSwipeIndex >= 0;
-        public bool IsSwipe => Type == NoteType.PressOrSwipe && (SwipeType == NoteStatus.SwipeLeft || SwipeType == NoteStatus.SwipeRight);
-        public bool IsPress => Type == NoteType.PressOrSwipe && SwipeType == NoteStatus.NoSwipe;
+        public bool IsSwipe => Type == NoteType.TapOrSwipe && (SwipeType == NoteStatus.SwipeLeft || SwipeType == NoteStatus.SwipeRight);
+        public bool IsTap => Type == NoteType.TapOrSwipe && SwipeType == NoteStatus.Tap;
+        public bool IsHold => Type == NoteType.Hold;
+
+        public bool Visible { get; set; }
 
     }
 }

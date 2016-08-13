@@ -2,7 +2,7 @@
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-namespace DereTore.Application.ScoreViewer.Model {
+namespace DereTore.Application.ScoreEditor.Model {
     public sealed class ScoreMap : CsvClassMap<Note> {
 
         public ScoreMap() {

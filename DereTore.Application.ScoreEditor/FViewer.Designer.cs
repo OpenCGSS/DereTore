@@ -1,5 +1,5 @@
-﻿namespace DereTore.Application.ScoreViewer {
-    partial class FMain {
+﻿namespace DereTore.Application.ScoreEditor {
+    partial class FViewer {
         /// <summary>
         /// 必需的设计器变量。
         /// </summary>
@@ -23,15 +23,13 @@
         /// 使用代码编辑器修改此方法的内容。
         /// </summary>
         private void InitializeComponent() {
-            this.components = new System.ComponentModel.Container();
-            this.pictureBox1 = new Controls.DoubleBufferedPictureBox();
+            this.pictureBox1 = new DereTore.Application.ScoreEditor.Controls.DoubleBufferedPictureBox();
             this.btnSelectAcb = new System.Windows.Forms.Button();
             this.btnSelectScore = new System.Windows.Forms.Button();
             this.txtAcbFileName = new System.Windows.Forms.TextBox();
             this.txtScoreFileName = new System.Windows.Forms.TextBox();
             this.btnPlay = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
-            this.timer = new System.Windows.Forms.Timer(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.lblSong = new System.Windows.Forms.Label();
             this.progress = new System.Windows.Forms.ProgressBar();
@@ -103,10 +101,6 @@
             this.btnStop.Text = "&Stop";
             this.btnStop.UseVisualStyleBackColor = true;
             // 
-            // timer
-            // 
-            this.timer.Interval = 10;
-            // 
             // lblSong
             // 
             this.lblSong.AutoSize = true;
@@ -149,7 +143,7 @@
             this.lblTime.TabIndex = 10;
             this.lblTime.Text = "Time:";
             // 
-            // FMain
+            // FViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
@@ -168,7 +162,7 @@
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.Name = "FMain";
+            this.Name = "FViewer";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DereTore: Score Viewer";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -186,7 +180,6 @@
         private System.Windows.Forms.TextBox txtScoreFileName;
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Button btnStop;
-        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Label lblSong;
         private System.Windows.Forms.ProgressBar progress;

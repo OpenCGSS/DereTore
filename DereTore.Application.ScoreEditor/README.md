@@ -7,3 +7,9 @@ An example of [Hotel Moonside](http://www.project-imas.com/wiki/Hotel_Moonside),
 ![Hotel Moonside](sv-screenshot-1.jpg)
 
 Test files can be found in [Resources](/Resources). Their copyrights belong to [BandaiNamco Entertainment Inc.](http://bandainamcoent.co.jp/).
+
+------
+
+**Known issues:**
+
+- The latency of notes will be high (visual & sound feedback) if the user plays a second music.

@@ -1,7 +1,7 @@
-﻿namespace DereTore.Application.ScoreViewer.Model {
+﻿namespace DereTore.Application.ScoreEditor.Model {
     public enum NoteType {
 
-        PressOrSwipe = 1,
+        TapOrSwipe = 1,
         Hold = 2,
 
         Debug1 = 81,

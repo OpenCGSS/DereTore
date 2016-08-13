@@ -6,6 +6,18 @@ using System.Text;
 namespace DereTore {
     public static class StreamExtensions {
 
+        public static void CopyTo(this Stream source, Stream destination) {
+            var buffer = new byte[1024];
+            var read = source.Read(buffer, 0, buffer.Length);
+            while (read > 0) {
+                destination.Write(buffer, 0, read);
+                if (read < buffer.Length) {
+                    break;
+                }
+                read = source.Read(buffer, 0, buffer.Length);
+            }
+        }
+
         public static int Write(this Stream stream, int value) {
             if (!BitConverter.IsLittleEndian) {
                 value = DereToreHelper.SwapEndian(value);
@@ -288,12 +300,13 @@ namespace DereTore {
             var secondBuffer = new byte[length];
             var bytesLeft = length;
             var currentIndex = 0;
+            int read;
             do {
-                var read = stream.Read(secondBuffer, 0, bytesLeft);
+                read = stream.Read(secondBuffer, 0, bytesLeft);
                 Array.Copy(secondBuffer, 0, finalBuffer, currentIndex, read);
                 bytesLeft -= read;
                 currentIndex += read;
-            } while (bytesLeft > 0);
+            } while (bytesLeft > 0 && read > 0);
             stream.Position = originalPosition;
             return finalBuffer;
         }

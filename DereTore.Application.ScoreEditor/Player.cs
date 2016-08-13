@@ -4,8 +4,11 @@ using System.IO;
 using System.Media;
 using DereTore.ACB;
 using DereTore.HCA;
+using NAudio.CoreAudioApi;
+using NAudio.Utils;
+using NAudio.Wave;
 
-namespace DereTore.Application.ScoreViewer {
+namespace DereTore.Application.ScoreEditor {
     public sealed class Player : DisposableBase {
 
         public static Player FromStream(Stream stream, string acbFileName) {
@@ -23,14 +26,6 @@ namespace DereTore.Application.ScoreViewer {
             _soundPlayer?.Play();
             _stopwatch.Start();
             IsPlaying = true;
-        }
-
-        public void PlayLooping() {
-            if (IsPlaying) {
-                Stop();
-            }
-            _soundPlayer?.PlayLooping();
-            _stopwatch.Start();
         }
 
         public void Stop() {
@@ -105,8 +100,10 @@ namespace DereTore.Application.ScoreViewer {
             var names = _acb.GetFileNames();
             _internalName = names[0];
             _hcaDataStream = _acb.OpenDataStream(_internalName);
-            _hca = new HcaAudioStream(_hcaDataStream, decodeParams);
-            _soundPlayer = new SoundPlayer(_hca);
+            _hca = new HcaWaveProvider(_hcaDataStream, decodeParams);
+            _soundPlayer = new WasapiOut(AudioClientShareMode.Shared, 0);
+            //_soundPlayer = new DirectSoundOut();
+            _soundPlayer.Init(_hca);
             _sourceStream = stream;
             _stopwatch = new Stopwatch();
             _isPlaying = false;
@@ -117,8 +114,8 @@ namespace DereTore.Application.ScoreViewer {
         private readonly Stream _sourceStream;
         private AcbFile _acb;
         private Stream _hcaDataStream;
-        private HcaAudioStream _hca;
-        private SoundPlayer _soundPlayer;
+        private HcaWaveProvider _hca;
+        private WasapiOut _soundPlayer;
         private bool _isPlaying;
         private Stopwatch _stopwatch;
         private readonly object _syncObject;

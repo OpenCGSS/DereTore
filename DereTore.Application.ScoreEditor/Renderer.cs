@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Drawing;
-using DereTore.Application.ScoreViewer.Model;
+using DereTore.Application.ScoreEditor.Model;
 
-namespace DereTore.Application.ScoreViewer {
+namespace DereTore.Application.ScoreEditor {
     public sealed class Renderer {
 
         static Renderer() {
             InstanceSyncObject = new object();
         }
+
+        public event EventHandler<NoteUpdatedEventArgs> NoteUpdated;
 
         public bool IsRendering {
             get {
@@ -41,6 +43,24 @@ namespace DereTore.Application.ScoreViewer {
             endIndex = scores.Length - 1;
             DrawNotes(graphics, clientSize, now, scores, startIndex, endIndex);
             IsRendering = false;
+        }
+
+        public void UpdateNotes(Score score, TimeSpan timeSpan) {
+            var notes = score.Items;
+            var now = (float)timeSpan.TotalSeconds;
+            foreach (var note in notes) {
+                if (IsNoteOnStage(note, now)) {
+                    if (!note.Visible) {
+                        NoteUpdated?.Invoke(this, new NoteUpdatedEventArgs(note));
+                        note.Visible = true;
+                    }
+                } else {
+                    if (note.Visible) {
+                        NoteUpdated?.Invoke(this, new NoteUpdatedEventArgs(note));
+                        note.Visible = false;
+                    }
+                }
+            }
         }
 
         private Renderer() {
@@ -79,7 +99,7 @@ namespace DereTore.Application.ScoreViewer {
             for (var i = startIndex; i <= endIndex; ++i) {
                 var note = notes[i];
                 switch (note.Type) {
-                    case NoteType.PressOrSwipe:
+                    case NoteType.TapOrSwipe:
                         if (note.Sync) {
                             // This will draw 2 lines, one time for each synced note.
                             DrawSyncLine(graphics, clientSize, note, notes[note.SyncPairIndex], now);

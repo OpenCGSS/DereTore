@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace DereTore.Application.ScoreViewer.Controls {
+namespace DereTore.Application.ScoreEditor.Controls {
     public sealed class DoubleBufferedPictureBox : PictureBox {
         
         public DoubleBufferedPictureBox() {

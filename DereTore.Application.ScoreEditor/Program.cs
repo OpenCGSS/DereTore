@@ -1,7 +1,7 @@
 ﻿using System;
 using App = System.Windows.Forms.Application;
 
-namespace DereTore.Application.ScoreViewer {
+namespace DereTore.Application.ScoreEditor {
     internal static class Program {
         /// <summary>
         /// 应用程序的主入口点。
@@ -10,7 +10,7 @@ namespace DereTore.Application.ScoreViewer {
         private static void Main() {
             App.EnableVisualStyles();
             App.SetCompatibleTextRenderingDefault(false);
-            App.Run(new FMain());
+            App.Run(new FViewer());
         }
     }
 }

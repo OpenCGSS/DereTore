@@ -7,8 +7,8 @@
     <ProjectGuid>{31E86FB4-68DE-4DD6-8F03-D8E2DAAE07FA}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DereTore.Application.ScoreViewer</RootNamespace>
-    <AssemblyName>DereTore.Application.ScoreViewer</AssemblyName>
+    <RootNamespace>DereTore.Application.ScoreEditor</RootNamespace>
+    <AssemblyName>DereTore.Application.ScoreEditor</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -74,6 +74,10 @@
       <HintPath>..\packages\CsvHelper.2.16.0.0\lib\net35\CsvHelper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -93,12 +97,13 @@
     <Compile Include="Controls\DoubleBufferedPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FMain.cs">
+    <Compile Include="FViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FMain.Designer.cs">
-      <DependentUpon>FMain.cs</DependentUpon>
+    <Compile Include="FViewer.Designer.cs">
+      <DependentUpon>FViewer.cs</DependentUpon>
     </Compile>
+    <Compile Include="HcaWaveProvider.cs" />
     <Compile Include="Model\Difficulty.cs" />
     <Compile Include="Model\NotePosition.cs" />
     <Compile Include="Model\NoteStatus.cs" />
@@ -106,12 +111,14 @@
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\ScoreMap.cs" />
     <Compile Include="Model\NoteType.cs" />
+    <Compile Include="NoteUpdatedEventArgs.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Renderer.cs" />
-    <EmbeddedResource Include="FMain.resx">
-      <DependentUpon>FMain.cs</DependentUpon>
+    <Compile Include="SoundManager.cs" />
+    <EmbeddedResource Include="FViewer.resx">
+      <DependentUpon>FViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -121,6 +128,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
     <None Include="packages.config" />
@@ -144,6 +152,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\oneshin.bdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\se_live_flic_perfect.hca">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\se_live_tap_perfect.hca">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

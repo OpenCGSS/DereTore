@@ -144,5 +144,12 @@ namespace DereTore.HCA {
             }
         }
 
+        public void SeekToStart() {
+            SourceStream.Seek(_hcaInfo.DataOffset, SeekOrigin.Begin);
+            _status.BlockIndex = 0;
+            _status.DataCursor = _hcaInfo.DataOffset;
+            _status.LoopNumber = 0;
+        }
+
     }
 }
