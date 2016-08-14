@@ -34,6 +34,7 @@ namespace DereTore.Application.ScoreEditor {
 
         public void RenderFrame(Graphics graphics, Size clientSize, TimeSpan timeSpan, Score score) {
             IsRendering = true;
+            DrawCeilingLine(graphics, clientSize);
             DrawAvatars(graphics, clientSize);
             var now = (float)timeSpan.TotalSeconds;
             var scores = score.Items;
@@ -73,6 +74,13 @@ namespace DereTore.Application.ScoreEditor {
                 var centerX = clientSize.Width * position;
                 graphics.FillEllipse(Brushes.Firebrick, centerX - AvatarCircleRadius, centerY - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
             }
+        }
+
+        private static void DrawCeilingLine(Graphics graphics, Size clientSize) {
+            float p1 = AvatarCenterXPositions[0], p5 = AvatarCenterXPositions[AvatarCenterXPositions.Length - 1];
+            float x1 = clientSize.Width * p1, x2 = clientSize.Width * p5;
+            float ceilingY = FutureNoteCeiling * clientSize.Height;
+            graphics.DrawLine(Pens.Red, x1, ceilingY, x2, ceilingY);
         }
 
         private static void GetVisibleNotes(float now, Note[] notes, out int startIndex, out int endIndex) {
@@ -151,27 +159,12 @@ namespace DereTore.Application.ScoreEditor {
         }
 
         private static void DrawSimpleLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now, Pen pen) {
+            OnStageStatus s1 = GetNoteOnStageStatus(startNote, now), s2 = GetNoteOnStageStatus(endNote, now);
+            if (s1 != OnStageStatus.OnStage && s2 != OnStageStatus.OnStage && s1 == s2) {
+                return;
+            }
             float x1, x2, y1, y2;
             GetNotePairPositions(startNote, endNote, clientSize, now, out x1, out x2, out y1, out y2);
-            //var xLeft = Math.Min(x1, x2);
-            //if (xLeft.Equals(x2)) {
-            //    DereToreHelper.Swap(ref y1, ref y2);
-            //    DereToreHelper.Swap(ref x1, ref x2);
-            //}
-            //float slope;
-            //if (x1.Equals(x2)) {
-            //    slope = float.PositiveInfinity;
-            //} else {
-            //    slope = (y2 - y1) / (x2 - x1);
-            //}
-            //float sin;
-            //if (float.IsPositiveInfinity(slope)) {
-            //    sin = 1;
-            //} else {
-            //    sin = (float)Math.Sin(slope);
-            //}
-            //var cos = (float)Math.Sqrt(1 - sin * sin);
-            //graphics.DrawLine(Pens.OliveDrab, x1 + cos * AvatarCircleRadius, y1 + sin * AvatarCircleRadius, x2 - cos * AvatarCircleRadius, y2 - sin * AvatarCircleRadius);
             graphics.DrawLine(pen, x1, y1, x2, y2);
         }
 
@@ -246,6 +239,16 @@ namespace DereTore.Application.ScoreEditor {
             return clientSize.Height * FutureNoteCeiling;
         }
 
+        private static OnStageStatus GetNoteOnStageStatus(Note note, float now) {
+            if (note.Second < now) {
+                return OnStageStatus.Passed;
+            }
+            if (note.Second > now + FutureTimeWindow) {
+                return OnStageStatus.Upcoming;
+            }
+            return OnStageStatus.OnStage;
+        }
+
         private static bool IsNoteOnStage(Note note, float now) {
             return now <= note.Second && note.Second <= now + FutureTimeWindow;
         }
@@ -273,6 +276,12 @@ namespace DereTore.Application.ScoreEditor {
         private static readonly object InstanceSyncObject;
         private static Renderer _instance;
         private bool _isRendering;
+
+        private enum OnStageStatus {
+            Upcoming,
+            OnStage,
+            Passed
+        }
 
     }
 }
