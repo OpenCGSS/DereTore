@@ -17,12 +17,6 @@ namespace DereTore.Application.ScoreEditor {
             CheckForIllegalCrossThreadCalls = false;
         }
 
-        ~FViewer() {
-            BtnStop_Click(this, EventArgs.Empty);
-            ClosePlayers();
-            UnregisterEventHandlers();
-        }
-
         private void ClosePlayers() {
             SoundManager.Instance.Dispose();
         }
@@ -36,6 +30,7 @@ namespace DereTore.Application.ScoreEditor {
             pictureBox1.Paint -= PictureBox1_Paint;
             Renderer.Instance.NoteUpdated -= RendererInstance_NoteUpdated;
             Load -= FMain_Load;
+            FormClosing -= FViewer_FormClosing;
         }
 
         private void RegisterEventHandlers() {
@@ -47,6 +42,13 @@ namespace DereTore.Application.ScoreEditor {
             pictureBox1.Paint += PictureBox1_Paint;
             Renderer.Instance.NoteUpdated += RendererInstance_NoteUpdated;
             Load += FMain_Load;
+            FormClosing += FViewer_FormClosing;
+        }
+
+        private void FViewer_FormClosing(object sender, FormClosingEventArgs e) {
+            BtnStop_Click(this, EventArgs.Empty);
+            ClosePlayers();
+            UnregisterEventHandlers();
         }
 
         private void RendererInstance_NoteUpdated(object sender, NoteUpdatedEventArgs e) {
