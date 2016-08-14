@@ -1,4 +1,3 @@
-
 ```plain
 # The MIT License
 
@@ -13,8 +12,11 @@ sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so,
 subject to the following conditions:
 
-The above copyright notice and this permission notice shall
+1. The above copyright notice and this permission notice shall
 be included in all copies or substantial portions of the Software.
+2. The Software must not be used to obstruct the official game
+servers operated by Cygames Inc., and/or to modify the data
+stored on those servers.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
@@ -24,5 +26,4 @@ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
-
 ```

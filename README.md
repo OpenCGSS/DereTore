@@ -1,7 +1,7 @@
 # DereTore
 
-The open-source components of DereTore. The goal of DereTore is to improve experience in
-[The Idolmaster Cinderella Girls Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage).
+The goal of DereTore is to improve gaming experience in [The Idolmaster Cinderella Girls Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
+(CGSS), or even to customize it a little bit.
 
 Wonder [how this name comes from](#the-name)?
 
@@ -81,14 +81,14 @@ Viewing and editing scores (collections of notes) of live music. Here is its [re
 
 ## License
 
-This solution uses [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).
+This solution uses modified [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).
 
 ## Notes
 
 ### The Name
 
 The name DereTore (デレトレ) is the short form of "Cinderella Trainer" (シン**デレ**ラ **トレ**イナー), in response to the
-official abbreviation of CGSS, DereSute (デレステ, アイドルマスター シン**デレ**ラ ガールズ スターライト **ステ**ージ).
+official abbreviation of CGSS, DereSute (デレステ), which is the short form of the game title (アイドルマスター シン**デレ**ラ ガールズ スターライト **ステ**ージ).
 
 ### The History
 
@@ -101,3 +101,15 @@ Its new goal is to improve the gaming experience, adding features to the origina
 written in C#.
 
 Early versions of DereTore apply [WTFPL](http://www.wtfpl.net/) for most of the components. However, newer versions embrace MIT License.
+
+### About the Word "score"
+
+CGSS is a music game, and its basic interacting element is **note**. The word **score** is used to reference the full collection of
+notes in a single gameplay, a single song. So it is more likely to be a term, rather than scores for composers or matches. See the
+[music video game](https://en.wikipedia.org/wiki/Music_video_game) entry on Wikipedia. Still, I don't know why the developers from
+Cygames use "atapon", which is a abbreviation of [a song](http://www.project-imas.com/wiki/Atashi_Ponkotsu_Android), all over the code.
+
+### Customizing CGSS
+
+Please keep in mind that cheating is notorious, and tearing the game apart is illegal. So please, DO NOT transmit evil data, and DO
+keep the game in its original state.
