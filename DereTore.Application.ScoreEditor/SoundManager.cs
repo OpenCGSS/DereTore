@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using DereTore.HCA;
 using DereTore.StarlightStage;
 using NAudio.Wave;
@@ -73,15 +74,31 @@ namespace DereTore.Application.ScoreEditor {
         }
 
         private AudioOut CreateOutput(string fileName, out int index) {
+            MemoryStream templateMemory = null;
+            if (_fileNames.Contains(fileName)) {
+                for (var i = 0; i < _soundStreams.Count; ++i) {
+                    if (_fileNames[i] == fileName) {
+                        templateMemory = _soundStreams[i];
+                        break;
+                    }
+                }
+            }
+
             _fileNames.Add(fileName);
             MemoryStream memory;
-            using (var fs = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
-                memory = new MemoryStream((int)fs.Length);
-                fs.CopyTo(memory);
-                memory.Seek(0, SeekOrigin.Begin);
-                memory.Capacity = (int)memory.Length;
-                _soundStreams.Add(memory);
+            if (templateMemory != null) {
+                memory = new MemoryStream(templateMemory.Capacity);
+                templateMemory.WriteTo(memory);
+            } else {
+                using (var fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+                    memory = new MemoryStream((int)fs.Length);
+                    fs.CopyTo(memory);
+                }
             }
+            memory.Seek(0, SeekOrigin.Begin);
+            memory.Capacity = (int)memory.Length;
+            _soundStreams.Add(memory);
+
             var waveProvider = new HcaWaveProvider(memory, new DecodeParams {
                 Key1 = CgssCipher.Key1,
                 Key2 = CgssCipher.Key2
@@ -91,8 +108,8 @@ namespace DereTore.Application.ScoreEditor {
             var @out = new AudioOut();
             _outs.Add(@out);
             index = _outs.Count - 1;
-            var i = index;
-            @out.PlaybackStopped += (s, e) => _playingList[i] = false;
+            var index2 = index;
+            @out.PlaybackStopped += (s, e) => _playingList[index2] = false;
             @out.Init(waveProvider);
             return @out;
         }

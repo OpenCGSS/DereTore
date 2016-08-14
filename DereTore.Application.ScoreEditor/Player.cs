@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Media;
 using DereTore.ACB;
 using DereTore.HCA;
 using NAudio.CoreAudioApi;
 using NAudio.Utils;
-using NAudio.Wave;
+using AudioOut = NAudio.Wave.WasapiOut;
 
 namespace DereTore.Application.ScoreEditor {
     public sealed class Player : DisposableBase {
@@ -101,7 +100,7 @@ namespace DereTore.Application.ScoreEditor {
             _internalName = names[0];
             _hcaDataStream = _acb.OpenDataStream(_internalName);
             _hca = new HcaWaveProvider(_hcaDataStream, decodeParams);
-            _soundPlayer = new WasapiOut(AudioClientShareMode.Shared, 0);
+            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
             //_soundPlayer = new DirectSoundOut();
             _soundPlayer.Init(_hca);
             _sourceStream = stream;
@@ -115,7 +114,7 @@ namespace DereTore.Application.ScoreEditor {
         private AcbFile _acb;
         private Stream _hcaDataStream;
         private HcaWaveProvider _hca;
-        private WasapiOut _soundPlayer;
+        private AudioOut _soundPlayer;
         private bool _isPlaying;
         private Stopwatch _stopwatch;
         private readonly object _syncObject;

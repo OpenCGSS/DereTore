@@ -64,11 +64,12 @@ namespace DereTore.Application.ScoreEditor {
         }
 
         private void PictureBox1_Paint(object sender, PaintEventArgs e) {
-            if (_shouldPaint && !Renderer.Instance.IsRendering && _player != null) {
-                e.Graphics.Clear(Color.Black);
-                Renderer.Instance.RenderFrame(e.Graphics, pictureBox1.ClientSize, _player.Elapsed, _score);
-                _shouldPaint = false;
+            if (!_shouldPaint || Renderer.Instance.IsRendering || _player == null) {
+                return;
             }
+            e.Graphics.Clear(Color.Black);
+            Renderer.Instance.RenderFrame(e.Graphics, pictureBox1.ClientSize, _player.Elapsed, _score);
+            _shouldPaint = false;
         }
 
         private void FMain_Load(object sender, EventArgs e) {

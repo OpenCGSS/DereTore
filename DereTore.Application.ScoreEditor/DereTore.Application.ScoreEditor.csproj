@@ -148,6 +148,12 @@
     <None Include="Resources\hotel.bdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\onedari.acb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\onedari.bdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\oneshin.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
