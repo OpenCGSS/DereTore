@@ -74,6 +74,7 @@ namespace DereTore.Application.ScoreEditor {
 
         private void FMain_Load(object sender, EventArgs e) {
             InitializeControls();
+            PreloadNoteSounds();
         }
 
         private void BtnSelectScore_Click(object sender, EventArgs e) {
@@ -183,6 +184,11 @@ namespace DereTore.Application.ScoreEditor {
             openFileDialog.ValidateNames = true;
             cboDifficulty.SelectedIndex = 0;
             btnStop.Enabled = false;
+        }
+
+        private void PreloadNoteSounds() {
+            SoundManager.Instance.PreloadHca(SwipeSoundFileName);
+            SoundManager.Instance.PreloadHca(TapSoundFileName);
         }
 
         private DialogResult Alert(string message) {

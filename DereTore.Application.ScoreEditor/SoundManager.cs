@@ -25,6 +25,11 @@ namespace DereTore.Application.ScoreEditor {
             }
         }
 
+        public void PreloadHca(string fileName) {
+            int index;
+            var @out = GetFreeOutput(fileName, out index) ?? CreateOutput(fileName, out index);
+        }
+
         public void PlayHca(string fileName) {
             int index;
             var @out = GetFreeOutput(fileName, out index) ?? CreateOutput(fileName, out index);
