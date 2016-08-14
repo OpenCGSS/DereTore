@@ -75,9 +75,9 @@ A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.
 The utility that integrates **Encoder**, **CipherConverter** and **AcbMaker** into a streamline. Here
 is its [readme](DereTore.Application.Toolchain/README.md).
 
-**DereTore.Application.ScoreViewer**
+**DereTore.Application.ScoreEditor**
 
-Viewing scores (the collection of notes) of live music. Here is its [readme](DereTore.Application.ScoreViewer/README.md).
+Viewing and editing scores (collections of notes) of live music. Here is its [readme](DereTore.Application.ScoreEditor/README.md).
 
 ## License
 
