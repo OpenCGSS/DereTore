@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using DereTore.Application.ScoreEditor.Controls;
 using DereTore.Application.ScoreEditor.Model;
 using DereTore.HCA;
 using DereTore.StarlightStage;
@@ -27,8 +28,7 @@ namespace DereTore.Application.ScoreEditor {
             btnStop.Click -= BtnStop_Click;
             btnSelectAcb.Click -= BtnSelectAcb_Click;
             btnSelectScore.Click -= BtnSelectScore_Click;
-            pictureBox1.Paint -= PictureBox1_Paint;
-            Renderer.Instance.NoteUpdated -= RendererInstance_NoteUpdated;
+            pictureBox1.NoteEnteringOrExitingStage -= ScoreEditorControl_NoteUpdated;
             Load -= FMain_Load;
             FormClosing -= FViewer_FormClosing;
         }
@@ -39,8 +39,7 @@ namespace DereTore.Application.ScoreEditor {
             btnStop.Click += BtnStop_Click;
             btnSelectAcb.Click += BtnSelectAcb_Click;
             btnSelectScore.Click += BtnSelectScore_Click;
-            pictureBox1.Paint += PictureBox1_Paint;
-            Renderer.Instance.NoteUpdated += RendererInstance_NoteUpdated;
+            pictureBox1.NoteEnteringOrExitingStage += ScoreEditorControl_NoteUpdated;
             Load += FMain_Load;
             FormClosing += FViewer_FormClosing;
         }
@@ -51,7 +50,7 @@ namespace DereTore.Application.ScoreEditor {
             UnregisterEventHandlers();
         }
 
-        private void RendererInstance_NoteUpdated(object sender, NoteUpdatedEventArgs e) {
+        private void ScoreEditorControl_NoteUpdated(object sender, NoteEnteringOrExitingStageEventArgs e) {
             var note = e.Note;
             if (!note.Visible) {
                 return;
@@ -61,15 +60,6 @@ namespace DereTore.Application.ScoreEditor {
             } else if (note.IsTap || note.IsHold) {
                 SoundManager.Instance.PlayHca(TapSoundFileName);
             }
-        }
-
-        private void PictureBox1_Paint(object sender, PaintEventArgs e) {
-            if (!_shouldPaint || Renderer.Instance.IsRendering || _player == null) {
-                return;
-            }
-            e.Graphics.Clear(Color.Black);
-            Renderer.Instance.RenderFrame(e.Graphics, pictureBox1.ClientSize, _player.Elapsed, _score);
-            _shouldPaint = false;
         }
 
         private void FMain_Load(object sender, EventArgs e) {
@@ -112,9 +102,8 @@ namespace DereTore.Application.ScoreEditor {
             lblSong.Text = string.Empty;
             lblTime.Text = string.Empty;
             if (!(pictureBox1.Disposing || pictureBox1.IsDisposed)) {
-                using (var graphics = pictureBox1.CreateGraphics()) {
-                    graphics.Clear(Color.Black);
-                }
+                pictureBox1.SetTime(TimeSpan.Zero);
+                pictureBox1.Invalidate();
             }
         }
 
@@ -123,8 +112,9 @@ namespace DereTore.Application.ScoreEditor {
                 return;
             }
             _acbStream = File.Open(txtAcbFileName.Text, FileMode.Open, FileAccess.Read);
-            _player = Player.FromStream(_acbStream, txtAcbFileName.Text, DecodeParams);
+            _player = LiveMusicPlayer.FromStream(_acbStream, txtAcbFileName.Text, DecodeParams);
             _score = Score.FromFile(txtScoreFileName.Text, (Difficulty)(cboDifficulty.SelectedIndex + 1));
+            pictureBox1.SetScore(_score);
             cboDifficulty.Enabled = false;
             btnPlay.Enabled = false;
             btnStop.Enabled = true;
@@ -147,9 +137,9 @@ namespace DereTore.Application.ScoreEditor {
             var val = (int)(ratio * (progress.Maximum - progress.Minimum)) + progress.Minimum;
             progress.Value = val;
             lblTime.Text = $"{elapsed}/{_player.TotalLength}";
-            _shouldPaint = true;
+            pictureBox1.SetTime(elapsed);
             pictureBox1.Invalidate();
-            Renderer.Instance.UpdateNotes(_score, elapsed);
+            pictureBox1.JudgeNotesEnteringOrExiting(elapsed);
         }
 
         private bool CheckPlayEnvironment() {
@@ -204,12 +194,11 @@ namespace DereTore.Application.ScoreEditor {
         private static readonly string SwipeSoundFileName = "Resources/se_live_flic_perfect.hca";
         private static readonly string TapSoundFileName = "Resources/se_live_tap_perfect.hca";
 
-        private Timer timer = new Timer(10);
+        private readonly Timer timer = new Timer(5);
 
-        private Player _player;
+        private LiveMusicPlayer _player;
         private Score _score;
         private Stream _acbStream;
-        private bool _shouldPaint;
 
         private static readonly DecodeParams DecodeParams = new DecodeParams {
             Key1 = CgssCipher.Key1,

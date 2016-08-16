@@ -23,8 +23,11 @@
         public bool IsSwipe => Type == NoteType.TapOrSwipe && (SwipeType == NoteStatus.SwipeLeft || SwipeType == NoteStatus.SwipeRight);
         public bool IsTap => Type == NoteType.TapOrSwipe && SwipeType == NoteStatus.Tap;
         public bool IsHold => Type == NoteType.Hold;
+        public bool IsGamingNote => Type == NoteType.TapOrSwipe || Type == NoteType.Hold;
 
+        // Properties for editor control.
         public bool Visible { get; set; }
+        public bool Selected { get; set; }
 
     }
 }

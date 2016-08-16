@@ -8,14 +8,14 @@ using NAudio.Utils;
 using AudioOut = NAudio.Wave.WasapiOut;
 
 namespace DereTore.Application.ScoreEditor {
-    public sealed class Player : DisposableBase {
+    public sealed class LiveMusicPlayer : DisposableBase {
 
-        public static Player FromStream(Stream stream, string acbFileName) {
-            return new Player(stream, acbFileName, DecodeParams.Default);
+        public static LiveMusicPlayer FromStream(Stream stream, string acbFileName) {
+            return new LiveMusicPlayer(stream, acbFileName, DecodeParams.Default);
         }
 
-        public static Player FromStream(Stream stream, string acbFileName, DecodeParams decodeParams) {
-            return new Player(stream, acbFileName, decodeParams);
+        public static LiveMusicPlayer FromStream(Stream stream, string acbFileName, DecodeParams decodeParams) {
+            return new LiveMusicPlayer(stream, acbFileName, decodeParams);
         }
 
         public void Play() {
@@ -93,7 +93,7 @@ namespace DereTore.Application.ScoreEditor {
             _stopwatch = null;
         }
 
-        private Player(Stream stream, string acbFileName, DecodeParams decodeParams) {
+        private LiveMusicPlayer(Stream stream, string acbFileName, DecodeParams decodeParams) {
             _acb = AcbFile.FromStream(stream, acbFileName, false);
             _acb.Initialize();
             var names = _acb.GetFileNames();

@@ -23,7 +23,6 @@
         /// 使用代码编辑器修改此方法的内容。
         /// </summary>
         private void InitializeComponent() {
-            this.pictureBox1 = new DereTore.Application.ScoreEditor.Controls.DoubleBufferedPictureBox();
             this.btnSelectAcb = new System.Windows.Forms.Button();
             this.btnSelectScore = new System.Windows.Forms.Button();
             this.txtAcbFileName = new System.Windows.Forms.TextBox();
@@ -32,22 +31,12 @@
             this.btnStop = new System.Windows.Forms.Button();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.lblSong = new System.Windows.Forms.Label();
-            this.progress = new System.Windows.Forms.ProgressBar();
             this.cboDifficulty = new System.Windows.Forms.ComboBox();
             this.lblTime = new System.Windows.Forms.Label();
+            this.pictureBox1 = new DereTore.Application.ScoreEditor.Controls.ScoreEditorControl();
+            this.progress = new System.Windows.Forms.ProgressBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 118);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(922, 460);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
             // 
             // btnSelectAcb
             // 
@@ -110,15 +99,6 @@
             this.lblSong.TabIndex = 7;
             this.lblSong.Text = "Song:";
             // 
-            // progress
-            // 
-            this.progress.Location = new System.Drawing.Point(389, 71);
-            this.progress.Maximum = 5000;
-            this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(415, 21);
-            this.progress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progress.TabIndex = 8;
-            // 
             // cboDifficulty
             // 
             this.cboDifficulty.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -143,14 +123,34 @@
             this.lblTime.TabIndex = 10;
             this.lblTime.Text = "Time:";
             // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.EnableMouse = false;
+            this.pictureBox1.Location = new System.Drawing.Point(12, 118);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(922, 460);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
+            // progress
+            // 
+            this.progress.Location = new System.Drawing.Point(389, 71);
+            this.progress.Maximum = 65536;
+            this.progress.Name = "progress";
+            this.progress.Size = new System.Drawing.Size(413, 21);
+            this.progress.TabIndex = 11;
+            // 
             // FViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(946, 590);
+            this.Controls.Add(this.progress);
             this.Controls.Add(this.lblTime);
             this.Controls.Add(this.cboDifficulty);
-            this.Controls.Add(this.progress);
             this.Controls.Add(this.lblSong);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnPlay);
@@ -164,7 +164,7 @@
             this.MaximizeBox = false;
             this.Name = "FViewer";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "DereTore: Score Viewer";
+            this.Text = "DereTore: Score Editor";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -173,7 +173,7 @@
 
         #endregion
 
-        private Controls.DoubleBufferedPictureBox pictureBox1;
+        private Controls.ScoreEditorControl pictureBox1;
         private System.Windows.Forms.Button btnSelectAcb;
         private System.Windows.Forms.Button btnSelectScore;
         private System.Windows.Forms.TextBox txtAcbFileName;
@@ -182,9 +182,9 @@
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Label lblSong;
-        private System.Windows.Forms.ProgressBar progress;
         private System.Windows.Forms.ComboBox cboDifficulty;
         private System.Windows.Forms.Label lblTime;
+        private System.Windows.Forms.ProgressBar progress;
     }
 }
 

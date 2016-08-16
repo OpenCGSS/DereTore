@@ -97,6 +97,10 @@
     <Compile Include="Controls\DoubleBufferedPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\RenderHelper.cs" />
+    <Compile Include="Controls\ScoreEditorControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -111,11 +115,11 @@
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\ScoreMap.cs" />
     <Compile Include="Model\NoteType.cs" />
-    <Compile Include="NoteUpdatedEventArgs.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="Controls\NoteEnteringOrExitingStageEventArgs.cs" />
+    <Compile Include="LiveMusicPlayer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Renderer.cs" />
+    <Compile Include="Controls\Renderer.cs" />
     <Compile Include="SoundManager.cs" />
     <EmbeddedResource Include="FViewer.resx">
       <DependentUpon>FViewer.cs</DependentUpon>
