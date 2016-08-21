@@ -5,11 +5,12 @@ The goal of DereTore is to improve gaming experience in [The Idolmaster Cinderel
 
 Wonder [how this name comes from](#the-name)?
 
-## Installing
+## Building
 
-1. Clone from [GitHub](https://github.com/hozuki/DereTore.git): `git clone https://github.com/hozuki/DereTore.git`
-2. Install missing NuGet packages: `nuget restore DereTore.sln`
-3. Have fun.
+1. Clone from [GitHub](https://github.com/hozuki/DereTore.git): `git clone https://github.com/hozuki/DereTore.git`;
+2. Install missing NuGet packages: `nuget restore DereTore.sln`;
+3. Open `DereTore.sln` in Visual Studio (VS2010 SP1 or later is required);
+4. Build the solution.
 
 ## Projects
 
@@ -27,7 +28,7 @@ See it for yourself.
 
 **DereTore.HCA**
 
-The pure C# implementation of CRI HCA v2.0 decoder, ported from [kawashima](https://github.com/Hozuki/kawashima).
+The pure C# implementation of CRI HCA v2.0 decoder, based on [kawashima](https://github.com/Hozuki/kawashima).
 Here is its [readme](DereTore.HCA/README.md).
 
 **DereTore.HCA.Native**
@@ -44,7 +45,7 @@ The console test application for DereTore.HCA.Native.
 
 **DereTore.ACB**
 
-CRI ACB/AWB package extraction library. Only necessary parts are implemented. Here is its [readme](DereTore.ACB/README.md).
+CRI ACB/AWB package manipulation library. Only necessary parts are implemented. Here is its [readme](DereTore.ACB/README.md).
 
 **DereTore.ACB.Test**
 
@@ -62,7 +63,7 @@ The C# version of HCA encoding utility. See **hcaenc** in [hcatools](https://git
 
 **DereTore.Application.Hca2Wav**
 
-An console appilcation that converts HCA audio to WAVE audio. It is similar to DereTore.HCA.Test,
+A console appilcation that converts HCA audio to WAVE audio. It is similar to DereTore.HCA.Test,
 but it outputs to a stream, in fixed linear sequence. It can be used as a clearer demo to integrate
 DereTore.HCA.
 
