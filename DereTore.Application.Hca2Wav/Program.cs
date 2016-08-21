@@ -32,16 +32,16 @@ namespace DereTore.Application.Hca2Wav {
 
             using (var inputFileStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read)) {
                 using (var outputFileStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write)) {
-                    var decoder = new HcaDecoder(inputFileStream, new DecodeParams {
+                    var decoder = new OneWayHcaDecoder(inputFileStream, new DecodeParams {
                         Key1 = key1,
                         Key2 = key2
                     });
-                    var waveHeaderBuffer = new byte[decoder.GetWaveHeaderNeededLength()];
+                    var waveHeaderBuffer = new byte[decoder.GetMinWaveHeaderBufferSize()];
                     decoder.WriteWaveHeader(waveHeaderBuffer);
                     outputFileStream.Write(waveHeaderBuffer, 0, waveHeaderBuffer.Length);
                     var hasMore = true;
                     var read = 1;
-                    var dataBuffer = new byte[decoder.GetWaveDataBlockNeededLength() * 10];
+                    var dataBuffer = new byte[decoder.GetMinWaveDataBufferSize() * 10];
                     while (hasMore && read > 0) {
                         read = decoder.DecodeData(dataBuffer, out hasMore);
                         outputFileStream.Write(dataBuffer, 0, read);

@@ -9,9 +9,9 @@ namespace DereTore.HCA {
 
         public HcaInfo HcaInfo => _hcaInfo;
 
-        public float LengthInSeconds => _lengthInSeconds;
+        public float LengthInSeconds => HcaHelper.CalculateLengthInSeconds(_hcaInfo);
 
-        public int LengthInSamples => _lengthInSamples;
+        public int LengthInSamples => HcaHelper.CalculateLengthInSamples(_hcaInfo);
 
         internal void ParseHeaders() {
             var stream = SourceStream;
@@ -176,9 +176,6 @@ namespace DereTore.HCA {
                 throw new HcaException($"Expected CompR01=1, CompR02=15, read {_hcaInfo.CompR01}, {_hcaInfo.CompR02}.", ActionResult.InvalidFieldValue);
             }
             _hcaInfo.CompR09 = HcaHelper.Ceil2(_hcaInfo.CompR05 - (_hcaInfo.CompR06 + _hcaInfo.CompR07), _hcaInfo.CompR08);
-
-            _lengthInSamples = (int)_hcaInfo.BlockCount * (int)_hcaInfo.ChannelCount * 0x80 * 8;
-            _lengthInSeconds = _lengthInSamples / (float)_hcaInfo.SamplingRate / (int)_hcaInfo.ChannelCount;
         }
 
         protected HcaReader(Stream sourceStream) {
@@ -187,8 +184,6 @@ namespace DereTore.HCA {
 
         protected HcaInfo _hcaInfo;
         private readonly Stream _sourceStream;
-        private float _lengthInSeconds;
-        private int _lengthInSamples;
 
     }
 }

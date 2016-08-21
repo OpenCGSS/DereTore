@@ -1,6 +1,6 @@
 ﻿namespace DereTore.HCA {
 
-    internal delegate int DecodeToBufferFunc(float f, byte[] buffer, int startIndex);
+    public delegate int DecodeToBufferFunc(float f, byte[] buffer, int startIndex);
 
 }
 

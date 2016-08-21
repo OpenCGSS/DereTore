@@ -75,11 +75,16 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionResult.cs" />
     <Compile Include="Ath.cs" />
+    <Compile Include="HcaAudioStream.cs" />
+    <Compile Include="HcaAudioStreamDecodeState.cs" />
+    <Compile Include="HcaDecoder.Internal.cs" />
+    <Compile Include="OneWayHcaDecoder.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="ChannelTables.cs" />
     <Compile Include="Cipher.cs" />
@@ -91,9 +96,9 @@
     <Compile Include="DecodeParams.cs" />
     <Compile Include="DecodeStatus.cs" />
     <Compile Include="ErrorMessages.cs" />
-    <Compile Include="HcaAudioStream.cs" />
+    <Compile Include="OneWayHcaAudioStream.cs" />
     <Compile Include="CipherConverter.cs" />
-    <Compile Include="HcaDecoder.Internal.cs" />
+    <Compile Include="HcaDecoder.Private.cs" />
     <Compile Include="HcaException.cs" />
     <Compile Include="HcaReader.cs" />
     <Compile Include="HcaInfo.cs" />

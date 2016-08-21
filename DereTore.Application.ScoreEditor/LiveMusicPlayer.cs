@@ -5,6 +5,7 @@ using DereTore.ACB;
 using DereTore.HCA;
 using NAudio.CoreAudioApi;
 using NAudio.Utils;
+using NAudio.Wave;
 using AudioOut = NAudio.Wave.WasapiOut;
 
 namespace DereTore.Application.ScoreEditor {
@@ -16,6 +17,19 @@ namespace DereTore.Application.ScoreEditor {
 
         public static LiveMusicPlayer FromStream(Stream stream, string acbFileName, DecodeParams decodeParams) {
             return new LiveMusicPlayer(stream, acbFileName, decodeParams);
+        }
+
+        public event EventHandler<StoppedEventArgs> PlaybackStopped {
+            add {
+                if (_soundPlayer != null) {
+                    _soundPlayer.PlaybackStopped += value;
+                }
+            }
+            remove {
+                if (_soundPlayer != null) {
+                    _soundPlayer.PlaybackStopped -= value;
+                }
+            }
         }
 
         public void Play() {
@@ -33,7 +47,10 @@ namespace DereTore.Application.ScoreEditor {
             IsPlaying = false;
         }
 
-        public TimeSpan Elapsed => _stopwatch.Elapsed;
+        public TimeSpan CurrentTime {
+            get { return _hca.CurrentTime; }
+            set { _hca.CurrentTime = value; }
+        }
 
         public Stream SourceStream => _sourceStream;
 
@@ -99,7 +116,7 @@ namespace DereTore.Application.ScoreEditor {
             var names = _acb.GetFileNames();
             _internalName = names[0];
             _hcaDataStream = _acb.OpenDataStream(_internalName);
-            _hca = new HcaWaveProvider(_hcaDataStream, decodeParams);
+            _hca = new RawSourceWaveStream(new HcaAudioStream(_hcaDataStream, decodeParams), HcaWaveProvider.DefaultWaveFormat);
             _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
             //_soundPlayer = new DirectSoundOut();
             _soundPlayer.Init(_hca);
@@ -107,13 +124,14 @@ namespace DereTore.Application.ScoreEditor {
             _stopwatch = new Stopwatch();
             _isPlaying = false;
             _syncObject = new object();
-            _totalLength = TimeSpan.FromSeconds(_hca.LengthInSeconds);
+            var lengthInSeconds = (float)_hca.TotalTime.TotalSeconds;
+            _totalLength = float.IsPositiveInfinity(lengthInSeconds) ? TimeSpan.MaxValue : TimeSpan.FromSeconds(lengthInSeconds);
         }
 
         private readonly Stream _sourceStream;
         private AcbFile _acb;
         private Stream _hcaDataStream;
-        private HcaWaveProvider _hca;
+        private WaveStream _hca;
         private AudioOut _soundPlayer;
         private bool _isPlaying;
         private Stopwatch _stopwatch;

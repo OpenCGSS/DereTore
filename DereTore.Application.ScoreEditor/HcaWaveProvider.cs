@@ -15,7 +15,7 @@ namespace DereTore.Application.ScoreEditor {
 
         public WaveFormat WaveFormat => DefaultWaveFormat;
 
-        private static readonly WaveFormat DefaultWaveFormat = new WaveFormat();
+        public static readonly WaveFormat DefaultWaveFormat = new WaveFormat();
 
     }
 }

@@ -33,7 +33,7 @@ namespace DereTore.Application.ScoreEditor {
         public void PlayHca(string fileName) {
             int index;
             var @out = GetFreeOutput(fileName, out index) ?? CreateOutput(fileName, out index);
-            _hcaWaveProviders[index].SeekToStart();
+            _hcaWaveProviders[index].Seek(0, SeekOrigin.Begin);
             _playingList[index] = true;
             @out.Play();
         }

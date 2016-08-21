@@ -50,7 +50,7 @@ namespace DereTore.Application.AcbMaker {
             int lengthInSamples;
             float lengthInSeconds;
             using (var fileStream = File.Open(hcaFileName, FileMode.Open, FileAccess.Read)) {
-                var decoder = new HcaDecoder(fileStream);
+                var decoder = new OneWayHcaDecoder(fileStream);
                 info = decoder.HcaInfo;
                 lengthInSamples = decoder.LengthInSamples;
                 lengthInSeconds = decoder.LengthInSeconds;

@@ -34,8 +34,9 @@
             this.cboDifficulty = new System.Windows.Forms.ComboBox();
             this.lblTime = new System.Windows.Forms.Label();
             this.pictureBox1 = new DereTore.Application.ScoreEditor.Controls.ScoreEditorControl();
-            this.progress = new System.Windows.Forms.ProgressBar();
+            this.progress = new System.Windows.Forms.TrackBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.progress)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSelectAcb
@@ -93,7 +94,7 @@
             // lblSong
             // 
             this.lblSong.AutoSize = true;
-            this.lblSong.Location = new System.Drawing.Point(387, 56);
+            this.lblSong.Location = new System.Drawing.Point(521, 23);
             this.lblSong.Name = "lblSong";
             this.lblSong.Size = new System.Drawing.Size(35, 12);
             this.lblSong.TabIndex = 7;
@@ -117,7 +118,7 @@
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(387, 95);
+            this.lblTime.Location = new System.Drawing.Point(387, 86);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(35, 12);
             this.lblTime.TabIndex = 10;
@@ -129,27 +130,28 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.EnableMouse = false;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 118);
+            this.pictureBox1.Location = new System.Drawing.Point(12, 110);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(922, 460);
+            this.pictureBox1.Size = new System.Drawing.Size(922, 468);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
             // progress
             // 
-            this.progress.Location = new System.Drawing.Point(389, 71);
+            this.progress.Location = new System.Drawing.Point(389, 47);
             this.progress.Maximum = 65536;
             this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(413, 21);
-            this.progress.TabIndex = 11;
+            this.progress.Size = new System.Drawing.Size(415, 45);
+            this.progress.TabIndex = 12;
+            this.progress.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
             // FViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(946, 590);
-            this.Controls.Add(this.progress);
             this.Controls.Add(this.lblTime);
+            this.Controls.Add(this.progress);
             this.Controls.Add(this.cboDifficulty);
             this.Controls.Add(this.lblSong);
             this.Controls.Add(this.btnStop);
@@ -166,6 +168,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DereTore: Score Editor";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.progress)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -184,7 +187,7 @@
         private System.Windows.Forms.Label lblSong;
         private System.Windows.Forms.ComboBox cboDifficulty;
         private System.Windows.Forms.Label lblTime;
-        private System.Windows.Forms.ProgressBar progress;
+        private System.Windows.Forms.TrackBar progress;
     }
 }
 

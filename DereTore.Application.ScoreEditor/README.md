@@ -10,6 +10,7 @@ Test files can be found in [Resources](/Resources). Their copyrights belong to [
 
 ------
 
-**Known issues:**
+**Known issue(s):**
 
-- The latency of notes will be high (visual & sound feedback) if the user plays a second music.
+- Seeking when playing may cause decoding error (noise can be heard) or even crash.
+- Closing the window when playing may cause program crash.

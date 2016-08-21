@@ -1,17 +1,34 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DereTore.HCA {
     public class HcaAudioStream : Stream {
 
         public HcaAudioStream(Stream sourceStream)
-            : this(sourceStream, DecodeParams.Default) {
+            : this(sourceStream, DecodeParams.Default, true) {
         }
 
-        public HcaAudioStream(Stream sourceStream, DecodeParams decodeParams) {
-            _decoder = new HcaDecoder(sourceStream, decodeParams);
-            OutputWaveHeader = true;
-            _state = DecodeState.Initialized;
+        public HcaAudioStream(Stream sourceStream, bool outputWaveHeader)
+            : this(sourceStream, DecodeParams.Default, outputWaveHeader) {
+        }
+
+        public HcaAudioStream(Stream sourceStream, DecodeParams decodeParams)
+            : this(sourceStream, decodeParams, true) {
+        }
+
+        public HcaAudioStream(Stream sourceStream, DecodeParams decodeParams, bool outputWaveHeader) {
+            var decoder = new HcaDecoder(sourceStream, decodeParams);
+            _decoder = decoder;
+            _hcaInfo = decoder.HcaInfo;
+            _decodeStatus = new DecodeStatus();
+            OutputWaveHeader = outputWaveHeader;
+            var buffer = new byte[GetTotalAfterDecodingWaveDataSize()];
+            _memoryCache = new MemoryStream(buffer, true);
+            _decodedBlocks = new Dictionary<long, long>();
+            _decodeBuffer = new byte[decoder.GetMinWaveDataBufferSize()];
+
+            PrepareDecoding();
         }
 
         public override void Flush() {
@@ -19,7 +36,23 @@ namespace DereTore.HCA {
         }
 
         public override long Seek(long offset, SeekOrigin origin) {
-            throw new NotSupportedException();
+            switch (origin) {
+                case SeekOrigin.Begin:
+                    Position = offset;
+                    break;
+                case SeekOrigin.Current:
+                    Position = Position + offset;
+                    break;
+                case SeekOrigin.End:
+                    if (HasLoop) {
+                        throw new NotSupportedException("Cannot seek to end in a looped HCA audio.");
+                    }
+                    Position = Length - offset;
+                    break;
+                default:
+                    break;
+            }
+            return Position;
         }
 
         public override void SetLength(long value) {
@@ -27,160 +60,193 @@ namespace DereTore.HCA {
         }
 
         public override int Read(byte[] buffer, int offset, int count) {
-            if (!CanRead) {
+            if (!HasMoreData()) {
                 return 0;
             }
-            var loopControl = false;
-            var writeLengthLimit = Math.Min(count, buffer.Length);
-            do {
-                int maxToCopy;
-                bool hasMore;
-                int decodedLength;
-                var state = _state;
-                switch (state) {
-                    case DecodeState.Initialized:
-                        if (!OutputWaveHeader) {
-                            _state = DecodeState.WaveHeaderTransmitted;
-                            loopControl = true;
-                            break;
-                        }
-                        _waveHeaderSize = _decoder.GetWaveHeaderNeededLength();
-                        _waveHeaderBuffer = new byte[_waveHeaderSize];
-                        _waveHeaderSizeLeft = _waveHeaderSize;
-                        _decoder.WriteWaveHeader(_waveHeaderBuffer);
-                        maxToCopy = Math.Min(writeLengthLimit, _waveHeaderSizeLeft);
-                        Array.Copy(_waveHeaderBuffer, _waveHeaderSize - _waveHeaderSizeLeft, buffer, offset, maxToCopy);
-                        _waveHeaderSizeLeft -= maxToCopy;
-                        _state = _waveHeaderSizeLeft <= 0 ? DecodeState.WaveHeaderTransmitted : DecodeState.WaveHeaderTransmitting;
-                        return maxToCopy;
-                    case DecodeState.WaveHeaderTransmitting:
-                        if (!OutputWaveHeader) {
-                            _state = DecodeState.WaveHeaderTransmitted;
-                            loopControl = true;
-                            break;
-                        }
-                        maxToCopy = Math.Min(writeLengthLimit, _waveHeaderSizeLeft);
-                        Array.Copy(_waveHeaderBuffer, _waveHeaderSize - _waveHeaderSizeLeft, buffer, offset, maxToCopy);
-                        _waveHeaderSizeLeft -= maxToCopy;
-                        if (_waveHeaderSizeLeft <= 0) {
-                            _state = DecodeState.WaveHeaderTransmitted;
-                        }
-                        return maxToCopy;
-                    case DecodeState.WaveHeaderTransmitted:
-                        _standardWaveDataSize = _decoder.GetWaveDataBlockNeededLength();
-                        _waveDataSize = _standardWaveDataSize * BlockBatchSize;
-                        _waveDataBuffer = new byte[_waveDataSize];
-                        decodedLength = _decoder.DecodeData(_waveDataBuffer, out hasMore);
-                        _waveDataSize = decodedLength;
-                        _waveDataSizeLeft = _waveDataSize;
-                        maxToCopy = Math.Min(writeLengthLimit, _waveDataSizeLeft);
-                        Array.Copy(_waveDataBuffer, _waveDataSize - _waveDataSizeLeft, buffer, offset, maxToCopy);
-                        _waveDataSizeLeft -= maxToCopy;
-                        if (_waveDataSizeLeft <= 0) {
-                            _state = hasMore ? DecodeState.DataTransmitting : DecodeState.WaveHeaderTransmitted;
-                        } else {
-                            _state = DecodeState.DataTransmitting;
-                        }
-                        return maxToCopy;
-                    case DecodeState.DataTransmitting:
-                        if (_waveDataSizeLeft <= 0) {
-                            _waveDataSize = _standardWaveDataSize * BlockBatchSize;
-                            _waveDataBuffer = new byte[_waveDataSize];
-                            decodedLength = _decoder.DecodeData(_waveDataBuffer, out hasMore);
-                            if (decodedLength > 0 || hasMore) {
-                                _waveDataSize = decodedLength;
-                                _waveDataSizeLeft = _waveDataSize;
-                                _state = DecodeState.DataTransmitting;
-                            } else {
-                                _state = DecodeState.WaveHeaderTransmitted;
-                                loopControl = true;
-                                break;
-                            }
-                        }
-                        maxToCopy = Math.Min(writeLengthLimit, _waveDataSizeLeft);
-                        Array.Copy(_waveDataBuffer, _waveDataSize - _waveDataSizeLeft, buffer, offset, maxToCopy);
-                        _waveDataSizeLeft -= maxToCopy;
-                        return maxToCopy;
-                    case DecodeState.DataTransmitted:
-                        return 0;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(state));
+            if (offset < 0) {
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            }
+            if (count < 0) {
+                throw new ArgumentOutOfRangeException(nameof(count));
+            }
+            if (count == 0) {
+                return 0;
+            }
+            var memoryCache = _memoryCache;
+            var hcaInfo = _hcaInfo;
+            var positionInFileStream = GetPositionInFileStream();
+            int read;
+            var headerCrossData = false;
+            long origPosInStream = 0;
+            if (positionInFileStream + count < hcaInfo.DataOffset) {
+                read = memoryCache.Read(buffer, offset, count);
+                Position += read;
+                return read;
+            } else {
+                if (positionInFileStream < hcaInfo.DataOffset) {
+                    origPosInStream = positionInFileStream;
+                    positionInFileStream = hcaInfo.DataOffset;
+                    headerCrossData = true;
                 }
-            } while (loopControl);
-            return 0;
+            }
+            EnsureDecoded(positionInFileStream, count);
+            if (headerCrossData) {
+                positionInFileStream = origPosInStream;
+            }
+            memoryCache.Seek(positionInFileStream, SeekOrigin.Begin);
+            if (HasLoop) {
+                var headerSize = _headerSize;
+                var decoder = _decoder;
+                var endLoopDataPositionIncludingHeader = hcaInfo.LoopEnd * decoder.GetMinWaveDataBufferSize() + headerSize;
+                var shouldRead = (int)Math.Min(count, endLoopDataPositionIncludingHeader - positionInFileStream);
+                read = memoryCache.Read(buffer, offset, shouldRead);
+            } else {
+                read = memoryCache.Read(buffer, offset, count);
+            }
+            Position += read;
+            return read;
         }
 
         public override void Write(byte[] buffer, int offset, int count) {
             throw new NotSupportedException();
         }
 
-        public override bool CanRead {
-            get {
-                if ((_state & DecodeState.CanDoHasMoreCheck) != 0) {
-                    var hasMore = _decoder.HasMore();
-                    return !(_waveDataSizeLeft <= 0 && _waveHeaderSizeLeft <= 0 && !hasMore);
-                } else {
-                    return _state == DecodeState.Initialized;
-                }
-            }
-        }
-
-        public override bool CanSeek => false;
-
+        public override bool CanRead => true;
+        public override bool CanSeek => true;
         public override bool CanWrite => false;
 
         public override long Length {
-            get { throw new NotSupportedException(); }
+            get {
+                if (_length != null) {
+                    return _length.Value;
+                }
+                var hcaInfo = _hcaInfo;
+                if (hcaInfo.LoopFlag) {
+                    _length = long.MaxValue;
+                } else {
+                    long totalLength = 0;
+                    if (OutputWaveHeader) {
+                        totalLength += _headerSize;
+                    }
+                    totalLength += _decoder.GetMinWaveDataBufferSize() * hcaInfo.BlockCount;
+                    _length = totalLength;
+                }
+                return _length.Value;
+            }
         }
 
         public override long Position {
-            get { throw new NotSupportedException(); }
-            set { throw new NotSupportedException(); }
+            get {
+                return _position;
+            }
+            set {
+                if (value < 0 || value > Length) {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+                _position = value;
+            }
         }
 
-        public bool OutputWaveHeader { get; set; }
-
-        public int BlockBatchSize => 10;
+        public bool OutputWaveHeader { get; }
 
         public HcaInfo HcaInfo => _decoder.HcaInfo;
 
-        public float LengthInSeconds => _decoder.LengthInSeconds;
+        public float LengthInSeconds => HasLoop ? float.PositiveInfinity : _decoder.LengthInSeconds;
 
         public int LengthInSamples => _decoder.LengthInSamples;
 
-        public void SeekToStart() {
-            _decoder.SeekToStart();
-        }
-
         protected override void Dispose(bool disposing) {
-            if (!_isDisposed) {
-                if (disposing) {
-                    _isDisposed = true;
-                }
-            }
+            _memoryCache.Dispose();
             base.Dispose(disposing);
         }
 
-        private readonly HcaDecoder _decoder;
-        private byte[] _waveHeaderBuffer;
-        private int _waveHeaderSize;
-        private int _waveHeaderSizeLeft;
-        private byte[] _waveDataBuffer;
-        private int _waveDataSize;
-        private int _standardWaveDataSize;
-        private int _waveDataSizeLeft;
-        private bool _isDisposed;
-        private DecodeState _state;
-
-        [Flags]
-        private enum DecodeState {
-            Initialized = 0,
-            WaveHeaderTransmitting = 1,
-            WaveHeaderTransmitted = 2,
-            DataTransmitting = 4,
-            DataTransmitted = 8,
-            CanDoHasMoreCheck = WaveHeaderTransmitting | WaveHeaderTransmitted | DataTransmitting,
+        private long GetPositionInFileStream() {
+            var position = Position;
+            if (!HasLoop) {
+                return position;
+            }
+            var hcaInfo = _hcaInfo;
+            var decoder = _decoder;
+            var headerSize = _headerSize;
+            var relativeDataPosition = position - headerSize;
+            var endLoopDataPosition = hcaInfo.LoopEnd * decoder.GetMinWaveDataBufferSize();
+            if (relativeDataPosition < endLoopDataPosition) {
+                return position;
+            }
+            var startLoopDataPosition = hcaInfo.LoopStart * decoder.GetMinWaveDataBufferSize();
+            var waveDataLength = endLoopDataPosition - startLoopDataPosition;
+            var positionInsideLoop = (relativeDataPosition - startLoopDataPosition) % waveDataLength;
+            return headerSize + startLoopDataPosition + positionInsideLoop;
         }
+
+        private void EnsureDecoded(long dataOffset, int count) {
+            var decodeStatus = _decodeStatus;
+            var decoder = _decoder;
+            var decodedBlocks = _decodedBlocks;
+            var headerSize = _headerSize;
+            var blockSize = decoder.GetMinWaveDataBufferSize();
+            var startBlockIndex = (dataOffset - headerSize) / blockSize;
+            var endBlockIndex = (dataOffset + count - headerSize) / blockSize;
+            var hcaInfo = _hcaInfo;
+            endBlockIndex = Math.Min(endBlockIndex, (int)hcaInfo.BlockCount - 1);
+            var decodeBuffer = _decodeBuffer;
+            var memoryCache = _memoryCache;
+            for (var i = startBlockIndex; i <= endBlockIndex; ++i) {
+                if (decodedBlocks.ContainsKey(i)) {
+                    continue;
+                }
+                decodeStatus.BlockIndex = (uint)i;
+                decodeStatus.DataCursor = (uint)i * hcaInfo.BlockSize + hcaInfo.DataOffset;
+                decodeStatus.LoopNumber = 0;
+                bool hasMore;
+                decoder.DecodeData(decodeBuffer, ref decodeStatus, out hasMore);
+                var positionInOutputStream = headerSize + blockSize * i;
+                memoryCache.Seek(positionInOutputStream, SeekOrigin.Begin);
+                memoryCache.WriteBytes(decodeBuffer);
+                decodedBlocks.Add(i, positionInOutputStream);
+            }
+        }
+
+        private void PrepareDecoding() {
+            var decoder = _decoder;
+            var memoryCache = _memoryCache;
+            if (OutputWaveHeader) {
+                var waveHeaderBufferSize = decoder.GetMinWaveHeaderBufferSize();
+                var waveHeaderBuffer = new byte[waveHeaderBufferSize];
+                decoder.WriteWaveHeader(waveHeaderBuffer);
+                memoryCache.WriteBytes(waveHeaderBuffer);
+                _headerSize = waveHeaderBufferSize;
+            } else {
+                _headerSize = 0;
+            }
+        }
+
+        private bool HasMoreData() {
+            return HasLoop || Position < Length;
+        }
+
+        private bool HasLoop => _hcaInfo.LoopFlag;
+
+        private int GetTotalAfterDecodingWaveDataSize() {
+            var hcaInfo = _hcaInfo;
+            var totalLength = 0;
+            if (OutputWaveHeader) {
+                totalLength += _decoder.GetMinWaveHeaderBufferSize();
+            }
+            totalLength += _decoder.GetMinWaveDataBufferSize() * (int)hcaInfo.BlockCount;
+            return totalLength;
+        }
+
+        private readonly HcaDecoder _decoder;
+        private int _headerSize;
+        private HcaInfo _hcaInfo;
+        private readonly DecodeStatus _decodeStatus;
+        private readonly MemoryStream _memoryCache;
+        private readonly Dictionary<long, long> _decodedBlocks;
+        private long? _length;
+        private long _position;
+
+        private readonly byte[] _decodeBuffer;
 
     }
 }

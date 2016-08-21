@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 using DereTore.HCA.Interop;
 
 namespace DereTore.HCA {
-    public sealed partial class HcaDecoder : HcaReader {
+    public partial class HcaDecoder : HcaReader {
 
         public HcaDecoder(Stream sourceStream)
-           : this(sourceStream, DecodeParams.Default) {
+          : this(sourceStream, DecodeParams.Default) {
         }
 
         public HcaDecoder(Stream sourceStream, DecodeParams decodeParams)
@@ -37,7 +37,7 @@ namespace DereTore.HCA {
             return result;
         }
 
-        public int GetWaveHeaderNeededLength() {
+        public int GetMinWaveHeaderBufferSize() {
             var wavNoteSize = 0;
             if (_hcaInfo.Comment != null) {
                 wavNoteSize = 4 + (int)_hcaInfo.CommentLength + 1;
@@ -56,7 +56,7 @@ namespace DereTore.HCA {
             return sizeNeeded;
         }
 
-        public int GetWaveDataBlockNeededLength() {
+        public int GetMinWaveDataBufferSize() {
             return 0x80 * GetSampleBitsFromParams() * (int)_hcaInfo.ChannelCount;
         }
 
@@ -64,9 +64,9 @@ namespace DereTore.HCA {
             if (stream == null) {
                 throw new ArgumentNullException(nameof(stream));
             }
-            var minimumSize = GetWaveHeaderNeededLength();
-            if (stream.Length < minimumSize) {
-                throw new HcaException(ErrorMessages.GetBufferTooSmall(minimumSize, stream.Length), ActionResult.BufferTooSmall);
+            var minimumHeaderBufferSize = GetMinWaveHeaderBufferSize();
+            if (stream.Length < minimumHeaderBufferSize) {
+                throw new HcaException(ErrorMessages.GetBufferTooSmall(minimumHeaderBufferSize, stream.Length), ActionResult.BufferTooSmall);
             }
             var sampleBits = GetSampleBitsFromParams();
             var loopCount = _decodeParams.Loop;
@@ -112,43 +112,6 @@ namespace DereTore.HCA {
             }
             bytesWritten += stream.Write(wavData, bytesWritten);
             return bytesWritten;
-        }
-
-        public int DecodeData(byte[] buffer, out bool hasMore) {
-            if (buffer == null) {
-                throw new ArgumentNullException(nameof(buffer));
-            }
-            var minimumSize = GetWaveDataBlockNeededLength();
-            if (buffer.Length < minimumSize) {
-                throw new HcaException(ErrorMessages.GetBufferTooSmall(minimumSize, buffer.Length), ActionResult.BufferTooSmall);
-            }
-            if (_status.DataCursor < _hcaInfo.DataOffset) {
-                _status.DataCursor = _hcaInfo.DataOffset;
-            }
-            uint waveBlockSize = 0x80 * (uint)GetSampleBitsFromParams() * _hcaInfo.ChannelCount;
-            uint blockProcessableThisRound = (uint)buffer.Length / waveBlockSize;
-            if (!_decodeParams.EnableLoop && !_hcaInfo.LoopFlag) {
-                int bufferCursor;
-                if (_status.BlockIndex + blockProcessableThisRound >= _hcaInfo.BlockCount) {
-                    blockProcessableThisRound = _hcaInfo.BlockCount - _status.BlockIndex;
-                    hasMore = false;
-                } else {
-                    hasMore = true;
-                }
-                var streamBuffer = GetHcaBlockBuffer();
-                GenerateWaveDataBlocks(SourceStream, buffer, blockProcessableThisRound, streamBuffer, GetDecodeToBufferFunc(), out bufferCursor);
-                _status.BlockIndex += blockProcessableThisRound;
-                return bufferCursor;
-            } else {
-                throw new NotImplementedException();
-            }
-        }
-
-        public void SeekToStart() {
-            SourceStream.Seek(_hcaInfo.DataOffset, SeekOrigin.Begin);
-            _status.BlockIndex = 0;
-            _status.DataCursor = _hcaInfo.DataOffset;
-            _status.LoopNumber = 0;
         }
 
     }

@@ -33,7 +33,7 @@ namespace DereTore.HCA.Test {
 
             var param = new DecodeParams { Key1 = key1, Key2 = key2 };
             using (var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
-                using (var hca = new HcaAudioStream(fs, param)) {
+                using (var hca = new OneWayHcaAudioStream(fs, param)) {
                     using (var sp = new SoundPlayer(hca)) {
                         sp.LoadTimeout = 5000000;
                         sp.PlaySync();

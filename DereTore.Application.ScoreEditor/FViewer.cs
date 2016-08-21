@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -31,6 +32,7 @@ namespace DereTore.Application.ScoreEditor {
             pictureBox1.NoteEnteringOrExitingStage -= ScoreEditorControl_NoteUpdated;
             Load -= FMain_Load;
             FormClosing -= FViewer_FormClosing;
+            progress.ValueChanged -= Progress_ValueChanged;
         }
 
         private void RegisterEventHandlers() {
@@ -42,6 +44,22 @@ namespace DereTore.Application.ScoreEditor {
             pictureBox1.NoteEnteringOrExitingStage += ScoreEditorControl_NoteUpdated;
             Load += FMain_Load;
             FormClosing += FViewer_FormClosing;
+            progress.ValueChanged += Progress_ValueChanged;
+        }
+
+        private void Player_PlaybackStopped(object sender, NAudio.Wave.StoppedEventArgs e) {
+            BtnStop_Click(this, EventArgs.Empty);
+        }
+
+        private void Progress_ValueChanged(object sender, EventArgs e) {
+            lock (_liveMusicSyncObject) {
+                if (_codeValueChange) {
+                    return;
+                }
+            }
+            if (_player != null) {
+                _player.CurrentTime = TimeSpan.FromSeconds(_player.TotalLength.TotalSeconds * ((double)(progress.Value - progress.Minimum) / progress.Maximum));
+            }
         }
 
         private void FViewer_FormClosing(object sender, FormClosingEventArgs e) {
@@ -88,6 +106,7 @@ namespace DereTore.Application.ScoreEditor {
                 return;
             }
             _player.Stop();
+            _player.PlaybackStopped -= Player_PlaybackStopped;
             timer.Stop();
             _player.Dispose();
             _player = null;
@@ -113,6 +132,7 @@ namespace DereTore.Application.ScoreEditor {
             }
             _acbStream = File.Open(txtAcbFileName.Text, FileMode.Open, FileAccess.Read);
             _player = LiveMusicPlayer.FromStream(_acbStream, txtAcbFileName.Text, DecodeParams);
+            _player.PlaybackStopped += Player_PlaybackStopped;
             _score = Score.FromFile(txtScoreFileName.Text, (Difficulty)(cboDifficulty.SelectedIndex + 1));
             pictureBox1.SetScore(_score);
             cboDifficulty.Enabled = false;
@@ -123,11 +143,11 @@ namespace DereTore.Application.ScoreEditor {
             lblSong.Text = string.Format(SongTipFormat, _player.HcaName);
             _player.Play();
             timer.Start();
-            lblTime.Text = $"{_player.Elapsed}/{_player.TotalLength}";
+            lblTime.Text = $"{_player.CurrentTime}/{_player.TotalLength}";
         }
 
         private void Timer_Tick(object sender, EventArgs e) {
-            var elapsed = _player.Elapsed;
+            var elapsed = _player.CurrentTime;
             var total = _player.TotalLength;
             if (elapsed > total) {
                 BtnStop_Click(this, EventArgs.Empty);
@@ -135,7 +155,11 @@ namespace DereTore.Application.ScoreEditor {
             }
             var ratio = elapsed.TotalSeconds / total.TotalSeconds;
             var val = (int)(ratio * (progress.Maximum - progress.Minimum)) + progress.Minimum;
-            progress.Value = val;
+            lock (_liveMusicSyncObject) {
+                _codeValueChange = true;
+                progress.Value = val;
+                _codeValueChange = false;
+            }
             lblTime.Text = $"{elapsed}/{_player.TotalLength}";
             pictureBox1.SetTime(elapsed);
             pictureBox1.Invalidate();
@@ -204,6 +228,9 @@ namespace DereTore.Application.ScoreEditor {
             Key1 = CgssCipher.Key1,
             Key2 = CgssCipher.Key2
         };
+
+        private bool _codeValueChange;
+        private readonly object _liveMusicSyncObject = new object();
 
     }
 }
