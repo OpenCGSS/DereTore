@@ -6,24 +6,24 @@
         public NoteType Type { get; set; }
         public NotePosition StartPosition { get; set; }
         public NotePosition FinishPosition { get; set; }
-        public NoteStatus SwipeType { get; set; }
+        public NoteStatus FlickType { get; set; }
         public bool Sync { get; set; }
         public int GroupId { get; set; }
 
         public int NextHoldingIndex { get; set; } = -1;
-        public int NextSwipeIndex { get; set; } = -1;
+        public int NextFlickIndex { get; set; } = -1;
         public int PrevHoldingIndex { get; set; } = -1;
-        public int PrevSwipeIndex { get; set; } = -1;
+        public int PrevFlickIndex { get; set; } = -1;
         public int SyncPairIndex { get; set; } = -1;
 
         public bool HasNextHolding => NextHoldingIndex >= 0;
-        public bool HasNextSwipe => NextSwipeIndex >= 0;
+        public bool HasNextFlick => NextFlickIndex >= 0;
         public bool HasPrevHolding => PrevHoldingIndex >= 0;
-        public bool HasPrevSwipe => PrevSwipeIndex >= 0;
-        public bool IsSwipe => Type == NoteType.TapOrSwipe && (SwipeType == NoteStatus.SwipeLeft || SwipeType == NoteStatus.SwipeRight);
-        public bool IsTap => Type == NoteType.TapOrSwipe && SwipeType == NoteStatus.Tap;
+        public bool HasPrevFlick => PrevFlickIndex >= 0;
+        public bool IsFlick => Type == NoteType.TapOrFlick && (FlickType == NoteStatus.FlickLeft || FlickType == NoteStatus.FlickRight);
+        public bool IsTap => Type == NoteType.TapOrFlick && FlickType == NoteStatus.Tap;
         public bool IsHold => Type == NoteType.Hold;
-        public bool IsGamingNote => Type == NoteType.TapOrSwipe || Type == NoteType.Hold;
+        public bool IsGamingNote => Type == NoteType.TapOrFlick || Type == NoteType.Hold;
 
         // Properties for editor control.
         public bool Visible { get; set; }

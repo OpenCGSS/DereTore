@@ -73,7 +73,7 @@ namespace DereTore.Application.ScoreEditor {
             if (!note.Visible) {
                 return;
             }
-            if (note.IsSwipe) {
+            if (note.IsFlick) {
                 SoundManager.Instance.PlayHca(SwipeSoundFileName);
             } else if (note.IsTap || note.IsHold) {
                 SoundManager.Instance.PlayHca(TapSoundFileName);

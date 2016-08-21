@@ -12,7 +12,7 @@ namespace DereTore.Application.ScoreEditor.Model {
             // See song_3034 (m063), master level score. These fields are empty, so we need a custom type converter.
             Map(m => m.StartPosition).Name("startPos").TypeConverter<IntConverter>();
             Map(m => m.FinishPosition).Name("finishPos").TypeConverter<IntConverter>();
-            Map(m => m.SwipeType).Name("status");
+            Map(m => m.FlickType).Name("status");
             Map(m => m.Sync).Name("sync").TypeConverter<IntToBoolConverter>();
             Map(m => m.GroupId).Name("groupId");
         }

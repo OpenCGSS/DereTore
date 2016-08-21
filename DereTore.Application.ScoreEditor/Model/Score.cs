@@ -110,7 +110,7 @@ namespace DereTore.Application.ScoreEditor.Model {
             for (var i = 0; i < notes.Length; ++i) {
                 var note = notes[i];
                 switch (note.Type) {
-                    case NoteType.TapOrSwipe:
+                    case NoteType.TapOrFlick:
                         if (note.Sync) {
                             var syncPairIndex = notes.FirstIndexOf(n => n != note && n.Second.Equals(note.Second) && n.Sync);
                             if (syncPairIndex < 0) {
@@ -118,19 +118,19 @@ namespace DereTore.Application.ScoreEditor.Model {
                             }
                             note.SyncPairIndex = syncPairIndex;
                         }
-                        if (note.IsSwipe) {
+                        if (note.IsFlick) {
                             if (!swipeGroupNoteCount.ContainsKey(note.GroupId)) {
                                 swipeGroupNoteCount.Add(note.GroupId, 0);
                             }
                             ++swipeGroupNoteCount[note.GroupId];
-                            var nextSwipeIndex = notes.FirstIndexOf(n => n.IsSwipe && n.GroupId != 0 && n.GroupId == note.GroupId, i + 1);
+                            var nextSwipeIndex = notes.FirstIndexOf(n => n.IsFlick && n.GroupId != 0 && n.GroupId == note.GroupId, i + 1);
                             if (nextSwipeIndex < 0) {
                                 if (swipeGroupNoteCount[note.GroupId] < 2) {
                                     Debug.WriteLine($"[WARNING] No enough swipe notes to form a swipe group at note #{i + 1}, group ID {note.GroupId}.");
                                 }
                             } else {
-                                note.NextSwipeIndex = nextSwipeIndex;
-                                notes[nextSwipeIndex].PrevSwipeIndex = i;
+                                note.NextFlickIndex = nextSwipeIndex;
+                                notes[nextSwipeIndex].PrevFlickIndex = i;
                             }
                         }
                         break;

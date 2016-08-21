@@ -44,7 +44,7 @@ namespace DereTore.Application.ScoreEditor.Controls {
             for (var i = startIndex; i <= endIndex; ++i) {
                 var note = notes[i];
                 switch (note.Type) {
-                    case NoteType.TapOrSwipe:
+                    case NoteType.TapOrFlick:
                     case NoteType.Hold:
                         if (note.Selected && IsNoteOnStage(note, now)) {
                             float x = GetNoteXPosition(note, clientSize, now), y = GetNoteYPosition(note, clientSize, now);
@@ -56,11 +56,11 @@ namespace DereTore.Application.ScoreEditor.Controls {
                         break;
                 }
                 switch (note.Type) {
-                    case NoteType.TapOrSwipe:
-                        if (note.IsSwipe) {
-                            if (note.HasNextSwipe) {
-                                DrawSwipeLine(graphics, clientSize, note, notes[note.NextSwipeIndex], now);
-                                //DrawSwipeLine(graphics, clientSize, notes[note.NextSwipeIndex], note, now);
+                    case NoteType.TapOrFlick:
+                        if (note.IsFlick) {
+                            if (note.HasNextFlick) {
+                                DrawFlickLine(graphics, clientSize, note, notes[note.NextFlickIndex], now);
+                                //DrawFlickLine(graphics, clientSize, notes[note.NextFlickIndex], note, now);
                             }
                         }
                         break;
@@ -76,7 +76,7 @@ namespace DereTore.Application.ScoreEditor.Controls {
                         break;
                 }
                 switch (note.Type) {
-                    case NoteType.TapOrSwipe:
+                    case NoteType.TapOrFlick:
                     case NoteType.Hold:
                         DrawSimpleNote(graphics, clientSize, note, now);
                         break;
@@ -99,7 +99,7 @@ namespace DereTore.Application.ScoreEditor.Controls {
             graphics.DrawLine(Pens.DodgerBlue, xLeft + AvatarCircleRadius, y, xRight - AvatarCircleRadius, y);
         }
 
-        public static void DrawSwipeLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now) {
+        public static void DrawFlickLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now) {
             DrawSimpleLine(graphics, clientSize, startNote, endNote, now, Pens.OliveDrab);
         }
 
@@ -142,12 +142,12 @@ namespace DereTore.Application.ScoreEditor.Controls {
             }
             float x = GetNoteXPosition(note, clientSize, now), y = GetNoteYPosition(note, clientSize, now);
             graphics.FillEllipse(Brushes.DarkMagenta, x - AvatarCircleRadius, y - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
-            if (note.IsSwipe) {
-                switch (note.SwipeType) {
-                    case NoteStatus.SwipeLeft:
+            if (note.IsFlick) {
+                switch (note.FlickType) {
+                    case NoteStatus.FlickLeft:
                         graphics.FillPie(Brushes.DarkOrange, x - AvatarCircleRadius, y - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter, 135, 90);
                         break;
-                    case NoteStatus.SwipeRight:
+                    case NoteStatus.FlickRight:
                         graphics.FillPie(Brushes.DarkOrange, x - AvatarCircleRadius, y - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter, -45, 90);
                         break;
                 }
