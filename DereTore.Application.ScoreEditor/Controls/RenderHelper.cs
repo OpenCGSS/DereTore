@@ -47,8 +47,7 @@ namespace DereTore.Application.ScoreEditor.Controls {
                     case NoteType.TapOrFlick:
                     case NoteType.Hold:
                         if (note.Selected && IsNoteOnStage(note, now)) {
-                            float x = GetNoteXPosition(note, clientSize, now), y = GetNoteYPosition(note, clientSize, now);
-                            graphics.DrawRectangle(Pens.White, x - AvatarCircleRadius, y - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
+                            DrawSelectedRect(graphics, clientSize, note, now);
                         }
                         if (note.Sync) {
                             DrawSyncLine(graphics, clientSize, note, notes[note.SyncPairIndex], now);
@@ -84,8 +83,9 @@ namespace DereTore.Application.ScoreEditor.Controls {
             }
         }
 
-        public static void DrawHoldLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now) {
-            DrawSimpleLine(graphics, clientSize, startNote, endNote, now, Pens.Yellow);
+        public static void DrawSelectedRect(Graphics graphics, Size clientSize, Note note, float now) {
+            float x = GetNoteXPosition(note, clientSize, now), y = GetNoteYPosition(note, clientSize, now);
+            graphics.DrawRectangle(Pens.White, x - AvatarCircleRadius, y - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
         }
 
         public static void DrawSyncLine(Graphics graphics, Size clientSize, Note note1, Note note2, float now) {
@@ -97,6 +97,10 @@ namespace DereTore.Application.ScoreEditor.Controls {
                 x2 = GetNoteXPosition(note2, clientSize, now);
             float xLeft = Math.Min(x1, x2), xRight = Math.Max(x1, x2);
             graphics.DrawLine(Pens.DodgerBlue, xLeft + AvatarCircleRadius, y, xRight - AvatarCircleRadius, y);
+        }
+
+        public static void DrawHoldLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now) {
+            DrawSimpleLine(graphics, clientSize, startNote, endNote, now, Pens.Yellow);
         }
 
         public static void DrawFlickLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now) {
