@@ -155,6 +155,8 @@ namespace DereTore.HCA {
         private readonly Cipher _cipher;
         private Channel[] _channels;
         private readonly DecodeParams _decodeParams;
+        private int? _minWaveHeaderBufferSize;
+        private int? _minWaveDataBufferSize;
 
     }
 }

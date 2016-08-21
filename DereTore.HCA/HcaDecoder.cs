@@ -38,6 +38,9 @@ namespace DereTore.HCA {
         }
 
         public int GetMinWaveHeaderBufferSize() {
+            if (_minWaveHeaderBufferSize != null) {
+                return _minWaveHeaderBufferSize.Value;
+            }
             var wavNoteSize = 0;
             if (_hcaInfo.Comment != null) {
                 wavNoteSize = 4 + (int)_hcaInfo.CommentLength + 1;
@@ -53,11 +56,16 @@ namespace DereTore.HCA {
                 sizeNeeded += 8 * wavNoteSize;
             }
             sizeNeeded += Marshal.SizeOf(typeof(WaveDataSection));
-            return sizeNeeded;
+            _minWaveHeaderBufferSize = sizeNeeded;
+            return _minWaveHeaderBufferSize.Value;
         }
 
         public int GetMinWaveDataBufferSize() {
-            return 0x80 * GetSampleBitsFromParams() * (int)_hcaInfo.ChannelCount;
+            if (_minWaveDataBufferSize != null) {
+                return _minWaveDataBufferSize.Value;
+            }
+            _minWaveDataBufferSize = 0x80 * GetSampleBitsFromParams() * (int)_hcaInfo.ChannelCount;
+            return _minWaveDataBufferSize.Value;
         }
 
         public int WriteWaveHeader(byte[] stream) {
