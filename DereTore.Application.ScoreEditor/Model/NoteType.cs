@@ -1,7 +1,13 @@
-﻿namespace DereTore.Application.ScoreEditor.Model {
+﻿using System.ComponentModel;
+
+namespace DereTore.Application.ScoreEditor.Model {
     public enum NoteType {
 
+        Invalid = 0,
+
+        [Description("Tap or flick")]
         TapOrFlick = 1,
+        [Description("Hold")]
         Hold = 2,
 
         Debug1 = 81,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
@@ -20,7 +21,9 @@ namespace DereTore.Application.ScoreEditor.Model {
             return new Score(fileName, difficulty);
         }
 
-        public Note[] Items => _items;
+        public event EventHandler<ScoreChangedEventArgs> ScoreChanged;
+
+        public ReadOnlyCollection<Note> Notes => _notes;
 
         public static bool IsScoreFile(string fileName) {
             string[] dummy;
@@ -69,8 +72,88 @@ namespace DereTore.Application.ScoreEditor.Model {
             return DifficultyRegexes[n - 1].IsMatch(names[n - 1]);
         }
 
+        public bool Validate(out string[] reasons) {
+            var b = true;
+            var notes = _editableNotes;
+            var flickGroupNoteCount = new Dictionary<int, int>();
+            var r = new List<string>();
+            foreach (var note in notes) {
+                switch (note.Type) {
+                    case NoteType.TapOrFlick:
+                        if (note.IsSync) {
+                            if (note.SyncPairNote == null) {
+                                r.Add($"Missing sync pair note at note ID #{note.Id}.");
+                                b = false;
+                            }
+                        }
+                        if (note.IsFlick) {
+                            if (!flickGroupNoteCount.ContainsKey(note.FlickGroupId)) {
+                                flickGroupNoteCount.Add(note.FlickGroupId, 0);
+                            }
+                            ++flickGroupNoteCount[note.FlickGroupId];
+                        }
+                        break;
+                    case NoteType.Hold:
+                        if (note.IsSync) {
+                            if (note.SyncPairNote == null) {
+                                r.Add($"Missing sync pair note at note ID #{note.Id}.");
+                                b = false;
+                            }
+                        }
+                        if (note.NextHoldNote != null && note.PrevHoldNote != null) {
+                            r.Add($"Note ${note.Id} has both previous and next hold notes.");
+                            b = false;
+                        }
+                        if (note.NextHoldNote != null) {
+                            if (note.NextHoldNote.PrevHoldNote != note) {
+                                r.Add($"Broken next hold note detected at note ID #{note.Id}.");
+                            }
+                        }
+                        if (note.PrevHoldNote != null) {
+                            if (note.PrevHoldNote.NextHoldNote != note) {
+                                r.Add($"Broken previous hold note detected at note ID #{note.Id}.");
+                            }
+                        }
+                        break;
+                }
+            }
+            r.AddRange(from flickGroup in flickGroupNoteCount
+                       where flickGroup.Value < 2
+                       select $"[WARNING] Flick group ID #{flickGroup.Key} does not contain enough notes (at least 2).");
+            reasons = r.ToArray();
+            return b;
+        }
+
+        public string SaveToCsv() {
+            var tempFileName = Path.GetTempFileName();
+            using (var stream = File.Open(tempFileName, FileMode.Create, FileAccess.Write)) {
+                using (var writer = new StreamWriter(stream, Encoding.UTF8)) {
+                    var config = new CsvConfiguration();
+                    config.RegisterClassMap<ScoreCsvMap>();
+                    config.HasHeaderRecord = true;
+                    config.TrimFields = false;
+                    using (var csv = new CsvWriter(writer, config)) {
+                        var newList = new List<Note>(Notes);
+                        newList.Sort((n1, n2) => n1.Id.CompareTo(n2.Id));
+                        csv.WriteRecords(newList);
+                    }
+                }
+            }
+            // Bug: WTF? Why can't all the data be written into a MemoryStream right after the csv.WriteRecords() call, but a FileStream?
+            var text = File.ReadAllText(tempFileName, Encoding.UTF8);
+            File.Delete(tempFileName);
+            return text;
+        }
+
+        internal List<Note> EditableNotes => _editableNotes;
+
+        internal void RaiseScoreChanged(object sender, ScoreChangedEventArgs e) {
+            ScoreChanged?.Invoke(sender, e);
+        }
+
         private Score(string fileName, Difficulty difficulty) {
-            using (var connection = new SQLiteConnection($"Data Source={SanitizeString(fileName)};")) {
+            var sanitizedFileName = SanitizeString(fileName);
+            using (var connection = new SQLiteConnection($"Data Source={sanitizedFileName};")) {
                 using (var adapter = new SQLiteDataAdapter("SELECT name, data FROM blobs WHERE name LIKE 'musicscores/m___/%.csv' ORDER BY name;", connection)) {
                     using (var dataTable = new DataTable()) {
                         adapter.Fill(dataTable);
@@ -86,14 +169,16 @@ namespace DereTore.Application.ScoreEditor.Model {
                         using (var stream = new MemoryStream((byte[])data)) {
                             using (var reader = new StreamReader(stream, Encoding.UTF8)) {
                                 var config = new CsvConfiguration();
-                                config.RegisterClassMap<ScoreMap>();
+                                config.RegisterClassMap<ScoreCsvMap>();
+                                config.HasHeaderRecord = true;
                                 using (var csv = new CsvReader(reader, config)) {
                                     var items = new List<Note>();
                                     while (csv.Read()) {
                                         items.Add(csv.GetRecord<Note>());
                                     }
-                                    items.Sort((s1, s2) => s1.Second > s2.Second ? 1 : (s2.Second > s1.Second ? -1 : 0));
-                                    _items = items.ToArray();
+                                    items.Sort((s1, s2) => s1.HitTiming > s2.HitTiming ? 1 : (s2.HitTiming > s1.HitTiming ? -1 : 0));
+                                    _editableNotes = items;
+                                    _notes = _editableNotes.AsReadOnly();
                                 }
                             }
                         }
@@ -104,60 +189,61 @@ namespace DereTore.Application.ScoreEditor.Model {
         }
 
         private void UpdateNotesInfo() {
-            var notes = _items;
-            var holdingNotesToBeMatched = new List<Note>();
-            var swipeGroupNoteCount = new Dictionary<int, int>();
-            for (var i = 0; i < notes.Length; ++i) {
-                var note = notes[i];
+            var notes = _editableNotes;
+            var holdNotesToBeMatched = new List<Note>();
+            var flickGroupNoteCount = new Dictionary<int, int>();
+            var i = 0;
+            foreach (var note in notes) {
                 switch (note.Type) {
                     case NoteType.TapOrFlick:
-                        if (note.Sync) {
-                            var syncPairIndex = notes.FirstIndexOf(n => n != note && n.Second.Equals(note.Second) && n.Sync);
-                            if (syncPairIndex < 0) {
-                                throw new FormatException($"Missing sync pair note at note #{i + 1}.");
+                        if (note.IsSync) {
+                            var syncPairItem = notes.FirstOrDefault(n => n != note && n.HitTiming.Equals(note.HitTiming) && n.IsSync);
+                            if (syncPairItem == null) {
+                                throw new FormatException($"Missing sync pair note at note ID #{note.Id}.");
                             }
-                            note.SyncPairIndex = syncPairIndex;
+                            note.SyncPairNote = syncPairItem;
                         }
                         if (note.IsFlick) {
-                            if (!swipeGroupNoteCount.ContainsKey(note.GroupId)) {
-                                swipeGroupNoteCount.Add(note.GroupId, 0);
+                            if (!flickGroupNoteCount.ContainsKey(note.FlickGroupId)) {
+                                flickGroupNoteCount.Add(note.FlickGroupId, 0);
                             }
-                            ++swipeGroupNoteCount[note.GroupId];
-                            var nextSwipeIndex = notes.FirstIndexOf(n => n.IsFlick && n.GroupId != 0 && n.GroupId == note.GroupId, i + 1);
-                            if (nextSwipeIndex < 0) {
-                                if (swipeGroupNoteCount[note.GroupId] < 2) {
-                                    Debug.WriteLine($"[WARNING] No enough swipe notes to form a swipe group at note #{i + 1}, group ID {note.GroupId}.");
+                            ++flickGroupNoteCount[note.FlickGroupId];
+                            var nextFlickItem = notes.Skip(i + 1).FirstOrDefault(n => n.IsFlick && n.FlickGroupId != 0 && n.FlickGroupId == note.FlickGroupId);
+                            if (nextFlickItem == null) {
+                                if (flickGroupNoteCount[note.FlickGroupId] < 2) {
+                                    Debug.WriteLine($"[WARNING] No enough flick notes to form a flick group at note ID #{note.Id}, group ID {note.FlickGroupId}.");
                                 }
                             } else {
-                                note.NextFlickIndex = nextSwipeIndex;
-                                notes[nextSwipeIndex].PrevFlickIndex = i;
+                                note.NextFlickNote = nextFlickItem;
+                                nextFlickItem.PrevFlickNote = note;
                             }
                         }
                         break;
                     case NoteType.Hold:
-                        if (note.Sync) {
-                            var syncPairIndex = notes.FirstIndexOf(n => n != note && n.Second.Equals(note.Second) && n.Sync);
-                            if (syncPairIndex < 0) {
-                                throw new FormatException($"Missing sync pair note at note #{i + 1}.");
+                        if (note.IsSync) {
+                            var syncPairItem = notes.FirstOrDefault(n => n != note && n.HitTiming.Equals(note.HitTiming) && n.IsSync);
+                            if (syncPairItem == null) {
+                                throw new FormatException($"Missing sync pair note at note ID #{note.Id}.");
                             }
-                            note.SyncPairIndex = syncPairIndex;
+                            note.SyncPairNote = syncPairItem;
                         }
-                        if (holdingNotesToBeMatched.Contains(note)) {
-                            holdingNotesToBeMatched.Remove(note);
+                        if (holdNotesToBeMatched.Contains(note)) {
+                            holdNotesToBeMatched.Remove(note);
                             break;
                         }
-                        var endHoldingIndex = notes.FirstIndexOf(n => n.FinishPosition == note.FinishPosition, i + 1);
-                        if (endHoldingIndex < 0) {
-                            throw new FormatException($"Missing end holding note at note #{i + 1}.");
+                        var endHoldItem = notes.Skip(i + 1).FirstOrDefault(n => n.FinishPosition == note.FinishPosition);
+                        if (endHoldItem == null) {
+                            throw new FormatException($"Missing end hold note at note ID #{note.Id}.");
                         }
-                        note.NextHoldingIndex = endHoldingIndex;
-                        notes[endHoldingIndex].PrevHoldingIndex = i;
-                        // The end holding note always follows the trail of start holding note, so the literal value of its 'start' field is ignored.
+                        note.NextHoldNote = endHoldItem;
+                        endHoldItem.PrevHoldNote = note;
+                        // The end hold note always follows the trail of start hold note, so the literal value of its 'start' field is ignored.
                         // See song_1001, 'Master' difficulty, #189-#192, #479-#483.
-                        notes[endHoldingIndex].StartPosition = note.StartPosition;
-                        holdingNotesToBeMatched.Add(notes[endHoldingIndex]);
+                        endHoldItem.StartPosition = note.StartPosition;
+                        holdNotesToBeMatched.Add(endHoldItem);
                         break;
                 }
+                ++i;
             }
         }
 
@@ -175,8 +261,9 @@ namespace DereTore.Application.ScoreEditor.Model {
             }
             return shouldCoverWithQuotes ? "\"" + s + "\"" : s;
         }
-        
-        private readonly Note[] _items;
+
+        private readonly List<Note> _editableNotes;
+        private readonly ReadOnlyCollection<Note> _notes;
 
         private static readonly char[] CommandlineEscapeChars = { ' ', '&', '%', '#', '@', '!', ',', '~', '+', '=', '(', ')' };
 

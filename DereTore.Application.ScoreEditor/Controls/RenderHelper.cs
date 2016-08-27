@@ -1,56 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using DereTore.Application.ScoreEditor.Model;
 
 namespace DereTore.Application.ScoreEditor.Controls {
     internal static class RenderHelper {
 
-        public static void DrawAvatars(Graphics graphics, Size clientSize) {
+        public static void DrawAvatars(RenderParams renderParams) {
+            var clientSize = renderParams.ClientSize;
             var centerY = clientSize.Height * BaseLineYPosition;
             foreach (var position in AvatarCenterXPositions) {
                 var centerX = clientSize.Width * position;
-                graphics.FillEllipse(Brushes.Firebrick, centerX - AvatarCircleRadius, centerY - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
+                renderParams.Graphics.FillEllipse(Brushes.Firebrick, centerX - AvatarCircleRadius, centerY - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
             }
         }
 
-        public static void DrawCeilingLine(Graphics graphics, Size clientSize) {
+        public static void DrawCeilingLine(RenderParams renderParams) {
+            var clientSize = renderParams.ClientSize;
             float p1 = AvatarCenterXPositions[0], p5 = AvatarCenterXPositions[AvatarCenterXPositions.Length - 1];
             float x1 = clientSize.Width * p1, x2 = clientSize.Width * p5;
-            float ceilingY = FutureNoteCeiling * clientSize.Height;
-            graphics.DrawLine(Pens.Red, x1, ceilingY, x2, ceilingY);
+            var ceilingY = FutureNoteCeiling * clientSize.Height;
+            renderParams.Graphics.DrawLine(Pens.Red, x1, ceilingY, x2, ceilingY);
         }
 
-        public static void GetVisibleNotes(float now, Note[] notes, out int startIndex, out int endIndex) {
+        public static void GetVisibleNotes(double now, List<Note> notes, out int startIndex, out int endIndex) {
             startIndex = -1;
             endIndex = -1;
+            var i = 0;
             // Notes which have connection lines should be drawn, but only their lines. Case for holding time exceeds falling time window.
-            for (var i = 0; i < notes.Length; ++i) {
-                var s = notes[i];
-                if (startIndex < 0 && s.Second > now - PastTimeWindow) {
+            foreach (var note in notes) {
+                if (startIndex < 0 && note.HitTiming > now - PastTimeWindow) {
                     startIndex = i;
                 }
-                if (s.Second > now + FutureTimeWindow) {
+                if (note.HitTiming > now + FutureTimeWindow) {
                     break;
                 }
                 endIndex = i;
+                ++i;
             }
         }
 
-        public static void DrawNotes(Graphics graphics, Size clientSize, float now, List<Note> notes, int startIndex, int endIndex) {
+        public static void DrawNotes(RenderParams renderParams, IList<Note> notes, int startIndex, int endIndex) {
             if (startIndex < 0) {
                 return;
             }
-            for (var i = startIndex; i <= endIndex; ++i) {
-                var note = notes[i];
+            var selectedNotes = notes.Skip(startIndex).Take(endIndex - startIndex + 1);
+            foreach (var note in selectedNotes) {
                 switch (note.Type) {
                     case NoteType.TapOrFlick:
                     case NoteType.Hold:
-                        if (note.Selected && IsNoteOnStage(note, now)) {
-                            DrawSelectedRect(graphics, clientSize, note, now);
+                        if (IsNoteOnStage(note, renderParams.Now)) {
+                            if (note.EditorSelected) {
+                                DrawSelectedRect(renderParams, note, Pens.White);
+                            } else if (note.EditorSelected2) {
+                                DrawSelectedRect(renderParams, note, Pens.LightGreen);
+                            }
                         }
-                        if (note.Sync) {
-                            DrawSyncLine(graphics, clientSize, note, notes[note.SyncPairIndex], now);
+                        if (note.IsSync) {
+                            DrawSyncLine(renderParams, note, note.SyncPairNote);
                         }
                         break;
                 }
@@ -58,18 +66,17 @@ namespace DereTore.Application.ScoreEditor.Controls {
                     case NoteType.TapOrFlick:
                         if (note.IsFlick) {
                             if (note.HasNextFlick) {
-                                DrawFlickLine(graphics, clientSize, note, notes[note.NextFlickIndex], now);
-                                //DrawFlickLine(graphics, clientSize, notes[note.NextFlickIndex], note, now);
+                                DrawFlickLine(renderParams, note, note.NextFlickNote);
                             }
                         }
                         break;
                     case NoteType.Hold:
-                        if (note.HasNextHolding) {
-                            DrawHoldLine(graphics, clientSize, note, notes[note.NextHoldingIndex], now);
+                        if (note.HasNextHold) {
+                            DrawHoldLine(renderParams, note, note.NextHoldNote);
                         }
-                        if (note.HasPrevHolding) {
-                            if (!IsNoteOnStage(notes[note.PrevHoldingIndex], now)) {
-                                DrawHoldLine(graphics, clientSize, notes[note.PrevHoldingIndex], note, now);
+                        if (note.HasPrevHold) {
+                            if (!IsNoteOnStage(note.PrevHoldNote, renderParams.Now)) {
+                                DrawHoldLine(renderParams, note.PrevHoldNote, note);
                             }
                         }
                         break;
@@ -77,74 +84,55 @@ namespace DereTore.Application.ScoreEditor.Controls {
                 switch (note.Type) {
                     case NoteType.TapOrFlick:
                     case NoteType.Hold:
-                        DrawSimpleNote(graphics, clientSize, note, now);
+                        DrawSimpleNote(renderParams, note);
                         break;
                 }
             }
         }
 
-        public static void DrawSelectedRect(Graphics graphics, Size clientSize, Note note, float now) {
-            float x = GetNoteXPosition(note, clientSize, now), y = GetNoteYPosition(note, clientSize, now);
-            graphics.DrawRectangle(Pens.White, x - AvatarCircleRadius, y - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
+        public static void DrawSelectedRect(RenderParams renderParams, Note note, Pen pen) {
+            float x = GetNoteXPosition(renderParams, note), y = GetNoteYPosition(renderParams, note);
+            renderParams.Graphics.DrawRectangle(pen, x - AvatarCircleRadius, y - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
         }
 
-        public static void DrawSyncLine(Graphics graphics, Size clientSize, Note note1, Note note2, float now) {
+        public static void DrawSyncLine(RenderParams renderParams, Note note1, Note note2) {
+            var now = renderParams.Now;
             if (!IsNoteOnStage(note1, now) || !IsNoteOnStage(note2, now)) {
                 return;
             }
-            float x1 = GetNoteXPosition(note1, clientSize, now),
-                y = GetNoteYPosition(note2, clientSize, now),
-                x2 = GetNoteXPosition(note2, clientSize, now);
+            float x1 = GetNoteXPosition(renderParams, note1),
+                y = GetNoteYPosition(renderParams, note2),
+                x2 = GetNoteXPosition(renderParams, note2);
             float xLeft = Math.Min(x1, x2), xRight = Math.Max(x1, x2);
-            graphics.DrawLine(Pens.DodgerBlue, xLeft + AvatarCircleRadius, y, xRight - AvatarCircleRadius, y);
+            renderParams.Graphics.DrawLine(Pens.DodgerBlue, xLeft + AvatarCircleRadius, y, xRight - AvatarCircleRadius, y);
         }
 
-        public static void DrawHoldLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now) {
-            DrawSimpleLine(graphics, clientSize, startNote, endNote, now, Pens.Yellow);
+        public static void DrawHoldLine(RenderParams renderParams, Note startNote, Note endNote) {
+            DrawSimpleLine(renderParams, startNote, endNote, Pens.Yellow);
         }
 
-        public static void DrawFlickLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now) {
-            DrawSimpleLine(graphics, clientSize, startNote, endNote, now, Pens.OliveDrab);
+        public static void DrawFlickLine(RenderParams renderParams, Note startNote, Note endNote) {
+            DrawSimpleLine(renderParams, startNote, endNote, Pens.OliveDrab);
         }
 
-        public static void DrawSimpleLine(Graphics graphics, Size clientSize, Note startNote, Note endNote, float now, Pen pen) {
+        public static void DrawSimpleLine(RenderParams renderParams, Note startNote, Note endNote, Pen pen) {
+            var graphics = renderParams.Graphics;
+            var now = renderParams.Now;
             OnStageStatus s1 = GetNoteOnStageStatus(startNote, now), s2 = GetNoteOnStageStatus(endNote, now);
             if (s1 != OnStageStatus.OnStage && s2 != OnStageStatus.OnStage && s1 == s2) {
                 return;
             }
             float x1, x2, y1, y2;
-            GetNotePairPositions(startNote, endNote, clientSize, now, out x1, out x2, out y1, out y2);
+            GetNotePairPositions(renderParams, startNote, endNote, out x1, out x2, out y1, out y2);
             graphics.DrawLine(pen, x1, y1, x2, y2);
         }
 
-        public static void GetNotePairPositions(Note note1, Note note2, Size clientSize, float now, out float x1, out float x2, out float y1, out float y2) {
-            if (IsNotePassed(note1, now)) {
-                x1 = GetAvatarXPosition(clientSize, note1.FinishPosition);
-                y1 = GetAvatarYPosition(clientSize);
-            } else if (IsNoteComing(note1, now)) {
-                x1 = GetBirthXPosition(clientSize, note1.StartPosition);
-                y1 = GetBirthYPosition(clientSize);
-            } else {
-                x1 = GetNoteXPosition(note1, clientSize, now);
-                y1 = GetNoteYPosition(note1, clientSize, now);
-            }
-            if (IsNotePassed(note2, now)) {
-                x2 = GetAvatarXPosition(clientSize, note2.FinishPosition);
-                y2 = GetAvatarYPosition(clientSize);
-            } else if (IsNoteComing(note2, now)) {
-                x2 = GetBirthXPosition(clientSize, note2.StartPosition);
-                y2 = GetBirthYPosition(clientSize);
-            } else {
-                x2 = GetNoteXPosition(note2, clientSize, now);
-                y2 = GetNoteYPosition(note2, clientSize, now);
-            }
-        }
-
-        public static void DrawSimpleNote(Graphics graphics, Size clientSize, Note note, float now) {
-            if (!IsNoteOnStage(note, now)) {
+        public static void DrawSimpleNote(RenderParams renderParams, Note note) {
+            if (!IsNoteOnStage(note, renderParams.Now)) {
                 return;
             }
-            float x = GetNoteXPosition(note, clientSize, now), y = GetNoteYPosition(note, clientSize, now);
+            var graphics = renderParams.Graphics;
+            float x = GetNoteXPosition(renderParams, note), y = GetNoteYPosition(renderParams, note);
             graphics.FillEllipse(Brushes.DarkMagenta, x - AvatarCircleRadius, y - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
             if (note.IsFlick) {
                 switch (note.FlickType) {
@@ -158,18 +146,49 @@ namespace DereTore.Application.ScoreEditor.Controls {
             }
         }
 
-        public static float GetNoteXPosition(Note note, Size clientSize, float now) {
-            var timeRemaining = note.Second - now;
-            float startPos = AvatarCenterXPositions[(int)note.StartPosition - 1] * clientSize.Width,
-                endPos = AvatarCenterXPositions[(int)note.FinishPosition - 1] * clientSize.Width;
-            return endPos - (endPos - startPos) * timeRemaining / FutureTimeWindow;
+        public static void GetNotePairPositions(RenderParams renderParams, Note note1, Note note2, out float x1, out float x2, out float y1, out float y2) {
+            var now = renderParams.Now;
+            var clientSize = renderParams.ClientSize;
+            if (IsNotePassed(note1, now)) {
+                x1 = GetXByNotePosition(clientSize, note1.FinishPosition);
+                y1 = GetAvatarYPosition(clientSize);
+            } else if (IsNoteComing(note1, now)) {
+                x1 = GetXByNotePosition(clientSize, renderParams.IsPreview ? note1.StartPosition : note1.FinishPosition);
+                y1 = GetBirthYPosition(clientSize);
+            } else {
+                x1 = GetNoteXPosition(renderParams, note1);
+                y1 = GetNoteYPosition(renderParams, note1);
+            }
+            if (IsNotePassed(note2, now)) {
+                x2 = GetXByNotePosition(clientSize, note2.FinishPosition);
+                y2 = GetAvatarYPosition(clientSize);
+            } else if (IsNoteComing(note2, now)) {
+                x2 = GetXByNotePosition(clientSize, renderParams.IsPreview ? note2.StartPosition : note2.FinishPosition);
+                y2 = GetBirthYPosition(clientSize);
+            } else {
+                x2 = GetNoteXPosition(renderParams, note2);
+                y2 = GetNoteYPosition(renderParams, note2);
+            }
         }
 
-        public static float GetNoteYPosition(Note note, Size clientSize, float now) {
-            var timeRemaining = note.Second - now;
+        public static float GetNoteXPosition(RenderParams renderParams, Note note) {
+            var timeRemaining = note.HitTiming - renderParams.Now;
+            var clientSize = renderParams.ClientSize;
+            var endPos = AvatarCenterXPositions[(int)note.FinishPosition - 1] * clientSize.Width;
+            if (renderParams.IsPreview) {
+                var startPos = AvatarCenterXPositions[(int)note.StartPosition - 1] * clientSize.Width;
+                return endPos - (endPos - startPos) * (float)timeRemaining / FutureTimeWindow;
+            } else {
+                return endPos;
+            }
+        }
+
+        public static float GetNoteYPosition(RenderParams renderParams, Note note) {
+            var timeRemaining = note.HitTiming - renderParams.Now;
+            var clientSize = renderParams.ClientSize;
             float ceiling = FutureNoteCeiling * clientSize.Height,
                 baseLine = BaseLineYPosition * clientSize.Height;
-            return baseLine - (baseLine - ceiling) * timeRemaining / FutureTimeWindow;
+            return baseLine - (baseLine - ceiling) * (float)timeRemaining / FutureTimeWindow;
         }
 
         public static float GetAvatarXPosition(Size clientSize, NotePosition position) {
@@ -180,7 +199,7 @@ namespace DereTore.Application.ScoreEditor.Controls {
             return clientSize.Height * BaseLineYPosition;
         }
 
-        public static float GetBirthXPosition(Size clientSize, NotePosition position) {
+        public static float GetXByNotePosition(Size clientSize, NotePosition position) {
             return clientSize.Width * AvatarCenterXPositions[(int)position - 1];
         }
 
@@ -188,26 +207,26 @@ namespace DereTore.Application.ScoreEditor.Controls {
             return clientSize.Height * FutureNoteCeiling;
         }
 
-        public static OnStageStatus GetNoteOnStageStatus(Note note, float now) {
-            if (note.Second < now) {
+        public static OnStageStatus GetNoteOnStageStatus(Note note, double now) {
+            if (note.HitTiming < now) {
                 return OnStageStatus.Passed;
             }
-            if (note.Second > now + FutureTimeWindow) {
+            if (note.HitTiming > now + FutureTimeWindow) {
                 return OnStageStatus.Upcoming;
             }
             return OnStageStatus.OnStage;
         }
 
-        public static bool IsNoteOnStage(Note note, float now) {
-            return now <= note.Second && note.Second <= now + FutureTimeWindow;
+        public static bool IsNoteOnStage(Note note, double now) {
+            return now <= note.HitTiming && note.HitTiming <= now + FutureTimeWindow;
         }
 
-        public static bool IsNotePassed(Note note, float now) {
-            return note.Second < now;
+        public static bool IsNotePassed(Note note, double now) {
+            return note.HitTiming < now;
         }
 
-        public static bool IsNoteComing(Note note, float now) {
-            return note.Second > now + FutureTimeWindow;
+        public static bool IsNoteComing(Note note, double now) {
+            return note.HitTiming > now + FutureTimeWindow;
         }
 
         public enum OnStageStatus {

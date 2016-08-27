@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using DereTore.ACB;
 using DereTore.HCA;
 using NAudio.CoreAudioApi;
-using NAudio.Utils;
 using NAudio.Wave;
 using AudioOut = NAudio.Wave.WasapiOut;
 
@@ -34,17 +32,27 @@ namespace DereTore.Application.ScoreEditor {
 
         public void Play() {
             if (IsPlaying) {
-                Stop();
+                if (IsPaused) {
+                    IsPaused = false;
+                } else {
+                    Stop();
+                }
             }
             _soundPlayer?.Play();
-            _stopwatch.Start();
             IsPlaying = true;
         }
 
         public void Stop() {
             _soundPlayer?.Stop();
-            _stopwatch.Reset();
             IsPlaying = false;
+        }
+
+        public void Pause() {
+            if (!IsPlaying || IsPaused) {
+                return;
+            }
+            _soundPlayer?.Pause();
+            IsPaused = true;
         }
 
         public TimeSpan CurrentTime {
@@ -67,6 +75,19 @@ namespace DereTore.Application.ScoreEditor {
             private set {
                 lock (_syncObject) {
                     _isPlaying = value;
+                }
+            }
+        }
+
+        public bool IsPaused {
+            get {
+                lock (_syncObject) {
+                    return _isPaused;
+                }
+            }
+            private set {
+                lock (_syncObject) {
+                    _isPaused = value;
                 }
             }
         }
@@ -107,7 +128,6 @@ namespace DereTore.Application.ScoreEditor {
             _hcaDataStream = null;
             _acb = null;
             _soundPlayer = null;
-            _stopwatch = null;
         }
 
         private LiveMusicPlayer(Stream stream, string acbFileName, DecodeParams decodeParams) {
@@ -118,10 +138,9 @@ namespace DereTore.Application.ScoreEditor {
             _hcaDataStream = _acb.OpenDataStream(_internalName);
             _hca = new RawSourceWaveStream(new HcaAudioStream(_hcaDataStream, decodeParams), HcaWaveProvider.DefaultWaveFormat);
             _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
-            //_soundPlayer = new DirectSoundOut();
+            //_soundPlayer = new AudioOut();
             _soundPlayer.Init(_hca);
             _sourceStream = stream;
-            _stopwatch = new Stopwatch();
             _isPlaying = false;
             _syncObject = new object();
             var lengthInSeconds = (float)_hca.TotalTime.TotalSeconds;
@@ -134,7 +153,7 @@ namespace DereTore.Application.ScoreEditor {
         private WaveStream _hca;
         private AudioOut _soundPlayer;
         private bool _isPlaying;
-        private Stopwatch _stopwatch;
+        private bool _isPaused;
         private readonly object _syncObject;
         private readonly TimeSpan _totalLength;
         private readonly string _internalName;

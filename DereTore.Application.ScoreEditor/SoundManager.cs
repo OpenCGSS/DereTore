@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using DereTore.HCA;
 using DereTore.StarlightStage;
-using NAudio.Wave;
 using AudioOut = NAudio.Wave.DirectSoundOut;
 
 namespace DereTore.Application.ScoreEditor {
@@ -31,6 +28,9 @@ namespace DereTore.Application.ScoreEditor {
         }
 
         public void PlayHca(string fileName) {
+            if (IsUserSeeking) {
+                return;
+            }
             int index;
             var @out = GetFreeOutput(fileName, out index) ?? CreateOutput(fileName, out index);
             _hcaWaveProviders[index].Seek(0, SeekOrigin.Begin);
@@ -43,23 +43,26 @@ namespace DereTore.Application.ScoreEditor {
             _soundStreams.Clear();
             _hcaWaveProviders.Clear();
             _fileNames.Clear();
-            _outs.Clear();
+            _audioOuts.Clear();
             _playingList.Clear();
         }
+
+        public bool IsUserSeeking { get; set; }
 
         protected override void Dispose(bool disposing) {
             DisposeInternal();
         }
 
         private void DisposeInternal() {
-            foreach (var memoryStream in _soundStreams) {
-                memoryStream.Dispose();
+            foreach (var audioOut in _audioOuts) {
+                audioOut.Stop();
+                audioOut.Dispose();
             }
             foreach (var hcaWaveProvider in _hcaWaveProviders) {
                 hcaWaveProvider.Dispose();
             }
-            foreach (var wasapiOut in _outs) {
-                wasapiOut.Dispose();
+            foreach (var memoryStream in _soundStreams) {
+                memoryStream.Dispose();
             }
         }
 
@@ -68,10 +71,10 @@ namespace DereTore.Application.ScoreEditor {
                 index = -1;
                 return null;
             }
-            for (var i = 0; i < _outs.Count; ++i) {
+            for (var i = 0; i < _audioOuts.Count; ++i) {
                 if (_fileNames[i] == fileName && !_playingList[i]) {
                     index = i;
-                    return _outs[i];
+                    return _audioOuts[i];
                 }
             }
             index = -1;
@@ -107,12 +110,14 @@ namespace DereTore.Application.ScoreEditor {
             var waveProvider = new HcaWaveProvider(memory, new DecodeParams {
                 Key1 = CgssCipher.Key1,
                 Key2 = CgssCipher.Key2
-            });
+            }) {
+                AllowDisposedOperations = true // In case of closing the form when sound effects are still playing
+            };
             _hcaWaveProviders.Add(waveProvider);
             _playingList.Add(false);
             var @out = new AudioOut();
-            _outs.Add(@out);
-            index = _outs.Count - 1;
+            _audioOuts.Add(@out);
+            index = _audioOuts.Count - 1;
             var index2 = index;
             @out.PlaybackStopped += (s, e) => _playingList[index2] = false;
             @out.Init(waveProvider);
@@ -123,14 +128,14 @@ namespace DereTore.Application.ScoreEditor {
             _soundStreams = new List<MemoryStream>();
             _fileNames = new List<string>();
             _hcaWaveProviders = new List<HcaWaveProvider>();
-            _outs = new List<AudioOut>();
+            _audioOuts = new List<AudioOut>();
             _playingList = new List<bool>();
         }
 
         private readonly List<MemoryStream> _soundStreams;
         private readonly List<HcaWaveProvider> _hcaWaveProviders;
         private readonly List<string> _fileNames;
-        private readonly List<AudioOut> _outs;
+        private readonly List<AudioOut> _audioOuts;
         private readonly List<bool> _playingList;
 
         private static SoundManager _instance;

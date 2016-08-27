@@ -1,4 +1,5 @@
 ﻿using System;
+using DereTore.Application.ScoreEditor.Forms;
 using App = System.Windows.Forms.Application;
 
 namespace DereTore.Application.ScoreEditor {

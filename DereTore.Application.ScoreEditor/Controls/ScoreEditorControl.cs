@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -9,32 +9,27 @@ namespace DereTore.Application.ScoreEditor.Controls {
     public sealed class ScoreEditorControl : DoubleBufferedPictureBox {
 
         public ScoreEditorControl() {
-            Notes = new List<Note>();
+            MouseEventsEnabled = true;
         }
 
-        public List<Note> Notes { get; }
-
-        public void SetScore(Score score) {
-            Notes.Clear();
-            Notes.AddRange(score.Items);
-        }
-
-        public bool EnableMouse { get; set; }
+        [Browsable(false)]
+        public bool MouseEventsEnabled { get; set; }
 
         public event EventHandler<NoteEnteringOrExitingStageEventArgs> NoteEnteringOrExitingStage;
+        public event EventHandler<EventArgs> SelectedNoteChanged;
 
         public void JudgeNotesEnteringOrExiting(TimeSpan timeSpan) {
-            var now = (float)timeSpan.TotalSeconds;
-            foreach (var note in Notes) {
+            var now = timeSpan.TotalSeconds;
+            foreach (var note in Score.Notes) {
                 if (RenderHelper.IsNoteOnStage(note, now)) {
-                    if (!note.Visible) {
-                        NoteEnteringOrExitingStage?.Invoke(this, new NoteEnteringOrExitingStageEventArgs(note));
-                        note.Visible = true;
+                    if (!note.EditorVisible) {
+                        NoteEnteringOrExitingStage?.Invoke(this, new NoteEnteringOrExitingStageEventArgs(note, true));
+                        note.EditorVisible = true;
                     }
                 } else {
-                    if (note.Visible) {
-                        NoteEnteringOrExitingStage?.Invoke(this, new NoteEnteringOrExitingStageEventArgs(note));
-                        note.Visible = false;
+                    if (note.EditorVisible) {
+                        NoteEnteringOrExitingStage?.Invoke(this, new NoteEnteringOrExitingStageEventArgs(note, false));
+                        note.EditorVisible = false;
                     }
                 }
             }
@@ -44,11 +39,32 @@ namespace DereTore.Application.ScoreEditor.Controls {
             _elapsed = elapsed;
         }
 
+        public Score Score {
+            get {
+                return _score;
+            }
+            set {
+                if (_score != null) {
+                    _score.ScoreChanged -= Score_ScoreChanged;
+                }
+                if (value == null) {
+                    SelectedNote = null;
+                }
+                _score = value;
+                if (_score != null) {
+                    _score.ScoreChanged += Score_ScoreChanged;
+                }
+            }
+        }
+
         public Note HitTest(float x, float y) {
+            if (Score == null) {
+                return null;
+            }
             var now = (float)_elapsed.TotalSeconds;
-            var clientSize = ClientSize;
-            foreach (var note in Notes.Where(n => n.IsGamingNote)) {
-                float nx = RenderHelper.GetNoteXPosition(note, clientSize, now), ny = RenderHelper.GetNoteYPosition(note, clientSize, now);
+            var renderParams = new RenderParams(null, ClientSize, now, IsPreview);
+            foreach (var note in Score.Notes.Where(n => n.IsGamingNote)) {
+                float nx = RenderHelper.GetNoteXPosition(renderParams, note), ny = RenderHelper.GetNoteYPosition(renderParams, note);
                 var rect = new RectangleF(nx - RenderHelper.AvatarCircleRadius, ny - RenderHelper.AvatarCircleRadius, RenderHelper.AvatarCircleDiameter, RenderHelper.AvatarCircleDiameter);
                 if (rect.Contains(x, y)) {
                     return note;
@@ -61,27 +77,130 @@ namespace DereTore.Application.ScoreEditor.Controls {
             return HitTest(pt.X, pt.Y);
         }
 
+        public Note SelectedNote {
+            get {
+                return _selectedNote;
+            }
+            private set {
+                var b = value != _selectedNote;
+                _selectedNote = value;
+                if (b) {
+                    SelectedNoteChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        /// <summary>
+        /// True: preview mode (dynamic trail)
+        /// False: score editing mode (no trail)
+        /// </summary>
+        public bool IsPreview { get; set; }
+
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
             if (_isPainting || Renderer.Instance.IsRendering) {
                 return;
             }
             _isPainting = true;
-            e.Graphics.Clear(Color.Black);
-            Renderer.Instance.RenderFrame(e.Graphics, ClientSize, _elapsed, Notes);
+            e.Graphics.Clear(MouseEventsEnabled ? MouseEventAcceptedColor : MouseEventIgnoredColor);
+            var renderParams = new RenderParams(e.Graphics, ClientSize, _elapsed.TotalSeconds, IsPreview);
+            Renderer.Instance.RenderFrame(renderParams, Score?.Notes);
             _isPainting = false;
         }
 
         protected override void OnMouseClick(MouseEventArgs e) {
-            base.OnMouseClick(e);
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            if (SelectedNote != null) {
+                SelectedNote.EditorSelected = false;
+                SelectedNote = null;
+            }
             var note = HitTest(e.X, e.Y);
             if (note != null) {
-                note.Selected = true;
+                note.EditorSelected = !note.EditorSelected;
+                SelectedNote = note.EditorSelected ? note : null;
+            } else {
+                SelectedNote = null;
+            }
+            base.OnMouseClick(e);
+        }
+
+        protected override void OnMouseDoubleClick(MouseEventArgs e) {
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            base.OnMouseDoubleClick(e);
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e) {
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e) {
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            base.OnMouseUp(e);
+        }
+
+        protected override void OnMouseEnter(EventArgs e) {
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            base.OnMouseEnter(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e) {
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            base.OnMouseLeave(e);
+        }
+
+        protected override void OnMouseHover(EventArgs e) {
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            base.OnMouseHover(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e) {
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            base.OnMouseMove(e);
+        }
+
+        protected override void OnMouseWheel(MouseEventArgs e) {
+            if (!MouseEventsEnabled) {
+                return;
+            }
+            base.OnMouseWheel(e);
+        }
+
+        private void Score_ScoreChanged(object sender, ScoreChangedEventArgs e) {
+            switch (e.Reason) {
+                case ScoreChangeReason.Removing:
+                    if (e.Note == SelectedNote) {
+                        SelectedNote = null;
+                    }
+                    break;
+                default:
+                    break;
             }
         }
 
         private bool _isPainting;
         private TimeSpan _elapsed;
+        private Note _selectedNote;
+        private Score _score;
+
+        private static readonly Color MouseEventAcceptedColor = Color.FromArgb(0x20, 0x20, 0x20);
+        private static readonly Color MouseEventIgnoredColor = Color.Black;
 
     }
 }

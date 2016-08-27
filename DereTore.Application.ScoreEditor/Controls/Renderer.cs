@@ -31,16 +31,19 @@ namespace DereTore.Application.ScoreEditor.Controls {
             }
         }
 
-        public void RenderFrame(Graphics graphics, Size clientSize, TimeSpan timeSpan, List<Note> notes) {
+        public void RenderFrame(RenderParams renderParams, IList<Note> notes) {
             IsRendering = true;
-            RenderHelper.DrawCeilingLine(graphics, clientSize);
-            RenderHelper.DrawAvatars(graphics, clientSize);
-            var now = (float)timeSpan.TotalSeconds;
+            RenderHelper.DrawCeilingLine(renderParams);
+            RenderHelper.DrawAvatars(renderParams);
+            if (notes == null) {
+                IsRendering = false;
+                return;
+            }
             int startIndex, endIndex;
             //GetVisibleNotes(now, scores, out startIndex, out endIndex);
             startIndex = 0;
             endIndex = notes.Count - 1;
-            RenderHelper.DrawNotes(graphics, clientSize, now, notes, startIndex, endIndex);
+            RenderHelper.DrawNotes(renderParams, notes, startIndex, endIndex);
             IsRendering = false;
         }
 

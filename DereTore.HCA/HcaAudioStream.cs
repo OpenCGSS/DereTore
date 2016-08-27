@@ -36,6 +36,9 @@ namespace DereTore.HCA {
         }
 
         public override long Seek(long offset, SeekOrigin origin) {
+            if (!EnsureNotDisposed()) {
+                return 0;
+            }
             switch (origin) {
                 case SeekOrigin.Begin:
                     Position = offset;
@@ -60,6 +63,9 @@ namespace DereTore.HCA {
         }
 
         public override int Read(byte[] buffer, int offset, int count) {
+            if (!EnsureNotDisposed()) {
+                return 0;
+            }
             if (!HasMoreData()) {
                 return 0;
             }
@@ -74,36 +80,40 @@ namespace DereTore.HCA {
             }
             var memoryCache = _memoryCache;
             var hcaInfo = _hcaInfo;
-            var positionInFileStream = GetPositionInFileStream();
+            var positionInWaveFileStream = GetPositionInWaveFileStream();
             int read;
             var headerCrossData = false;
             long origPosInStream = 0;
-            if (positionInFileStream + count < hcaInfo.DataOffset) {
+            var headerSize = _headerSize;
+            if (positionInWaveFileStream + count < headerSize) {
                 read = memoryCache.Read(buffer, offset, count);
                 Position += read;
                 return read;
             } else {
-                if (positionInFileStream < hcaInfo.DataOffset) {
-                    origPosInStream = positionInFileStream;
-                    positionInFileStream = hcaInfo.DataOffset;
+                if (positionInWaveFileStream < headerSize) {
+                    origPosInStream = positionInWaveFileStream;
+                    positionInWaveFileStream = headerSize;
                     headerCrossData = true;
                 }
             }
-            EnsureDecoded(positionInFileStream, count);
+            EnsureDecoded(positionInWaveFileStream, count);
             if (headerCrossData) {
-                positionInFileStream = origPosInStream;
+                positionInWaveFileStream = origPosInStream;
             }
-            memoryCache.Seek(positionInFileStream, SeekOrigin.Begin);
-            if (HasLoop) {
-                var headerSize = _headerSize;
-                var decoder = _decoder;
-                var endLoopDataPositionIncludingHeader = hcaInfo.LoopEnd * decoder.GetMinWaveDataBufferSize() + headerSize;
-                var shouldRead = (int)Math.Min(count, endLoopDataPositionIncludingHeader - positionInFileStream);
-                read = memoryCache.Read(buffer, offset, shouldRead);
-            } else {
-                read = memoryCache.Read(buffer, offset, count);
+            try {
+                memoryCache.Seek(positionInWaveFileStream, SeekOrigin.Begin);
+                if (HasLoop) {
+                    var decoder = _decoder;
+                    var endLoopDataPositionIncludingHeader = hcaInfo.LoopEnd * decoder.GetMinWaveDataBufferSize() + headerSize;
+                    var shouldRead = (int)Math.Min(count, endLoopDataPositionIncludingHeader - positionInWaveFileStream);
+                    read = memoryCache.Read(buffer, offset, shouldRead);
+                } else {
+                    read = memoryCache.Read(buffer, offset, count);
+                }
+                Position += read;
+            } catch (ObjectDisposedException) {
+                return 0;
             }
-            Position += read;
             return read;
         }
 
@@ -117,6 +127,9 @@ namespace DereTore.HCA {
 
         public override long Length {
             get {
+                if (!EnsureNotDisposed()) {
+                    return 0;
+                }
                 if (_length != null) {
                     return _length.Value;
                 }
@@ -137,9 +150,13 @@ namespace DereTore.HCA {
 
         public override long Position {
             get {
+                if (!EnsureNotDisposed()) {
+                    return 0;
+                }
                 return _position;
             }
             set {
+                EnsureNotDisposed();
                 if (value < 0 || value > Length) {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
@@ -155,12 +172,29 @@ namespace DereTore.HCA {
 
         public int LengthInSamples => _decoder.LengthInSamples;
 
+        public bool IsDisposed => _isDisposed;
+
+        public bool AllowDisposedOperations { get; set; }
+
         protected override void Dispose(bool disposing) {
             _memoryCache.Dispose();
+            _isDisposed = true;
             base.Dispose(disposing);
         }
 
-        private long GetPositionInFileStream() {
+        private bool EnsureNotDisposed() {
+            if (IsDisposed) {
+                if (AllowDisposedOperations) {
+                    return false;
+                } else {
+                    throw new ObjectDisposedException(typeof(HcaAudioStream).Name);
+                }
+            } else {
+                return true;
+            }
+        }
+
+        private long GetPositionInWaveFileStream() {
             var position = Position;
             if (!HasLoop) {
                 return position;
@@ -245,6 +279,7 @@ namespace DereTore.HCA {
         private readonly Dictionary<long, long> _decodedBlocks;
         private long? _length;
         private long _position;
+        private bool _isDisposed;
 
         private readonly byte[] _decodeBuffer;
 
