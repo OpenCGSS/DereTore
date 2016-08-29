@@ -24,10 +24,3 @@ of delay between the music and the score, and that's why I made the elapsed time
 
 - Microsoft .NET Framework 3.5
 - Windows Vista or above *(usage of WAS API)*
-
-------
-
-**Known issue(s):**
-
-- Seeking when playing may cause decoding error (noise can be heard).
-- Closing the window when playing may cause program crash.

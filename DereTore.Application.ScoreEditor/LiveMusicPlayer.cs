@@ -57,7 +57,19 @@ namespace DereTore.Application.ScoreEditor {
 
         public TimeSpan CurrentTime {
             get { return _hca.CurrentTime; }
-            set { _hca.CurrentTime = value; }
+            set {
+                var waveStream = _hca;
+                waveStream.CurrentTime = value;
+                var position = waveStream.Position;
+                var blockAlign = waveStream.BlockAlign;
+                if (position % blockAlign != 0) {
+                    position = (long)(Math.Round(position / (double)blockAlign) * blockAlign);
+                    if (position < 0) {
+                        position = 0;
+                    }
+                    waveStream.Position = position;
+                }
+            }
         }
 
         public Stream SourceStream => _sourceStream;
