@@ -71,10 +71,10 @@ DereTore.HCA.
 
 A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.Application.AcbMaker/README.md).
 
-**DereTore.Application.Toolchain**
+**DereTore.Application.MusicToolchain**
 
 The utility that integrates **Encoder**, **CipherConverter** and **AcbMaker** into a streamline. Here
-is its [readme](DereTore.Application.Toolchain/README.md).
+is its [readme](DereTore.Application.MusicToolchain/README.md).
 
 **DereTore.Application.ScoreEditor**
 
