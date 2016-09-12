@@ -53,32 +53,36 @@ The console test application for DereTore.ACB.
 
 ### Applications
 
-**DereTore.Application.CipherConverter**
+**DereTore.Applications.CipherConverter**
 
 The C# version of HCA cipher conversion utility. See **hcacc** in [hcatools](https://github.com/Hozuki/hcatools).
 
-**DereTore.Application.Encoder**
+**DereTore.Applications.Encoder**
 
 The C# version of HCA encoding utility. See **hcaenc** in [hcatools](https://github.com/Hozuki/hcatools).
 
-**DereTore.Application.Hca2Wav**
+**DereTore.Applications.Hca2Wav**
 
 A console appilcation that converts HCA audio to WAVE audio. It is similar to DereTore.HCA.Test,
 but it outputs to a stream, in fixed linear sequence. It can be used as a clearer demo to integrate
 DereTore.HCA.
 
-**DereTore.Application.AcbMaker**
+**DereTore.Applications.AcbMaker**
 
 A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.Application.AcbMaker/README.md).
 
-**DereTore.Application.MusicToolchain**
+**DereTore.Applications.MusicToolchain**
 
 The utility that integrates **Encoder**, **CipherConverter** and **AcbMaker** into a streamline. Here
 is its [readme](DereTore.Application.MusicToolchain/README.md).
 
-**DereTore.Application.ScoreEditor**
+**DereTore.Applications.ScoreEditor**
 
 Viewing and editing scores (collections of notes) of live music. Here is its [readme](DereTore.Application.ScoreEditor/README.md).
+
+**DereTore.Applications.StarlightComposer**
+
+Coming soon...
 
 ## License
 
