@@ -17,6 +17,7 @@ be included in all copies or substantial portions of the Software.
 2. The Software must not be used to obstruct the official game
 servers operated by Cygames Inc., and/or to modify the data
 stored on those servers.
+3. No commercial usage is allowed.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES

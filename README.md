@@ -69,16 +69,16 @@ DereTore.HCA.
 
 **DereTore.Applications.AcbMaker**
 
-A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.Application.AcbMaker/README.md).
+A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.Applications.AcbMaker/README.md).
 
 **DereTore.Applications.MusicToolchain**
 
 The utility that integrates **Encoder**, **CipherConverter** and **AcbMaker** into a streamline. Here
-is its [readme](DereTore.Application.MusicToolchain/README.md).
+is its [readme](DereTore.Applications.MusicToolchain/README.md).
 
 **DereTore.Applications.ScoreEditor**
 
-Viewing and editing scores (collections of notes) of live music. Here is its [readme](DereTore.Application.ScoreEditor/README.md).
+Viewing and editing scores (collections of notes) of live music. Here is its [readme](DereTore.Applications.ScoreEditor/README.md).
 
 **DereTore.Applications.StarlightComposer**
 
@@ -86,7 +86,7 @@ Coming soon...
 
 ## License
 
-This solution uses modified [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).
+This solution uses **_modified_** [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).
 
 ## Notes
 
