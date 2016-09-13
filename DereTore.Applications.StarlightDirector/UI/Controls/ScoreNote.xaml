@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="50"
+             SizeChanged="ScoreNote_OnSizeChanged">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="DefaultWhiteBorder" Color="White" />
+        <SolidColorBrush x:Key="DefaultRedMain" Color="Red" />
+    </UserControl.Resources>
+    <Grid>
+        <Grid ZIndex="0">
+            <Ellipse Name="Circle" Stroke="{StaticResource DefaultWhiteBorder}" StrokeThickness="3" Fill="{StaticResource DefaultRedMain}">
+                <Ellipse.Effect>
+                    <DropShadowEffect x:Name="DropShadow" ShadowDepth="0" BlurRadius="15" Color="LawnGreen" Opacity="0"/>
+                </Ellipse.Effect>
+            </Ellipse>
+        </Grid>
+        <Grid Name="ImageClipper" Margin="2" ZIndex="1">
+            <Grid.Clip>
+                <EllipseGeometry Center="23 23" RadiusX="23" RadiusY="23" />
+            </Grid.Clip>
+            <Image Name="ImageContent" Stretch="Uniform" RenderTransformOrigin="0.5 0.5">
+                <Image.RenderTransform>
+                    <!-- Notes will be upside down in ScoreEditor, so we should flip the image again. -->
+                    <ScaleTransform ScaleY="-1" />
+                </Image.RenderTransform>
+            </Image>
+        </Grid>
+        <Grid ZIndex="2">
+            <Ellipse Name="CircleInnerGlow" Stroke="{Binding ElementName=Circle, Path=Stroke}" StrokeThickness="{Binding ElementName=Circle, Path=StrokeThickness}" Fill="Transparent">
+                <Ellipse.Effect>
+                    <DropShadowEffect ShadowDepth="0" BlurRadius="10" Direction="0" Color="{Binding ElementName=CircleInnerGlow, Path=Stroke.Color}"/>
+                </Ellipse.Effect>
+                <Ellipse.Clip>
+                    <EllipseGeometry Center="25 25" RadiusX="23" RadiusY="23"/>
+                </Ellipse.Clip>
+            </Ellipse>
+        </Grid>
+    </Grid>
+</UserControl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
