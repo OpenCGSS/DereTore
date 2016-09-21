@@ -1,4 +1,4 @@
-﻿# DereTore.Application.MusicToolchain
+﻿# DereTore.Applications.MusicToolchain
 
 This project is meant for integrating the 3 tools: **AcbMaker**, **CipherConverter** and **Encoder**.
 It provides an automatic streamline to create CGSS-compatible live music ACB files.

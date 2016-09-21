@@ -1,4 +1,4 @@
-﻿# DereTore.Application.ScoreEditor
+﻿# DereTore.Applications.ScoreEditor
 
 A simple score editor for CGSS live music.
 
@@ -22,5 +22,5 @@ of delay between the music and the score, and that's why I made the elapsed time
 
 ## Prerequisities
 
-- Microsoft .NET Framework 3.5
+- Microsoft .NET Framework 4.0
 - Windows Vista or above *(usage of WAS API)*

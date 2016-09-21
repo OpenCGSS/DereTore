@@ -1,4 +1,4 @@
-﻿# DereTore.Application.AcbMaker
+﻿# DereTore.Applications.AcbMaker
 
 ACBs are used to store audio and images in CGSS. This application can generate
 CGSS-compatible ACB files. Currently it only supports single live music file
