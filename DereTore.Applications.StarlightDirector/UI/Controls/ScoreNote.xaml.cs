@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities;
+using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// <summary>
@@ -47,9 +48,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             internal set { SetValue(NoteProperty, value); }
         }
 
-        public bool Selected {
-            get { return (bool)GetValue(SelectedProperty); }
-            set { SetValue(SelectedProperty, value); }
+        public bool IsSelected {
+            get { return (bool)GetValue(IsSelectedProperty); }
+            set { SetValue(IsSelectedProperty, value); }
+        }
+
+        public double X {
+            get { return (double)GetValue(XProperty); }
+            set { SetValue(XProperty, value); }
+        }
+
+        public double Y {
+            get { return (double)GetValue(YProperty); }
+            set { SetValue(YProperty, value); }
         }
 
         public static readonly DependencyProperty FillProperty = DependencyProperty.Register(nameof(Fill), typeof(Brush), typeof(ScoreNote),
@@ -70,8 +81,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public static readonly DependencyProperty NoteProperty = DependencyProperty.Register(nameof(Note), typeof(Note), typeof(ScoreNote),
             new PropertyMetadata(null, OnNoteChanged));
 
-        public static readonly DependencyProperty SelectedProperty = DependencyProperty.Register(nameof(Selected), typeof(bool), typeof(ScoreNote),
+        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(nameof(IsSelected), typeof(bool), typeof(ScoreNote),
             new PropertyMetadata(false, OnSelectedChanged));
+
+        public static readonly DependencyProperty XProperty = DependencyProperty.Register(nameof(X), typeof(double), typeof(ScoreNote),
+          new PropertyMetadata(0d, OnXChanged));
+
+        public static readonly DependencyProperty YProperty = DependencyProperty.Register(nameof(Y), typeof(double), typeof(ScoreNote),
+          new PropertyMetadata(0d, OnYChanged));
 
         private static void OnFillChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = obj as ScoreNote;
@@ -111,8 +128,26 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private static void OnSelectedChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = obj as ScoreNote;
             Debug.Assert(note != null, "note != null");
-            note.DropShadow.Opacity = note.Selected ? 1 : 0;
+            note.DropShadow.Opacity = note.IsSelected ? 1 : 0;
             note.Stroke = note.GetBorderBrush();
+        }
+
+        private static void OnXChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var note = obj as ScoreNote;
+            Debug.Assert(note != null, "note != null");
+            if (note.VisualParent is Canvas) {
+                var value = (double)e.NewValue;
+                Canvas.SetLeft(note, value - note.Radius);
+            }
+        }
+
+        private static void OnYChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var note = obj as ScoreNote;
+            Debug.Assert(note != null, "note != null");
+            if (note.VisualParent is Canvas) {
+                var value = (double)e.NewValue;
+                Canvas.SetTop(note, value - note.Radius);
+            }
         }
 
         private Brush GetBorderBrush() {
@@ -125,18 +160,18 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private Brush GetBorderBrush(Party party) {
             var app = Application.Current;
-            if (Selected) {
+            if (IsSelected) {
                 return Brushes.LawnGreen;
             }
             switch (party) {
                 case Party.Neutral:
-                    return app.FindResource(App.ResourceKeys.NeutralStrokeBrush) as Brush;
+                    return app.FindResource<Brush>(App.ResourceKeys.NeutralStrokeBrush);
                 case Party.Cute:
-                    return app.FindResource(App.ResourceKeys.CuteStrokeBrush) as Brush;
+                    return app.FindResource<Brush>(App.ResourceKeys.CuteStrokeBrush);
                 case Party.Cool:
-                    return app.FindResource(App.ResourceKeys.CoolStrokeBrush) as Brush;
+                    return app.FindResource<Brush>(App.ResourceKeys.CoolStrokeBrush);
                 case Party.Passion:
-                    return app.FindResource(App.ResourceKeys.PassionStrokeBrush) as Brush;
+                    return app.FindResource<Brush>(App.ResourceKeys.PassionStrokeBrush);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(party), party, null);
             }
@@ -146,13 +181,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var app = Application.Current;
             switch (party) {
                 case Party.Neutral:
-                    return app.FindResource(App.ResourceKeys.NeutralFillBrush) as Brush;
+                    return app.FindResource<Brush>(App.ResourceKeys.NeutralFillBrush);
                 case Party.Cute:
-                    return app.FindResource(App.ResourceKeys.CuteFillBrush) as Brush;
+                    return app.FindResource<Brush>(App.ResourceKeys.CuteFillBrush);
                 case Party.Cool:
-                    return app.FindResource(App.ResourceKeys.CoolFillBrush) as Brush;
+                    return app.FindResource<Brush>(App.ResourceKeys.CoolFillBrush);
                 case Party.Passion:
-                    return app.FindResource(App.ResourceKeys.PassionFillBrush) as Brush;
+                    return app.FindResource<Brush>(App.ResourceKeys.PassionFillBrush);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(party), party, null);
             }

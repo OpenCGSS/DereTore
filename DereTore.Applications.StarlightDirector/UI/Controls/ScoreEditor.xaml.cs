@@ -47,7 +47,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             var rect = new Rect();
             rect.Y = e.NewSize.Height * BaseLineYPosition;
-            rect.Height = e.NewSize.Height - rect.Y;
+            rect.Height = e.NewSize.Height - rect.Y - rect.Y;
             rect.Width = e.NewSize.Width;
             clip.Rect = rect;
             var definition = WorkingAreaUpperHalf.RowDefinitions[0];
@@ -56,12 +56,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void ScoreEditor_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
-            var maginfy = 1;
+            double change;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
-                maginfy = 5;
+                change = LargeChange;
+            } else {
+                change = SmallChange;
             }
-            var targetOffset = ScrollOffset + SingleScrollDistance * (e.Delta > 0 ? -maginfy : maginfy);
-            targetOffset = -MathHelper.ClampUpper(-targetOffset, MinimumScrollOffset);
+            var targetOffset = ScrollOffset + change * (e.Delta < 0 ? -1 : 1);
+            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
             if (!targetOffset.Equals(ScrollOffset)) {
                 ScrollOffset = targetOffset;
             }
@@ -79,7 +81,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ScoreNote_MouseDown(object sender, MouseButtonEventArgs e) {
             var scoreNote = (ScoreNote)sender;
-            scoreNote.Selected = !scoreNote.Selected;
+            scoreNote.IsSelected = !scoreNote.IsSelected;
             var note = scoreNote.Note;
             var barIndex = note.Bar.Index;
             var row = note.PositionInGrid;
@@ -97,6 +99,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ScoreEditor_OnMouseDown(object sender, MouseButtonEventArgs e) {
             UnselectAllScoreNotes();
+            if (EditMode != EditMode.Select) {
+                EditMode = EditMode.Select;
+            }
         }
 
     }

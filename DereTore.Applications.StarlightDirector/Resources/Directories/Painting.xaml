@@ -1,0 +1,23 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="NeutralStrokeColor" A="#FF" R="#FF" G="#FF" B="#FF"/>
+    <Color x:Key="CuteStrokeColor" A="#FF" R="#FF" G="#95" B="#95"/>
+    <Color x:Key="CoolStrokeColor" A="#FF" R="#00" G="#00" B="#CD"/>
+    <Color x:Key="PassionStrokeColor" A="#FF" R="#FF" G="#A5" B="#00"/>
+    <SolidColorBrush x:Key="NeutralStrokeBrush" Color="{StaticResource NeutralStrokeColor}"/>
+    <SolidColorBrush x:Key="CuteStrokeBrush" Color="{StaticResource CuteStrokeColor}"/>
+    <SolidColorBrush x:Key="CoolStrokeBrush" Color="{StaticResource CoolStrokeColor}"/>
+    <SolidColorBrush x:Key="PassionStrokeBrush" Color="{StaticResource PassionStrokeColor}"/>
+    <Color x:Key="NeutralFillColor" A="#C0" R="#23" G="#E0" B="#18"/>
+    <Color x:Key="CuteFillColor" A="#C0" R="#FF" G="#C0" B="#CB"/>
+    <Color x:Key="CoolFillColor" A="#C0" R="#35" G="#7A" B="#E8"/>
+    <Color x:Key="PassionFillColor" A="#C0" R="#FF" G="#90" B="#90"/>
+    <SolidColorBrush x:Key="NeutralFillBrush" Color="{StaticResource NeutralFillColor}"/>
+    <SolidColorBrush x:Key="CuteFillBrush" Color="{StaticResource CuteFillColor}"/>
+    <SolidColorBrush x:Key="CoolFillBrush" Color="{StaticResource CoolFillColor}"/>
+    <SolidColorBrush x:Key="PassionFillBrush" Color="{StaticResource PassionFillColor}"/>
+    <Color x:Key="BarStrokeColor" A="#FF" R="#EE" G="#EE" B="#10"/>
+    <Color x:Key="BarStrokeStressColor" A="#FF" R="#EE" G="#88" B="#10"/>
+    <SolidColorBrush x:Key="BarStrokeBrush" Color="{StaticResource BarStrokeColor}"/>
+    <SolidColorBrush x:Key="BarStrokeStressBrush" Color="{StaticResource BarStrokeStressColor}"/>
+</ResourceDictionary>

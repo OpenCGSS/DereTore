@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <BitmapImage x:Key="RibbonIconFileNew" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FileNew.png"/>
+    <BitmapImage x:Key="RibbonIconFileOpen" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FileOpen.png"/>
+    <BitmapImage x:Key="RibbonIconFileSave" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FileSave.png"/>
+    <BitmapImage x:Key="RibbonIconFileSaveAs" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FileSaveAs.png"/>
+    <BitmapImage x:Key="RibbonIconFilePreferences" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FilePreferences.png"/>
+    <BitmapImage x:Key="RibbonIconFileExit" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FileExit.png"/>
+    <BitmapImage x:Key="RibbonIconEditMode" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/EditMode.png"/>
+    <BitmapImage x:Key="RibbonIconBarNew" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarNew.png"/>
+    <BitmapImage x:Key="RibbonIconBarInsert" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarInsert.png"/>
+    <BitmapImage x:Key="RibbonIconBarEdit" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarEdit.png"/>
+    <BitmapImage x:Key="RibbonIconBarDelete" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarDelete.png"/>
+    <BitmapImage x:Key="RibbonIconNoteNew" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteNew.png"/>
+    <BitmapImage x:Key="RibbonIconNoteInsert" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteInsert.png"/>
+    <BitmapImage x:Key="RibbonIconNoteEdit" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteEdit.png"/>
+    <BitmapImage x:Key="RibbonIconNoteDelete" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteDelete.png"/>
+    <BitmapImage x:Key="RibbonIconPreviewStart" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/PreviewStart.png"/>
+    <BitmapImage x:Key="RibbonIconMusicSelectWaveFile" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/MusicSelectWaveFile.png"/>
+    <BitmapImage x:Key="RibbonIconMusicPlay" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/MusicPlay.png"/>
+    <BitmapImage x:Key="RibbonIconMusicStop" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/MusicStop.png"/>
+    <BitmapImage x:Key="RibbonIconScoreDifficulty" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ScoreDifficulty.png"/>
+    <BitmapImage x:Key="RibbonIconBuildMusicArchive" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BuildMusicArchive.png"/>
+    <BitmapImage x:Key="RibbonIconBuildScoreDatabase" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BuildScoreDatabase.png"/>
+    <BitmapImage x:Key="RibbonIconImport" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Import.png"/>
+    <BitmapImage x:Key="RibbonIconExport" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Export.png"/>
+</ResourceDictionary>

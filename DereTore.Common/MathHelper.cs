@@ -11,6 +11,14 @@ namespace DereTore {
             return value < minimum ? minimum : value;
         }
 
+        public static double ClampLower(double value, double maximum) {
+            return value > maximum ? maximum : value;
+        }
+
+        public static double Clamp(double value, double minimum, double maximum) {
+            return value < minimum ? minimum : (value > maximum ? maximum : value);
+        }
+
         public static int NextRandomInt32() {
             return Random.Next();
         }

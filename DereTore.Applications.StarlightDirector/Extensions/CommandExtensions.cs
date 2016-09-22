@@ -8,7 +8,7 @@ namespace DereTore.Applications.StarlightDirector.Extensions {
             //var ev = type.GetEvent("CanExecute");
             //var method = ev?.GetRaiseMethod(true);
             //method?.Invoke(command, NullObjects);
-            // TODO: This method is quite "heavy". It causes all commands to reevaluate there CanExecute status.
+            // TODO: This method is quite "heavy". It causes all commands to reevaluate their CanExecute status.
             CommandManager.InvalidateRequerySuggested();
         }
 

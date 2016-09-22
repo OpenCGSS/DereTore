@@ -38,6 +38,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(BarColumnWidthProperty, value); }
         }
 
+        public double SpaceColumnWidth {
+            get { return (double)GetValue(SpaceColumnWidthProperty); }
+            set { SetValue(SpaceColumnWidthProperty, value); }
+        }
+
         public Bar Bar {
             get { return (Bar)GetValue(BarProperty); }
             set { SetValue(BarProperty, value); }
@@ -52,16 +57,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var height = Canvas.ActualHeight;
             var columnCount = 5;
             var rowCount = TotalRowCount;
-            double unitWidth = width / (columnCount + 1), unitHeight = height / rowCount;
+            double unitWidth = width / (columnCount - 1), unitHeight = height / rowCount;
             var column = (int)Math.Round(destPoint.X / unitWidth);
             var row = (int)Math.Round(destPoint.Y / unitHeight);
-            if (column < 1 || column > 5) {
+            if (column < 0 || column > columnCount - 1) {
                 return new ScoreBarHitTestInfo(this, Bar, new Point(), -1, -1, false, false);
             }
             if (row < 0 || row >= Bar.GetTotalGridCount()) {
                 return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, -1, -1, true, false);
             }
-            return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column - 1, row, false, true);
+            return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, false, true);
         }
 
         public void UpdateBarTime(string barTimeText) {
@@ -90,6 +95,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public static readonly DependencyProperty BarColumnWidthProperty = DependencyProperty.Register(nameof(BarColumnWidth), typeof(double), typeof(ScoreBar),
            new PropertyMetadata(375d, OnBarColumnWidthChanged));
 
+        public static readonly DependencyProperty SpaceColumnWidthProperty = DependencyProperty.Register(nameof(SpaceColumnWidth), typeof(double), typeof(ScoreBar),
+            new PropertyMetadata(75d, OnSpaceColumnWidthChanged));
+
         public static readonly DependencyProperty BarProperty = DependencyProperty.Register(nameof(Bar), typeof(Bar), typeof(ScoreBar),
             new PropertyMetadata(null, OnBarChanged));
 
@@ -111,6 +119,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             bar.BarColumnDef.Width = new GridLength((double)e.NewValue);
         }
 
+        private static void OnSpaceColumnWidthChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var bar = obj as ScoreBar;
+            Debug.Assert(bar != null, "bar != null");
+            bar.SpaceColumnDef.Width = new GridLength((double)e.NewValue);
+        }
+
         private static void OnBarChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var scoreBar = obj as ScoreBar;
             Debug.Assert(scoreBar != null, "scoreBar != null");
@@ -122,12 +136,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             RedrawBar(this, Bar, e.PreviousSize, e.NewSize);
         }
 
-        private void Canvas_OnPreviewMouseDown(object sender, MouseButtonEventArgs e) {
+        private void MouseArea_OnPreviewMouseDown(object sender, MouseButtonEventArgs e) {
             var info = HitTest(e.GetPosition(this));
             ScoreBarHitTest?.Invoke(this, new ScoreBarHitTestEventArgs(info, e));
         }
 
-        private void Canvas_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
+        private void MouseArea_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
             var info = HitTest(e.GetPosition(this));
             ScoreBarHitTest?.Invoke(this, new ScoreBarHitTestEventArgs(info, e));
         }
@@ -204,13 +218,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var height = canvas.ActualHeight;
             var stroke = Stroke;
             if (_verticalLines.Count == 0) {
-                for (var i = 0; i <= columnCount + 1; ++i) {
+                for (var i = 0; i < columnCount; ++i) {
                     var lineShape = new Line();
-                    lineShape.Stroke = (1 <= i && i <= 5) ? Brushes.White : stroke;
+                    lineShape.Stroke = Brushes.White;
                     lineShape.StrokeThickness = 3;
                     lineShape.Y1 = 0;
                     lineShape.Y2 = height;
-                    lineShape.X1 = lineShape.X2 = height * i / (columnCount + 1);
+                    lineShape.X1 = lineShape.X2 = height * i / (columnCount - 1);
                     canvas.Children.Add(lineShape);
                     _verticalLines.Add(lineShape);
                 }
@@ -220,7 +234,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     if (!height.Equals(0)) {
                         lineShape.Y2 = height;
                     }
-                    lineShape.X1 = lineShape.X2 = width * i / (columnCount + 1);
+                    lineShape.X1 = lineShape.X2 = width * i / (columnCount - 1);
                     ++i;
                 }
             }

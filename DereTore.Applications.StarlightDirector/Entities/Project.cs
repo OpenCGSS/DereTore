@@ -1,41 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Windows;
 using NAudio.Wave;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace DereTore.Applications.StarlightDirector.Entities {
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
-    public sealed class Project {
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy), MemberSerialization = MemberSerialization.OptIn)]
+    public sealed class Project : DependencyObject {
 
         public Project() {
             Version = CurrentVersion;
             Scores = new Dictionary<Difficulty, Score>();
-            CompiledScores = new Dictionary<Difficulty, CompiledScore>();
+            Difficulty = Difficulty.Debut;
         }
 
-        public static Project CurrentProject { get; set; }
+        public event EventHandler<EventArgs> DifficultyChanged;
 
+        public static Project Current { get; set; }
+
+        [JsonProperty]
         public Dictionary<Difficulty, Score> Scores { get; private set; }
 
-        [JsonIgnore]
-        public Dictionary<Difficulty, CompiledScore> CompiledScores { get; private set; }
-
-        [JsonIgnore]
         public WaveStream Music { get; internal set; }
 
+        [JsonProperty]
         public string MusicFileName { get; set; }
 
-        [JsonIgnore]
         public bool IsChanged { get; internal set; } = true;
 
-        [JsonIgnore]
         public bool IsSaved => !string.IsNullOrEmpty(SaveFileName);
 
-        [JsonIgnore]
         public string SaveFileName { get; private set; }
 
+        [JsonProperty]
         public string Version { get; set; }
 
         public Score GetScore(Difficulty difficulty) {
@@ -46,27 +46,19 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return Scores[difficulty];
         }
 
-        public void CompileScore(Difficulty difficulty) {
-            if (!Scores.ContainsKey(difficulty)) {
-                throw new InvalidOperationException();
-            }
-            var score = Scores[difficulty];
-            CompiledScore compiledScore;
-            CompiledScores.TryGetValue(difficulty, out compiledScore);
-            if (compiledScore == null) {
-                compiledScore = score.Compile();
-                CompiledScores.Add(difficulty, compiledScore);
-            } else {
-                score.CompileTo(compiledScore);
+        public void SaveScoreToCsv(Difficulty difficulty, string fileName) {
+            using (var stream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
+                using (var writer = new StreamWriter(stream)) {
+                    SaveScoreToCsv(difficulty, writer);
+                }
             }
         }
 
         public void SaveScoreToCsv(Difficulty difficulty, TextWriter writer) {
-            if (!CompiledScores.ContainsKey(difficulty)) {
-                CompileScore(difficulty);
-            }
-            var compiledScore = CompiledScores[difficulty];
-            throw new NotImplementedException();
+            var score = GetScore(difficulty);
+            var compiledScore = score.Compile();
+            var csvString = compiledScore.GetCsvString();
+            writer.Write(csvString);
         }
 
         public void Save() {
@@ -123,7 +115,22 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
         }
 
+        public Difficulty Difficulty {
+            get { return (Difficulty)GetValue(DifficultyProperty); }
+            set { SetValue(DifficultyProperty, value); }
+        }
+
+        public static readonly DependencyProperty DifficultyProperty = DependencyProperty.Register(nameof(Difficulty), typeof(Difficulty), typeof(Project),
+            new PropertyMetadata(Difficulty.Master, OnDifficultyChanged));
+
         private static readonly string CurrentVersion = "0.1";
+
+        private static void OnDifficultyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var project = obj as Project;
+            Debug.Assert(project != null, "project != null");
+            Debug.Print($"New difficulty: {e.NewValue}");
+            project.DifficultyChanged.Raise(project, EventArgs.Empty);
+        }
 
     }
 }

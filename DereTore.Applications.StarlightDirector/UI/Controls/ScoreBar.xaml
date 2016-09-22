@@ -11,12 +11,14 @@
         </Grid.LayoutTransform>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Name="TextColumnDef" Width="75"/>
+            <ColumnDefinition Name="SpaceColumnDef" Width="75"/>
             <ColumnDefinition Name="BarColumnDef" Width="300"/>
+            <ColumnDefinition Name="MouseAreaProtectionColumnDef" Width="50"/>
         </Grid.ColumnDefinitions>
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.Resources>
                 <Style x:Key="TextBlockMargin" TargetType="TextBlock">
@@ -34,8 +36,9 @@
                 </TextBlock>
             </Border>
         </Grid>
-        <Grid Grid.Column="1" Name="BarGridContainer" SizeChanged="BarGridContainer_OnSizeChanged">
-            <Canvas Name="Canvas" Background="Transparent" PreviewMouseDown="Canvas_OnPreviewMouseDown" PreviewMouseUp="Canvas_OnPreviewMouseUp" RenderTransformOrigin="0.5 0.5">
+        <Grid Grid.Column="1" Grid.ColumnSpan="3" Background="Transparent" Name="MouseArea" PreviewMouseDown="MouseArea_OnPreviewMouseDown" PreviewMouseUp="MouseArea_OnPreviewMouseUp"/>
+        <Grid Grid.Column="2" SizeChanged="BarGridContainer_OnSizeChanged">
+            <Canvas Name="Canvas" RenderTransformOrigin="0.5 0.5">
                 <Canvas.LayoutTransform>
                     <ScaleTransform ScaleX="1" ScaleY="-1"/>
                 </Canvas.LayoutTransform>

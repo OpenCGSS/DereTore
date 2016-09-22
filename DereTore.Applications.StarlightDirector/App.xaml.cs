@@ -10,7 +10,7 @@ namespace DereTore.Applications.StarlightDirector {
         public static readonly ResourceKeys ResourceKeys = new ResourceKeys();
 
         private void App_OnStartup(object sender, StartupEventArgs e) {
-            Project.CurrentProject = new Project();
+            Project.Current = new Project();
         }
 
     }

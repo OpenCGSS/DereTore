@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <BitmapImage x:Key="CardAvatar1" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Cards/jougasaki_rika_75.jpg"/>
+    <BitmapImage x:Key="CardAvatar2" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Cards/kanzaki_ranko_75.jpg"/>
+    <BitmapImage x:Key="CardAvatar3" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Cards/koshimizu_sachiko_75.jpg"/>
+    <BitmapImage x:Key="CardAvatar4" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Cards/mimura_kanako_75.jpg"/>
+    <BitmapImage x:Key="CardAvatar5" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Cards/sagisawa_fumika_75.jpg"/>
+</ResourceDictionary>

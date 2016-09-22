@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DereTore.Applications.StarlightDirector.UI.Controls;
-using TupleType = DereTore.Applications.StarlightDirector.Components.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>;
-using InternalEntryType = System.Collections.Generic.KeyValuePair<DereTore.Applications.StarlightDirector.Components.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>, DereTore.Applications.StarlightDirector.Components.NoteRelation>;
+using TupleType = System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>;
+using InternalEntryType = System.Collections.Generic.KeyValuePair<System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>, DereTore.Applications.StarlightDirector.Components.NoteRelation>;
 
 namespace DereTore.Applications.StarlightDirector.Components {
     public sealed class NoteRelationCollection : IEnumerable<NoteRelationCollection.Entry> {
@@ -13,12 +14,12 @@ namespace DereTore.Applications.StarlightDirector.Components {
         }
 
         public void Add(ScoreNote scoreNote1, ScoreNote scoreNote2, NoteRelation relation) {
-            var tuple = TupleType.Create(scoreNote1, scoreNote2);
+            var tuple = new TupleType(scoreNote1, scoreNote2);
             InternalDictionary.Add(tuple, relation);
         }
 
         public int Remove(ScoreNote oneOf) {
-            var contained = InternalDictionary.Where(kv => kv.Key.Value1.Equals(oneOf) || kv.Key.Value2.Equals(oneOf)).ToArray();
+            var contained = InternalDictionary.Where(kv => kv.Key.Item1.Equals(oneOf) || kv.Key.Item2.Equals(oneOf)).ToArray();
             var n = 0;
             foreach (var kv in contained) {
                 InternalDictionary.Remove(kv.Key);
@@ -28,7 +29,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
         }
 
         public int Remove(ScoreNote oneOf, NoteRelation relation) {
-            var contained = InternalDictionary.Where(kv => (kv.Key.Value1.Equals(oneOf) || kv.Key.Value2.Equals(oneOf)) && kv.Value == relation).ToArray();
+            var contained = InternalDictionary.Where(kv => (kv.Key.Item1.Equals(oneOf) || kv.Key.Item2.Equals(oneOf)) && kv.Value == relation).ToArray();
             var n = 0;
             foreach (var kv in contained) {
                 InternalDictionary.Remove(kv.Key);
@@ -37,8 +38,24 @@ namespace DereTore.Applications.StarlightDirector.Components {
             return n;
         }
 
+        public void RemoveAll(Predicate<ScoreNote> match) {
+            if (match == null) {
+                throw new ArgumentNullException(nameof(match));
+            }
+            var keys = InternalDictionary.Keys.ToArray();
+            foreach (var key in keys) {
+                if (match(key.Item1) || match(key.Item2)) {
+                    InternalDictionary.Remove(key);
+                }
+            }
+        }
+
+        public void RemoveAllRelated(ScoreNote scoreNote) {
+            RemoveAll(s => s.Equals(scoreNote));
+        }
+
         public bool ContainsNote(ScoreNote oneOf) {
-            return InternalDictionary.Any(kv => kv.Key.Value1.Equals(oneOf) || kv.Key.Value2.Equals(oneOf));
+            return InternalDictionary.Any(kv => kv.Key.Item1.Equals(oneOf) || kv.Key.Item2.Equals(oneOf));
         }
 
         public bool ContainsRelation(NoteRelation relation) {
@@ -71,7 +88,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
 
         }
 
-        private Dictionary<Tuple<ScoreNote, ScoreNote>, NoteRelation> InternalDictionary { get; }
+        private Dictionary<TupleType, NoteRelation> InternalDictionary { get; }
 
         private class NoteRelationEnumerator : IEnumerator<Entry> {
 
@@ -94,7 +111,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
             public Entry Current {
                 get {
                     var current = Enumerator.Current;
-                    return new Entry(current.Key.Value1, current.Key.Value2, current.Value);
+                    return new Entry(current.Key.Item1, current.Key.Item2, current.Value);
                 }
             }
 

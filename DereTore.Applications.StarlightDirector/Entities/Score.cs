@@ -89,7 +89,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         internal CompiledScore Compile() {
-            var compiledScore = new CompiledScore(this);
+            var compiledScore = new CompiledScore();
             CompileTo(compiledScore);
             return compiledScore;
         }
@@ -110,7 +110,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 foreach (var note in bar.Notes) {
                     var compiledNote = new CompiledNote();
                     note.CompilationResult = compiledNote;
-                    compiledNote.OriginalNote = note;
                     compiledNote.ID = IDGenerators.CompiledNoteIDGenerator.Next();
                     compiledNote.Type = note.Type;
                     compiledNote.StartPosition = note.StartPosition;

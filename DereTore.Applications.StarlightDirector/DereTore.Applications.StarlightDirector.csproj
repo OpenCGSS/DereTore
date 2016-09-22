@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DereTore.Applications.StarlightDirector</RootNamespace>
     <AssemblyName>StarlightDirector</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -43,6 +43,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -71,9 +72,20 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ControlzEx, Version=2.0.1.61, Culture=neutral, PublicKeyToken=f08b075e934b7045, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.2.0.1.61\lib\net40\ControlzEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
-      <HintPath>..\packages\CsvHelper.2.16.2.0\lib\net35\CsvHelper.dll</HintPath>
+      <HintPath>..\packages\CsvHelper.2.16.3.0\lib\net40\CsvHelper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Fluent, Version=4.0.3.394, Culture=neutral, PublicKeyToken=3e436e32a8c5546f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fluent.Ribbon.4.0.3.394\lib\net40\Fluent.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -81,19 +93,24 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.102.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.102.0\lib\net20\System.Data.SQLite.dll</HintPath>
+    <Reference Include="System.Data.SQLite, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.103\lib\net40\System.Data.SQLite.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Data.SQLite.Linq, Version=1.0.102.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.102.0\lib\net20\System.Data.SQLite.Linq.dll</HintPath>
+    <Reference Include="System.Data.SQLite.Linq, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.103\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.2.0.1.61\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -107,6 +124,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Resources\Directories\Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Directories\Images.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Directories\Painting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Directories\Strings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\ScoreBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -133,11 +166,11 @@
     </Compile>
     <Compile Include="Components\DescribedEnumConverter.cs" />
     <Compile Include="Components\IntegerIDGenerator.cs" />
-    <Compile Include="Components\InternalList.cs" />
+    <Compile Include="Components\InternalEditionList.cs" />
     <Compile Include="Components\NoteRelation.cs" />
     <Compile Include="Components\NoteRelationCollection.cs" />
+    <Compile Include="Components\ObjectPool.cs" />
     <Compile Include="Components\ThreadingTimer.cs" />
-    <Compile Include="Components\Tuple.cs" />
     <Compile Include="ComposerUtilities.cs" />
     <Compile Include="Entities\Bar.cs" />
     <Compile Include="Entities\BarParams.cs" />
@@ -154,6 +187,8 @@
     <Compile Include="Entities\Project.cs" />
     <Compile Include="Entities\Score.cs" />
     <Compile Include="Entities\ScoreSettings.cs" />
+    <Compile Include="Entities\Serialization\ScoreCsvMap.cs" />
+    <Compile Include="Extensions\ApplicationExtensions.cs" />
     <Compile Include="Extensions\BarExtensions.cs" />
     <Compile Include="Extensions\CommandExtensions.cs" />
     <Compile Include="Extensions\NotifyPropertyChangedExtensions.cs" />
@@ -176,10 +211,15 @@
     <Compile Include="UI\Controls\ScoreProgressBar.xaml.cs">
       <DependentUpon>ScoreProgressBar.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Converters\DescribedEnumToStringConverter.cs" />
+    <Compile Include="UI\Converters\DifficultyToIndexConverter.cs" />
+    <Compile Include="UI\Converters\DifficultyToIsCheckedConverter.cs" />
+    <Compile Include="UI\Converters\EditModeToIsCheckedConverter.cs" />
+    <Compile Include="UI\Converters\NegateConverter.cs" />
     <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />
-    <Compile Include="UI\ScoreChangedEventArgs.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Private.cs" />
     <Compile Include="UI\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -204,6 +244,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <EmbeddedResource Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -237,36 +278,40 @@
     <Compile Include="UI\Controls\ScoreEditor.Logic.Public.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Cards\sagisawa_fumika_75.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\sagisawa_fumika.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\mimura_kanako_75.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\mimura_kanako.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\koshimizu_sachiko_75.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\koshimizu_sachiko.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\kanzaki_ranko_75.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\kanzaki_ranko.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\jougasaki_rika_75.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Cards\jougasaki_rika.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Resources\Cards\sagisawa_fumika_75.jpg" />
+    <None Include="Resources\Cards\sagisawa_fumika.jpg" />
+    <Resource Include="Resources\Cards\mimura_kanako_75.jpg" />
+    <None Include="Resources\Cards\mimura_kanako.jpg" />
+    <Resource Include="Resources\Cards\koshimizu_sachiko_75.jpg" />
+    <None Include="Resources\Cards\koshimizu_sachiko.jpg" />
+    <Resource Include="Resources\Cards\kanzaki_ranko_75.jpg" />
+    <None Include="Resources\Cards\kanzaki_ranko.jpg" />
+    <Resource Include="Resources\Cards\jougasaki_rika_75.jpg" />
+    <None Include="Resources\Cards\jougasaki_rika.jpg" />
+    <Resource Include="Resources\Icons\FileNew.png" />
+    <Resource Include="Resources\Icons\FileOpen.png" />
+    <Resource Include="Resources\Icons\FileSave.png" />
+    <Resource Include="Resources\Icons\FileSaveAs.png" />
+    <Resource Include="Resources\Icons\FileExit.png" />
+    <Resource Include="Resources\Icons\EditMode.png" />
+    <Resource Include="Resources\Icons\PreviewStart.png" />
+    <Resource Include="Resources\Icons\BarDelete.png" />
+    <Resource Include="Resources\Icons\BarEdit.png" />
+    <Resource Include="Resources\Icons\BarInsert.png" />
+    <Resource Include="Resources\Icons\BarNew.png" />
+    <Resource Include="Resources\Icons\NoteDelete.png" />
+    <Resource Include="Resources\Icons\NoteEdit.png" />
+    <Resource Include="Resources\Icons\NoteInsert.png" />
+    <Resource Include="Resources\Icons\NoteNew.png" />
+    <Resource Include="Resources\Icons\MusicPlay.png" />
+    <Resource Include="Resources\Icons\MusicSelectWaveFile.png" />
+    <Resource Include="Resources\Icons\MusicStop.png" />
+    <Resource Include="Resources\Icons\ScoreDifficulty.png" />
+    <Resource Include="Resources\Icons\BuildMusicArchive.png" />
+    <Resource Include="Resources\Icons\BuildScoreDatabase.png" />
+    <Resource Include="Resources\Icons\Export.png" />
+    <Resource Include="Resources\Icons\Import.png" />
+    <Resource Include="Resources\Icons\FilePreferences.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -294,12 +339,12 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\System.Data.SQLite.Core.1.0.102.0\build\net20\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.102.0\build\net20\System.Data.SQLite.Core.targets')" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.103\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.103\build\net40\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.102.0\build\net20\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.102.0\build\net20\System.Data.SQLite.Core.targets'))" />
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.103\build\net40\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.103\build\net40\System.Data.SQLite.Core.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

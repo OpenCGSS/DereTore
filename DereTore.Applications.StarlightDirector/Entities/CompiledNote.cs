@@ -19,8 +19,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public int FlickGroupID { get; set; }
 
-        internal Note OriginalNote { get; set; }
-
         internal static readonly Comparison<CompiledNote> IDComparison = (n1, n2) => n1.ID.CompareTo(n2.ID);
         internal static readonly Comparison<CompiledNote> TimingComparison = (n1, n2) => n1.HitTiming.CompareTo(n2.HitTiming);
 
