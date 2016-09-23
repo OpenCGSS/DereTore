@@ -19,24 +19,24 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public Difficulty Difficulty { get; internal set; }
 
         public Bar AddBar() {
-            return AddBar(Bars.Count);
+            return InsertBar(Bars.Count);
         }
 
-        public Bar AddBar(int index) {
-            return AddBar(index, null);
+        public Bar InsertBar(int indexBefore) {
+            return InsertBar(indexBefore, null);
         }
 
-        public Bar AddBar(int index, BarParams barParams) {
-            var bar = new Bar(this, index) {
+        public Bar InsertBar(int indexBefore, BarParams barParams) {
+            var bar = new Bar(this, indexBefore) {
                 Params = barParams
             };
-            if (index == Bars.Count) {
+            if (indexBefore == Bars.Count) {
                 Bars.Add(bar);
             } else {
-                foreach (var b in Bars.Skip(index - 1)) {
+                foreach (var b in Bars.Skip(indexBefore)) {
                     ++b.Index;
                 }
-                Bars.Insert(index, bar);
+                Bars.Insert(indexBefore, bar);
             }
             return bar;
         }
@@ -63,12 +63,23 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return bars;
         }
 
+        public bool RemoveBarAt(int index) {
+            if (index < 0 || index >= Bars.Count) {
+                return false;
+            }
+            Bars.RemoveAt(index);
+            for (var i = index; i < Bars.Count; ++i) {
+                --Bars[i].Index;
+            }
+            return true;
+        }
+
         [JsonConstructor]
         internal Score(Project project, Difficulty difficulty) {
             Bars = new InternalList<Bar>();
             Project = project;
             Difficulty = difficulty;
-            Settings = ScoreSettings.CreateDefault();
+            Settings = ScoreSettings.CreateDefault(this);
             IDGenerators = new IDGenerators();
         }
 

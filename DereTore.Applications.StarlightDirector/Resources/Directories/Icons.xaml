@@ -7,11 +7,12 @@
     <BitmapImage x:Key="RibbonIconFilePreferences" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FilePreferences.png"/>
     <BitmapImage x:Key="RibbonIconFileExit" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FileExit.png"/>
     <BitmapImage x:Key="RibbonIconEditMode" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/EditMode.png"/>
-    <BitmapImage x:Key="RibbonIconBarNew" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarNew.png"/>
+    <BitmapImage x:Key="RibbonIconBarAppend" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarAppend.png"/>
+    <BitmapImage x:Key="RibbonIconBarAppendMany" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarAppendMany.png"/>
     <BitmapImage x:Key="RibbonIconBarInsert" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarInsert.png"/>
     <BitmapImage x:Key="RibbonIconBarEdit" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarEdit.png"/>
     <BitmapImage x:Key="RibbonIconBarDelete" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarDelete.png"/>
-    <BitmapImage x:Key="RibbonIconNoteNew" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteNew.png"/>
+    <BitmapImage x:Key="RibbonIconNoteAdd" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteAdd.png"/>
     <BitmapImage x:Key="RibbonIconNoteInsert" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteInsert.png"/>
     <BitmapImage x:Key="RibbonIconNoteEdit" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteEdit.png"/>
     <BitmapImage x:Key="RibbonIconNoteDelete" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/NoteDelete.png"/>

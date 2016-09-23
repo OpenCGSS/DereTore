@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using NAudio.Wave;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -22,21 +21,21 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static Project Current { get; set; }
 
         [JsonProperty]
-        public Dictionary<Difficulty, Score> Scores { get; private set; }
-
-        public WaveStream Music { get; internal set; }
+        public Dictionary<Difficulty, Score> Scores { get; }
 
         [JsonProperty]
         public string MusicFileName { get; set; }
 
+        public bool HasMusic => !string.IsNullOrEmpty(MusicFileName) && File.Exists(MusicFileName);
+
         public bool IsChanged { get; internal set; } = true;
 
-        public bool IsSaved => !string.IsNullOrEmpty(SaveFileName);
+        public bool IsSaved => !string.IsNullOrEmpty(SaveFileName) && File.Exists(SaveFileName);
 
         public string SaveFileName { get; private set; }
 
         [JsonProperty]
-        public string Version { get; set; }
+        public string Version { get; private set; }
 
         public Score GetScore(Difficulty difficulty) {
             if (!Scores.ContainsKey(difficulty)) {

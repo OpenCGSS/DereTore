@@ -10,7 +10,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// <summary>
     /// ScoreNote.xaml 的交互逻辑
     /// </summary>
-    public partial class ScoreNote : UserControl {
+    partial class ScoreNote {
 
         public ScoreNote() {
             InitializeComponent();
@@ -82,7 +82,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             new PropertyMetadata(null, OnNoteChanged));
 
         public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(nameof(IsSelected), typeof(bool), typeof(ScoreNote),
-            new PropertyMetadata(false, OnSelectedChanged));
+            new PropertyMetadata(false, OnIsSelectedChanged));
 
         public static readonly DependencyProperty XProperty = DependencyProperty.Register(nameof(X), typeof(double), typeof(ScoreNote),
           new PropertyMetadata(0d, OnXChanged));
@@ -125,7 +125,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private static void OnNoteChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
         }
 
-        private static void OnSelectedChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+        private static void OnIsSelectedChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = obj as ScoreNote;
             Debug.Assert(note != null, "note != null");
             note.DropShadow.Opacity = note.IsSelected ? 1 : 0;

@@ -7,7 +7,7 @@
              d:DesignHeight="284.667" d:DesignWidth="460.667"
              Background="Transparent" Focusable="True"
              MouseDown="ScoreEditor_OnMouseDown"
-             PreviewMouseWheel="ScoreEditor_OnPreviewMouseWheel">
+             MouseWheel="ScoreEditor_OnMouseWheel">
     <UserControl.Resources>
         <LinearGradientBrush x:Key="FrameBrush" StartPoint="0 0" EndPoint="1 1">
             <GradientStop Color="Pink" Offset="0"/>

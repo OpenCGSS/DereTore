@@ -13,7 +13,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// <summary>
     /// ScoreBar.xaml 的交互逻辑
     /// </summary>
-    public partial class ScoreBar : UserControl {
+    partial class ScoreBar {
 
         public ScoreBar() {
             InitializeComponent();
@@ -48,6 +48,53 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(BarProperty, value); }
         }
 
+        public bool IsSelected {
+            get { return (bool)GetValue(IsSelectedProperty); }
+            set { SetValue(IsSelectedProperty, value); }
+        }
+
+        public Brush SelectedInfoBrush {
+            get { return (Brush)GetValue(SelectedInfoBrushProperty); }
+            set { SetValue(SelectedInfoBrushProperty, value); }
+        }
+
+        public Brush NormalInfoBrush {
+            get { return (Brush)GetValue(NormalInfoBrushProperty); }
+            set { SetValue(NormalInfoBrushProperty, value); }
+        }
+
+        public Brush InfoBrush {
+            get { return (Brush)GetValue(InfoBrushProperty); }
+            set { SetValue(InfoBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(nameof(Stroke), typeof(Brush), typeof(ScoreBar),
+            new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.BarStrokeBrush), OnStrokeChanged));
+
+        public static readonly DependencyProperty TextColumnWidthProperty = DependencyProperty.Register(nameof(TextColumnWidth), typeof(double), typeof(ScoreBar),
+            new PropertyMetadata(75d, OnTextColumnWidthChanged));
+
+        public static readonly DependencyProperty BarColumnWidthProperty = DependencyProperty.Register(nameof(BarColumnWidth), typeof(double), typeof(ScoreBar),
+           new PropertyMetadata(375d, OnBarColumnWidthChanged));
+
+        public static readonly DependencyProperty SpaceColumnWidthProperty = DependencyProperty.Register(nameof(SpaceColumnWidth), typeof(double), typeof(ScoreBar),
+            new PropertyMetadata(75d, OnSpaceColumnWidthChanged));
+
+        public static readonly DependencyProperty BarProperty = DependencyProperty.Register(nameof(Bar), typeof(Bar), typeof(ScoreBar),
+            new PropertyMetadata(null, OnBarChanged));
+
+        public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(nameof(IsSelected), typeof(bool), typeof(ScoreBar),
+            new PropertyMetadata(false, OnIsSelectedChanged));
+
+        public static readonly DependencyProperty SelectedInfoBrushProperty = DependencyProperty.Register(nameof(SelectedInfoBrush), typeof(Brush), typeof(ScoreBar),
+            new PropertyMetadata(Brushes.Green));
+
+        public static readonly DependencyProperty NormalInfoBrushProperty = DependencyProperty.Register(nameof(NormalInfoBrush), typeof(Brush), typeof(ScoreBar),
+            new PropertyMetadata(Brushes.White));
+
+        public static readonly DependencyProperty InfoBrushProperty = DependencyProperty.Register(nameof(InfoBrush), typeof(Brush), typeof(ScoreBar),
+            new PropertyMetadata(Brushes.White, OnInfoBrushChanged));
+
         public ScoreBarHitTestInfo HitTest(Point pointRelativeToScoreBar) {
             if (Bar == null) {
                 return new ScoreBarHitTestInfo(this, Bar, new Point(), -1, -1, false, false);
@@ -69,37 +116,51 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, false, true);
         }
 
-        public void UpdateBarTime(string barTimeText) {
-            // TODO: Use binding.
-            BarTimeLabel.Text = barTimeText;
+        public void SetGlobalBpm(double bpm) {
+            Bar.SquashParams();
+            if (Bar.Params == null) {
+                UpdateBpmText(bpm);
+            }
         }
 
-        public void UpdateBarIndex(int newIndex) {
-            // TODO: Use binding.
-            MeasureLabel.Text = newIndex.ToString();
+        public void SetPrivateBpm(double bpm) {
+            var bar = Bar;
+            if (bar.Params == null) {
+                bar.Params = new BarParams();
+            }
+            bar.Params.UserDefinedBpm = bpm;
+            UpdateBpmText(bpm);
         }
 
-        public void UpdateBpm(double newBpm) {
+        public void UpdateBarTimeText() {
+            // TODO: Bar.GetStartTime() is EXTREMELY time expensive (O(n), so it's easy to be O(n^2) when calling it in a loop). Avoid using it.
+            UpdateBarTimeText(TimeSpan.FromSeconds(Bar.GetStartTime()));
+        }
+
+        public void UpdateBarTimeText(TimeSpan timeSpan) {
+            // TODO: Use binding.
+            BarTimeLabel.Text = $"{timeSpan.Minutes:00}:{timeSpan.Seconds:00}.{timeSpan.Milliseconds:000}";
+        }
+
+        public void UpdateBarIndexText() {
+            UpdateBarIndexText(Bar.Index);
+        }
+
+        public void UpdateBarIndexText(int newIndex) {
+            // TODO: Use binding.
+            MeasureLabel.Text = (newIndex + 1).ToString();
+        }
+
+        public void UpdateBpmText() {
+            UpdateBpmText(Bar.GetActualBpm());
+        }
+
+        public void UpdateBpmText(double newBpm) {
             // TODO: Use binding.
             BpmLabel.Text = newBpm.ToString("F2");
         }
 
         public int TotalRowCount { get; private set; }
-
-        public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(nameof(Stroke), typeof(Brush), typeof(ScoreBar),
-            new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.BarStrokeBrush), OnStrokeChanged));
-
-        public static readonly DependencyProperty TextColumnWidthProperty = DependencyProperty.Register(nameof(TextColumnWidth), typeof(double), typeof(ScoreBar),
-            new PropertyMetadata(75d, OnTextColumnWidthChanged));
-
-        public static readonly DependencyProperty BarColumnWidthProperty = DependencyProperty.Register(nameof(BarColumnWidth), typeof(double), typeof(ScoreBar),
-           new PropertyMetadata(375d, OnBarColumnWidthChanged));
-
-        public static readonly DependencyProperty SpaceColumnWidthProperty = DependencyProperty.Register(nameof(SpaceColumnWidth), typeof(double), typeof(ScoreBar),
-            new PropertyMetadata(75d, OnSpaceColumnWidthChanged));
-
-        public static readonly DependencyProperty BarProperty = DependencyProperty.Register(nameof(Bar), typeof(Bar), typeof(ScoreBar),
-            new PropertyMetadata(null, OnBarChanged));
 
         private static void OnStrokeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var bar = obj as ScoreBar;
@@ -132,6 +193,18 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             RedrawBar(scoreBar, bar, Size.Empty, new Size(scoreBar.ActualWidth, scoreBar.ActualHeight));
         }
 
+        private static void OnIsSelectedChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var scoreBar = obj as ScoreBar;
+            Debug.Assert(scoreBar != null, "scoreBar != null");
+            scoreBar.InfoBrush = (bool)e.NewValue ? scoreBar.SelectedInfoBrush : scoreBar.NormalInfoBrush;
+        }
+
+        private static void OnInfoBrushChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var scoreBar = obj as ScoreBar;
+            Debug.Assert(scoreBar != null, "scoreBar != null");
+            scoreBar.InfoBorder.BorderBrush = (Brush)e.NewValue;
+        }
+
         private void BarGridContainer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
             RedrawBar(this, Bar, e.PreviousSize, e.NewSize);
         }
@@ -156,9 +229,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
 
             var timeSpan = TimeSpan.FromSeconds(bar.GetStartTime());
-            sb.BarTimeLabel.Text = $"{timeSpan.Minutes:00}:{timeSpan.Seconds:00}.{timeSpan.Milliseconds:000}";
-            sb.BpmLabel.Text = bar.GetActualBpm().ToString("F2");
-            sb.MeasureLabel.Text = bar.Index.ToString();
+            sb.UpdateBarTimeText(timeSpan);
+            sb.UpdateBpmText(bar.GetActualBpm());
+            sb.UpdateBarIndexText(bar.Index);
 
             if (newValue != oldValue) {
                 sb.UpdateAllLayouts();
@@ -187,7 +260,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 lineShape.Stroke = stroke;
             }
             foreach (var lineShape in _horizontalLines) {
-                if (lineShape.Stroke != stressStroke) {
+                if (!lineShape.Stroke.Equals(stressStroke)) {
                     lineShape.Stroke = stroke;
                 }
             }

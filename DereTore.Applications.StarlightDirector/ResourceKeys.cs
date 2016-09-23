@@ -38,6 +38,7 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string BdbFileFilter;
         public readonly string ExitPrompt;
         public readonly string PreviewNotImplemented;
+        public readonly string ConfirmDeleteBar;
 
         internal ResourceKeys() {
             var thisType = GetType();

@@ -11,5 +11,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public int? UserDefinedSignature { get; internal set; }
 
+        [JsonIgnore]
+        public bool CanBeSquashed => UserDefinedBpm == null && UserDefinedGridPerSignature == null && UserDefinedSignature == null;
+
     }
 }

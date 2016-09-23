@@ -1,15 +1,16 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media;
+using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
-using DereTore.Applications.StarlightDirector.UI.Controls;
-using DereTore.Applications.StarlightDirector.UI.Converters;
-using Fluent;
-using ComboBox = System.Windows.Controls.ComboBox;
+using DereTore.Applications.StarlightDirector.Interop;
+using NAudio.Wave;
+using AudioOut = NAudio.Wave.WasapiOut;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     /// <summary>
@@ -19,7 +20,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
 
         public MainWindow() {
             InitializeComponent();
-            InitializeCommandBindings();
+            CommandHelper.InitializeCommandBindings(this);
         }
 
         public Project Project {
@@ -27,8 +28,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             set { SetValue(ProjectProperty, value); }
         }
 
+        public Brush AccentColorBrush {
+            get { return (Brush)GetValue(AccentColorBrushProperty); }
+            private set { SetValue(AccentColorBrushProperty, value); }
+        }
+
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(nameof(Project), typeof(Project), typeof(MainWindow),
             new PropertyMetadata(null, OnProjectChanged));
+
+        public static readonly DependencyProperty AccentColorBrushProperty = DependencyProperty.Register(nameof(AccentColorBrush), typeof(Brush), typeof(MainWindow),
+            new PropertyMetadata(ColorizationHelper.GetWindowColorizationBrush()));
 
         private static void OnProjectChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var window = obj as MainWindow;
@@ -85,6 +94,38 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
         }
+
+        private void MainWindow_OnSourceInitialized(object sender, EventArgs e) {
+            this.RegisterWndProc(WndProc);
+        }
+        
+        private void OnDwmColorizationColorChanged(object sender, EventArgs e) {
+            AccentColorBrush = ColorizationHelper.GetWindowColorizationBrush();
+        }
+
+        private IntPtr WndProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam, ref bool handled) {
+            switch (uMsg) {
+                case NativeConstants.WM_DWMCOLORIZATIONCOLORCHANGED:
+                    OnDwmColorizationColorChanged(this, EventArgs.Empty);
+                    return IntPtr.Zero;
+                default:
+                    return IntPtr.Zero;
+            }
+        }
+
+        private void SelectedWaveOut_PlaybackStopped(object sender, EventArgs e) {
+            var waveOut = _selectedWaveOut;
+            if (waveOut != null) {
+                waveOut.PlaybackStopped -= SelectedWaveOut_PlaybackStopped;
+                waveOut.Dispose();
+                _selectedWaveOut = null;
+            }
+            _waveReader?.Dispose();
+            _waveReader = null;
+        }
+
+        private AudioOut _selectedWaveOut;
+        private WaveFileReader _waveReader;
 
     }
 }

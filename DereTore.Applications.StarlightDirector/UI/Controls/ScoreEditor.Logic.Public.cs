@@ -24,12 +24,79 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             InitializeControls();
         }
 
-        public void AppendBar() {
-            AddBar();
+        public ScoreBar AppendBar() {
+            return AddBar(null);
         }
 
-        public void RemoveBar(int index) {
-            RemoveBar(ScoreBars[index]);
+        public ScoreBar InsertBar(ScoreBar before) {
+            return AddBar(before);
+        }
+
+        public void RemoveBar(ScoreBar scoreBar) {
+            if (!ScoreBars.Contains(scoreBar)) {
+                throw new ArgumentException("Invalid ScoreBar.", nameof(scoreBar));
+            }
+            scoreBar.ScoreBarHitTest -= ScoreBar_ScoreBarHitTest;
+            scoreBar.MouseDoubleClick -= ScoreBar_MouseDoubleClick;
+            scoreBar.MouseDown -= ScoreBar_MouseDown;
+            Score.RemoveBarAt(scoreBar.Bar.Index);
+            EditableScoreBars.Remove(scoreBar);
+            BarLayer.Children.Remove(scoreBar);
+            TrimScoreNotes(scoreBar);
+            UpdateBarTexts();
+            RecalcEditorLayout();
+            UpdateMaximumScrollOffset();
+        }
+
+        public ScoreNote AddNote(ScoreBar scoreBar, int row, NotePosition position) {
+            return AddNote(scoreBar, row, (int)position - 1);
+        }
+
+        public ScoreNote AddNote(ScoreBar scoreBar, int row, int column) {
+            if (row < 0 || column < 0 || row >= 5) {
+                return null;
+            }
+            if (row >= scoreBar.Bar.GetTotalGridCount()) {
+                return null;
+            }
+            var bar = scoreBar.Bar;
+            var scoreNote = AnyNoteExistOnPosition(bar.Index, column, row);
+            if (scoreNote != null) {
+                return scoreNote;
+            }
+            var baseY = ScrollOffset + bar.Index * BarHeight;
+            var extraY = BarHeight * row / bar.GetTotalGridCount();
+            scoreNote = new ScoreNote();
+            scoreNote.Radius = NoteRadius;
+            var note = bar.AddNote(MathHelper.NextRandomInt32());
+            note.Type = NoteType.TapOrFlick;
+            note.StartPosition = note.FinishPosition = (NotePosition)(column + 1);
+            note.PositionInGrid = row;
+            scoreNote.Note = note;
+            EditableScoreNotes.Add(scoreNote);
+            NoteLayer.Children.Add(scoreNote);
+            scoreNote.X = NoteLayer.ActualWidth * TrackCenterXPositions[column];
+            scoreNote.Y = baseY + extraY;
+            scoreNote.MouseDown += ScoreNote_MouseDown;
+            scoreNote.MouseUp += ScoreNote_MouseUp;
+            scoreNote.MouseDoubleClick += ScoreNote_MouseDoubleClick;
+            return scoreNote;
+        }
+
+        public void RemoveNote(ScoreNote scoreNote) {
+            if (!ScoreNotes.Contains(scoreNote)) {
+                throw new ArgumentException("Invalid ScoreNote.", nameof(scoreNote));
+            }
+            scoreNote.MouseDown -= ScoreNote_MouseDown;
+            scoreNote.MouseUp -= ScoreNote_MouseUp;
+            scoreNote.MouseDoubleClick -= ScoreNote_MouseDoubleClick;
+            EditableScoreNotes.Remove(scoreNote);
+            var note = scoreNote.Note;
+            if (Score.Bars.Contains(note.Bar)) {
+                note.Bar.Notes.Remove(note);
+                Debug.Print("Note removed.");
+            }
+            NoteLayer.Children.Remove(scoreNote);
         }
 
         public ReadOnlyCollection<ScoreNote> ScoreNotes { get; }
@@ -42,9 +109,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             get {
                 var i = 0;
                 foreach (var scoreNote in ScoreNotes) {
-                    if (scoreNote.IsSelected) {
-                        ++i;
+                    if (!scoreNote.IsSelected) {
+                        continue;
                     }
+                    ++i;
                     if (i > 1) {
                         return false;
                     }
@@ -53,23 +121,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
-        public int SelectedScoreNoteCount => ScoreNotes.Count(scoreNote => scoreNote.IsSelected);
+        public int GetSelectedScoreNoteCount() {
+            return ScoreNotes.Count(scoreNote => scoreNote.IsSelected);
+        }
 
         public ScoreNote GetSelectedScoreNote() {
-            return ScoreNotes.SingleOrDefault(scoreNote => scoreNote.IsSelected);
+            return ScoreNotes.FirstOrDefault(scoreNote => scoreNote.IsSelected);
         }
 
         public IEnumerable<ScoreNote> GetSelectedScoreNotes() {
-            return from scoreNote in ScoreNotes
-                   where scoreNote.IsSelected
-                   select scoreNote;
+            return ScoreNotes.Where(scoreNote => scoreNote.IsSelected);
         }
 
         public IEnumerable<ScoreNote> SelectAllScoreNotes() {
             foreach (var scoreNote in ScoreNotes) {
                 scoreNote.IsSelected = true;
             }
-            return EditableScoreNotes;
+            return ScoreNotes;
         }
 
         public IEnumerable<ScoreNote> UnselectAllScoreNotes() {
@@ -79,6 +147,38 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             return Enumerable.Empty<ScoreNote>();
         }
 
+        public bool HasSelectedScoreBars => ScoreBars.Any(scoreBar => scoreBar.IsSelected);
+
+        public bool HasSingleSelectedScoreBar {
+            get {
+                var i = 0;
+                foreach (var scoreBar in ScoreBars) {
+                    if (!scoreBar.IsSelected) {
+                        continue;
+                    }
+                    ++i;
+                    if (i > 1) {
+                        return false;
+                    }
+                }
+                return i == 1;
+            }
+        }
+
+        public ScoreBar GetSelectedScoreBar() {
+            return ScoreBars.FirstOrDefault(scoreBar => scoreBar.IsSelected);
+        }
+
+        public IEnumerable<ScoreBar> GetSelectedScoreBars() {
+            return ScoreBars.Where(scoreBar => scoreBar.IsSelected);
+        }
+
+        public void SetGlobalBpm(double bpm) {
+            foreach (var scoreBar in ScoreBars) {
+                scoreBar.SetGlobalBpm(bpm);
+            }
+        }
+
         public double ScrollOffset {
             get { return (double)GetValue(ScrollOffsetProperty); }
             set { SetValue(ScrollOffsetProperty, value); }
@@ -86,7 +186,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public double MinimumScrollOffset {
             get { return (double)GetValue(MinimumScrollOffsetProperty); }
-            set { SetValue(MinimumScrollOffsetProperty, value); }
+            private set { SetValue(MinimumScrollOffsetProperty, value); }
         }
 
         public double MaximumScrollOffset {
@@ -114,6 +214,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(ProjectProperty, value); }
         }
 
+        public double SmallChange {
+            get { return (double)GetValue(SmallChangeProperty); }
+            set { SetValue(SmallChangeProperty, value); }
+        }
+
+        public double LargeChange {
+            get { return (double)GetValue(LargeChangeProperty); }
+            set { SetValue(LargeChangeProperty, value); }
+        }
+
         public static readonly DependencyProperty ScrollOffsetProperty = DependencyProperty.Register(nameof(ScrollOffset), typeof(double), typeof(ScoreEditor),
             new PropertyMetadata(0d, OnScrollOffsetChanged));
 
@@ -134,6 +244,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(nameof(Project), typeof(Project), typeof(ScoreEditor),
             new PropertyMetadata(null, OnProjectChanged));
+
+        public static readonly DependencyProperty SmallChangeProperty = DependencyProperty.Register(nameof(SmallChange), typeof(double), typeof(ScoreEditor),
+            new PropertyMetadata(10d));
+
+        public static readonly DependencyProperty LargeChangeProperty = DependencyProperty.Register(nameof(LargeChange), typeof(double), typeof(ScoreEditor),
+            new PropertyMetadata(50d));
 
         private static void OnScrollOffsetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;

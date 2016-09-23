@@ -3,19 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:windows="clr-namespace:DereTore.Applications.StarlightDirector.UI.Windows"
+        xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Windows"
         xmlns:controls="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
         xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
         xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities"
         xmlns:fluent="urn:fluent-ribbon"
         mc:Ignorable="d" Name="Me" WindowStartupLocation="CenterScreen"
-        Title="Starlight Director" Height="620" Width="920"
-        Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing">
+        Title="Starlight Director" Width="920" Height="620" MinWidth="750" MinHeight="400"
+        Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" SourceInitialized="MainWindow_OnSourceInitialized">
     <Window.Resources>
         <converters:EditModeToIsCheckedConverter x:Key="EditModeToIsCheckedConverter"/>
         <converters:DifficultyToIsCheckedConverter x:Key="DifficultyToIsCheckedConverter"/>
         <converters:DescribedEnumToStringConverter x:Key="DescribedEnumToStringConverter"/>
         <converters:NegateConverter x:Key="NegateConverter"/>
+        <converters:PositiveDoubleToStringConverter x:Key="PositiveDoubleToStringConverter"/>
+        <converters:PositiveInt32ToStringConverter x:Key="PositiveInt32ToStringConverter"/>
+        <converters:DoubleToStringConverter x:Key="DoubleToStringConverter"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -25,17 +28,17 @@
             <RowDefinition Height="Auto"></RowDefinition>
         </Grid.RowDefinitions>
         <!-- Margins: hack for 'in-window' ribbon and backstage -->
-        <fluent:Ribbon IsQuickAccessToolBarVisible="False" Margin="0 -27 0 0" CanMinimize="False">
+        <fluent:Ribbon IsQuickAccessToolBarVisible="False" Margin="0 -27 0 0" CanCustomizeRibbon="False">
             <fluent:Ribbon.Menu>
-                <fluent:Backstage Header="File" KeyTip="F" Background="#2765BC">
+                <fluent:Backstage Header="File" KeyTip="F" Background="{Binding ElementName=Me, Path=AccentColorBrush, Mode=OneWay}">
                     <fluent:BackstageTabControl Margin="0 -4 0 0">
-                        <fluent:Button Header="New Project" KeyTip="N" Command="{x:Static windows:MainWindow.CmdFileNewProject}"
+                        <fluent:Button Header="New Project" KeyTip="N" Command="{x:Static local:MainWindow.CmdFileNewProject}"
                                        Icon="{StaticResource RibbonIconFileNew}"/>
-                        <fluent:Button Header="Open Project" KeyTip="O" Command="{x:Static windows:MainWindow.CmdFileOpenProject}"
+                        <fluent:Button Header="Open Project" KeyTip="O" Command="{x:Static local:MainWindow.CmdFileOpenProject}"
                                        Icon="{StaticResource RibbonIconFileOpen}"/>
-                        <fluent:Button Header="Save Project" KeyTip="S" Command="{x:Static windows:MainWindow.CmdFileSaveProject}"
+                        <fluent:Button Header="Save Project" KeyTip="S" Command="{x:Static local:MainWindow.CmdFileSaveProject}"
                                        Icon="{StaticResource RibbonIconFileSave}"/>
-                        <fluent:Button Header="Save Project As" KeyTip="A" Command="{x:Static windows:MainWindow.CmdFileSaveProjectAs}"
+                        <fluent:Button Header="Save Project As" KeyTip="A" Command="{x:Static local:MainWindow.CmdFileSaveProjectAs}"
                                        Icon="{StaticResource RibbonIconFileSaveAs}"/>
                         <fluent:BackstageTabItem Header="Summary" KeyTip="M">
                         </fluent:BackstageTabItem>
@@ -43,10 +46,11 @@
                             <fluent:Button Header="Hello"></fluent:Button>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="About" KeyTip="T">
+                            <Frame Source="../Pages/AboutPage.xaml"/>
                         </fluent:BackstageTabItem>
-                        <fluent:Button Header="Preferences" KeyTip="C"
+                        <fluent:Button Header="Preferences" KeyTip="C" Command="{x:Static local:MainWindow.CmdFilePreferences}"
                                        Icon="{StaticResource RibbonIconFilePreferences}"/>
-                        <fluent:Button Header="Exit" KeyTip="X" Command="{x:Static windows:MainWindow.CmdFileExit}"
+                        <fluent:Button Header="Exit" KeyTip="X" Command="{x:Static local:MainWindow.CmdFileExit}"
                                        Icon="{StaticResource RibbonIconFileExit}"/>
                     </fluent:BackstageTabControl>
                 </fluent:Backstage>
@@ -54,48 +58,61 @@
             <fluent:RibbonTabItem Header="Home" KeyTip="H">
                 <fluent:RibbonGroupBox Header="Edit">
                     <fluent:DropDownButton Header="Edit Mode" Size="Large" LargeIcon="{StaticResource RibbonIconEditMode}">
-                        <fluent:MenuItem Header="_Select" Command="{x:Static windows:MainWindow.CmdEditModeSelect}"
+                        <fluent:MenuItem Header="_Select" Command="{x:Static local:MainWindow.CmdEditModeSelect}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Select}}"/>
-                        <fluent:MenuItem Header="Sy_nc" Command="{x:Static windows:MainWindow.CmdEditModeEditSync}"
+                        <fluent:MenuItem Header="Sy_nc" Command="{x:Static local:MainWindow.CmdEditModeEditSync}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Sync}}"/>
-                        <fluent:MenuItem Header="_Flick" Command="{x:Static windows:MainWindow.CmdEditModeEditFlick}"
+                        <fluent:MenuItem Header="_Flick" Command="{x:Static local:MainWindow.CmdEditModeEditFlick}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Flick}}"/>
-                        <fluent:MenuItem Header="_Hold" Command="{x:Static windows:MainWindow.CmdEditModeEditHold}"
+                        <fluent:MenuItem Header="_Hold" Command="{x:Static local:MainWindow.CmdEditModeEditHold}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Hold}}"/>
-                        <fluent:MenuItem Header="_Clear" Command="{x:Static windows:MainWindow.CmdEditModeClear}"
+                        <fluent:MenuItem Header="_Clear" Command="{x:Static local:MainWindow.CmdEditModeClear}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Clear}}"/>
                     </fluent:DropDownButton>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Measure">
-                    <fluent:Button Header="Append" Command="{x:Static windows:MainWindow.CmdEditBarAppend}" LargeIcon="{StaticResource RibbonIconBarNew}"/>
-                    <fluent:Button Header="Insert" LargeIcon="{StaticResource RibbonIconBarInsert}"/>
-                    <fluent:Button Header="Edit" LargeIcon="{StaticResource RibbonIconBarEdit}"/>
-                    <fluent:Button Header="Delete" LargeIcon="{StaticResource RibbonIconBarDelete}"/>
+                    <fluent:SplitButton Header="Append" Command="{x:Static local:MainWindow.CmdEditBarAppend}" LargeIcon="{StaticResource RibbonIconBarAppend}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="22"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <fluent:Spinner Grid.Column="1" Header="Count" VerticalContentAlignment="Center" Minimum="1" Maximum="50" Interval="1"
+                                            Value="{Binding ElementName=EditBarAppendMany, Path=CommandParameter, Mode=OneWayToSource}"
+                                            TextToValueConverter="{StaticResource PositiveInt32ToStringConverter}"/>
+                            <fluent:Button Grid.Column="2" x:Name="EditBarAppendMany" Header="Append" Size="Small" Margin="5 0 0 0" Command="{x:Static local:MainWindow.CmdEditBarAppendMany}"
+                                           Icon="{StaticResource RibbonIconBarAppendMany}"/>
+                        </Grid>
+                    </fluent:SplitButton>
+                    <fluent:Button Header="Insert" Command="{x:Static local:MainWindow.CmdEditBarInsert}" LargeIcon="{StaticResource RibbonIconBarInsert}"/>
+                    <fluent:Button Header="Edit" Command="{x:Static local:MainWindow.CmdEditBarEdit}" LargeIcon="{StaticResource RibbonIconBarEdit}"/>
+                    <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditBarDelete}" LargeIcon="{StaticResource RibbonIconBarDelete}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Note">
-                    <fluent:Button Header="Add" IsEnabled="False" LargeIcon="{StaticResource RibbonIconNoteNew}"/>
-                    <fluent:Button Header="Edit" Command="{x:Static windows:MainWindow.CmdEditNoteEdit}" LargeIcon="{StaticResource RibbonIconNoteEdit}"/>
-                    <fluent:Button Header="Delete" Command="{x:Static windows:MainWindow.CmdEditNoteDelete}" LargeIcon="{StaticResource RibbonIconNoteDelete}"/>
+                    <fluent:Button Header="Add" Command="{x:Static local:MainWindow.CmdEditNoteAdd}" LargeIcon="{StaticResource RibbonIconNoteAdd}"/>
+                    <fluent:Button Header="Edit" Command="{x:Static local:MainWindow.CmdEditNoteEdit}" LargeIcon="{StaticResource RibbonIconNoteEdit}"/>
+                    <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditNoteDelete}" LargeIcon="{StaticResource RibbonIconNoteDelete}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Preview">
-                    <fluent:Button Header="Start Preview" Command="{x:Static windows:MainWindow.CmdPreviewStart}" LargeIcon="{StaticResource RibbonIconPreviewStart}"/>
+                    <fluent:Button Header="Start Preview" Command="{x:Static local:MainWindow.CmdPreviewStart}" LargeIcon="{StaticResource RibbonIconPreviewStart}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Music">
-                    <fluent:Button Header="Select File" LargeIcon="{StaticResource RibbonIconMusicSelectWaveFile}"/>
-                    <fluent:Button Header="Play" Size="Middle" Icon="{StaticResource RibbonIconMusicPlay}"/>
-                    <fluent:Button Header="Stop" Size="Middle" Icon="{StaticResource RibbonIconMusicStop}"/>
+                    <fluent:Button Header="Select File" Command="{x:Static local:MainWindow.CmdMusicSelectWaveFile}" LargeIcon="{StaticResource RibbonIconMusicSelectWaveFile}"/>
+                    <fluent:Button Header="Play" Command="{x:Static local:MainWindow.CmdMusicPlay}" Size="Middle" Icon="{StaticResource RibbonIconMusicPlay}"/>
+                    <fluent:Button Header="Stop" Command="{x:Static local:MainWindow.CmdMusicStop}" Size="Middle" Icon="{StaticResource RibbonIconMusicStop}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Score">
                     <fluent:DropDownButton Header="Difficulty" LargeIcon="{StaticResource RibbonIconScoreDifficulty}">
-                        <fluent:MenuItem Header="Debut" Command="{x:Static windows:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.Debut}"
+                        <fluent:MenuItem Header="Debut" Command="{x:Static local:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.Debut}"
                             IsChecked="{Binding ElementName=Me, Path=Project.Difficulty, Converter={StaticResource DifficultyToIsCheckedConverter}, ConverterParameter={x:Static entities:Difficulty.Debut}}"/>
-                        <fluent:MenuItem Header="Regular" Command="{x:Static windows:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.Regular}"
+                        <fluent:MenuItem Header="Regular" Command="{x:Static local:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.Regular}"
                             IsChecked="{Binding ElementName=Me, Path=Project.Difficulty, Converter={StaticResource DifficultyToIsCheckedConverter}, ConverterParameter={x:Static entities:Difficulty.Regular}}"/>
-                        <fluent:MenuItem Header="Pro" Command="{x:Static windows:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.Pro}"
+                        <fluent:MenuItem Header="Pro" Command="{x:Static local:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.Pro}"
                             IsChecked="{Binding ElementName=Me, Path=Project.Difficulty, Converter={StaticResource DifficultyToIsCheckedConverter}, ConverterParameter={x:Static entities:Difficulty.Pro}}"/>
-                        <fluent:MenuItem Header="Master" Command="{x:Static windows:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.Master}"
+                        <fluent:MenuItem Header="Master" Command="{x:Static local:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.Master}"
                             IsChecked="{Binding ElementName=Me, Path=Project.Difficulty, Converter={StaticResource DifficultyToIsCheckedConverter}, ConverterParameter={x:Static entities:Difficulty.Master}}"/>
-                        <fluent:MenuItem Header="Master+" Command="{x:Static windows:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.MasterPlus}"
+                        <fluent:MenuItem Header="Master+" Command="{x:Static local:MainWindow.CmdScoreSwitchDifficulty}" CommandParameter="{x:Static entities:Difficulty.MasterPlus}"
                             IsChecked="{Binding ElementName=Me, Path=Project.Difficulty, Converter={StaticResource DifficultyToIsCheckedConverter}, ConverterParameter={x:Static entities:Difficulty.MasterPlus}}"/>
                     </fluent:DropDownButton>
                     <TextBlock Padding="4 2 0 2">
@@ -104,22 +121,22 @@
                             <Run Text="{Binding ElementName=Editor, Path=Score.Difficulty, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type entities:Difficulty}, Mode=OneWay}"/>
                         </Bold>
                     </TextBlock>
-                    <fluent:TextBox Header="BPM" InputWidth="75" VerticalContentAlignment="Center"/>
-                    <fluent:TextBox Header="Offset" InputWidth="75" VerticalContentAlignment="Center"/>
+                    <fluent:TextBox Header="BPM:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Editor, Path=Score.Settings.GlobalBpm, Converter={StaticResource PositiveDoubleToStringConverter}}"/>
+                    <fluent:TextBox Header="Start Offset:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Editor, Path=Score.Settings.StartTimeOffset, Converter={StaticResource DoubleToStringConverter}}"/>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
             <fluent:RibbonTabItem Header="Tools">
                 <fluent:RibbonGroupBox Header="Build">
-                    <fluent:Button Header="Music Archive" LargeIcon="{StaticResource RibbonIconBuildMusicArchive}"/>
-                    <fluent:Button Header="Score Database" LargeIcon="{StaticResource RibbonIconBuildScoreDatabase}"/>
+                    <fluent:Button Header="Music Archive" Command="{x:Static local:MainWindow.CmdToolsBuildMusicArchive}" LargeIcon="{StaticResource RibbonIconBuildMusicArchive}"/>
+                    <fluent:Button Header="Score Database" Command="{x:Static local:MainWindow.CmdToolsBuildScoreDatabase}" LargeIcon="{StaticResource RibbonIconBuildScoreDatabase}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Conversion">
                     <fluent:DropDownButton Header="Import" LargeIcon="{StaticResource RibbonIconImport}">
-                        <fluent:MenuItem Header="_Music Archive"/>
-                        <fluent:MenuItem Header="_Score Database"/>
+                        <fluent:MenuItem Header="_Music Archive" Command="{x:Static local:MainWindow.CmdToolsImportMusicArchive}"/>
+                        <fluent:MenuItem Header="_Score Database" Command="{x:Static local:MainWindow.CmdToolsImportScoreDatabase}"/>
                     </fluent:DropDownButton>
                     <fluent:DropDownButton Header="Export" LargeIcon="{StaticResource RibbonIconExport}">
-                        <fluent:MenuItem Header="_Current Score to CSV" Command="{x:Static windows:MainWindow.CmdToolsExportScoreToCsv}"/>
+                        <fluent:MenuItem Header="_Current Score to CSV" Command="{x:Static local:MainWindow.CmdToolsExportScoreToCsv}"/>
                     </fluent:DropDownButton>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
@@ -134,12 +151,13 @@
             <ScrollBar Grid.Column="1" Value="{Binding ElementName=Editor, Path=ScrollOffset, Converter={StaticResource NegateConverter}}"
                        Minimum="{Binding ElementName=Editor, Path=MinimumScrollOffset, Mode=OneWay}"
                        Maximum="{Binding ElementName=Editor, Path=MaximumScrollOffset, Mode=OneWay}"
-                       SmallChange="5" LargeChange="20"/>
+                       SmallChange="{Binding ElementName=Editor, Path=SmallChange, Mode=OneWay}"
+                       LargeChange="{Binding ElementName=Editor, Path=LargeChange, Mode=OneWay}"/>
         </Grid>
         <Grid Grid.Row="3" Margin="0 2 0 0">
             <StatusBar>
                 <StatusBarItem Padding="0">
-                    <Label>Composer Ready.</Label>
+                    <Label>Ready.</Label>
                 </StatusBarItem>
             </StatusBar>
         </Grid>

@@ -28,5 +28,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Index = index;
         }
 
+        public void SquashParams() {
+            if (Params?.CanBeSquashed ?? false) {
+                Params = null;
+            }
+        }
+
     }
 }

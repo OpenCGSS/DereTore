@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
@@ -12,8 +11,6 @@ using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
-
-        internal ScoreNote[] Avatars { get; private set; }
 
         private void ReloadScore() {
             Debug.Print("Not implemented: ScoreEditor.ReloadScore().");
@@ -51,14 +48,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void ResizeNotes() {
-            //throw new NotImplementedException();
         }
 
         private void RepositionNotes() {
-            if (EditableScoreNotes == null || EditableScoreNotes.Count == 0) {
+            if (ScoreNotes.Count == 0) {
                 return;
             }
-            foreach (var scoreNote in EditableScoreNotes) {
+            foreach (var scoreNote in ScoreNotes) {
                 var note = scoreNote.Note;
                 var bar = note.Bar;
                 var baseY = ScrollOffset + bar.Index * BarHeight;
@@ -124,10 +120,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             Avatars = avatars;
         }
 
-        private ScoreBar AddBar() {
+        private ScoreBar AddBar(ScoreBar before) {
             var project = Project;
             Debug.Assert(project != null, "project != null");
-            var bar = project.GetScore(project.Difficulty).AddBar();
+            var score = project.GetScore(project.Difficulty);
+            var bar = before == null ? score.AddBar() : score.InsertBar(before.Bar.Index);
             if (bar == null) {
                 return null;
             }
@@ -135,23 +132,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             scoreBar.Bar = bar;
             scoreBar.Height = BarHeight;
             scoreBar.ScoreBarHitTest += ScoreBar_ScoreBarHitTest;
-            scoreBar.PreviewMouseDoubleClick += ScoreBar_PreviewMouseDoubleClick;
-            BarLayer.Children.Add(scoreBar);
-            EditableScoreBars.Add(scoreBar);
+            scoreBar.MouseDoubleClick += ScoreBar_MouseDoubleClick;
+            scoreBar.MouseDown += ScoreBar_MouseDown;
+            if (before == null) {
+                BarLayer.Children.Add(scoreBar);
+                EditableScoreBars.Add(scoreBar);
+            } else {
+                BarLayer.Children.Add(scoreBar);
+                EditableScoreBars.Insert(ScoreBars.IndexOf(before), scoreBar);
+            }
+            UpdateBarTexts();
             RecalcEditorLayout();
             UpdateMaximumScrollOffset();
             return scoreBar;
-        }
-
-        private void RemoveBar(ScoreBar scoreBar) {
-            if (!EditableScoreBars.Contains(scoreBar)) {
-                throw new ArgumentException("Invalid ScoreBar.", nameof(scoreBar));
-            }
-            scoreBar.ScoreBarHitTest -= ScoreBar_ScoreBarHitTest;
-            scoreBar.PreviewMouseDoubleClick -= ScoreBar_PreviewMouseDoubleClick;
-            EditableScoreBars.Remove(scoreBar);
-            BarLayer.Children.Remove(scoreBar);
-            UpdateMaximumScrollOffset();
         }
 
         private ScoreNote AddNote(ScoreBar scoreBar, ScoreBarHitTestInfo info) {
@@ -167,8 +160,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 return AddNote(nextBar, nextBar.HitTest(point));
             }
             var bar = scoreBar.Bar;
-            ScoreNote scoreNote;
-            if (DoesNoteExistOnPosition(bar.Index, info.Column, info.Row, out scoreNote)) {
+            var scoreNote = AnyNoteExistOnPosition(bar.Index, info.Column, info.Row);
+            if (scoreNote != null) {
                 return scoreNote;
             }
             var baseY = ScrollOffset + bar.Index * BarHeight;
@@ -190,31 +183,38 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             return scoreNote;
         }
 
-        private void RemoveNote(ScoreNote scoreNote) {
-            if (!EditableScoreNotes.Contains(scoreNote)) {
-                throw new ArgumentException("Invalid ScoreNote.", nameof(scoreNote));
-            }
-            scoreNote.MouseDown -= ScoreNote_MouseDown;
-            scoreNote.MouseUp -= ScoreNote_MouseUp;
-            scoreNote.MouseDoubleClick -= ScoreNote_MouseDoubleClick;
-            EditableScoreNotes.Remove(scoreNote);
-            NoteLayer.Children.Remove(scoreNote);
-        }
-
-        private bool DoesNoteExistOnPosition(int barIndex, int column, int row, out ScoreNote existNote) {
-            foreach (var scoreNote in EditableScoreNotes) {
+        private ScoreNote AnyNoteExistOnPosition(int barIndex, int column, int row) {
+            foreach (var scoreNote in ScoreNotes) {
                 var note = scoreNote.Note;
                 if (note.Bar.Index == barIndex && (int)note.FinishPosition == column + 1 && note.PositionInGrid == row) {
-                    existNote = scoreNote;
-                    return true;
+                    return scoreNote;
                 }
             }
-            existNote = null;
-            return false;
+            return null;
+        }
+
+        private void UpdateBarTexts() {
+            foreach (var scoreBar in ScoreBars) {
+                scoreBar.UpdateBarIndexText();
+                scoreBar.UpdateBarTimeText();
+            }
         }
 
         private void UpdateMaximumScrollOffset() {
             MaximumScrollOffset = BarHeight * ScoreBars.Count;
+        }
+
+        private void TrimScoreNotes(ScoreBar willBeDeleted) {
+            // Reposition after calling this function.
+            var bar = willBeDeleted.Bar;
+            Func<ScoreNote, bool> matchFunc = scoreNote => scoreNote.Note.Bar == bar;
+            // Damn C#, their signatures are excatly the same!
+            Predicate<ScoreNote> matchPredicate = scoreNote => scoreNote.Note.Bar == bar;
+            var processing = ScoreNotes.Where(matchFunc).ToArray();
+            foreach (var scoreNote in processing) {
+                NoteLayer.Children.Remove(scoreNote);
+            }
+            EditableScoreNotes.RemoveAll(matchPredicate);
         }
 
         private List<ScoreBar> EditableScoreBars { get; }
@@ -223,19 +223,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private NoteRelationCollection Relations { get; }
 
+        private ScoreNote[] Avatars { get; set; }
+
         private static readonly double[] TrackCenterXPositions = { 0.2, 0.35, 0.5, 0.65, 0.8 };
         //private static readonly double BaseLineYPosition = 1d / 6;
         private static readonly double BaseLineYPosition = 0.1;
         private static readonly double WorkingAreaPadding = 2;
         private static readonly double BarHeight = 550;
         private static readonly double NoteDiameter = 30;
-        public static readonly double NoteRadius = NoteDiameter / 2;
-        public static readonly double FutureTimeWindow = 1;
-        public static readonly double PastTimeWindow = 0.2;
+        private static readonly double NoteRadius = NoteDiameter / 2;
+        private static readonly double FutureTimeWindow = 1;
+        private static readonly double PastTimeWindow = 0.2;
         // Then we know the bottom is <AvatarCenterY + (PastWindow / FutureWindow) * (AvatarCenterY - Ceiling))>.
-        public static readonly double FutureNoteCeiling = 5d / 6;
-        public static readonly double SmallChange = 10;
-        public static readonly double LargeChange = 50;
+        private static readonly double FutureNoteCeiling = 5d / 6;
 
     }
 }

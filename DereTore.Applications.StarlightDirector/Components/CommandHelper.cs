@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using DereTore.Applications.StarlightDirector.UI.Windows;
 
-namespace DereTore.Applications.StarlightDirector.UI.Windows {
-    partial class MainWindow {
+namespace DereTore.Applications.StarlightDirector.Components {
+    public static class CommandHelper {
 
-        private static RoutedCommand RC(params string[] gestures) {
+        public static RoutedCommand RC(params string[] gestures) {
             var command = new RoutedCommand(Guid.NewGuid().ToString(), typeof(MainWindow));
             if (gestures.Length <= 0) {
                 return command;
@@ -41,6 +45,26 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 command.InputGestures.Add(new KeyGesture(key, modifierKeys));
             }
             return command;
+        }
+
+        public static void InitializeCommandBindings(FrameworkElement element) {
+            var cb = element.CommandBindings;
+
+            var thisType = element.GetType();
+            var icommandType = typeof(ICommand);
+            var commandFields = thisType.GetFields(BindingFlags.Static | BindingFlags.Public);
+            foreach (var commandField in commandFields) {
+                if (commandField.FieldType != icommandType && !commandField.FieldType.IsSubclassOf(icommandType)) {
+                    continue;
+                }
+                var command = (ICommand)commandField.GetValue(null);
+                var name = commandField.Name;
+                var executedHandlerInfo = thisType.GetMethod(name + "_Executed", BindingFlags.NonPublic | BindingFlags.Instance);
+                var executedHandler = (ExecutedRoutedEventHandler)Delegate.CreateDelegate(typeof(ExecutedRoutedEventHandler), element, executedHandlerInfo);
+                var canExecuteHandlerInfo = thisType.GetMethod(name + "_CanExecute", BindingFlags.NonPublic | BindingFlags.Instance);
+                var canExecuteHandler = (CanExecuteRoutedEventHandler)Delegate.CreateDelegate(typeof(CanExecuteRoutedEventHandler), element, canExecuteHandlerInfo);
+                cb.Add(new CommandBinding(command, executedHandler, canExecuteHandler));
+            }
         }
 
     }

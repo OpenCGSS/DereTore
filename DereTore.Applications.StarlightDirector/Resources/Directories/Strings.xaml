@@ -8,4 +8,5 @@
     <system:String x:Key="BdbFileFilter">Score Database (*.bdb)|*.bdb</system:String>
     <system:String x:Key="ExitPrompt">The project is changed. Do you want to save it first?</system:String>
     <system:String x:Key="PreviewNotImplemented">The Preview function is not implemented yet. You can export the score to a CSV file and use ScoreEditor to view it.</system:String>
+    <system:String x:Key="ConfirmDeleteBar">You are going to delete a measure. This operation cannot be reverted. Proceed?</system:String>
 </ResourceDictionary>

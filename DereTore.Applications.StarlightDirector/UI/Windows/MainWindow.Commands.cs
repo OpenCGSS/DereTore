@@ -1,61 +1,54 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 using DereTore.Applications.StarlightDirector.UI.Controls;
 using Microsoft.Win32;
+using NAudio.CoreAudioApi;
+using NAudio.Wave;
+using AudioOut = NAudio.Wave.WasapiOut;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {
 
-        public static readonly ICommand CmdFileNewProject = RC("Ctrl+N");
-        public static readonly ICommand CmdFileOpenProject = RC("Ctrl+O");
-        public static readonly ICommand CmdFileSaveProject = RC("Ctrl+S");
-        public static readonly ICommand CmdFileSaveProjectAs = RC("F12");
-        public static readonly ICommand CmdFileExit = RC("Ctrl+Shift+Q");
+        public static readonly ICommand CmdFileNewProject = CommandHelper.RC("Ctrl+N");
+        public static readonly ICommand CmdFileOpenProject = CommandHelper.RC("Ctrl+O");
+        public static readonly ICommand CmdFileSaveProject = CommandHelper.RC("Ctrl+S");
+        public static readonly ICommand CmdFileSaveProjectAs = CommandHelper.RC("F12");
+        public static readonly ICommand CmdFilePreferences = CommandHelper.RC();
+        public static readonly ICommand CmdFileExit = CommandHelper.RC("Ctrl+W", "Ctrl+Shift+Q");
 
-        public static readonly ICommand CmdEditModeSelect = RC("Ctrl+1", "Ctrl+NumPad1");
-        public static readonly ICommand CmdEditModeEditSync = RC("Ctrl+2", "Ctrl+NumPad2");
-        public static readonly ICommand CmdEditModeEditFlick = RC("Ctrl+3", "Ctrl+NumPad3");
-        public static readonly ICommand CmdEditModeEditHold = RC("Ctrl+4", "Ctrl+NumPad4");
-        public static readonly ICommand CmdEditModeClear = RC("Ctrl+0", "Ctrl+NumPad0");
-        public static readonly ICommand CmdEditNoteEdit = RC();
-        public static readonly ICommand CmdEditNoteDelete = RC();
+        public static readonly ICommand CmdEditModeSelect = CommandHelper.RC("Ctrl+1", "Ctrl+NumPad1");
+        public static readonly ICommand CmdEditModeEditSync = CommandHelper.RC("Ctrl+2", "Ctrl+NumPad2");
+        public static readonly ICommand CmdEditModeEditFlick = CommandHelper.RC("Ctrl+3", "Ctrl+NumPad3");
+        public static readonly ICommand CmdEditModeEditHold = CommandHelper.RC("Ctrl+4", "Ctrl+NumPad4");
+        public static readonly ICommand CmdEditModeClear = CommandHelper.RC("Ctrl+0", "Ctrl+NumPad0");
+        public static readonly ICommand CmdEditNoteAdd = CommandHelper.RC();
+        public static readonly ICommand CmdEditNoteEdit = CommandHelper.RC();
+        public static readonly ICommand CmdEditNoteDelete = CommandHelper.RC();
+        public static readonly ICommand CmdEditBarAppend = CommandHelper.RC("Ctrl+Alt+U");
+        public static readonly ICommand CmdEditBarAppendMany = CommandHelper.RC();
+        public static readonly ICommand CmdEditBarInsert = CommandHelper.RC();
+        public static readonly ICommand CmdEditBarEdit = CommandHelper.RC();
+        public static readonly ICommand CmdEditBarDelete = CommandHelper.RC();
 
-        public static readonly ICommand CmdEditBarAppend = RC("Ctrl+Alt+I");
+        public static readonly ICommand CmdPreviewStart = CommandHelper.RC("F5");
 
-        public static readonly ICommand CmdPreviewStart = RC("F5");
+        public static readonly ICommand CmdMusicSelectWaveFile = CommandHelper.RC();
+        public static readonly ICommand CmdMusicPlay = CommandHelper.RC();
+        public static readonly ICommand CmdMusicStop = CommandHelper.RC();
 
-        public static readonly ICommand CmdScoreSwitchDifficulty = RC();
+        public static readonly ICommand CmdScoreSwitchDifficulty = CommandHelper.RC();
 
-        public static readonly ICommand CmdToolsExportScoreToCsv = RC();
-
-        private void InitializeCommandBindings() {
-            var cb = CommandBindings;
-
-            var thisType = GetType();
-            var icommandType = typeof(ICommand);
-            var commandFields = thisType.GetFields(BindingFlags.Static | BindingFlags.Public);
-            foreach (var commandField in commandFields) {
-                if (commandField.FieldType != icommandType && !commandField.FieldType.IsSubclassOf(icommandType)) {
-                    continue;
-                }
-                var command = (ICommand)commandField.GetValue(null);
-                var name = commandField.Name;
-                var executedHandlerInfo = thisType.GetMethod(name + "_Executed", BindingFlags.NonPublic | BindingFlags.Instance);
-                var executedHandler = (ExecutedRoutedEventHandler)Delegate.CreateDelegate(typeof(ExecutedRoutedEventHandler), this, executedHandlerInfo);
-                var canExecuteHandlerInfo = thisType.GetMethod(name + "_CanExecute", BindingFlags.NonPublic | BindingFlags.Instance);
-                var canExecuteHandler = (CanExecuteRoutedEventHandler)Delegate.CreateDelegate(typeof(CanExecuteRoutedEventHandler), this, canExecuteHandlerInfo);
-                cb.Add(new CommandBinding(command, executedHandler, canExecuteHandler));
-            }
-        }
+        public static readonly ICommand CmdToolsBuildMusicArchive = CommandHelper.RC();
+        public static readonly ICommand CmdToolsBuildScoreDatabase = CommandHelper.RC();
+        public static readonly ICommand CmdToolsImportMusicArchive = CommandHelper.RC();
+        public static readonly ICommand CmdToolsImportScoreDatabase = CommandHelper.RC();
+        public static readonly ICommand CmdToolsExportScoreToCsv = CommandHelper.RC();
 
         private void CmdFileNewProject_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = true;
@@ -151,6 +144,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 Project.Save(saveDialog.FileName);
                 CmdFileSaveProjectAs.RaiseCanExecuteChanged();
             }
+        }
+
+        private void CmdFilePreferences_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = false;
+        }
+
+        private void CmdFilePreferences_Executed(object sender, ExecutedRoutedEventArgs e) {
         }
 
         private void CmdFileExit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -268,6 +268,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             Debug.Print("Edit mode: clear");
         }
 
+        private void CmdEditNoteAdd_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = false;
+        }
+
+        private void CmdEditNoteAdd_Executed(object sender, ExecutedRoutedEventArgs e) {
+
+        }
+
         private void CmdEditNoteEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.HasSingleSelectedScoreNote;
         }
@@ -284,12 +292,134 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
 
         }
 
+        private void CmdEditBarAppend_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.Score != null;
+        }
+
+        private void CmdEditBarAppend_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Editor.AppendBar();
+        }
+
+        private void CmdEditBarAppendMany_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.Score != null;
+        }
+
+        private void CmdEditBarAppendMany_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var count = (int)(double)e.Parameter;
+            for (var i = 0; i < count; ++i) {
+                Editor.AppendBar();
+            }
+        }
+
+        private void CmdEditBarInsert_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.HasSingleSelectedScoreBar;
+        }
+
+        private void CmdEditBarInsert_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var scoreBar = Editor.GetSelectedScoreBar();
+            if (scoreBar != null) {
+                Editor.InsertBar(scoreBar);
+            }
+        }
+
+        private void CmdEditBarEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.HasSingleSelectedScoreBar && false;
+        }
+
+        private void CmdEditBarEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Debug.Print("Not implemented: edit bar");
+        }
+
+        private void CmdEditBarDelete_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.HasSingleSelectedScoreBar;
+        }
+
+        private void CmdEditBarDelete_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var scoreBar = Editor.GetSelectedScoreBar();
+            if (scoreBar != null) {
+                var result = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.ConfirmDeleteBar), Title, MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                switch (result) {
+                    case MessageBoxResult.Yes:
+                        Editor.RemoveBar(scoreBar);
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(result));
+                }
+            }
+        }
+
         private void CmdPreviewStart_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.Score != null;
         }
 
         private void CmdPreviewStart_Executed(object sender, ExecutedRoutedEventArgs e) {
             MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.PreviewNotImplemented), Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        }
+
+        private void CmdMusicSelectWaveFile_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.Project != null;
+        }
+
+        private void CmdMusicSelectWaveFile_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var openDialog = new OpenFileDialog();
+            openDialog.CheckPathExists = true;
+            openDialog.Multiselect = false;
+            openDialog.ShowReadOnly = false;
+            openDialog.ReadOnlyChecked = false;
+            openDialog.ValidateNames = true;
+            openDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.WaveFileFilter);
+            var dialogResult = openDialog.ShowDialog();
+            if (dialogResult ?? false) {
+                Editor.Project.MusicFileName = openDialog.FileName;
+                CmdMusicSelectWaveFile.RaiseCanExecuteChanged();
+            }
+        }
+
+        private void CmdMusicPlay_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            var r = Editor.Project?.HasMusic ?? false;
+            if (r) {
+                if (_selectedWaveOut != null) {
+                    r = _selectedWaveOut.PlaybackState != PlaybackState.Playing;
+                } else {
+                    r = Project.HasMusic;
+                }
+            }
+            e.CanExecute = r;
+        }
+
+        private void CmdMusicPlay_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var o = _selectedWaveOut;
+            if (o == null) {
+                o = new AudioOut(AudioClientShareMode.Shared, 0);
+                var fileStream = new FileStream(Project.MusicFileName, FileMode.Open, FileAccess.Read);
+                _waveReader = new WaveFileReader(fileStream);
+                o.PlaybackStopped += SelectedWaveOut_PlaybackStopped;
+                o.Init(_waveReader);
+                _selectedWaveOut = o;
+            }
+            if (o.PlaybackState == PlaybackState.Playing) {
+                _waveReader.Position = 0;
+            } else {
+                o.Play();
+            }
+            CmdMusicPlay.RaiseCanExecuteChanged();
+        }
+
+        private void CmdMusicStop_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            var r = Editor.Project?.HasMusic ?? false;
+            if (r) {
+                r = _selectedWaveOut != null && _selectedWaveOut.PlaybackState == PlaybackState.Playing;
+            }
+            e.CanExecute = r;
+        }
+
+        private void CmdMusicStop_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var o = _selectedWaveOut;
+            o?.Stop();
+            SelectedWaveOut_PlaybackStopped(o, EventArgs.Empty);
+            CmdMusicStop.RaiseCanExecuteChanged();
         }
 
         private void CmdScoreSwitchDifficulty_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -306,8 +436,40 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             }
         }
 
+        private void CmdToolsBuildMusicArchive_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.Project?.HasMusic ?? false;
+        }
+
+        private void CmdToolsBuildMusicArchive_Executed(object sender, ExecutedRoutedEventArgs e) {
+
+        }
+
+        private void CmdToolsBuildScoreDatabase_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = (Editor.Project?.Scores?.Count ?? 0) > 0 && false;
+        }
+
+        private void CmdToolsBuildScoreDatabase_Executed(object sender, ExecutedRoutedEventArgs e) {
+
+        }
+
+        private void CmdToolsImportMusicArchive_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = false;
+        }
+
+        private void CmdToolsImportMusicArchive_Executed(object sender, ExecutedRoutedEventArgs e) {
+
+        }
+
+        private void CmdToolsImportScoreDatabase_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = false;
+        }
+
+        private void CmdToolsImportScoreDatabase_Executed(object sender, ExecutedRoutedEventArgs e) {
+
+        }
+
         private void CmdToolsExportScoreToCsv_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = true;
+            e.CanExecute = Editor.Score != null;
         }
 
         private void CmdToolsExportScoreToCsv_Executed(object sender, ExecutedRoutedEventArgs e) {
@@ -320,14 +482,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             if (result ?? false) {
                 //Project.Current.SaveScoreToCsv(difficulty, saveDialog.FileName);
             }
-        }
-
-        private void CmdEditBarAppend_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = Editor.Project != null;
-        }
-
-        private void CmdEditBarAppend_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.AppendBar();
         }
 
     }

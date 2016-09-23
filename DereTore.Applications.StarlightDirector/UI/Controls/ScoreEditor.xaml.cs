@@ -9,7 +9,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// <summary>
     /// ScoreEditor.xaml 的交互逻辑
     /// </summary>
-    public partial class ScoreEditor : UserControl {
+    partial class ScoreEditor {
 
         private void FrameLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
             var path = FrameLayer.Children[0] as Path;
@@ -55,7 +55,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             definition.Height = new GridLength(rect.Y);
         }
 
-        private void ScoreEditor_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
+        private void ScoreEditor_OnMouseWheel(object sender, MouseWheelEventArgs e) {
             double change;
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
                 change = LargeChange;
@@ -69,7 +69,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
-        private void ScoreBar_PreviewMouseDoubleClick(object sender, MouseButtonEventArgs e) {
+        private void ScoreBar_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             var scoreBar = (ScoreBar)sender;
             var hitTestInfo = scoreBar.HitTest(e.GetPosition(scoreBar));
             AddNote(scoreBar, hitTestInfo);
@@ -77,6 +77,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ScoreBar_ScoreBarHitTest(object sender, ScoreBarHitTestEventArgs e) {
             Debug.Print($"row: {e.Info.Row}, col: {e.Info.Column}");
+        }
+
+        private void ScoreBar_MouseDown(object sender, MouseButtonEventArgs e) {
+            var previousSelected = GetSelectedScoreBar();
+            if (previousSelected != null) {
+                previousSelected.IsSelected = false;
+            }
+            var current = sender as ScoreBar;
+            if (current != null) {
+                current.IsSelected = true;
+            }
         }
 
         private void ScoreNote_MouseDown(object sender, MouseButtonEventArgs e) {

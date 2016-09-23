@@ -76,8 +76,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ControlzEx, Version=2.0.1.61, Culture=neutral, PublicKeyToken=f08b075e934b7045, processorArchitecture=MSIL">
-      <HintPath>..\packages\ControlzEx.2.0.1.61\lib\net40\ControlzEx.dll</HintPath>
+    <Reference Include="ControlzEx, Version=2.1.2.3, Culture=neutral, PublicKeyToken=f08b075e934b7045, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.2.1.2.3\lib\net40\ControlzEx.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
@@ -107,7 +107,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\ControlzEx.2.0.1.61\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\ControlzEx.2.1.2.3\lib\net40\System.Windows.Interactivity.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xaml" />
@@ -156,6 +156,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Pages\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -164,9 +168,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Components\ColorizationHelper.cs" />
+    <Compile Include="Components\CommandHelper.cs" />
     <Compile Include="Components\DescribedEnumConverter.cs" />
     <Compile Include="Components\IntegerIDGenerator.cs" />
-    <Compile Include="Components\InternalEditionList.cs" />
+    <Compile Include="Components\InternalList.cs" />
     <Compile Include="Components\NoteRelation.cs" />
     <Compile Include="Components\NoteRelationCollection.cs" />
     <Compile Include="Components\ObjectPool.cs" />
@@ -196,6 +202,9 @@
     <Compile Include="Fraction.cs" />
     <Compile Include="GamingServices\NoteManipulator.cs" />
     <Compile Include="GamingServices\ScoreManipulator.cs" />
+    <Compile Include="Interop\NativeConstants.cs" />
+    <Compile Include="Interop\NativeMethods.cs" />
+    <Compile Include="Interop\NativeStructures.cs" />
     <Compile Include="ResourceKeys.cs" />
     <Compile Include="UI\Controls\EditMode.cs" />
     <Compile Include="UI\Controls\ScoreBar.xaml.cs">
@@ -216,10 +225,15 @@
     <Compile Include="UI\Converters\DifficultyToIsCheckedConverter.cs" />
     <Compile Include="UI\Converters\EditModeToIsCheckedConverter.cs" />
     <Compile Include="UI\Converters\NegateConverter.cs" />
+    <Compile Include="UI\Converters\DoubleToStringConverter.cs" />
+    <Compile Include="UI\Converters\PositiveDoubleToStringConverter.cs" />
+    <Compile Include="UI\Converters\PositiveInt32ToStringConverter.cs" />
+    <Compile Include="UI\Pages\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.cs" />
-    <Compile Include="UI\Windows\MainWindow.Commands.Private.cs" />
     <Compile Include="UI\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -298,11 +312,11 @@
     <Resource Include="Resources\Icons\BarDelete.png" />
     <Resource Include="Resources\Icons\BarEdit.png" />
     <Resource Include="Resources\Icons\BarInsert.png" />
-    <Resource Include="Resources\Icons\BarNew.png" />
+    <Resource Include="Resources\Icons\BarAppend.png" />
     <Resource Include="Resources\Icons\NoteDelete.png" />
     <Resource Include="Resources\Icons\NoteEdit.png" />
     <Resource Include="Resources\Icons\NoteInsert.png" />
-    <Resource Include="Resources\Icons\NoteNew.png" />
+    <Resource Include="Resources\Icons\NoteAdd.png" />
     <Resource Include="Resources\Icons\MusicPlay.png" />
     <Resource Include="Resources\Icons\MusicSelectWaveFile.png" />
     <Resource Include="Resources\Icons\MusicStop.png" />
@@ -312,6 +326,7 @@
     <Resource Include="Resources\Icons\Export.png" />
     <Resource Include="Resources\Icons\Import.png" />
     <Resource Include="Resources\Icons\FilePreferences.png" />
+    <Resource Include="Resources\Icons\BarAppendMany.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
