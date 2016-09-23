@@ -265,28 +265,28 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Resources\hotel.acb">
+    <None Include="Resources\Testing\song_3034_hotel.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\hotel.bdb">
+    <None Include="Resources\Testing\song_3034_hotel.bdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\onedari.acb">
+    <None Include="Resources\Testing\song_3010_onedari.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\onedari.bdb">
+    <None Include="Resources\Testing\song_3010_onedari.bdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\oneshin.acb">
+    <None Include="Resources\Testing\song_1001_oneshin.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\oneshin.bdb">
+    <None Include="Resources\Testing\song_1001_oneshin.bdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\se_live_flic_perfect.hca">
+    <None Include="Resources\Testing\se_live_flic_perfect.hca">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\se_live_tap_perfect.hca">
+    <None Include="Resources\Testing\se_live_tap_perfect.hca">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="UI\Controls\ScoreEditor.Logic.Public.cs" />
