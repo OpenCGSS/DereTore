@@ -26,6 +26,9 @@
                 </Style>
             </Grid.Resources>
             <Border Grid.Row="1" Name="InfoBorder" BorderBrush="{Binding ElementName=Me, Path=InfoBrush}" BorderThickness="3" Margin="-1">
+                <Border.Effect>
+                    <DropShadowEffect x:Name="InfoDropShadowEffect" Color="{Binding ElementName=Me, Path=SelectedInfoBrush.Color}" ShadowDepth="0" BlurRadius="5" Opacity="0"/>
+                </Border.Effect>
                 <TextBlock Style="{StaticResource TextBlockMargin}" Foreground="White">
                 <Bold><Run>Measure:</Run></Bold><LineBreak/>
                 <Run Name="MeasureLabel">233</Run><LineBreak/>

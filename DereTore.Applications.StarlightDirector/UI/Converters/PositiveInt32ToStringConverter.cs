@@ -18,12 +18,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Converters {
             var b = double.TryParse(stringValue, out d);
             if (!b) {
                 Debug.Print($"Object '{value}' is not a number.");
-                return DependencyProperty.UnsetValue;
+                return 0.0;
             }
             var n = (int)d;
             if (n <= 0) {
                 Debug.Print($"Error: value {n} is negative.");
-                return DependencyProperty.UnsetValue;
+                return 0.0;
             }
             return (double)n;
         }

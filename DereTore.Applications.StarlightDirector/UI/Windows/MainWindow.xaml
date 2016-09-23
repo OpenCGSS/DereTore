@@ -78,7 +78,7 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <fluent:Spinner Grid.Column="1" Header="Count" VerticalContentAlignment="Center" Minimum="1" Maximum="50" Interval="1"
+                            <fluent:Spinner Grid.Column="1" Header="Many:" VerticalContentAlignment="Center" Minimum="1" Maximum="50" Interval="1"
                                             Value="{Binding ElementName=EditBarAppendMany, Path=CommandParameter, Mode=OneWayToSource}"
                                             TextToValueConverter="{StaticResource PositiveInt32ToStringConverter}"/>
                             <fluent:Button Grid.Column="2" x:Name="EditBarAppendMany" Header="Append" Size="Small" Margin="5 0 0 0" Command="{x:Static local:MainWindow.CmdEditBarAppendMany}"

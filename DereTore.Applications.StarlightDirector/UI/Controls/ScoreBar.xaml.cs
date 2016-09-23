@@ -87,7 +87,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             new PropertyMetadata(false, OnIsSelectedChanged));
 
         public static readonly DependencyProperty SelectedInfoBrushProperty = DependencyProperty.Register(nameof(SelectedInfoBrush), typeof(Brush), typeof(ScoreBar),
-            new PropertyMetadata(Brushes.Green));
+            new PropertyMetadata(Brushes.LightGreen));
 
         public static readonly DependencyProperty NormalInfoBrushProperty = DependencyProperty.Register(nameof(NormalInfoBrush), typeof(Brush), typeof(ScoreBar),
             new PropertyMetadata(Brushes.White));
@@ -196,7 +196,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private static void OnIsSelectedChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var scoreBar = obj as ScoreBar;
             Debug.Assert(scoreBar != null, "scoreBar != null");
-            scoreBar.InfoBrush = (bool)e.NewValue ? scoreBar.SelectedInfoBrush : scoreBar.NormalInfoBrush;
+            var b = (bool)e.NewValue;
+            scoreBar.InfoBrush = b ? scoreBar.SelectedInfoBrush : scoreBar.NormalInfoBrush;
+            scoreBar.InfoDropShadowEffect.Opacity = b ? 1 : 0;
         }
 
         private static void OnInfoBrushChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
