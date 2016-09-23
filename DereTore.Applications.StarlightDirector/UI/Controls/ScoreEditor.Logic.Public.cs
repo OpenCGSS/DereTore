@@ -68,7 +68,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var extraY = BarHeight * row / bar.GetTotalGridCount();
             scoreNote = new ScoreNote();
             scoreNote.Radius = NoteRadius;
-            var note = bar.AddNote(MathHelper.NextRandomInt32());
+            var note = bar.AddNote(MathHelper.NextRandomPositiveInt32());
             note.Type = NoteType.TapOrFlick;
             note.StartPosition = note.FinishPosition = (NotePosition)(column + 1);
             note.PositionInGrid = row;
@@ -143,6 +143,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public IEnumerable<ScoreNote> UnselectAllScoreNotes() {
             foreach (var scoreNote in ScoreNotes) {
                 scoreNote.IsSelected = false;
+            }
+            return Enumerable.Empty<ScoreNote>();
+        }
+
+        public IEnumerable<ScoreNote> UnselectAllScoreBars() {
+            foreach (var scoreBar in ScoreBars) {
+                scoreBar.IsSelected = false;
             }
             return Enumerable.Empty<ScoreNote>();
         }

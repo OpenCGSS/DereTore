@@ -98,7 +98,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void MainWindow_OnSourceInitialized(object sender, EventArgs e) {
             this.RegisterWndProc(WndProc);
         }
-        
+
         private void OnDwmColorizationColorChanged(object sender, EventArgs e) {
             AccentColorBrush = ColorizationHelper.GetWindowColorizationBrush();
         }
@@ -122,6 +122,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             }
             _waveReader?.Dispose();
             _waveReader = null;
+        }
+
+        private void NotifyProjectChanged() {
+            if (Project != null) {
+                Project.IsChanged = true;
+            }
         }
 
         private AudioOut _selectedWaveOut;

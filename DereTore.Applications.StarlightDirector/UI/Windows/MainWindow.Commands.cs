@@ -108,7 +108,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             if (dialogResult ?? false) {
                 var project = Project.Load(openDialog.FileName);
                 Project = Editor.Project = Project.Current = project;
-                Editor.Score = project?.GetScore(project.Difficulty);
+                // Caution! The property is set to true on deserialization.
+                project.IsChanged = false;
+                Editor.Score = project.GetScore(project.Difficulty);
             }
         }
 
@@ -273,7 +275,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdEditNoteAdd_Executed(object sender, ExecutedRoutedEventArgs e) {
-
+            Debug.Print("Not implemented: add note");
+            NotifyProjectChanged();
         }
 
         private void CmdEditNoteEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -281,7 +284,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdEditNoteEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
-
+            Debug.Print("Not implemented: edit note");
+            NotifyProjectChanged();
         }
 
         private void CmdEditNoteDelete_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -289,7 +293,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdEditNoteDelete_Executed(object sender, ExecutedRoutedEventArgs e) {
-
+            Debug.Print("Not implemented: delete note");
+            NotifyProjectChanged();
         }
 
         private void CmdEditBarAppend_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -298,6 +303,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
 
         private void CmdEditBarAppend_Executed(object sender, ExecutedRoutedEventArgs e) {
             Editor.AppendBar();
+            NotifyProjectChanged();
         }
 
         private void CmdEditBarAppendMany_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -309,6 +315,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             for (var i = 0; i < count; ++i) {
                 Editor.AppendBar();
             }
+            NotifyProjectChanged();
         }
 
         private void CmdEditBarInsert_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -319,6 +326,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             var scoreBar = Editor.GetSelectedScoreBar();
             if (scoreBar != null) {
                 Editor.InsertBar(scoreBar);
+                NotifyProjectChanged();
             }
         }
 
@@ -328,6 +336,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
 
         private void CmdEditBarEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
             Debug.Print("Not implemented: edit bar");
+            NotifyProjectChanged();
         }
 
         private void CmdEditBarDelete_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -341,6 +350,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 switch (result) {
                     case MessageBoxResult.Yes:
                         Editor.RemoveBar(scoreBar);
+                        NotifyProjectChanged();
                         break;
                     case MessageBoxResult.No:
                         break;
@@ -374,6 +384,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             if (dialogResult ?? false) {
                 Editor.Project.MusicFileName = openDialog.FileName;
                 CmdMusicSelectWaveFile.RaiseCanExecuteChanged();
+                NotifyProjectChanged();
             }
         }
 
@@ -441,7 +452,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsBuildMusicArchive_Executed(object sender, ExecutedRoutedEventArgs e) {
-
+            Debug.Print("Not implemented: build music archive");
+            NotifyProjectChanged();
         }
 
         private void CmdToolsBuildScoreDatabase_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -449,7 +461,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsBuildScoreDatabase_Executed(object sender, ExecutedRoutedEventArgs e) {
-
+            Debug.Print("Not implemented: build score database");
+            NotifyProjectChanged();
         }
 
         private void CmdToolsImportMusicArchive_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -457,7 +470,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsImportMusicArchive_Executed(object sender, ExecutedRoutedEventArgs e) {
-
+            Debug.Print("Not implemented: import music archive");
+            NotifyProjectChanged();
         }
 
         private void CmdToolsImportScoreDatabase_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -465,7 +479,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsImportScoreDatabase_Executed(object sender, ExecutedRoutedEventArgs e) {
-
+            Debug.Print("Not implemented: import score database");
+            NotifyProjectChanged();
         }
 
         private void CmdToolsExportScoreToCsv_CanExecute(object sender, CanExecuteRoutedEventArgs e) {

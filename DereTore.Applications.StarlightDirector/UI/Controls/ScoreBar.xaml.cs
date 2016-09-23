@@ -87,7 +87,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             new PropertyMetadata(false, OnIsSelectedChanged));
 
         public static readonly DependencyProperty SelectedInfoBrushProperty = DependencyProperty.Register(nameof(SelectedInfoBrush), typeof(Brush), typeof(ScoreBar),
-            new PropertyMetadata(Brushes.LightGreen));
+            new PropertyMetadata(Brushes.LawnGreen));
 
         public static readonly DependencyProperty NormalInfoBrushProperty = DependencyProperty.Register(nameof(NormalInfoBrush), typeof(Brush), typeof(ScoreBar),
             new PropertyMetadata(Brushes.White));

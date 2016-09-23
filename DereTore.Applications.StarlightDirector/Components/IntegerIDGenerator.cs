@@ -20,7 +20,7 @@
         }
 
         private int _current;
-        private int _start;
+        private readonly int _start;
 
     }
 }

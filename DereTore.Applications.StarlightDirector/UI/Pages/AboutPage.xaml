@@ -19,10 +19,10 @@
             <TextBlock FontSize="15">
                 <Bold FontSize="30">Starlight Director</Bold>
                 <LineBreak/>
-                <Run FontSize="20">Score and music creator for</Run> <Hyperlink FontSize="20" CommandParameter="http://cinderella.idolmaster.jp/sl-stage">CGSS</Hyperlink>
+                <Run FontSize="20">Score and music creator for</Run> <Hyperlink FontSize="20" CommandParameter="http://cinderella.idolmaster.jp/sl-stage/">CGSS</Hyperlink>
                 <LineBreak/>
                 Developed and maintained by <Hyperlink CommandParameter="https://github.com/hozuki">@hozuki</Hyperlink>
-                at the <Hyperlink CommandParameter="https://github.com/hozuki/DereTore">GitHub repository</Hyperlink>
+                at its <Hyperlink CommandParameter="https://github.com/hozuki/DereTore">GitHub repository</Hyperlink>
                 <LineBreak/><LineBreak/>
                 Powered by the open source projects:<LineBreak/>
                 ● <Hyperlink CommandParameter="http://sqlite.org">SQLite</Hyperlink><LineBreak/>
@@ -31,7 +31,7 @@
                 ● <Hyperlink CommandParameter="https://github.com/JoshClose/CsvHelper">CsvHelper</Hyperlink><LineBreak/>
                 ● <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink>
                 <LineBreak/><LineBreak/>
-                <Run FontSize="10">The copyright of CGSS and its related content is held by</Run> <Hyperlink FontSize="10" CommandParameter="https://bandainamcoent.co.jp/">Bandai Namco Entertainment, Inc.</Hyperlink>
+                <Run FontSize="10">The copyright of CGSS and its related content are held by</Run> <Hyperlink FontSize="10" CommandParameter="https://bandainamcoent.co.jp/">Bandai Namco Entertainment, Inc.</Hyperlink>
             </TextBlock>
         </StackPanel>
     </Border>

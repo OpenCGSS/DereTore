@@ -5,8 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" 
              d:DesignHeight="284.667" d:DesignWidth="460.667"
-             Background="Transparent" Focusable="True"
+             Background="Transparent" Focusable="True" IsTabStop="True"
+             FocusVisualStyle="{x:Null}"
              MouseDown="ScoreEditor_OnMouseDown"
+             PreviewMouseDown="ScoreEditor_OnPreviewMouseDown"
              MouseWheel="ScoreEditor_OnMouseWheel">
     <UserControl.Resources>
         <LinearGradientBrush x:Key="FrameBrush" StartPoint="0 0" EndPoint="1 1">
@@ -51,9 +53,9 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="5*" />
                     </Grid.RowDefinitions>
-                    <Canvas Grid.Row="1" Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged" />
-                    <Canvas Grid.Row="1" Name="LineLayer" SizeChanged="LineLayer_OnSizeChanged" />
-                    <Canvas Grid.Row="1" Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged" />
+                    <Canvas Grid.Row="1" Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
+                    <Canvas Grid.Row="1" Name="LineLayer" SizeChanged="LineLayer_OnSizeChanged"/>
+                    <Canvas Grid.Row="1" Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
                 </Grid>
             </Grid>
         </Grid>
