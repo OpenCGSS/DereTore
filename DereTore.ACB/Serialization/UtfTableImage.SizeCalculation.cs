@@ -174,10 +174,11 @@ namespace DereTore.ACB.Serialization {
 
             foreach (var fieldImage in orderedDataFieldImages) {
                 var rawOffset = baseOffset;
-                if (fieldImage.IsTable) {
+                if (fieldImage.IsTable && fieldImage.DataValue.Length > 0) {
                     baseOffset = SerializationHelper.RoundUpAsTable(baseOffset, Alignment);
                 }
-                totalSize += (uint)fieldImage.DataValue.Length + (baseOffset - rawOffset);
+                baseOffset += (uint)fieldImage.DataValue.Length;
+                totalSize += (baseOffset - rawOffset);
             }
             return totalSize;
         }

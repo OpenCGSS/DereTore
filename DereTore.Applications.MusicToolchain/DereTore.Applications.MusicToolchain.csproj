@@ -108,6 +108,18 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DereTore.Applications.AcbMaker\DereTore.Applications.AcbMaker.csproj">
+      <Project>{7516898d-66cc-4084-a218-29f19a503673}</Project>
+      <Name>DereTore.Applications.AcbMaker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Applications.CipherConverter\DereTore.Applications.CipherConverter.csproj">
+      <Project>{22da9276-bae2-4328-9b74-522d5333e09c}</Project>
+      <Name>DereTore.Applications.CipherConverter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Applications.Encoder\DereTore.Applications.Encoder.csproj">
+      <Project>{5b8fcabb-7663-4047-997c-bd14c06ef301}</Project>
+      <Name>DereTore.Applications.Encoder</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DereTore.Common\DereTore.Common.csproj">
       <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
       <Name>DereTore.Common</Name>
