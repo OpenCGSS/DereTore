@@ -8,7 +8,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Converters {
     public sealed class PositiveDoubleToStringConverter : IValueConverter {
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            return ((double)value).ToString("F2");
+            return ((double)value).ToString("F3");
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {

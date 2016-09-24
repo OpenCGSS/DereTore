@@ -44,7 +44,7 @@ namespace DereTore.Applications.StarlightDirector.Entities.Serialization {
         private sealed class RestrictedDoubleToStringConverter : ITypeConverter {
 
             public string ConvertToString(TypeConverterOptions options, object value) {
-                return ((double)value).ToString("F6");
+                return ((double)value).ToString("0.######");
             }
 
             public object ConvertFromString(TypeConverterOptions options, string text) {
