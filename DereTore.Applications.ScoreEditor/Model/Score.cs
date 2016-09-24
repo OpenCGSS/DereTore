@@ -14,11 +14,15 @@ using CsvHelper.Configuration;
 namespace DereTore.Applications.ScoreEditor.Model {
     public sealed class Score {
 
-        public static Score FromFile(string fileName, Difficulty difficulty) {
+        public static Score FromBdbFile(string fileName, Difficulty difficulty) {
             if (!IsScoreFile(fileName)) {
                 throw new FormatException($"'{fileName}' is not a score file.");
             }
             return new Score(fileName, difficulty);
+        }
+
+        public static Score FromCsvFile(string fileName) {
+            return new Score(fileName);
         }
 
         public event EventHandler<ScoreChangedEventArgs> ScoreChanged;
@@ -151,8 +155,15 @@ namespace DereTore.Applications.ScoreEditor.Model {
             ScoreChanged?.Invoke(sender, e);
         }
 
-        private Score(string fileName, Difficulty difficulty) {
-            var sanitizedFileName = SanitizeString(fileName);
+        private Score(string csvFileName) {
+            using (var fileStream = File.Open(csvFileName, FileMode.Open, FileAccess.Read)) {
+                InitializeWithCsv(fileStream);
+            }
+            UpdateNotesInfo();
+        }
+
+        private Score(string bdbFileName, Difficulty difficulty) {
+            var sanitizedFileName = SanitizeString(bdbFileName);
             using (var connection = new SQLiteConnection($"Data Source={sanitizedFileName};")) {
                 using (var adapter = new SQLiteDataAdapter("SELECT name, data FROM blobs WHERE name LIKE 'musicscores/m___/%.csv' ORDER BY name;", connection)) {
                     using (var dataTable = new DataTable()) {
@@ -167,25 +178,29 @@ namespace DereTore.Applications.ScoreEditor.Model {
                             throw new InvalidCastException("The 'data' row should be byte arrays.");
                         }
                         using (var stream = new MemoryStream((byte[])data)) {
-                            using (var reader = new StreamReader(stream, Encoding.UTF8)) {
-                                var config = new CsvConfiguration();
-                                config.RegisterClassMap<ScoreCsvMap>();
-                                config.HasHeaderRecord = true;
-                                using (var csv = new CsvReader(reader, config)) {
-                                    var items = new List<Note>();
-                                    while (csv.Read()) {
-                                        items.Add(csv.GetRecord<Note>());
-                                    }
-                                    items.Sort((s1, s2) => s1.HitTiming > s2.HitTiming ? 1 : (s2.HitTiming > s1.HitTiming ? -1 : 0));
-                                    _editableNotes = items;
-                                    _notes = _editableNotes.AsReadOnly();
-                                }
-                            }
+                            InitializeWithCsv(stream);
                         }
                     }
                 }
             }
             UpdateNotesInfo();
+        }
+
+        private void InitializeWithCsv(Stream csvStream) {
+            using (var reader = new StreamReader(csvStream, Encoding.UTF8)) {
+                var config = new CsvConfiguration();
+                config.RegisterClassMap<ScoreCsvMap>();
+                config.HasHeaderRecord = true;
+                using (var csv = new CsvReader(reader, config)) {
+                    var items = new List<Note>();
+                    while (csv.Read()) {
+                        items.Add(csv.GetRecord<Note>());
+                    }
+                    items.Sort((s1, s2) => s1.HitTiming > s2.HitTiming ? 1 : (s2.HitTiming > s1.HitTiming ? -1 : 0));
+                    _editableNotes = items;
+                    _notes = _editableNotes.AsReadOnly();
+                }
+            }
         }
 
         private void UpdateNotesInfo() {
@@ -262,8 +277,8 @@ namespace DereTore.Applications.ScoreEditor.Model {
             return shouldCoverWithQuotes ? "\"" + s + "\"" : s;
         }
 
-        private readonly List<Note> _editableNotes;
-        private readonly ReadOnlyCollection<Note> _notes;
+        private List<Note> _editableNotes;
+        private ReadOnlyCollection<Note> _notes;
 
         private static readonly char[] CommandlineEscapeChars = { ' ', '&', '%', '#', '@', '!', ',', '~', '+', '=', '(', ')' };
 

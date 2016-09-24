@@ -26,14 +26,23 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                 this.ShowMessageBox("Please select the score file.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
             }
-            string[] scoreNames;
-            var isScoreFile = Score.IsScoreFile(txtScoreFileName.Text, out scoreNames);
-            if (!isScoreFile) {
-                this.ShowMessageBox($"The file '{txtScoreFileName.Text}' is not a score file.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                return false;
-            }
-            if (!Score.ContainsDifficulty(scoreNames, (Difficulty)(cboDifficulty.SelectedIndex + 1))) {
-                this.ShowMessageBox($"The file '{txtScoreFileName.Text}' does not contain required difficulty '{cboDifficulty.SelectedItem}'.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            var scoreFileName = txtScoreFileName.Text;
+            var scoreFileExtension = new FileInfo(scoreFileName).Extension.ToLowerInvariant();
+            if (scoreFileExtension == ExtensionBdb) {
+                string[] scoreNames;
+                var isScoreFile = Score.IsScoreFile(txtScoreFileName.Text, out scoreNames);
+                if (!isScoreFile) {
+                    this.ShowMessageBox($"The file '{scoreFileName}' is not a score database file.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
+                if (!Score.ContainsDifficulty(scoreNames, (Difficulty)(cboDifficulty.SelectedIndex + 1))) {
+                    this.ShowMessageBox($"The file '{scoreFileName}' does not contain required difficulty '{cboDifficulty.SelectedItem}'.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return false;
+                }
+            } else if (scoreFileExtension == ExtensionCsv) {
+                // Don't have an idea how to fully check the file.
+            } else {
+                this.ShowMessageBox($"The file {scoreFileName} is neither a score database or a single score file.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
             }
             return true;
@@ -195,8 +204,12 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             }
         }
 
-        private static readonly string AcbFilter = "ACB Files|*";
-        private static readonly string ScoreFilter = "Score|*";
+        private static readonly string AcbFilter = "ACB Files (*.acb)|*.acb";
+        private static readonly string ScoreFilter = "Score Database (*.bdb)|*.bdb|Single Score (*.csv)|*.csv";
+
+        private static readonly string ExtensionAcb = ".acb";
+        private static readonly string ExtensionBdb = ".bdb";
+        private static readonly string ExtensionCsv = ".csv";
 
         private static readonly string SongTipFormat = "Song: {0}";
 

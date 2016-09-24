@@ -312,7 +312,17 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             _acbStream = File.Open(txtAcbFileName.Text, FileMode.Open, FileAccess.Read);
             _player = LiveMusicPlayer.FromStream(_acbStream, txtAcbFileName.Text, DecodeParams);
             _player.PlaybackStopped += Player_PlaybackStopped;
-            _score = Score.FromFile(txtScoreFileName.Text, (Difficulty)(cboDifficulty.SelectedIndex + 1));
+            Score score;
+            var scoreFileName = txtScoreFileName.Text;
+            var scoreFileExtension = new FileInfo(scoreFileName).Extension.ToLowerInvariant();
+            if (scoreFileExtension == ExtensionBdb) {
+                score = Score.FromBdbFile(scoreFileName, (Difficulty)(cboDifficulty.SelectedIndex + 1));
+            } else if (scoreFileExtension == ExtensionCsv) {
+                score = Score.FromCsvFile(scoreFileName);
+            } else {
+                throw new ArgumentException("What?", nameof(scoreFileExtension));
+            }
+            _score = score;
             editor.Score = _score;
             SetControlsEnabled(ViewerState.Loaded);
             lblSong.Text = string.Format(SongTipFormat, _player.HcaName);
