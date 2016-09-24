@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
+using DereTore.Applications.StarlightDirector.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -54,7 +57,13 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                         FlickType = NoteFlickType.Tap;
                     }
                 } else {
-                    if (n1 != null) {
+                    if (n1 != null && n2 == null) {
+                        // Currently there isn't an example of quick 'Z' turn appeared in CGSS (as shown below),
+                        // so the following completion method is good enough.
+                        //     -->
+                        //      ^
+                        //       \
+                        //      -->
                         FlickType = n1.FlickType;
                     }
                 }
@@ -126,35 +135,56 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public bool IsGamingNote => Type == NoteType.TapOrFlick || Type == NoteType.Hold;
 
-        public bool TryGetFlickGroupID(ref int suggestedID) {
+        public static readonly DependencyProperty FlickTypeProperty = DependencyProperty.Register(nameof(FlickType), typeof(NoteFlickType), typeof(Note),
+            new PropertyMetadata(NoteFlickType.Tap));
+
+        public static readonly Comparison<Note> TimeComparison = (n1, n2) => {
+            if (n1.Bar == n2.Bar) {
+                return n1.PositionInGrid.CompareTo(n2.PositionInGrid);
+            } else {
+                return n1.GetHitTiming().CompareTo(n2.GetHitTiming());
+            }
+        };
+
+        internal bool TryGetFlickGroupID(out FlickGroupModificationResult modificationResult, out int knownGroupID, out Note groupStart) {
             if (!IsFlick) {
+                knownGroupID = EntityID.Invalid;
+                modificationResult = FlickGroupModificationResult.Declined;
+                groupStart = null;
                 return false;
             }
             var groupItemCount = 0;
             var temp = this;
-            var groupStart = this;
-            while (temp.HasPrevFlick) {
+            // Compiler trick.
+            groupStart = temp;
+            while (temp != null) {
                 groupStart = temp;
                 temp = temp.PrevFlickNote;
                 ++groupItemCount;
             }
             temp = this;
+            ++groupItemCount;
             while (temp.HasNextFlick) {
                 temp = temp.NextFlickNote;
                 ++groupItemCount;
             }
             if (groupItemCount < 2) {
-                // Actually, the flick group is not fully filled.
+                // Actually, the flick group is not fully filled. We should throw an exception.
+                knownGroupID = EntityID.Invalid;
+                modificationResult = FlickGroupModificationResult.Declined;
                 return false;
             }
-            if (groupStart.ID != EntityID.Invalid) {
-                suggestedID = groupStart.ID;
+            if (groupStart.GroupID != EntityID.Invalid) {
+                knownGroupID = groupStart.GroupID;
+                modificationResult = FlickGroupModificationResult.Reused;
+            } else {
+                knownGroupID = EntityID.Invalid;
+                modificationResult = FlickGroupModificationResult.CreationPending;
             }
             return true;
         }
 
-        public static readonly DependencyProperty FlickTypeProperty = DependencyProperty.Register(nameof(FlickType), typeof(NoteFlickType), typeof(Note),
-            new PropertyMetadata(NoteFlickType.Tap));
+        internal int GroupID { get; set; }
 
         [JsonConstructor]
         internal Note(int id, Bar bar) {

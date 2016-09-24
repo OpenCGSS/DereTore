@@ -173,7 +173,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public void UpdateBpmText(double newBpm) {
             // TODO: Use binding.
-            BpmLabel.Text = newBpm.ToString("F2");
+            BpmLabel.Text = newBpm.ToString("F3");
         }
 
         public int TotalRowCount { get; private set; }

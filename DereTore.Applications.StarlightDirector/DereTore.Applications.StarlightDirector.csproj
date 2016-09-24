@@ -193,6 +193,7 @@
     <Compile Include="Entities\CompiledScore.cs" />
     <Compile Include="Entities\Difficulty.cs" />
     <Compile Include="Entities\EntityID.cs" />
+    <Compile Include="Entities\FlickGroupModificationResult.cs" />
     <Compile Include="Entities\IDGenerators.cs" />
     <Compile Include="Entities\Note.cs" />
     <Compile Include="Entities\NoteFlickType.cs" />

@@ -1,8 +1,10 @@
-﻿namespace DereTore.Applications.StarlightDirector.Components {
+﻿using System.Collections;
+
+namespace DereTore.Applications.StarlightDirector.Components {
     public sealed class IntegerIDGenerator {
 
         public int Next() {
-            return _current++;
+            return ++_current;
         }
 
         public void Reset() {
@@ -16,7 +18,7 @@
         }
 
         internal IntegerIDGenerator(int start) {
-            _start = _current = start;
+            _start = _current = start - 1;
         }
 
         private int _current;

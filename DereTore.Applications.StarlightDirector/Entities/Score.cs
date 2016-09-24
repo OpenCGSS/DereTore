@@ -132,9 +132,18 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         internal void CompileTo(CompiledScore compiledScore) {
             var settings = Settings;
             IDGenerators.ResetCompiled();
+            IDGenerators.ResetOriginal();
             var compiledNotes = compiledScore.Notes;
             compiledNotes.Clear();
             var endTimeOfLastBar = settings.StartTimeOffset;
+
+            // Clear the GroupID caches.
+            foreach (var bar in Bars) {
+                foreach (var note in bar.Notes) {
+                    note.GroupID = EntityID.Invalid;
+                    note.CompilationResult = null;
+                }
+            }
 
             // We can also use Note.GetNoteHitTiming(), but that requires massive loops. Therefore we manually expand them here.
             foreach (var bar in Bars) {
@@ -142,6 +151,9 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 var signature = bar.GetActualSignature();
                 var gridCountInBar = bar.GetActualGridPerSignature();
                 var barStartTime = ComposerUtilities.BpmToSeconds(bpm) * signature;
+                // Sorting is for flick group generation. We have to assure that the start of each group is
+                // processed first, at least in the group which it is in.
+                bar.Notes.Sort(Note.TimeComparison);
                 foreach (var note in bar.Notes) {
                     var compiledNote = new CompiledNote();
                     note.CompilationResult = compiledNote;
@@ -152,14 +164,26 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     compiledNote.FlickType = note.FlickType;
                     compiledNote.IsSync = note.IsSync;
                     compiledNote.HitTiming = endTimeOfLastBar + barStartTime * (note.PositionInGrid / (double)(signature * gridCountInBar));
-                    var groupID = IDGenerators.FlickGroupIDGenerator.Current;
-                    if (note.TryGetFlickGroupID(ref groupID)) {
-                        compiledNote.FlickGroupID = groupID;
-                        if (groupID == IDGenerators.FlickGroupIDGenerator.Current) {
-                            IDGenerators.FlickGroupIDGenerator.Next();
+                    if (note.GroupID != EntityID.Invalid) {
+                        compiledNote.FlickGroupID = note.GroupID;
+                    } else {
+                        int groupID;
+                        FlickGroupModificationResult result;
+                        Note groupStart;
+                        if (note.TryGetFlickGroupID(out result, out groupID, out groupStart)) {
+                            switch (result) {
+                                case FlickGroupModificationResult.Reused:
+                                    note.GroupID = compiledNote.FlickGroupID = groupID;
+                                    break;
+                                case FlickGroupModificationResult.CreationPending:
+                                    groupID = IDGenerators.FlickGroupIDGenerator.Next();
+                                    groupStart.GroupID = note.GroupID = compiledNote.FlickGroupID = groupID;
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
                     }
-
                     compiledNotes.Add(compiledNote);
                 }
                 endTimeOfLastBar += barStartTime;
