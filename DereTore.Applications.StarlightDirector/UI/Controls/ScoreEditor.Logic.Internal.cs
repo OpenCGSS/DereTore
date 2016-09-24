@@ -198,6 +198,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             NoteRelations.RemoveAll(scoreNote);
             var note = scoreNote.Note;
             if (Score.Bars.Contains(note.Bar)) {
+                // The Reset() call is necessary.
+                note.Reset();
                 note.Bar.Notes.Remove(note);
                 Debug.Print("Note removed.");
             }
