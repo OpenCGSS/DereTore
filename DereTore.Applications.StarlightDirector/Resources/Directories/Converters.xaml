@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters">
+    <converters:EditModeToIsCheckedConverter x:Key="EditModeToIsCheckedConverter"/>
+    <converters:DifficultyToIsCheckedConverter x:Key="DifficultyToIsCheckedConverter"/>
+    <converters:DescribedEnumToStringConverter x:Key="DescribedEnumToStringConverter"/>
+    <converters:NegateConverter x:Key="NegateConverter"/>
+    <converters:PositiveDoubleToStringConverter x:Key="PositiveDoubleToStringConverter"/>
+    <converters:PositiveInt32ToStringConverter x:Key="PositiveInt32ToStringConverter"/>
+    <converters:DoubleToStringConverter x:Key="DoubleToStringConverter"/>
+    <converters:NoteFlickTypeToVisibilityConverter x:Key="NoteFlickTypeToVisibilityConverter"/>
+</ResourceDictionary>

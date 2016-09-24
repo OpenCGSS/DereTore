@@ -36,9 +36,13 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string WaveFileFilter;
         public readonly string AcbFileFilter;
         public readonly string BdbFileFilter;
-        public readonly string ExitPrompt;
+        public readonly string ProjectChangedPrompt;
         public readonly string PreviewNotImplemented;
         public readonly string ConfirmDeleteBar;
+        public readonly string NoteRelationAlreadyExists;
+        public readonly string InvalidSyncCreation;
+        public readonly string InvalidFlickCreation;
+        public readonly string InvalidHoldCreation;
 
         internal ResourceKeys() {
             var thisType = GetType();

@@ -1,10 +1,13 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace DereTore.Applications.StarlightDirector.Entities {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy), MemberSerialization = MemberSerialization.OptIn)]
     public sealed class ScoreSettings : DependencyObject {
+
+        public event EventHandler<EventArgs> SettingChanged;
 
         /// <summary>
         /// Tempo，每分钟四分音符出现次数。
@@ -16,7 +19,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         [JsonProperty]
-        public double StartTimeOffset { get; set; }
+        public double StartTimeOffset {
+            get { return (double)GetValue(StartTimeOffsetProperty); }
+            set { SetValue(StartTimeOffsetProperty, value); }
+        }
 
         /// <summary>
         /// 细分级别，一个四分音符被分成多少份。
@@ -43,7 +49,17 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty GlobalBpmProperty = DependencyProperty.Register(nameof(GlobalBpm), typeof(double), typeof(ScoreSettings),
             new PropertyMetadata(120d, OnGlobalBpmChanged));
 
+        public static readonly DependencyProperty StartTimeOffsetProperty = DependencyProperty.Register(nameof(StartTimeOffset), typeof(double), typeof(ScoreSettings),
+            new PropertyMetadata(0d, OnStartTimeOffsetChanged));
+
         private static void OnGlobalBpmChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var settings = (ScoreSettings)obj;
+            settings.SettingChanged.Raise(obj, EventArgs.Empty);
+        }
+
+        private static void OnStartTimeOffsetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var settings = (ScoreSettings)obj;
+            settings.SettingChanged.Raise(obj, EventArgs.Empty);
         }
 
         private ScoreSettings(Score score) {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using DereTore.Applications.StarlightDirector.UI.Controls;
 using TupleType = System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>;
@@ -18,7 +19,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
             InternalDictionary.Add(tuple, relation);
         }
 
-        public int Remove(ScoreNote oneOf) {
+        public int RemoveAll(ScoreNote oneOf) {
             var contained = InternalDictionary.Where(kv => kv.Key.Item1.Equals(oneOf) || kv.Key.Item2.Equals(oneOf)).ToArray();
             var n = 0;
             foreach (var kv in contained) {
@@ -28,7 +29,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
             return n;
         }
 
-        public int Remove(ScoreNote oneOf, NoteRelation relation) {
+        public int RemoveAll(ScoreNote oneOf, NoteRelation relation) {
             var contained = InternalDictionary.Where(kv => (kv.Key.Item1.Equals(oneOf) || kv.Key.Item2.Equals(oneOf)) && kv.Value == relation).ToArray();
             var n = 0;
             foreach (var kv in contained) {
@@ -50,12 +51,19 @@ namespace DereTore.Applications.StarlightDirector.Components {
             }
         }
 
-        public void RemoveAllRelated(ScoreNote scoreNote) {
-            RemoveAll(s => s.Equals(scoreNote));
-        }
-
         public bool ContainsNote(ScoreNote oneOf) {
             return InternalDictionary.Any(kv => kv.Key.Item1.Equals(oneOf) || kv.Key.Item2.Equals(oneOf));
+        }
+
+        public bool ContainsPair(ScoreNote scoreNote1, ScoreNote scoreNote2) {
+            if (scoreNote1.Equals(scoreNote2)) {
+                return false;
+            }
+            return InternalDictionary.Any(kv => {
+                var i1 = kv.Key.Item1;
+                var i2 = kv.Key.Item2;
+                return (i1.Equals(scoreNote1) && i2.Equals(scoreNote2)) || (i1.Equals(scoreNote2) && i2.Equals(scoreNote1));
+            });
         }
 
         public bool ContainsRelation(NoteRelation relation) {

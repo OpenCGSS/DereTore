@@ -5,27 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Windows"
         xmlns:controls="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
-        xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
         xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities"
+        xmlns:ui="clr-namespace:DereTore.Applications.StarlightDirector.UI"
         xmlns:fluent="urn:fluent-ribbon"
         mc:Ignorable="d" Name="Me" WindowStartupLocation="CenterScreen"
         Title="Starlight Director" Width="920" Height="620" MinWidth="750" MinHeight="400"
         Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" SourceInitialized="MainWindow_OnSourceInitialized">
-    <Window.Resources>
-        <converters:EditModeToIsCheckedConverter x:Key="EditModeToIsCheckedConverter"/>
-        <converters:DifficultyToIsCheckedConverter x:Key="DifficultyToIsCheckedConverter"/>
-        <converters:DescribedEnumToStringConverter x:Key="DescribedEnumToStringConverter"/>
-        <converters:NegateConverter x:Key="NegateConverter"/>
-        <converters:PositiveDoubleToStringConverter x:Key="PositiveDoubleToStringConverter"/>
-        <converters:PositiveInt32ToStringConverter x:Key="PositiveInt32ToStringConverter"/>
-        <converters:DoubleToStringConverter x:Key="DoubleToStringConverter"/>
-    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <!-- Margins: hack for 'in-window' ribbon and backstage -->
         <fluent:Ribbon IsQuickAccessToolBarVisible="False" Margin="0 -27 0 0" CanCustomizeRibbon="False">
@@ -43,7 +34,7 @@
                         <fluent:BackstageTabItem Header="Summary" KeyTip="M">
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="Recent" KeyTip="R">
-                            <fluent:Button Header="Hello"></fluent:Button>
+                            <Frame Source="../Pages/RecentPage.xaml"/>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="About" KeyTip="T">
                             <Frame Source="../Pages/AboutPage.xaml"/>
@@ -59,16 +50,23 @@
                 <fluent:RibbonGroupBox Header="Edit">
                     <fluent:DropDownButton Header="Edit Mode" Size="Large" LargeIcon="{StaticResource RibbonIconEditMode}">
                         <fluent:MenuItem Header="_Select" Command="{x:Static local:MainWindow.CmdEditModeSelect}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Select}}"/>
+                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Select}}"/>
                         <fluent:MenuItem Header="Sy_nc" Command="{x:Static local:MainWindow.CmdEditModeEditSync}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Sync}}"/>
+                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Sync}}"/>
                         <fluent:MenuItem Header="_Flick" Command="{x:Static local:MainWindow.CmdEditModeEditFlick}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Flick}}"/>
+                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Flick}}"/>
                         <fluent:MenuItem Header="_Hold" Command="{x:Static local:MainWindow.CmdEditModeEditHold}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Hold}}"/>
+                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Hold}}"/>
                         <fluent:MenuItem Header="_Clear" Command="{x:Static local:MainWindow.CmdEditModeClear}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static controls:EditMode.Clear}}"/>
+                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Clear}}"/>
                     </fluent:DropDownButton>
+                    <TextBlock Padding="4 2">
+                        <Run Text="Current: "/>
+                        <Bold>
+                            <Run Text="{Binding ElementName=Editor, Path=EditMode, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type ui:EditMode}, Mode=OneWay}"/>
+                        </Bold>
+                    </TextBlock>
+                    <fluent:Button Header="Select All" Size="Middle" Command="{x:Static local:MainWindow.CmdEditSelectAll}" Icon="{StaticResource RibbonIconEditSelectAll}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Measure">
                     <fluent:SplitButton Header="Append" Command="{x:Static local:MainWindow.CmdEditBarAppend}" LargeIcon="{StaticResource RibbonIconBarAppend}">

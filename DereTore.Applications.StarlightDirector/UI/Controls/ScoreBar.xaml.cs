@@ -68,6 +68,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(InfoBrushProperty, value); }
         }
 
+        public double GridStrokeThickness {
+            get { return (double)GetValue(GridStrokeThicknessProperty); }
+            set { SetValue(GridStrokeThicknessProperty, value); }
+        }
+
+        public double InfoStrokeThickness {
+            get { return (double)GetValue(InfoStrokeThicknessProperty); }
+            set { SetValue(InfoStrokeThicknessProperty, value); }
+        }
+
         public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(nameof(Stroke), typeof(Brush), typeof(ScoreBar),
             new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.BarStrokeBrush), OnStrokeChanged));
 
@@ -94,6 +104,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty InfoBrushProperty = DependencyProperty.Register(nameof(InfoBrush), typeof(Brush), typeof(ScoreBar),
             new PropertyMetadata(Brushes.White, OnInfoBrushChanged));
+
+        public static readonly DependencyProperty GridStrokeThicknessProperty = DependencyProperty.Register(nameof(GridStrokeThickness), typeof(double), typeof(ScoreBar),
+            new PropertyMetadata(1d));
+
+        public static readonly DependencyProperty InfoStrokeThicknessProperty = DependencyProperty.Register(nameof(InfoStrokeThickness), typeof(double), typeof(ScoreBar),
+            new PropertyMetadata(3d));
 
         public ScoreBarHitTestInfo HitTest(Point pointRelativeToScoreBar) {
             if (Bar == null) {
@@ -247,7 +263,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (rectShape == null) {
                 rectShape = new Rectangle();
                 rectShape.Stroke = Stroke;
-                rectShape.StrokeThickness = 3;
+                rectShape.StrokeThickness = GridStrokeThickness;
                 canvas.Children.Add(rectShape);
                 _frameRectangle = rectShape;
             }
@@ -296,7 +312,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 for (var i = 0; i < columnCount; ++i) {
                     var lineShape = new Line();
                     lineShape.Stroke = Brushes.White;
-                    lineShape.StrokeThickness = 3;
+                    lineShape.StrokeThickness = GridStrokeThickness;
                     lineShape.Y1 = 0;
                     lineShape.Y2 = height;
                     lineShape.X1 = lineShape.X2 = height * i / (columnCount - 1);
@@ -326,7 +342,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 for (var i = 0; i <= rowCount; ++i) {
                     var lineShape = new Line();
                     lineShape.Stroke = i % signature == 0 ? (i == 0 ? Brushes.Red : stressStroke) : stroke;
-                    lineShape.StrokeThickness = 3;
+                    lineShape.StrokeThickness = GridStrokeThickness;
                     lineShape.X1 = 0;
                     lineShape.X2 = width;
                     lineShape.Y1 = lineShape.Y2 = height * i / rowCount;

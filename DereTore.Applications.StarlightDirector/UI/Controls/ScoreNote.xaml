@@ -3,8 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             mc:Ignorable="d" 
+             xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities"
+             mc:Ignorable="d"
              d:DesignHeight="50" d:DesignWidth="50"
+             Name="Me"
              SizeChanged="ScoreNote_OnSizeChanged">
     <UserControl.Resources>
         <SolidColorBrush x:Key="DefaultWhiteBorder" Color="White" />
@@ -17,6 +19,12 @@
                     <DropShadowEffect x:Name="DropShadow" ShadowDepth="0" BlurRadius="15" Color="LawnGreen" Opacity="0"/>
                 </Ellipse.Effect>
             </Ellipse>
+            <Grid Margin="6 10">
+                <Path Stretch="Fill" Fill="{Binding ElementName=Circle, Path=Stroke}" Data="F1 M 57,42L 57,34L 32.25,34L 42.25,24L 31.75,24L 17.75,38L 31.75,52L 42.25,52L 32.25,42L 57,42 Z "
+                  Visibility="{Binding ElementName=Me, Path=Note.FlickType, Converter={StaticResource NoteFlickTypeToVisibilityConverter}, ConverterParameter={x:Static entities:NoteFlickType.FlickLeft}, Mode=OneWay}"/>
+                <Path Stretch="Fill" Fill="{Binding ElementName=Circle, Path=Stroke}" Data="F1 M 19.0002,34L 19.0002,42L 43.7502,42L 33.7502,52L 44.2502,52L 58.2502,38L 44.2502,24L 33.7502,24L 43.7502,34L 19.0002,34 Z "
+                  Visibility="{Binding ElementName=Me, Path=Note.FlickType, Converter={StaticResource NoteFlickTypeToVisibilityConverter}, ConverterParameter={x:Static entities:NoteFlickType.FlickRight}, Mode=OneWay}"/>
+            </Grid>
         </Grid>
         <Grid Name="ImageClipper" Margin="2" ZIndex="1">
             <Grid.Clip>

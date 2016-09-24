@@ -124,6 +124,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Resources\Directories\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Directories\Icons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -160,6 +164,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Pages\RecentPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -173,6 +181,7 @@
     <Compile Include="Components\DescribedEnumConverter.cs" />
     <Compile Include="Components\IntegerIDGenerator.cs" />
     <Compile Include="Components\InternalList.cs" />
+    <Compile Include="Components\LinePositioner.cs" />
     <Compile Include="Components\NoteRelation.cs" />
     <Compile Include="Components\NoteRelationCollection.cs" />
     <Compile Include="Components\ObjectPool.cs" />
@@ -199,6 +208,7 @@
     <Compile Include="Extensions\CommandExtensions.cs" />
     <Compile Include="Extensions\NotifyPropertyChangedExtensions.cs" />
     <Compile Include="Extensions\NoteExtensions.cs" />
+    <Compile Include="Extensions\PageExtensions.cs" />
     <Compile Include="Fraction.cs" />
     <Compile Include="GamingServices\NoteManipulator.cs" />
     <Compile Include="GamingServices\ScoreManipulator.cs" />
@@ -206,7 +216,8 @@
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\NativeStructures.cs" />
     <Compile Include="ResourceKeys.cs" />
-    <Compile Include="UI\Controls\EditMode.cs" />
+    <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
+    <Compile Include="UI\EditMode.cs" />
     <Compile Include="UI\Controls\ScoreBar.xaml.cs">
       <DependentUpon>ScoreBar.xaml</DependentUpon>
     </Compile>
@@ -230,6 +241,10 @@
     <Compile Include="UI\Converters\PositiveInt32ToStringConverter.cs" />
     <Compile Include="UI\Pages\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Pages\IDirectorPage.cs" />
+    <Compile Include="UI\Pages\RecentPage.xaml.cs">
+      <DependentUpon>RecentPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />
@@ -328,6 +343,7 @@
     <Resource Include="Resources\Icons\Import.png" />
     <Resource Include="Resources\Icons\FilePreferences.png" />
     <Resource Include="Resources\Icons\BarAppendMany.png" />
+    <Resource Include="Resources\Icons\EditSelectAll.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

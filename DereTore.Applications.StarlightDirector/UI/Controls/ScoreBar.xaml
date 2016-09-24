@@ -25,7 +25,7 @@
                     <Setter Property="Margin" Value="4 1 4 1"/>
                 </Style>
             </Grid.Resources>
-            <Border Grid.Row="1" Name="InfoBorder" BorderBrush="{Binding ElementName=Me, Path=InfoBrush}" Background="Transparent" BorderThickness="3" Margin="-1">
+            <Border Grid.Row="1" Name="InfoBorder" BorderBrush="{Binding ElementName=Me, Path=InfoBrush}" Background="Transparent" BorderThickness="{Binding ElementName=Me, Path=InfoStrokeThickness}" Margin="-1">
                 <Border.Effect>
                     <DropShadowEffect x:Name="InfoDropShadowEffect" Color="{Binding ElementName=Me, Path=SelectedInfoBrush.Color}" ShadowDepth="0" BlurRadius="15" Opacity="0"/>
                 </Border.Effect>

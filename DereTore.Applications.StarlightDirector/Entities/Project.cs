@@ -28,7 +28,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public bool HasMusic => !string.IsNullOrEmpty(MusicFileName) && File.Exists(MusicFileName);
 
-        public bool IsChanged { get; internal set; } = true;
+        public bool IsChanged { get; internal set; }
 
         public bool IsSaved => !string.IsNullOrEmpty(SaveFileName) && File.Exists(SaveFileName);
 

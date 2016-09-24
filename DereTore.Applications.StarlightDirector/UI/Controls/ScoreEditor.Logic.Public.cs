@@ -18,42 +18,52 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             EditableScoreBars = new List<ScoreBar>();
             ScoreNotes = EditableScoreNotes.AsReadOnly();
             ScoreBars = EditableScoreBars.AsReadOnly();
-            Relations = new NoteRelationCollection();
+            NoteRelations = new NoteRelationCollection();
 
             InitializeComponent();
             InitializeControls();
         }
 
-        public ScoreBar AppendBar() {
-            return AddBar(null);
+        public ScoreBar AppendScoreBar() {
+            return AddScoreBar(null, true);
         }
 
-        public ScoreBar InsertBar(ScoreBar before) {
-            return AddBar(before);
-        }
-
-        public void RemoveBar(ScoreBar scoreBar) {
-            if (!ScoreBars.Contains(scoreBar)) {
-                throw new ArgumentException("Invalid ScoreBar.", nameof(scoreBar));
+        public ScoreBar[] AppendScoreBars(int count) {
+            var added = new List<ScoreBar>();
+            for (var i = 0; i < count; ++i) {
+                added.Add(AddScoreBar(null, false));
             }
-            scoreBar.ScoreBarHitTest -= ScoreBar_ScoreBarHitTest;
-            scoreBar.MouseDoubleClick -= ScoreBar_MouseDoubleClick;
-            scoreBar.MouseDown -= ScoreBar_MouseDown;
-            Score.RemoveBarAt(scoreBar.Bar.Index);
-            EditableScoreBars.Remove(scoreBar);
-            BarLayer.Children.Remove(scoreBar);
-            TrimScoreNotes(scoreBar);
             UpdateBarTexts();
             RecalcEditorLayout();
             UpdateMaximumScrollOffset();
+            return added.ToArray();
         }
 
-        public ScoreNote AddNote(ScoreBar scoreBar, int row, NotePosition position) {
-            return AddNote(scoreBar, row, (int)position - 1);
+        public ScoreBar InsertScoreBar(ScoreBar before) {
+            return AddScoreBar(before, true);
         }
 
-        public ScoreNote AddNote(ScoreBar scoreBar, int row, int column) {
-            if (row < 0 || column < 0 || row >= 5) {
+        public ScoreBar[] InsertScoreBars(ScoreBar before, int count) {
+            var added = new List<ScoreBar>();
+            for (var i = 0; i < count; ++i) {
+                added.Add(AddScoreBar(before, false));
+            }
+            UpdateBarTexts();
+            RecalcEditorLayout();
+            UpdateMaximumScrollOffset();
+            return added.ToArray();
+        }
+
+        public void RemoveScoreBar(ScoreBar scoreBar) {
+            RemoveScoreBar(scoreBar, true);
+        }
+
+        public ScoreNote AddScoreNote(ScoreBar scoreBar, int row, NotePosition position) {
+            return AddScoreNote(scoreBar, row, (int)position - 1);
+        }
+
+        public ScoreNote AddScoreNote(ScoreBar scoreBar, int row, int column) {
+            if (row < 0 || column < 0 || column >= 5) {
                 return null;
             }
             if (row >= scoreBar.Bar.GetTotalGridCount()) {
@@ -69,7 +79,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             scoreNote = new ScoreNote();
             scoreNote.Radius = NoteRadius;
             var note = bar.AddNote(MathHelper.NextRandomPositiveInt32());
-            note.Type = NoteType.TapOrFlick;
             note.StartPosition = note.FinishPosition = (NotePosition)(column + 1);
             note.PositionInGrid = row;
             scoreNote.Note = note;
@@ -80,23 +89,22 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             scoreNote.MouseDown += ScoreNote_MouseDown;
             scoreNote.MouseUp += ScoreNote_MouseUp;
             scoreNote.MouseDoubleClick += ScoreNote_MouseDoubleClick;
+            scoreNote.ContextMenu = Resources.FindName("NoteContextMenu") as Fluent.ContextMenu;
             return scoreNote;
         }
 
-        public void RemoveNote(ScoreNote scoreNote) {
-            if (!ScoreNotes.Contains(scoreNote)) {
-                throw new ArgumentException("Invalid ScoreNote.", nameof(scoreNote));
+        public void RemoveScoreNote(ScoreNote scoreNote) {
+            RemoveScoreNote(scoreNote, true);
+        }
+
+        public void RemoveScoreNotes(IEnumerable<ScoreNote> scoreNotes) {
+            // Avoid 'the collection has been modified' exception.
+            var backup = scoreNotes.ToArray();
+            foreach (var scoreNote in backup) {
+                RemoveScoreNote(scoreNote, false);
             }
-            scoreNote.MouseDown -= ScoreNote_MouseDown;
-            scoreNote.MouseUp -= ScoreNote_MouseUp;
-            scoreNote.MouseDoubleClick -= ScoreNote_MouseDoubleClick;
-            EditableScoreNotes.Remove(scoreNote);
-            var note = scoreNote.Note;
-            if (Score.Bars.Contains(note.Bar)) {
-                note.Bar.Notes.Remove(note);
-                Debug.Print("Note removed.");
-            }
-            NoteLayer.Children.Remove(scoreNote);
+            RegenerateLines();
+            RepositionLines();
         }
 
         public ReadOnlyCollection<ScoreNote> ScoreNotes { get; }
@@ -180,6 +188,22 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             return ScoreBars.Where(scoreBar => scoreBar.IsSelected);
         }
 
+        public void ScrollToScoreBar(ScoreBar scoreBar) {
+            var y = Math.Abs(MinimumScrollOffset) + scoreBar.Bar.Index * BarHeight;
+            ScrollOffset = y;
+        }
+
+        public void SelectScoreBar(ScoreBar scoreBar) {
+            var previousSelected = GetSelectedScoreBar();
+            if (previousSelected != null) {
+                previousSelected.IsSelected = false;
+            }
+            var current = scoreBar;
+            if (current != null) {
+                current.IsSelected = true;
+            }
+        }
+
         public void SetGlobalBpm(double bpm) {
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.SetGlobalBpm(bpm);
@@ -231,6 +255,26 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(LargeChangeProperty, value); }
         }
 
+        public double NoteLineThickness {
+            get { return (double)GetValue(NoteLineThicknessProperty); }
+            set { SetValue(NoteLineThicknessProperty, value); }
+        }
+
+        public Brush SyncRelationBrush {
+            get { return (Brush)GetValue(SyncRelationBrushProperty); }
+            set { SetValue(SyncRelationBrushProperty, value); }
+        }
+
+        public Brush FlickRelationBrush {
+            get { return (Brush)GetValue(FlickRelationBrushProperty); }
+            set { SetValue(FlickRelationBrushProperty, value); }
+        }
+
+        public Brush HoldRelationBrush {
+            get { return (Brush)GetValue(HoldRelationBrushProperty); }
+            set { SetValue(HoldRelationBrushProperty, value); }
+        }
+
         public static readonly DependencyProperty ScrollOffsetProperty = DependencyProperty.Register(nameof(ScrollOffset), typeof(double), typeof(ScoreEditor),
             new PropertyMetadata(0d, OnScrollOffsetChanged));
 
@@ -257,6 +301,18 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty LargeChangeProperty = DependencyProperty.Register(nameof(LargeChange), typeof(double), typeof(ScoreEditor),
             new PropertyMetadata(50d));
+
+        public static readonly DependencyProperty NoteLineThicknessProperty = DependencyProperty.Register(nameof(NoteLineThickness), typeof(double), typeof(ScoreEditor),
+            new PropertyMetadata(4d));
+
+        public static readonly DependencyProperty SyncRelationBrushProperty = DependencyProperty.Register(nameof(SyncRelationBrush), typeof(Brush), typeof(ScoreEditor),
+            new PropertyMetadata(Brushes.DodgerBlue));
+
+        public static readonly DependencyProperty FlickRelationBrushProperty = DependencyProperty.Register(nameof(FlickRelationBrush), typeof(Brush), typeof(ScoreEditor),
+            new PropertyMetadata(Brushes.Orchid));
+
+        public static readonly DependencyProperty HoldRelationBrushProperty = DependencyProperty.Register(nameof(HoldRelationBrush), typeof(Brush), typeof(ScoreEditor),
+            new PropertyMetadata(Brushes.Yellow));
 
         private static void OnScrollOffsetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;
@@ -285,7 +341,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private static void OnScoreChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;
             Debug.Assert(editor != null, "editor != null");
-            editor.ReloadScore();
+            var oldScore = (Score)e.OldValue;
+            var newScore = (Score)e.NewValue;
+            if (oldScore != null) {
+                oldScore.GlobalSettingsChanged -= editor.OnScoreGlobalSettingsChanged;
+            }
+            if (newScore != null) {
+                newScore.GlobalSettingsChanged += editor.OnScoreGlobalSettingsChanged;
+            }
+            editor.ReloadScore(newScore);
         }
 
         private static void OnPartyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
@@ -324,6 +388,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private static void OnProjectChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             CommandManager.InvalidateRequerySuggested();
+        }
+
+        private void OnScoreGlobalSettingsChanged(object sender, EventArgs e) {
+            UpdateBarTexts();
         }
 
     }

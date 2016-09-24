@@ -8,14 +8,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Pages {
     /// <summary>
     /// AboutPage.xaml 的交互逻辑
     /// </summary>
-    partial class AboutPage {
+    partial class AboutPage : IDirectorPage {
 
         public AboutPage() {
             InitializeComponent();
             CommandHelper.InitializeCommandBindings(this);
         }
 
-        public static readonly ICommand CmdOpenLink = CommandHelper.RC();
+        public static readonly ICommand CmdOpenLink = CommandHelper.RegisterCommand();
 
         private void CmdOpenLink_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = true;

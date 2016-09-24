@@ -138,6 +138,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (note.VisualParent is Canvas) {
                 var value = (double)e.NewValue;
                 Canvas.SetLeft(note, value - note.Radius);
+            } else {
+                Debug.Print("The ScoreNote is expected to be put on a Canvas.");
             }
         }
 
@@ -147,6 +149,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (note.VisualParent is Canvas) {
                 var value = (double)e.NewValue;
                 Canvas.SetTop(note, value - note.Radius);
+            } else {
+                Debug.Print("The ScoreNote is expected to be put on a Canvas.");
             }
         }
 

@@ -1,4 +1,4 @@
-﻿namespace DereTore.Applications.StarlightDirector.UI.Controls {
+﻿namespace DereTore.Applications.StarlightDirector.UI {
     public enum EditMode {
 
         Select,

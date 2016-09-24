@@ -5,6 +5,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
@@ -12,13 +13,12 @@ using DereTore.Applications.StarlightDirector.Extensions;
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
 
-        private void ReloadScore() {
+        private void ReloadScore(Score toBeSet) {
             Debug.Print("Not implemented: ScoreEditor.ReloadScore().");
         }
 
         private void RecalcEditorLayout() {
             ResizeBars();
-            ResizeNotes();
             RepositionBars();
             RepositionNotes();
             RepositionLines();
@@ -45,9 +45,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 return;
             }
             //throw new NotImplementedException();
-        }
-
-        private void ResizeNotes() {
         }
 
         private void RepositionNotes() {
@@ -98,7 +95,47 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void RepositionLines() {
+            foreach (var child in LineLayer.Children) {
+                var line = child as Line;
+                if (line == null) {
+                    continue;
+                }
+                var s1 = LinePositioner.GetScoreNote1(line);
+                var s2 = LinePositioner.GetScoreNote2(line);
+                line.X1 = s1.X;
+                line.X2 = s2.X;
+                line.Y1 = s1.Y;
+                line.Y2 = s2.Y;
+            }
+        }
 
+        private void RegenerateLines() {
+            // We do it in a brutal but simple way.
+            LineLayer.Children.Clear();
+            foreach (var relation in NoteRelations) {
+                var line = new Line();
+                switch (relation.Relation) {
+                    case NoteRelation.Sync:
+                        line.Stroke = SyncRelationBrush;
+                        break;
+                    case NoteRelation.Flick:
+                        line.Stroke = FlickRelationBrush;
+                        break;
+                    case NoteRelation.Hold:
+                        line.Stroke = HoldRelationBrush;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(relation.Relation));
+                }
+                line.StrokeThickness = NoteLineThickness;
+                line.X1 = relation.ScoreNote1.X;
+                line.X2 = relation.ScoreNote2.X;
+                line.Y1 = relation.ScoreNote1.Y;
+                line.Y2 = relation.ScoreNote2.Y;
+                LinePositioner.SetScoreNote1(line, relation.ScoreNote1);
+                LinePositioner.SetScoreNote2(line, relation.ScoreNote2);
+                LineLayer.Children.Add(line);
+            }
         }
 
         private Rect GetWorkingAreaRect() {
@@ -120,10 +157,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             Avatars = avatars;
         }
 
-        private ScoreBar AddBar(ScoreBar before) {
+        private ScoreBar AddScoreBar(ScoreBar before, bool recalculateLayout) {
             var project = Project;
             Debug.Assert(project != null, "project != null");
-            var score = project.GetScore(project.Difficulty);
+            var score = Score;
             var bar = before == null ? score.AddBar() : score.InsertBar(before.Bar.Index);
             if (bar == null) {
                 return null;
@@ -141,13 +178,38 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 BarLayer.Children.Add(scoreBar);
                 EditableScoreBars.Insert(ScoreBars.IndexOf(before), scoreBar);
             }
-            UpdateBarTexts();
-            RecalcEditorLayout();
-            UpdateMaximumScrollOffset();
+            if (recalculateLayout) {
+                UpdateBarTexts();
+                RecalcEditorLayout();
+                UpdateMaximumScrollOffset();
+            }
             return scoreBar;
         }
 
-        private ScoreNote AddNote(ScoreBar scoreBar, ScoreBarHitTestInfo info) {
+        private void RemoveScoreNote(ScoreNote scoreNote, bool repositionLines) {
+            if (!ScoreNotes.Contains(scoreNote)) {
+                throw new ArgumentException("Invalid ScoreNote.", nameof(scoreNote));
+            }
+            scoreNote.MouseDown -= ScoreNote_MouseDown;
+            scoreNote.MouseUp -= ScoreNote_MouseUp;
+            scoreNote.MouseDoubleClick -= ScoreNote_MouseDoubleClick;
+            scoreNote.ContextMenu = null;
+            EditableScoreNotes.Remove(scoreNote);
+            NoteRelations.RemoveAll(scoreNote);
+            var note = scoreNote.Note;
+            if (Score.Bars.Contains(note.Bar)) {
+                note.Bar.Notes.Remove(note);
+                Debug.Print("Note removed.");
+            }
+            NoteLayer.Children.Remove(scoreNote);
+            // TODO: Query if there is a need to do that.
+            if (repositionLines) {
+                RegenerateLines();
+                RepositionLines();
+            }
+        }
+
+        private ScoreNote AddScoreNote(ScoreBar scoreBar, ScoreBarHitTestInfo info) {
             if (!info.IsValid || info.Row < 0 || info.Column < 0) {
                 if (!info.IsInNextBar) {
                     return null;
@@ -157,30 +219,28 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     return null;
                 }
                 var point = scoreBar.TranslatePoint(info.HitPoint, nextBar);
-                return AddNote(nextBar, nextBar.HitTest(point));
+                return AddScoreNote(nextBar, nextBar.HitTest(point));
             }
-            var bar = scoreBar.Bar;
-            var scoreNote = AnyNoteExistOnPosition(bar.Index, info.Column, info.Row);
-            if (scoreNote != null) {
-                return scoreNote;
+            return AddScoreNote(scoreBar, info.Row, info.Column);
+        }
+
+        private void RemoveScoreBar(ScoreBar scoreBar, bool recalcLayout) {
+            if (!ScoreBars.Contains(scoreBar)) {
+                throw new ArgumentException("Invalid ScoreBar.", nameof(scoreBar));
             }
-            var baseY = ScrollOffset + bar.Index * BarHeight;
-            var extraY = BarHeight * info.Row / bar.GetTotalGridCount();
-            scoreNote = new ScoreNote();
-            scoreNote.Radius = NoteRadius;
-            var note = bar.AddNote(MathHelper.NextRandomInt32());
-            note.Type = NoteType.TapOrFlick;
-            note.StartPosition = note.FinishPosition = (NotePosition)(info.Column + 1);
-            note.PositionInGrid = info.Row;
-            scoreNote.Note = note;
-            EditableScoreNotes.Add(scoreNote);
-            NoteLayer.Children.Add(scoreNote);
-            scoreNote.X = NoteLayer.ActualWidth * TrackCenterXPositions[info.Column];
-            scoreNote.Y = baseY + extraY;
-            scoreNote.MouseDown += ScoreNote_MouseDown;
-            scoreNote.MouseUp += ScoreNote_MouseUp;
-            scoreNote.MouseDoubleClick += ScoreNote_MouseDoubleClick;
-            return scoreNote;
+            scoreBar.ScoreBarHitTest -= ScoreBar_ScoreBarHitTest;
+            scoreBar.MouseDoubleClick -= ScoreBar_MouseDoubleClick;
+            scoreBar.MouseDown -= ScoreBar_MouseDown;
+            Score.RemoveBarAt(scoreBar.Bar.Index);
+            EditableScoreBars.Remove(scoreBar);
+            BarLayer.Children.Remove(scoreBar);
+            TrimScoreNotes(scoreBar);
+            UpdateBarTexts();
+            if (recalcLayout) {
+                RegenerateLines();
+                RecalcEditorLayout();
+            }
+            UpdateMaximumScrollOffset();
         }
 
         private ScoreNote AnyNoteExistOnPosition(int barIndex, int column, int row) {
@@ -196,6 +256,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private void UpdateBarTexts() {
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.UpdateBarIndexText();
+                scoreBar.UpdateBpmText();
                 scoreBar.UpdateBarTimeText();
             }
         }
@@ -208,22 +269,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             // Reposition after calling this function.
             var bar = willBeDeleted.Bar;
             Func<ScoreNote, bool> matchFunc = scoreNote => scoreNote.Note.Bar == bar;
-            // Damn C#, their signatures are excatly the same!
-            Predicate<ScoreNote> matchPredicate = scoreNote => scoreNote.Note.Bar == bar;
             var processing = ScoreNotes.Where(matchFunc).ToArray();
             foreach (var scoreNote in processing) {
-                NoteLayer.Children.Remove(scoreNote);
+                RemoveScoreNote(scoreNote, false);
             }
-            EditableScoreNotes.RemoveAll(matchPredicate);
         }
 
         private List<ScoreBar> EditableScoreBars { get; }
 
         private List<ScoreNote> EditableScoreNotes { get; }
 
-        private NoteRelationCollection Relations { get; }
+        private NoteRelationCollection NoteRelations { get; }
 
         private ScoreNote[] Avatars { get; set; }
+
+        private ScoreNote DraggingStartNote { get; set; }
+
+        private ScoreNote DraggingEndNote { get; set; }
 
         private static readonly double[] TrackCenterXPositions = { 0.2, 0.35, 0.5, 0.65, 0.8 };
         //private static readonly double BaseLineYPosition = 1d / 6;

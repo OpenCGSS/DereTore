@@ -49,16 +49,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
 
             if (oldProject != null) {
                 oldProject.DifficultyChanged -= window.Project_DifficultyChanged;
-                //BindingOperations.ClearBinding(window.DifficultySelector, ComboBox.SelectedIndexProperty);
             }
             if (newProject != null) {
                 newProject.DifficultyChanged += window.Project_DifficultyChanged;
-                //var binding = new Binding();
-                //binding.Converter = new DifficultyToIndexConverter();
-                //binding.Path = new PropertyPath($"{nameof(Project)}.{nameof(Entities.Project.Difficulty)}");
-                //binding.Mode = BindingMode.TwoWay;
-                //binding.Source = window;
-                //BindingOperations.SetBinding(window.DifficultySelector, ComboBox.SelectedIndexProperty, binding);
             }
         }
 
@@ -72,10 +65,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void MainWindow_OnClosing(object sender, CancelEventArgs e) {
-            if (Project == null || (!Project.IsChanged && Project.IsSaved)) {
+            if (!ShouldPromptSaving) {
                 return;
             }
-            var result = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.ExitPrompt), Title, MessageBoxButton.YesNoCancel, MessageBoxImage.Exclamation);
+            var result = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.ProjectChangedPrompt), App.Title, MessageBoxButton.YesNoCancel, MessageBoxImage.Exclamation);
             switch (result) {
                 case MessageBoxResult.Yes:
                     if (CmdFileSaveProject.CanExecute(null)) {
@@ -129,6 +122,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 Project.IsChanged = true;
             }
         }
+
+        private bool ShouldPromptSaving => Project != null && Project.IsChanged;
 
         private AudioOut _selectedWaveOut;
         private WaveFileReader _waveReader;

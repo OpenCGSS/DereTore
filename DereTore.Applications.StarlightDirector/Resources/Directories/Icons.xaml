@@ -7,6 +7,7 @@
     <BitmapImage x:Key="RibbonIconFilePreferences" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FilePreferences.png"/>
     <BitmapImage x:Key="RibbonIconFileExit" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/FileExit.png"/>
     <BitmapImage x:Key="RibbonIconEditMode" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/EditMode.png"/>
+    <BitmapImage x:Key="RibbonIconEditSelectAll" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/EditSelectAll.png"/>
     <BitmapImage x:Key="RibbonIconBarAppend" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarAppend.png"/>
     <BitmapImage x:Key="RibbonIconBarAppendMany" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarAppendMany.png"/>
     <BitmapImage x:Key="RibbonIconBarInsert" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BarInsert.png"/>

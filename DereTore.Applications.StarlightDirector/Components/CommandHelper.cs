@@ -9,7 +9,7 @@ using DereTore.Applications.StarlightDirector.UI.Windows;
 namespace DereTore.Applications.StarlightDirector.Components {
     public static class CommandHelper {
 
-        public static RoutedCommand RC(params string[] gestures) {
+        public static RoutedCommand RegisterCommand(params string[] gestures) {
             var command = new RoutedCommand(Guid.NewGuid().ToString(), typeof(MainWindow));
             if (gestures.Length <= 0) {
                 return command;

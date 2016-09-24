@@ -6,7 +6,11 @@
     <system:String x:Key="WaveFileFilter">Wave Audio (*.wav)|*.wav</system:String>
     <system:String x:Key="AcbFileFilter">CRI ACB Archive (*.acb)|*.acb</system:String>
     <system:String x:Key="BdbFileFilter">Score Database (*.bdb)|*.bdb</system:String>
-    <system:String x:Key="ExitPrompt">The project is changed. Do you want to save it first?</system:String>
+    <system:String x:Key="ProjectChangedPrompt">The project is changed. Do you want to save it first?</system:String>
     <system:String x:Key="PreviewNotImplemented">The Preview function is not implemented yet. You can export the score to a CSV file and use ScoreEditor to view it.</system:String>
     <system:String x:Key="ConfirmDeleteBar">You are going to delete a measure. This operation cannot be reverted. Proceed?</system:String>
+    <system:String x:Key="NoteRelationAlreadyExists">There is already a relation between these notes. Please clear it before adding new relations.</system:String>
+    <system:String x:Key="InvalidSyncCreation">Sync notes should be on the same row.</system:String>
+    <system:String x:Key="InvalidFlickCreation">Flick notes should be on different rows and different columns (start AND finish).</system:String>
+    <system:String x:Key="InvalidHoldCreation">Hold note should be on the same column. One note can only have one hold target. There should be no other notes between two hold notes.</system:String>
 </ResourceDictionary>

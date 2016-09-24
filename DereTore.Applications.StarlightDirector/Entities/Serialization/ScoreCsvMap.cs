@@ -7,7 +7,7 @@ namespace DereTore.Applications.StarlightDirector.Entities.Serialization {
 
         public ScoreCsvMap() {
             Map(m => m.ID).Name("id");
-            Map(m => m.HitTiming).Name("sec");
+            Map(m => m.HitTiming).Name("sec").TypeConverter<RestrictedDoubleToStringConverter>();
             Map(m => m.Type).Name("type").TypeConverter<StringToIntConverter>();
             // See song_3034 (m063), master level score. These fields are empty, so we need a custom type converter.
             Map(m => m.StartPosition).Name("startPos").TypeConverter<StringToIntConverter>();
@@ -29,6 +29,26 @@ namespace DereTore.Applications.StarlightDirector.Entities.Serialization {
                 }
                 var value = int.Parse(text);
                 return value != 0;
+            }
+
+            public bool CanConvertFrom(Type type) {
+                return true;
+            }
+
+            public bool CanConvertTo(Type type) {
+                return true;
+            }
+
+        }
+
+        private sealed class RestrictedDoubleToStringConverter : ITypeConverter {
+
+            public string ConvertToString(TypeConverterOptions options, object value) {
+                return ((double)value).ToString("F6");
+            }
+
+            public object ConvertFromString(TypeConverterOptions options, string text) {
+                return options.NumberStyle != null ? double.Parse(text, options.NumberStyle.Value) : double.Parse(text);
             }
 
             public bool CanConvertFrom(Type type) {

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Extensions;
 using Newtonsoft.Json;
@@ -7,6 +9,8 @@ using Newtonsoft.Json.Serialization;
 namespace DereTore.Applications.StarlightDirector.Entities {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public sealed class Score {
+
+        public event EventHandler<EventArgs> GlobalSettingsChanged;
 
         public InternalList<Bar> Bars { get; }
 
@@ -81,6 +85,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Difficulty = difficulty;
             Settings = ScoreSettings.CreateDefault(this);
             IDGenerators = new IDGenerators();
+            Settings.SettingChanged += OnGlobalSettingsChanged;
+        }
+
+        ~Score() {
+            Settings.SettingChanged -= OnGlobalSettingsChanged;
         }
 
         internal IDGenerators IDGenerators { get; }
@@ -96,6 +105,21 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     }
                 }
                 bar.Score = this;
+            }
+            var allNotes = Bars.SelectMany(bar => bar.Notes).ToArray();
+            foreach (var note in allNotes) {
+                if (note.SyncTargetID != EntityID.Invalid) {
+                    note.SyncTarget = FindNoteByID(note.SyncTargetID);
+                }
+                if (note.NextFlickNoteID != EntityID.Invalid) {
+                    note.NextFlickNote = FindNoteByID(note.NextFlickNoteID);
+                }
+                if (note.PrevFlickNoteID != EntityID.Invalid) {
+                    note.PrevFlickNote = FindNoteByID(note.PrevFlickNoteID);
+                }
+                if (note.HoldTargetID != EntityID.Invalid) {
+                    note.HoldTarget = FindNoteByID(note.HoldTargetID);
+                }
             }
         }
 
@@ -146,6 +170,21 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             foreach (var compiledNote in compiledNotes) {
                 compiledNote.ID = i++;
             }
+        }
+
+        private Note FindNoteByID(int noteID) {
+            foreach (var bar in Bars) {
+                foreach (var note in bar.Notes) {
+                    if (note.ID == noteID) {
+                        return note;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void OnGlobalSettingsChanged(object sender, EventArgs e) {
+            GlobalSettingsChanged.Raise(sender, e);
         }
 
     }

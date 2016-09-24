@@ -12,6 +12,7 @@
                 <ResourceDictionary Source="pack://application:,,,/StarlightDirector;component/Resources/Directories/Icons.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/StarlightDirector;component/Resources/Directories/Strings.xaml"/>
                 <ResourceDictionary Source="pack://application:,,,/StarlightDirector;component/Resources/Directories/Painting.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/StarlightDirector;component/Resources/Directories/Converters.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

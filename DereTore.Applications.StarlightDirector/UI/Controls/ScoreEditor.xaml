@@ -6,9 +6,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="284.667" d:DesignWidth="460.667"
              Background="Transparent" Focusable="True" IsTabStop="True"
-             FocusVisualStyle="{x:Null}"
-             MouseDown="ScoreEditor_OnMouseDown"
-             PreviewMouseDown="ScoreEditor_OnPreviewMouseDown"
+             FocusVisualStyle="{x:Null}" Name="Me"
+             MouseDown="ScoreEditor_OnMouseDown" MouseUp="ScoreEditor_OnMouseUp"
+             PreviewMouseDown="ScoreEditor_OnPreviewMouseDown" PreviewMouseUp="ScoreEditor_OnPreviewMouseUp" PreviewMouseMove="ScoreEditor_OnPreviewMouseMove"
              MouseWheel="ScoreEditor_OnMouseWheel">
     <UserControl.Resources>
         <LinearGradientBrush x:Key="FrameBrush" StartPoint="0 0" EndPoint="1 1">
@@ -54,6 +54,9 @@
                         <RowDefinition Height="5*" />
                     </Grid.RowDefinitions>
                     <Canvas Grid.Row="1" Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
+                    <Canvas Grid.Row="1" Name="EditingLineLayer">
+                        <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=Me, Path=NoteLineThickness, Mode=OneWay}"/>
+                    </Canvas>
                     <Canvas Grid.Row="1" Name="LineLayer" SizeChanged="LineLayer_OnSizeChanged"/>
                     <Canvas Grid.Row="1" Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
                 </Grid>
