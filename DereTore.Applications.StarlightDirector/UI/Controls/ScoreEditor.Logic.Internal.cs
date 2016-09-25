@@ -30,10 +30,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             // OK the fun part is here.
             foreach (var bar in toBeSet.Bars) {
                 var scoreBar = AddScoreBar(null, false, bar);
-                EditableScoreBars.Add(scoreBar);
                 foreach (var note in bar.Notes) {
                     var scoreNote = AddScoreNote(scoreBar, note.PositionInGrid, note.FinishPosition, note);
-                    EditableScoreNotes.Add(scoreNote);
                     temporaryMap.Add(note, scoreNote);
                     allNotes.Add(note);
                 }
@@ -45,6 +43,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 }
             }
             RegenerateLines();
+            UpdateMaximumScrollOffset();
+            UpdateBarTexts();
             RecalcEditorLayout();
             Debug.Print("Done: ScoreEditor.ReloadScore().");
         }
