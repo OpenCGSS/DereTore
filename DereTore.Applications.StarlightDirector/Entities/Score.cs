@@ -142,7 +142,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             foreach (var bar in Bars) {
                 foreach (var note in bar.Notes) {
                     note.GroupID = EntityID.Invalid;
-                    note.CompilationResult = null;
                 }
             }
 
@@ -151,20 +150,19 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 var bpm = bar.GetActualBpm();
                 var signature = bar.GetActualSignature();
                 var gridCountInBar = bar.GetActualGridPerSignature();
-                var barStartTime = ComposerUtilities.BpmToSeconds(bpm) * signature;
+                var barTimeInSeconds = ComposerUtilities.BpmToSeconds(bpm) * signature;
                 // Sorting is for flick group generation. We have to assure that the start of each group is
                 // processed first, at least in the group which it is in.
-                bar.Notes.Sort(Note.TimeComparison);
+                bar.Notes.Sort(Note.TimingComparison);
                 foreach (var note in bar.Notes) {
                     var compiledNote = new CompiledNote();
-                    note.CompilationResult = compiledNote;
-                    compiledNote.ID = IDGenerators.CompiledNoteIDGenerator.Next();
+                    compiledNote.ID = IDGenerators.CompiledNoteIDGenerator.Next(); // WTF?
                     compiledNote.Type = note.Type;
                     compiledNote.StartPosition = note.StartPosition;
                     compiledNote.FinishPosition = note.FinishPosition;
-                    compiledNote.FlickType = note.FlickType;
+                    compiledNote.FlickType = (int)note.FlickType;
                     compiledNote.IsSync = note.IsSync;
-                    compiledNote.HitTiming = endTimeOfLastBar + barStartTime * (note.PositionInGrid / (double)(signature * gridCountInBar));
+                    compiledNote.HitTiming = endTimeOfLastBar + barTimeInSeconds * (note.PositionInGrid / (double)(signature * gridCountInBar));
                     if (note.GroupID != EntityID.Invalid) {
                         compiledNote.FlickGroupID = note.GroupID;
                     } else {
@@ -187,14 +185,35 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     }
                     compiledNotes.Add(compiledNote);
                 }
-                endTimeOfLastBar += barStartTime;
+                endTimeOfLastBar += barTimeInSeconds;
             }
 
+            // The normal gaming notes.
             compiledNotes.Sort(CompiledNote.TimingComparison);
-            var i = 1;
+            var i = 3;
             foreach (var compiledNote in compiledNotes) {
                 compiledNote.ID = i++;
             }
+
+            // Special notes are added to their destined positions.
+            var totalNoteCount = compiledNotes.Count;
+            var scoreInfoNote = new CompiledNote {
+                ID = 1,
+                Type = NoteType.ScoreInfo,
+                FlickType = totalNoteCount
+            };
+            var songStartNote = new CompiledNote {
+                ID = 2,
+                Type = NoteType.SongStart
+            };
+            compiledNotes.Insert(0, scoreInfoNote);
+            compiledNotes.Insert(1, songStartNote);
+            var songEndNote = new CompiledNote {
+                ID = i++,
+                Type = NoteType.SongEnd,
+                HitTiming = endTimeOfLastBar
+            };
+            compiledNotes.Add(songEndNote);
         }
 
         private Note FindNoteByID(int noteID) {

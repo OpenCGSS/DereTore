@@ -13,7 +13,9 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public NotePosition FinishPosition { get; set; }
 
-        public NoteFlickType FlickType { get; set; }
+        // The type is Int32 here because this field ('status') will serve other usages.
+        // See note type 100 (score info).
+        public int FlickType { get; set; }
 
         public bool IsSync { get; set; }
 

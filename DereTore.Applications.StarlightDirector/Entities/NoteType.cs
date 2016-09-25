@@ -8,9 +8,9 @@
 
         Debug1 = 81,
         Debug2 = 82,
-        Debug3 = 91,
-        DebugSongEnd = 92,
-        Debug5 = 100,
+        SongStart = 91,
+        SongEnd = 92,
+        ScoreInfo = 100,
 
         Avatar = 99999
 

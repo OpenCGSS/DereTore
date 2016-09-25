@@ -33,8 +33,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public Bar Bar { get; internal set; }
 
-        public CompiledNote CompilationResult { get; internal set; }
-
         public bool IsFlick => Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
 
         [JsonProperty]
@@ -143,7 +141,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty FlickTypeProperty = DependencyProperty.Register(nameof(FlickType), typeof(NoteFlickType), typeof(Note),
             new PropertyMetadata(NoteFlickType.Tap));
 
-        public static readonly Comparison<Note> TimeComparison = (n1, n2) => {
+        public static readonly Comparison<Note> TimingComparison = (n1, n2) => {
             if (n1.Bar == n2.Bar) {
                 return n1.PositionInGrid.CompareTo(n2.PositionInGrid);
             } else {
@@ -152,11 +150,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         };
 
         public static bool operator >(Note left, Note right) {
-            return TimeComparison(left, right) > 0;
+            return TimingComparison(left, right) > 0;
         }
 
         public static bool operator <(Note left, Note right) {
-            return TimeComparison(left, right) < 0;
+            return TimingComparison(left, right) < 0;
         }
 
         internal bool TryGetFlickGroupID(out FlickGroupModificationResult modificationResult, out int knownGroupID, out Note groupStart) {
