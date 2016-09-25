@@ -168,6 +168,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Pages\SummaryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -185,6 +189,7 @@
     <Compile Include="Components\NoteRelation.cs" />
     <Compile Include="Components\NoteRelationCollection.cs" />
     <Compile Include="Components\ObjectPool.cs" />
+    <Compile Include="Components\ObservableDictionary.cs" />
     <Compile Include="Components\ThreadingTimer.cs" />
     <Compile Include="ComposerUtilities.cs" />
     <Compile Include="Entities\Bar.cs" />
@@ -246,6 +251,9 @@
     <Compile Include="UI\Pages\IDirectorPage.cs" />
     <Compile Include="UI\Pages\RecentPage.xaml.cs">
       <DependentUpon>RecentPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Pages\SummaryPage.xaml.cs">
+      <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />

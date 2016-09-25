@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Components;
 

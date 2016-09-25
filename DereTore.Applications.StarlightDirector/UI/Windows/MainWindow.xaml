@@ -32,6 +32,7 @@
                         <fluent:Button Header="Save Project As" KeyTip="A" Command="{x:Static local:MainWindow.CmdFileSaveProjectAs}"
                                        Icon="{StaticResource RibbonIconFileSaveAs}"/>
                         <fluent:BackstageTabItem Header="Summary" KeyTip="M">
+                            <Frame Source="../Pages/SummaryPage.xaml"/>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="Recent" KeyTip="R">
                             <Frame Source="../Pages/RecentPage.xaml"/>

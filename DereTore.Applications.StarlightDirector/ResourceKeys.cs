@@ -44,6 +44,10 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string InvalidFlickCreation;
         public readonly string InvalidHoldCreation;
 
+        public readonly string SummaryTotalNotes;
+        public readonly string SummaryTotalBars;
+        public readonly string SummaryMusicFile;
+
         internal ResourceKeys() {
             var thisType = GetType();
             var fields = thisType.GetFields(BindingFlags.Public | BindingFlags.Instance);

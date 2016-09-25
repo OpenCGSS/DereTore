@@ -13,4 +13,8 @@
     <system:String x:Key="InvalidSyncCreation">Sync notes should be on the same row.</system:String>
     <system:String x:Key="InvalidFlickCreation">Flick notes should be on different rows and different columns (start AND finish).</system:String>
     <system:String x:Key="InvalidHoldCreation">Hold note should be on the same column. One note can only have one hold target. There should be no other notes between two hold notes.</system:String>
+    
+    <system:String x:Key="SummaryTotalNotes">Total Notes in Current Score</system:String>
+    <system:String x:Key="SummaryTotalBars">Total Measures in Current Score</system:String>
+    <system:String x:Key="SummaryMusicFile">Music File</system:String>
 </ResourceDictionary>
