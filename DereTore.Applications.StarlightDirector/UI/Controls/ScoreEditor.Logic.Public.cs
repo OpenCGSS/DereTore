@@ -25,13 +25,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public ScoreBar AppendScoreBar() {
-            return AddScoreBar(null, true);
+            return AddScoreBar(null, true, null);
         }
 
         public ScoreBar[] AppendScoreBars(int count) {
             var added = new List<ScoreBar>();
             for (var i = 0; i < count; ++i) {
-                added.Add(AddScoreBar(null, false));
+                added.Add(AddScoreBar(null, false, null));
             }
             UpdateBarTexts();
             RecalcEditorLayout();
@@ -40,13 +40,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public ScoreBar InsertScoreBar(ScoreBar before) {
-            return AddScoreBar(before, true);
+            return AddScoreBar(before, true, null);
         }
 
         public ScoreBar[] InsertScoreBars(ScoreBar before, int count) {
             var added = new List<ScoreBar>();
             for (var i = 0; i < count; ++i) {
-                added.Add(AddScoreBar(before, false));
+                added.Add(AddScoreBar(before, false, null));
             }
             UpdateBarTexts();
             RecalcEditorLayout();
@@ -55,56 +55,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public void RemoveScoreBar(ScoreBar scoreBar) {
-            RemoveScoreBar(scoreBar, true);
+            RemoveScoreBar(scoreBar, true, true);
+        }
+
+        public void RemoveScoreBars(IEnumerable<ScoreBar> scoreBars) {
+            RemoveScoreBars(scoreBars, true, true);
         }
 
         public ScoreNote AddScoreNote(ScoreBar scoreBar, int row, NotePosition position) {
-            return AddScoreNote(scoreBar, row, (int)position - 1);
-        }
-
-        public ScoreNote AddScoreNote(ScoreBar scoreBar, int row, int column) {
-            if (row < 0 || column < 0 || column >= 5) {
-                return null;
-            }
-            if (row >= scoreBar.Bar.GetTotalGridCount()) {
-                return null;
-            }
-            var bar = scoreBar.Bar;
-            var scoreNote = AnyNoteExistOnPosition(bar.Index, column, row);
-            if (scoreNote != null) {
-                return scoreNote;
-            }
-            var baseY = ScrollOffset + bar.Index * BarHeight;
-            var extraY = BarHeight * row / bar.GetTotalGridCount();
-            scoreNote = new ScoreNote();
-            scoreNote.Radius = NoteRadius;
-            var note = bar.AddNote(MathHelper.NextRandomPositiveInt32());
-            note.StartPosition = note.FinishPosition = (NotePosition)(column + 1);
-            note.PositionInGrid = row;
-            scoreNote.Note = note;
-            EditableScoreNotes.Add(scoreNote);
-            NoteLayer.Children.Add(scoreNote);
-            scoreNote.X = NoteLayer.ActualWidth * TrackCenterXPositions[column];
-            scoreNote.Y = baseY + extraY;
-            scoreNote.MouseDown += ScoreNote_MouseDown;
-            scoreNote.MouseUp += ScoreNote_MouseUp;
-            scoreNote.MouseDoubleClick += ScoreNote_MouseDoubleClick;
-            scoreNote.ContextMenu = Resources.FindName("NoteContextMenu") as Fluent.ContextMenu;
-            return scoreNote;
+            return AddScoreNote(scoreBar, row, (int)position - 1, null);
         }
 
         public void RemoveScoreNote(ScoreNote scoreNote) {
-            RemoveScoreNote(scoreNote, true);
+            RemoveScoreNote(scoreNote, true, true);
         }
 
         public void RemoveScoreNotes(IEnumerable<ScoreNote> scoreNotes) {
-            // Avoid 'the collection has been modified' exception.
-            var backup = scoreNotes.ToArray();
-            foreach (var scoreNote in backup) {
-                RemoveScoreNote(scoreNote, false);
-            }
-            RegenerateLines();
-            RepositionLines();
+            RemoveScoreNotes(scoreNotes, true, true);
         }
 
         public ReadOnlyCollection<ScoreNote> ScoreNotes { get; }

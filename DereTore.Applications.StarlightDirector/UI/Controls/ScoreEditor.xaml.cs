@@ -78,7 +78,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private void ScoreBar_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             var scoreBar = (ScoreBar)sender;
             var hitTestInfo = scoreBar.HitTest(e.GetPosition(scoreBar));
-            AddScoreNote(scoreBar, hitTestInfo);
+            AddScoreNote(scoreBar, hitTestInfo, null);
             e.Handled = true;
         }
 

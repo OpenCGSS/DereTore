@@ -83,7 +83,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Bars = new InternalList<Bar>();
             Project = project;
             Difficulty = difficulty;
-            Settings = ScoreSettings.CreateDefault(this);
+            Settings = ScoreSettings.CreateDefault();
             IDGenerators = new IDGenerators();
             Settings.SettingChanged += OnGlobalSettingsChanged;
         }

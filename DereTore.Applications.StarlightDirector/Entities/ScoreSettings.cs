@@ -37,8 +37,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         [JsonProperty]
         public int GlobalSignature { get; set; }
 
-        public static ScoreSettings CreateDefault(Score score) {
-            return new ScoreSettings(score) {
+        public static ScoreSettings CreateDefault() {
+            return new ScoreSettings {
                 GlobalBpm = 120,
                 StartTimeOffset = 0,
                 GlobalGridPerSignature = 4, // 最高分辨率为十六分音符
@@ -62,11 +62,9 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             settings.SettingChanged.Raise(obj, EventArgs.Empty);
         }
 
-        private ScoreSettings(Score score) {
-            _score = score;
+        [JsonConstructor]
+        private ScoreSettings() {
         }
-
-        private readonly Score _score;
 
     }
 }

@@ -14,7 +14,67 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
 
         private void ReloadScore(Score toBeSet) {
-            Debug.Print("Not implemented: ScoreEditor.ReloadScore().");
+            // First, clean up the room before inviting guests. XD (You know where this sentense comes from.)
+            // These are presentation layer of the program, just clear them, and let the GC do the rest of the work.
+            // Clearing these objects will not affect the underlying model.
+            RemoveScoreBars(ScoreBars, false, true);
+            NoteRelations.Clear();
+            RegenerateLines();
+            UpdateMaximumScrollOffset();
+            if (toBeSet == null) {
+                return;
+            }
+
+            var temporaryMap = new Dictionary<Note, ScoreNote>();
+            var allNotes = new List<Note>();
+            // OK the fun part is here.
+            foreach (var bar in toBeSet.Bars) {
+                var scoreBar = AddScoreBar(null, false, bar);
+                EditableScoreBars.Add(scoreBar);
+                foreach (var note in bar.Notes) {
+                    var scoreNote = AddScoreNote(scoreBar, note.PositionInGrid, note.FinishPosition, note);
+                    EditableScoreNotes.Add(scoreNote);
+                    temporaryMap.Add(note, scoreNote);
+                    allNotes.Add(note);
+                }
+            }
+            var processedNotes = new List<Note>();
+            foreach (var note in allNotes) {
+                if (!processedNotes.Contains(note)) {
+                    ProcessNoteRelations(note, processedNotes, temporaryMap, NoteRelations);
+                }
+            }
+            RegenerateLines();
+            RecalcEditorLayout();
+            Debug.Print("Done: ScoreEditor.ReloadScore().");
+        }
+
+        private static void ProcessNoteRelations(Note root, ICollection<Note> processedNotes, IDictionary<Note, ScoreNote> map, NoteRelationCollection relations) {
+            var waitingList = new Queue<Note>();
+            waitingList.Enqueue(root);
+            while (waitingList.Count > 0) {
+                var note = waitingList.Dequeue();
+                if (processedNotes.Contains(note)) {
+                    continue;
+                }
+                processedNotes.Add(note);
+                if (note.IsSync) {
+                    relations.Add(map[note], map[note.SyncTarget], NoteRelation.Sync);
+                    waitingList.Enqueue(note.SyncTarget);
+                }
+                if (note.HasNextFlick) {
+                    relations.Add(map[note], map[note.NextFlickNote], NoteRelation.Flick);
+                    waitingList.Enqueue(note.NextFlickNote);
+                }
+                if (note.HasPrevFlick) {
+                    relations.Add(map[note], map[note.PrevFlickNote], NoteRelation.Flick);
+                    waitingList.Enqueue(note.PrevFlickNote);
+                }
+                if (note.IsHold) {
+                    relations.Add(map[note], map[note.HoldTarget], NoteRelation.Hold);
+                    waitingList.Enqueue(note.HoldTarget);
+                }
+            }
         }
 
         private void RecalcEditorLayout() {
@@ -157,11 +217,104 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             Avatars = avatars;
         }
 
-        private ScoreBar AddScoreBar(ScoreBar before, bool recalculateLayout) {
+        private void RemoveScoreNote(ScoreNote scoreNote, bool modifiesModel, bool repositionLines) {
+            if (!ScoreNotes.Contains(scoreNote)) {
+                throw new ArgumentException("Invalid ScoreNote.", nameof(scoreNote));
+            }
+            scoreNote.MouseDown -= ScoreNote_MouseDown;
+            scoreNote.MouseUp -= ScoreNote_MouseUp;
+            scoreNote.MouseDoubleClick -= ScoreNote_MouseDoubleClick;
+            scoreNote.ContextMenu = null;
+            EditableScoreNotes.Remove(scoreNote);
+            NoteRelations.RemoveAll(scoreNote);
+            if (modifiesModel) {
+                var note = scoreNote.Note;
+                if (Score.Bars.Contains(note.Bar)) {
+                    // The Reset() call is necessary.
+                    note.Reset();
+                    note.Bar.Notes.Remove(note);
+                }
+            }
+            NoteLayer.Children.Remove(scoreNote);
+            // TODO: Query if there is a need to do that.
+            if (repositionLines) {
+                RegenerateLines();
+                RepositionLines();
+            }
+        }
+
+        private void RemoveScoreNotes(IEnumerable<ScoreNote> scoreNotes, bool modifiesModel, bool recalcLayout) {
+            // Avoid 'the collection has been modified' exception.
+            var backup = scoreNotes.ToArray();
+            foreach (var scoreNote in backup) {
+                RemoveScoreNote(scoreNote, modifiesModel, false);
+            }
+            if (recalcLayout) {
+                RegenerateLines();
+                RepositionLines();
+            }
+        }
+
+        private ScoreNote AddScoreNote(ScoreBar scoreBar, int row, NotePosition column, Note dataTemplate) {
+            return AddScoreNote(scoreBar, row, (int)column - 1, dataTemplate);
+        }
+
+        private ScoreNote AddScoreNote(ScoreBar scoreBar, int row, int column, Note dataTemplate) {
+            if (row < 0 || column < 0 || column >= 5) {
+                return null;
+            }
+            if (row >= scoreBar.Bar.GetTotalGridCount()) {
+                return null;
+            }
+            var bar = scoreBar.Bar;
+            var scoreNote = AnyNoteExistOnPosition(bar.Index, column, row);
+            if (scoreNote != null) {
+                return scoreNote;
+            }
+            var baseY = ScrollOffset + bar.Index * BarHeight;
+            var extraY = BarHeight * row / bar.GetTotalGridCount();
+            scoreNote = new ScoreNote();
+            scoreNote.Radius = NoteRadius;
+            Note note;
+            if (dataTemplate != null) {
+                note = dataTemplate;
+            } else {
+                note = bar.AddNote(MathHelper.NextRandomPositiveInt32());
+                note.StartPosition = note.FinishPosition = (NotePosition)(column + 1);
+                note.PositionInGrid = row;
+            }
+            scoreNote.Note = note;
+            EditableScoreNotes.Add(scoreNote);
+            NoteLayer.Children.Add(scoreNote);
+            scoreNote.X = NoteLayer.ActualWidth * TrackCenterXPositions[column];
+            scoreNote.Y = baseY + extraY;
+            scoreNote.MouseDown += ScoreNote_MouseDown;
+            scoreNote.MouseUp += ScoreNote_MouseUp;
+            scoreNote.MouseDoubleClick += ScoreNote_MouseDoubleClick;
+            scoreNote.ContextMenu = Resources.FindName("NoteContextMenu") as Fluent.ContextMenu;
+            return scoreNote;
+        }
+
+        private ScoreNote AddScoreNote(ScoreBar scoreBar, ScoreBarHitTestInfo info, Note dataTemplate) {
+            if (!info.IsValid || info.Row < 0 || info.Column < 0) {
+                if (!info.IsInNextBar) {
+                    return null;
+                }
+                var nextBar = ScoreBars.FirstOrDefault(b => b.Bar.Index > scoreBar.Bar.Index);
+                if (nextBar == null) {
+                    return null;
+                }
+                var point = scoreBar.TranslatePoint(info.HitPoint, nextBar);
+                return AddScoreNote(nextBar, nextBar.HitTest(point), dataTemplate);
+            }
+            return AddScoreNote(scoreBar, info.Row, info.Column, dataTemplate);
+        }
+
+        private ScoreBar AddScoreBar(ScoreBar before, bool recalculateLayout, Bar dataTemplate) {
             var project = Project;
             Debug.Assert(project != null, "project != null");
             var score = Score;
-            var bar = before == null ? score.AddBar() : score.InsertBar(before.Bar.Index);
+            var bar = dataTemplate != null ? dataTemplate : (before == null ? score.AddBar() : score.InsertBar(before.Bar.Index));
             if (bar == null) {
                 return null;
             }
@@ -186,63 +339,38 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             return scoreBar;
         }
 
-        private void RemoveScoreNote(ScoreNote scoreNote, bool repositionLines) {
-            if (!ScoreNotes.Contains(scoreNote)) {
-                throw new ArgumentException("Invalid ScoreNote.", nameof(scoreNote));
-            }
-            scoreNote.MouseDown -= ScoreNote_MouseDown;
-            scoreNote.MouseUp -= ScoreNote_MouseUp;
-            scoreNote.MouseDoubleClick -= ScoreNote_MouseDoubleClick;
-            scoreNote.ContextMenu = null;
-            EditableScoreNotes.Remove(scoreNote);
-            NoteRelations.RemoveAll(scoreNote);
-            var note = scoreNote.Note;
-            if (Score.Bars.Contains(note.Bar)) {
-                // The Reset() call is necessary.
-                note.Reset();
-                note.Bar.Notes.Remove(note);
-                Debug.Print("Note removed.");
-            }
-            NoteLayer.Children.Remove(scoreNote);
-            // TODO: Query if there is a need to do that.
-            if (repositionLines) {
-                RegenerateLines();
-                RepositionLines();
-            }
-        }
-
-        private ScoreNote AddScoreNote(ScoreBar scoreBar, ScoreBarHitTestInfo info) {
-            if (!info.IsValid || info.Row < 0 || info.Column < 0) {
-                if (!info.IsInNextBar) {
-                    return null;
-                }
-                var nextBar = ScoreBars.FirstOrDefault(b => b.Bar.Index > scoreBar.Bar.Index);
-                if (nextBar == null) {
-                    return null;
-                }
-                var point = scoreBar.TranslatePoint(info.HitPoint, nextBar);
-                return AddScoreNote(nextBar, nextBar.HitTest(point));
-            }
-            return AddScoreNote(scoreBar, info.Row, info.Column);
-        }
-
-        private void RemoveScoreBar(ScoreBar scoreBar, bool recalcLayout) {
+        private void RemoveScoreBar(ScoreBar scoreBar, bool modifiesModel, bool recalcLayout) {
             if (!ScoreBars.Contains(scoreBar)) {
                 throw new ArgumentException("Invalid ScoreBar.", nameof(scoreBar));
             }
             scoreBar.ScoreBarHitTest -= ScoreBar_ScoreBarHitTest;
             scoreBar.MouseDoubleClick -= ScoreBar_MouseDoubleClick;
             scoreBar.MouseDown -= ScoreBar_MouseDown;
-            Score.RemoveBarAt(scoreBar.Bar.Index);
+            if (modifiesModel) {
+                Score.RemoveBarAt(scoreBar.Bar.Index);
+            }
             EditableScoreBars.Remove(scoreBar);
             BarLayer.Children.Remove(scoreBar);
-            TrimScoreNotes(scoreBar);
-            UpdateBarTexts();
+            TrimScoreNotes(scoreBar, modifiesModel);
             if (recalcLayout) {
+                UpdateBarTexts();
                 RegenerateLines();
                 RecalcEditorLayout();
+                UpdateMaximumScrollOffset();
             }
-            UpdateMaximumScrollOffset();
+        }
+
+        private void RemoveScoreBars(IEnumerable<ScoreBar> scoreBars, bool modifiesModel, bool recalcLayout) {
+            var backup = scoreBars.ToArray();
+            foreach (var scoreBar in backup) {
+                RemoveScoreBar(scoreBar, modifiesModel, false);
+            }
+            if (recalcLayout) {
+                UpdateBarTexts();
+                RegenerateLines();
+                RecalcEditorLayout();
+                UpdateMaximumScrollOffset();
+            }
         }
 
         private ScoreNote AnyNoteExistOnPosition(int barIndex, int column, int row) {
@@ -267,13 +395,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             MaximumScrollOffset = BarHeight * ScoreBars.Count;
         }
 
-        private void TrimScoreNotes(ScoreBar willBeDeleted) {
+        private void TrimScoreNotes(ScoreBar willBeDeleted, bool modifiesModel) {
             // Reposition after calling this function.
             var bar = willBeDeleted.Bar;
             Func<ScoreNote, bool> matchFunc = scoreNote => scoreNote.Note.Bar == bar;
             var processing = ScoreNotes.Where(matchFunc).ToArray();
             foreach (var scoreNote in processing) {
-                RemoveScoreNote(scoreNote, false);
+                RemoveScoreNote(scoreNote, modifiesModel, false);
             }
         }
 
