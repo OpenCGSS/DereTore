@@ -289,6 +289,8 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Resources\Testing\song_1001_gokuraku.csv" />
+    <None Include="Resources\Testing\song_1001_gokuraku.sldproj" />
     <None Include="Resources\Testing\song_3034_hotel.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
