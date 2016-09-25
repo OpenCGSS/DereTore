@@ -53,7 +53,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 n1 = PrevFlickNote;
                 n2 = NextFlickNote;
                 if (n1 == null && n2 == null) {
-                    if (!IsHold) {
+                    if (!IsHoldStart) {
                         FlickType = NoteFlickType.Tap;
                     }
                 } else {
@@ -89,7 +89,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 n1 = PrevFlickNote;
                 n2 = NextFlickNote;
                 if (n1 == null && n2 == null) {
-                    if (!IsHold) {
+                    if (!IsHoldStart) {
                         FlickType = NoteFlickType.Tap;
                     }
                 } else {
@@ -117,7 +117,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
         }
 
-        public bool IsHold => Type == NoteType.Hold && HoldTarget != null;
+        public bool IsHold => HoldTarget != null;
+
+        public bool IsHoldStart => Type == NoteType.Hold && HoldTarget != null;
+
+        public bool IsHoldEnd => Type == NoteType.TapOrFlick && HoldTarget != null;
 
         [JsonProperty]
         public int HoldTargetID { get; private set; }
@@ -128,7 +132,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
             set {
                 _holdTarget = value;
-                Type = value != null ? NoteType.Hold : NoteType.TapOrFlick;
+                // Only the former of the hold pair is considered as a hold note. The other is a tap or flick note.
+                Type = (value != null && value > this) ? NoteType.Hold : NoteType.TapOrFlick;
                 HoldTargetID = value?.ID ?? EntityID.Invalid;
             }
         }
@@ -145,6 +150,14 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 return n1.GetHitTiming().CompareTo(n2.GetHitTiming());
             }
         };
+
+        public static bool operator >(Note left, Note right) {
+            return TimeComparison(left, right) > 0;
+        }
+
+        public static bool operator <(Note left, Note right) {
+            return TimeComparison(left, right) < 0;
+        }
 
         internal bool TryGetFlickGroupID(out FlickGroupModificationResult modificationResult, out int knownGroupID, out Note groupStart) {
             if (!IsFlick) {

@@ -152,10 +152,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var ns = start.Note;
                 var ne = end.Note;
                 if (mode == EditMode.Clear) {
-                    ns?.Reset();
+                    ns.Reset();
                     NoteRelations.RemoveAll(start);
                     if (!DraggingStartNote.Equals(DraggingEndNote)) {
-                        ne?.Reset();
+                        ne.Reset();
                         NoteRelations.RemoveAll(end);
                     }
                     RegenerateLines();
@@ -182,7 +182,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidFlickCreation), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
-                            var first = ns.GetHitTiming() < ne.GetHitTiming() ? ns : ne;
+                            var first = ns < ne ? ns : ne;
                             var second = first.Equals(ns) ? ne : ns;
                             first.NextFlickNote = second;
                             second.PrevFlickNote = first;
@@ -190,7 +190,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             RegenerateLines();
                             break;
                         case EditMode.Hold:
-                            if (ns.FinishPosition != ne.FinishPosition || ns.IsHold || ne.IsHold) {
+                            if (ns.FinishPosition != ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart) {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreation), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
@@ -238,8 +238,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private void ScoreNote_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
             var scoreNote = (ScoreNote)sender;
             var note = scoreNote.Note;
-            if (note.IsHold) {
-                if (note.GetHitTiming() > note.HoldTarget.GetHitTiming()) {
+            if (note.IsHoldEnd) {
+                if (note > note.HoldTarget) {
                     switch (note.FlickType) {
                         case NoteFlickType.Tap:
                             note.FlickType = NoteFlickType.FlickLeft;

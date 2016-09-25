@@ -70,7 +70,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     relations.Add(map[note], map[note.PrevFlickNote], NoteRelation.Flick);
                     waitingList.Enqueue(note.PrevFlickNote);
                 }
-                if (note.IsHold) {
+                if (note.IsHoldStart) {
                     relations.Add(map[note], map[note.HoldTarget], NoteRelation.Hold);
                     waitingList.Enqueue(note.HoldTarget);
                 }
