@@ -105,7 +105,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 if (project.Scores != null) {
                     foreach (var kv in project.Scores) {
                         var score = kv.Value;
-                        score.ResolveReferences();
+                        score.ResolveReferences(project);
                         score.Difficulty = kv.Key;
                         score.Project = project;
                     }

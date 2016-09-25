@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Extensions;
 using Newtonsoft.Json;
@@ -92,9 +93,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Settings.SettingChanged -= OnGlobalSettingsChanged;
         }
 
-        internal IDGenerators IDGenerators { get; }
-
-        internal void ResolveReferences() {
+        internal void ResolveReferences(Project project) {
             if (Bars == null) {
                 return;
             }
@@ -121,6 +120,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     note.HoldTarget = FindNoteByID(note.HoldTargetID);
                 }
             }
+            Project = project;
+            Settings.SettingChanged += OnGlobalSettingsChanged;
         }
 
         internal CompiledScore Compile() {
@@ -208,8 +209,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         private void OnGlobalSettingsChanged(object sender, EventArgs e) {
+            Project.IsChanged = true;
             GlobalSettingsChanged.Raise(sender, e);
         }
+
+        private IDGenerators IDGenerators { get; }
 
     }
 }
