@@ -241,6 +241,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 RegenerateLines();
                 RepositionLines();
             }
+            if (modifiesModel) {
+                Project.IsChanged = true;
+            }
         }
 
         private void RemoveScoreNotes(IEnumerable<ScoreNote> scoreNotes, bool modifiesModel, bool recalcLayout) {
@@ -252,6 +255,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (recalcLayout) {
                 RegenerateLines();
                 RepositionLines();
+            }
+            if (modifiesModel) {
+                Project.IsChanged = true;
             }
         }
 
@@ -291,7 +297,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             scoreNote.MouseDown += ScoreNote_MouseDown;
             scoreNote.MouseUp += ScoreNote_MouseUp;
             scoreNote.MouseDoubleClick += ScoreNote_MouseDoubleClick;
-            scoreNote.ContextMenu = Resources.FindName("NoteContextMenu") as Fluent.ContextMenu;
+            if (dataTemplate == null) {
+                Project.IsChanged = true;
+            }
             return scoreNote;
         }
 
@@ -314,7 +322,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var project = Project;
             Debug.Assert(project != null, "project != null");
             var score = Score;
-            var bar = dataTemplate != null ? dataTemplate : (before == null ? score.AddBar() : score.InsertBar(before.Bar.Index));
+            var bar = dataTemplate ?? (before == null ? score.AddBar() : score.InsertBar(before.Bar.Index));
             if (bar == null) {
                 return null;
             }
@@ -335,6 +343,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 UpdateBarTexts();
                 RecalcEditorLayout();
                 UpdateMaximumScrollOffset();
+            }
+            if (dataTemplate == null) {
+                Project.IsChanged = true;
             }
             return scoreBar;
         }
@@ -358,6 +369,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 RecalcEditorLayout();
                 UpdateMaximumScrollOffset();
             }
+            if (modifiesModel) {
+                Project.IsChanged = true;
+            }
         }
 
         private void RemoveScoreBars(IEnumerable<ScoreBar> scoreBars, bool modifiesModel, bool recalcLayout) {
@@ -370,6 +384,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 RegenerateLines();
                 RecalcEditorLayout();
                 UpdateMaximumScrollOffset();
+            }
+            if (modifiesModel) {
+                Project.IsChanged = true;
             }
         }
 

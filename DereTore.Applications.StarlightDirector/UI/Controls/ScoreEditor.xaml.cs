@@ -159,6 +159,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                         NoteRelations.RemoveAll(end);
                     }
                     RegenerateLines();
+                    Project.IsChanged = true;
                 } else if (!DraggingStartNote.Equals(DraggingEndNote)) {
                     if (NoteRelations.ContainsPair(start, end)) {
                         MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.NoteRelationAlreadyExists), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -226,6 +227,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                         default:
                             throw new ArgumentOutOfRangeException(nameof(mode));
                     }
+                    Project.IsChanged = true;
                     DraggingEndNote.IsSelected = true;
                 }
             }
@@ -241,12 +243,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     switch (note.FlickType) {
                         case NoteFlickType.Tap:
                             note.FlickType = NoteFlickType.FlickLeft;
+                            Project.IsChanged = true;
                             break;
                         case NoteFlickType.FlickLeft:
                             note.FlickType = NoteFlickType.FlickRight;
+                            Project.IsChanged = true;
                             break;
                         case NoteFlickType.FlickRight:
                             note.FlickType = NoteFlickType.Tap;
+                            Project.IsChanged = true;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(note.FlickType));
