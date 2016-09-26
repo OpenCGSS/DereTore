@@ -37,5 +37,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Pages {
             VersionText.Text = fileVersionAttribute?.Version;
         }
 
+        public static string VersionExtra => "Alpha";
+
     }
 }
