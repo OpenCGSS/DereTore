@@ -205,7 +205,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         }
 
         private static readonly string AcbFilter = "ACB Files (*.acb)|*.acb";
-        private static readonly string ScoreFilter = "Score Database (*.bdb)|*.bdb|Single Score (*.csv)|*.csv";
+        private static readonly string ScoreFilter = "All Supported Score Formats (*.bdb;*.csv)|*.bdb;*.csv|Score Database (*.bdb)|*.bdb|Single Score (*.csv)|*.csv";
 
         private static readonly string ExtensionAcb = ".acb";
         private static readonly string ExtensionBdb = ".bdb";
