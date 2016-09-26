@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Windows;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Components;
 
@@ -25,6 +28,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Pages {
                 var startInfo = new ProcessStartInfo(link);
                 Process.Start(startInfo);
             }
+        }
+
+        private void AboutPage_OnLoaded(object sender, RoutedEventArgs e) {
+            var mainAssembly = Assembly.GetEntryAssembly();
+            var attributes = mainAssembly.GetCustomAttributes(false);
+            var fileVersionAttribute = attributes.FirstOrDefault(a => a is AssemblyFileVersionAttribute) as AssemblyFileVersionAttribute;
+            VersionText.Text = fileVersionAttribute?.Version;
         }
 
     }
