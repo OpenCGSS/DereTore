@@ -289,8 +289,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Resources\Testing\song_1001_gokuraku.csv" />
-    <None Include="Resources\Testing\song_1001_gokuraku.sldproj" />
+    <None Include="Resources\Testing\song_1001_gokuraku.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Testing\song_1001_gokuraku.sldproj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\Testing\song_3034_hotel.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -316,7 +320,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="UI\Controls\ScoreEditor.Logic.Public.cs" />
-    <None Include="Resources\Testing\song_1001_gokuraku.acb" />
+    <None Include="Resources\Testing\song_1001_gokuraku.acb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Cards\sagisawa_fumika_75.jpg" />
