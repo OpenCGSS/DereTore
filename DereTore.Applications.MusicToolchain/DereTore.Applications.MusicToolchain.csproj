@@ -124,6 +124,10 @@
       <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
       <Name>DereTore.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DereTore.Utilities.LZ4\DereTore.Utilities.LZ4.csproj">
+      <Project>{c6bc3fe0-8333-4dff-8284-07431e151b44}</Project>
+      <Name>DereTore.Utilities.LZ4</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

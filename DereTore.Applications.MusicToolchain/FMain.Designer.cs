@@ -38,6 +38,7 @@
             this.txtSaveLocation = new System.Windows.Forms.TextBox();
             this.btnBrowseSaveLocation = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.chkAlsoCreateLz4 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -148,11 +149,22 @@
             this.btnBrowseSaveLocation.Text = "...";
             this.btnBrowseSaveLocation.UseVisualStyleBackColor = true;
             // 
+            // chkAlsoCreateLz4
+            // 
+            this.chkAlsoCreateLz4.AutoSize = true;
+            this.chkAlsoCreateLz4.Location = new System.Drawing.Point(203, 217);
+            this.chkAlsoCreateLz4.Name = "chkAlsoCreateLz4";
+            this.chkAlsoCreateLz4.Size = new System.Drawing.Size(174, 16);
+            this.chkAlsoCreateLz4.TabIndex = 13;
+            this.chkAlsoCreateLz4.Text = "Also create a &LZ4 archive";
+            this.chkAlsoCreateLz4.UseVisualStyleBackColor = true;
+            // 
             // FMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(498, 392);
+            this.Controls.Add(this.chkAlsoCreateLz4);
             this.Controls.Add(this.btnBrowseSaveLocation);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.txtSaveLocation);
@@ -193,6 +205,7 @@
         private System.Windows.Forms.TextBox txtSaveLocation;
         private System.Windows.Forms.Button btnBrowseSaveLocation;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.CheckBox chkAlsoCreateLz4;
     }
 }
 

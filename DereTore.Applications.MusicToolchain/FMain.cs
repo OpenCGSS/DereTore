@@ -50,10 +50,18 @@ namespace DereTore.Applications.MusicToolchain {
             if (!CheckBeforeGo()) {
                 return;
             }
-            btnGo.Enabled = false;
-            var thread = new Thread(Go);
-            thread.IsBackground = true;
-            thread.Start();
+            DisableControls();
+            var thread = new Thread(Go) {
+                IsBackground = true,
+            };
+            thread.Start(new StartOptions {
+                WaveFileName = txtSourceWaveFile.Text,
+                Key1 = txtKey1.Text,
+                Key2 = txtKey2.Text,
+                AcbFileName = txtSaveLocation.Text,
+                SongName = txtSongName.Text,
+                ShouldCreateLz4 = chkAlsoCreateLz4.Checked
+            });
         }
 
         private void TxtSourceWaveFile_DragEnter(object sender, DragEventArgs e) {
@@ -100,7 +108,8 @@ namespace DereTore.Applications.MusicToolchain {
             }
         }
 
-        private void Go() {
+        private void Go(object paramObject) {
+            var options = (StartOptions)paramObject;
             string temp1, temp2;
             int code;
             var startInfo = new ProcessStartInfo();
@@ -110,8 +119,7 @@ namespace DereTore.Applications.MusicToolchain {
             startInfo.FileName = "hcaenc.exe";
             temp1 = Path.GetTempFileName();
             Log($"Target: {temp1}");
-            var waveFileName = txtSourceWaveFile.Text;
-            startInfo.Arguments = GetArgsString(SanitizeString(waveFileName), SanitizeString(temp1));
+            startInfo.Arguments = GetArgsString(SanitizeString(options.WaveFileName), SanitizeString(temp1));
             using (var proc = Process.Start(startInfo)) {
                 proc.WaitForExit();
                 code = proc.ExitCode;
@@ -121,19 +129,17 @@ namespace DereTore.Applications.MusicToolchain {
                 if (File.Exists(temp1)) {
                     File.Delete(temp1);
                 }
-                EnableGoButton();
+                EnableControls();
                 return;
             }
             Log("Encoding finished.");
 
             Log("Converting HCA...");
-            var key1 = txtKey1.Text;
-            var key2 = txtKey2.Text;
-            if (key1.Length > 0 && key2.Length > 0) {
+            if (options.Key1.Length > 0 && options.Key2.Length > 0) {
                 startInfo.FileName = "hcacc.exe";
                 temp2 = Path.GetTempFileName();
                 Log($"Target: {temp2}");
-                startInfo.Arguments = GetArgsString(SanitizeString(temp1), SanitizeString(temp2), "-ot", "56", "-o1", key1, "-o2", key2);
+                startInfo.Arguments = GetArgsString(SanitizeString(temp1), SanitizeString(temp2), "-ot", "56", "-o1", options.Key1, "-o2", options.Key2);
                 using (var proc = Process.Start(startInfo)) {
                     proc.WaitForExit();
                     code = proc.ExitCode;
@@ -146,7 +152,7 @@ namespace DereTore.Applications.MusicToolchain {
                     if (File.Exists(temp2)) {
                         File.Delete(temp2);
                     }
-                    EnableGoButton();
+                    EnableControls();
                     return;
                 }
                 Log("Conversion finished.");
@@ -157,10 +163,8 @@ namespace DereTore.Applications.MusicToolchain {
 
             Log("Packing ACB...");
             startInfo.FileName = "AcbMaker.exe";
-            var acbFileName = txtSaveLocation.Text;
-            Log($"Target: {acbFileName}");
-            var songName = txtSongName.Text;
-            startInfo.Arguments = GetArgsString(SanitizeString(temp2), SanitizeString(acbFileName), "-n", songName);
+            Log($"Target: {options.AcbFileName}");
+            startInfo.Arguments = GetArgsString(SanitizeString(temp2), SanitizeString(options.AcbFileName), "-n", options.SongName);
             using (var proc = Process.Start(startInfo)) {
                 proc.WaitForExit();
                 code = proc.ExitCode;
@@ -173,7 +177,7 @@ namespace DereTore.Applications.MusicToolchain {
                 if (File.Exists(temp2)) {
                     File.Delete(temp2);
                 }
-                EnableGoButton();
+                EnableControls();
                 return;
             }
             Log("ACB packing finished.");
@@ -183,18 +187,32 @@ namespace DereTore.Applications.MusicToolchain {
             if (File.Exists(temp2)) {
                 File.Delete(temp2);
             }
-            EnableGoButton();
-        }
 
-        private void EnableGoButton() {
-            if (InvokeRequired) {
-                Invoke(_enableGoDelegate);
-            } else {
-                btnGo.Enabled = true;
+            if (options.ShouldCreateLz4) {
+                Log("Performing LZ4 compression...");
+                startInfo.FileName = "LZ4.exe";
+                var lz4CompressedFileName = options.AcbFileName + ".lz4";
+                startInfo.Arguments = GetArgsString(SanitizeString(options.AcbFileName), SanitizeString(lz4CompressedFileName));
+                using (var proc = Process.Start(startInfo)) {
+                    proc.WaitForExit();
+                    code = proc.ExitCode;
+                }
+                if (code != 0) {
+                    LogError($"LZ4 exited with code {code}.");
+                    EnableControls();
+                    return;
+                }
+                Log("LZ4 compression finished.");
             }
+
+            EnableControls();
         }
 
         private void DisableControls() {
+            if (InvokeRequired) {
+                Invoke(_disableControlsDelegate);
+                return;
+            }
             foreach (Control control in Controls) {
                 var textBox = control as TextBox;
                 if (textBox != null) {
@@ -207,11 +225,28 @@ namespace DereTore.Applications.MusicToolchain {
             }
         }
 
+        private void EnableControls() {
+            if (InvokeRequired) {
+                Invoke(_enableControlsDelegate);
+                return;
+            }
+            foreach (Control control in Controls) {
+                var textBox = control as TextBox;
+                if (textBox != null) {
+                    if (!textBox.ReadOnly) {
+                        textBox.Enabled = true;
+                    }
+                }
+                control.Enabled = true;
+            }
+        }
+
         private bool CheckEnvironment() {
             Log("Checking environment...");
             _logDelegate = Log;
-            _enableGoDelegate = EnableGoButton;
-            var criticalFiles = new[] { "hcaenc.exe", "hcacc.exe", "AcbMaker.exe", "hcaenc_lite.dll" };
+            _enableControlsDelegate = EnableControls;
+            _disableControlsDelegate = DisableControls;
+            var criticalFiles = new[] { "hcaenc.exe", "hcacc.exe", "AcbMaker.exe", "LZ4.exe", "hcaenc_lite.dll" };
             var missingFiles = criticalFiles.Where(s => !File.Exists(s)).ToList();
             if (missingFiles.Count > 0) {
                 DisableControls();
@@ -273,7 +308,6 @@ namespace DereTore.Applications.MusicToolchain {
             saveFileDialog.ValidateNames = true;
             openFileDialog.Filter = Resources.BrowseForWaveFilter;
             saveFileDialog.AutoUpgradeEnabled = true;
-            saveFileDialog.CreatePrompt = true;
             saveFileDialog.OverwritePrompt = true;
             saveFileDialog.ValidateNames = true;
             saveFileDialog.Filter = Resources.BrowseForAcbFilter;
@@ -317,7 +351,19 @@ namespace DereTore.Applications.MusicToolchain {
         private static readonly string DefaultSongName = "song_1001";
         private static readonly char[] CommandlineEscapeChars = { ' ', '&', '%', '#', '@', '!', ',', '~', '+', '=', '(', ')' };
         private Action<string> _logDelegate;
-        private Action _enableGoDelegate;
+        private Action _enableControlsDelegate;
+        private Action _disableControlsDelegate;
+
+        private sealed class StartOptions {
+
+            public string WaveFileName { get; set; }
+            public string Key1 { get; set; }
+            public string Key2 { get; set; }
+            public string AcbFileName { get; set; }
+            public string SongName { get; set; }
+            public bool ShouldCreateLz4 { get; set; }
+
+        }
 
     }
 }

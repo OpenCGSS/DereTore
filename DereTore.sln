@@ -40,6 +40,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Applications.Score
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Applications.StarlightDirector", "DereTore.Applications.StarlightDirector\DereTore.Applications.StarlightDirector.csproj", "{EA6039D9-CFDA-44B5-BE32-F1256A649E18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Utilities.LZ4", "DereTore.Utilities.LZ4\DereTore.Utilities.LZ4.csproj", "{C6BC3FE0-8333-4DFF-8284-07431E151B44}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -236,6 +238,18 @@ Global
 		{EA6039D9-CFDA-44B5-BE32-F1256A649E18}.Release|x64.Build.0 = Release|x64
 		{EA6039D9-CFDA-44B5-BE32-F1256A649E18}.Release|x86.ActiveCfg = Release|x86
 		{EA6039D9-CFDA-44B5-BE32-F1256A649E18}.Release|x86.Build.0 = Release|x86
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Debug|x64.ActiveCfg = Debug|x64
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Debug|x64.Build.0 = Debug|x64
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Debug|x86.ActiveCfg = Debug|x86
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Debug|x86.Build.0 = Debug|x86
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Release|x64.ActiveCfg = Release|x64
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Release|x64.Build.0 = Release|x64
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Release|x86.ActiveCfg = Release|x86
+		{C6BC3FE0-8333-4DFF-8284-07431E151B44}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
