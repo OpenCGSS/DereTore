@@ -80,9 +80,16 @@ is its [readme](DereTore.Applications.MusicToolchain/README.md).
 
 Viewing and editing scores (collections of notes) of live music. Here is its [readme](DereTore.Applications.ScoreEditor/README.md).
 
-**DereTore.Applications.StarlightComposer**
+**DereTore.Applications.StarlightDirector**
 
-Coming soon...
+The new score composer (still in alpha phase), the successor of ScoreEditor. Detailed readme and user manual will be written
+in the future. Let's celebrate its alpha release!
+
+### Other
+
+**DereTore.Utilities.LZ4**
+
+An LZ4 compression utility for compressing game data. It is designed for IdolProxy.
 
 ## License
 
