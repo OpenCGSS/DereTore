@@ -32,6 +32,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
             // BUG: WTF? Why can't all the data be written into a MemoryStream right after the csv.WriteRecords() call, but a FileStream?
             var text = File.ReadAllText(tempFileName, Encoding.UTF8);
+            text = text.Replace("\r\n", "\n");
             File.Delete(tempFileName);
             return text;
         }
