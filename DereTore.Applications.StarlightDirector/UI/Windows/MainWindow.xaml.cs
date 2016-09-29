@@ -16,7 +16,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
     /// <summary>
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
-    partial class MainWindow {
+    public partial class MainWindow {
 
         public MainWindow() {
             InitializeComponent();
@@ -106,17 +106,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             }
         }
 
-        private void SelectedWaveOut_PlaybackStopped(object sender, EventArgs e) {
-            var waveOut = _selectedWaveOut;
-            if (waveOut != null) {
-                waveOut.PlaybackStopped -= SelectedWaveOut_PlaybackStopped;
-                waveOut.Dispose();
-                _selectedWaveOut = null;
-            }
-            _waveReader?.Dispose();
-            _waveReader = null;
-        }
-
         private void NotifyProjectChanged() {
             if (Project != null) {
                 Project.IsChanged = true;
@@ -125,8 +114,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
 
         private bool ShouldPromptSaving => Project != null && Project.IsChanged;
 
-        private AudioOut _selectedWaveOut;
-        private WaveFileReader _waveReader;
 
     }
 }

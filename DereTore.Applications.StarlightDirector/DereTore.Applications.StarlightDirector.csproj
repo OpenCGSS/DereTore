@@ -264,7 +264,14 @@
     </Compile>
     <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />
-    <Compile Include="UI\Windows\MainWindow.Commands.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Misc.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Edit.Bar.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Edit.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Edit.Mode.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.File.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Edit.Note.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Music.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Tools.cs" />
     <Compile Include="UI\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
