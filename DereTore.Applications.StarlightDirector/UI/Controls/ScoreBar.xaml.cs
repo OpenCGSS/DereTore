@@ -246,56 +246,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
 
             if (newValue != oldValue) {
-                //sb.UpdateAllLayouts();
                 sb.InvalidateMeasure();
             }
         }
-
-        //private void UpdateFrameLayout(double width, double height) {
-        //    // Frame first.
-        //    var rectShape = _frameRectangle;
-        //    var canvas = Canvas;
-        //    if (rectShape == null) {
-        //        rectShape = new Rectangle();
-        //        rectShape.Stroke = Stroke;
-        //        rectShape.StrokeThickness = GridStrokeThickness;
-        //        canvas.Children.Add(rectShape);
-        //        _frameRectangle = rectShape;
-        //    }
-        //    rectShape.Width = width;
-        //    rectShape.Height = height;
-        //}
-
-        //private void UpdateStroke() {
-        //    var stressStroke = (Brush)Application.Current.FindResource(App.ResourceKeys.BarStrokeStressBrush);
-        //    var stroke = Stroke;
-        //    foreach (var lineShape in _verticalLines) {
-        //        lineShape.Stroke = stroke;
-        //    }
-        //    foreach (var lineShape in _horizontalLines) {
-        //        if (!lineShape.Stroke.Equals(stressStroke)) {
-        //            lineShape.Stroke = stroke;
-        //        }
-        //    }
-        //    _frameRectangle.Stroke = stroke;
-        //}
-
-        //private void RenewMissingElements() {
-        //    // HACK: The lines do disappear when the second resize happens (controlled by WPF), I don't know why.
-        //    var canvas = Canvas;
-        //    var l = _horizontalLines;
-        //    if (l.Count > 0 && !canvas.Children.Contains(l[0])) {
-        //        foreach (var lineShape in l) {
-        //            canvas.Children.Add(lineShape);
-        //        }
-        //    }
-        //    l = _verticalLines;
-        //    if (l.Count > 0 && !canvas.Children.Contains(l[0])) {
-        //        foreach (var lineShape in l) {
-        //            canvas.Children.Add(lineShape);
-        //        }
-        //    }
-        //}
 
         protected override void OnRender(DrawingContext drawingContext) {
             base.OnRender(drawingContext);
@@ -305,27 +258,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var width = canvas.ActualWidth;
             var height = canvas.ActualHeight;
             var stroke = Stroke;
-            //if (_verticalLines.Count == 0) {
-            //    for (var i = 0; i < columnCount; ++i) {
-            //        var lineShape = new Line();
-            //        lineShape.Stroke = Brushes.White;
-            //        lineShape.StrokeThickness = GridStrokeThickness;
-            //        lineShape.Y1 = 0;
-            //        lineShape.Y2 = height;
-            //        lineShape.X1 = lineShape.X2 = height * i / (columnCount - 1);
-            //        canvas.Children.Add(lineShape);
-            //        _verticalLines.Add(lineShape);
-            //    }
-            //} else {
-            //    var i = 0;
-            //    foreach (var lineShape in _verticalLines) {
-            //        if (!height.Equals(0)) {
-            //            lineShape.Y2 = height;
-            //        }
-            //        lineShape.X1 = lineShape.X2 = width * i / (columnCount - 1);
-            //        ++i;
-            //    }
-            //}
 
             var canvasOrigin = canvas.TranslatePoint(new Point(), this);
             var xOffset = canvasOrigin.X;
@@ -341,31 +273,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var stressStroke = (Brush)Application.Current.FindResource(App.ResourceKeys.BarStrokeStressBrush);
             var rowCount = TotalRowCount = bar.GetActualSignature() * bar.GetActualGridPerSignature();
             var signature = bar.GetActualSignature();
-            //if (rowCount + 1 != _horizontalLines.Count) {
-            //    foreach (var horizontalLine in _horizontalLines) {
-            //        canvas.Children.Remove(horizontalLine);
-            //    }
-            //    _horizontalLines.Clear();
-            //    for (var i = 0; i <= rowCount; ++i) {
-            //        var lineShape = new Line();
-            //        lineShape.Stroke = i % signature == 0 ? (i == 0 ? Brushes.Red : stressStroke) : stroke;
-            //        lineShape.StrokeThickness = GridStrokeThickness;
-            //        lineShape.X1 = 0;
-            //        lineShape.X2 = width;
-            //        lineShape.Y1 = lineShape.Y2 = height * i / rowCount;
-            //        _horizontalLines.Add(lineShape);
-            //        canvas.Children.Add(lineShape);
-            //    }
-            //} else {
-            //    var i = 0;
-            //    foreach (var lineShape in _horizontalLines) {
-            //        if (!width.Equals(0)) {
-            //            lineShape.X2 = width;
-            //        }
-            //        lineShape.Y1 = lineShape.Y2 = height * i / rowCount;
-            //        ++i;
-            //    }
-            //}
             var barStartPen = new Pen(Brushes.Red, GridStrokeThickness);
             var barSignaturePen = new Pen(stressStroke, GridStrokeThickness);
             var barNormalPen = new Pen(stroke, GridStrokeThickness);
@@ -377,71 +284,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 drawingContext.DrawLine(pen, startPoint, endPoint);
             }
         }
-
-        //private void UpdateAllLayouts() {
-        //    var canvas = Canvas;
-        //    var columnCount = 5;
-        //    var width = canvas.ActualWidth;
-        //    var height = canvas.ActualHeight;
-        //    var stroke = Stroke;
-        //    if (_verticalLines.Count == 0) {
-        //        for (var i = 0; i < columnCount; ++i) {
-        //            var lineShape = new Line();
-        //            lineShape.Stroke = Brushes.White;
-        //            lineShape.StrokeThickness = GridStrokeThickness;
-        //            lineShape.Y1 = 0;
-        //            lineShape.Y2 = height;
-        //            lineShape.X1 = lineShape.X2 = height * i / (columnCount - 1);
-        //            canvas.Children.Add(lineShape);
-        //            _verticalLines.Add(lineShape);
-        //        }
-        //    } else {
-        //        var i = 0;
-        //        foreach (var lineShape in _verticalLines) {
-        //            if (!height.Equals(0)) {
-        //                lineShape.Y2 = height;
-        //            }
-        //            lineShape.X1 = lineShape.X2 = width * i / (columnCount - 1);
-        //            ++i;
-        //        }
-        //    }
-
-        //    var bar = Bar;
-        //    var stressStroke = (Brush)Application.Current.FindResource(App.ResourceKeys.BarStrokeStressBrush);
-        //    var rowCount = TotalRowCount = bar.GetActualSignature() * bar.GetActualGridPerSignature();
-        //    var signature = bar.GetActualSignature();
-        //    if (rowCount + 1 != _horizontalLines.Count) {
-        //        foreach (var horizontalLine in _horizontalLines) {
-        //            canvas.Children.Remove(horizontalLine);
-        //        }
-        //        _horizontalLines.Clear();
-        //        for (var i = 0; i <= rowCount; ++i) {
-        //            var lineShape = new Line();
-        //            lineShape.Stroke = i % signature == 0 ? (i == 0 ? Brushes.Red : stressStroke) : stroke;
-        //            lineShape.StrokeThickness = GridStrokeThickness;
-        //            lineShape.X1 = 0;
-        //            lineShape.X2 = width;
-        //            lineShape.Y1 = lineShape.Y2 = height * i / rowCount;
-        //            _horizontalLines.Add(lineShape);
-        //            canvas.Children.Add(lineShape);
-        //        }
-        //    } else {
-        //        var i = 0;
-        //        foreach (var lineShape in _horizontalLines) {
-        //            if (!width.Equals(0)) {
-        //                lineShape.X2 = width;
-        //            }
-        //            lineShape.Y1 = lineShape.Y2 = height * i / rowCount;
-        //            ++i;
-        //        }
-        //    }
-        //    RenewMissingElements();
-        //    UpdateFrameLayout(width, height);
-        //}
-
-        //private readonly List<Line> _verticalLines;
-        //private readonly List<Line> _horizontalLines;
-        //private Rectangle _frameRectangle;
 
     }
 }
