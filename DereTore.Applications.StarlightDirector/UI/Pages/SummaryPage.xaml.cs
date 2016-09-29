@@ -8,7 +8,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Pages {
     /// <summary>
     /// SummaryPage.xaml 的交互逻辑
     /// </summary>
-    partial class SummaryPage : IDirectorPage {
+    public partial class SummaryPage : IDirectorPage {
 
         public SummaryPage() {
             InitializeComponent();
