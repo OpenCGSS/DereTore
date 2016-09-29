@@ -192,7 +192,6 @@
     <Compile Include="Components\LinePositioner.cs" />
     <Compile Include="Components\NoteRelation.cs" />
     <Compile Include="Components\NoteRelationCollection.cs" />
-    <Compile Include="Components\ObjectPool.cs" />
     <Compile Include="Components\ObservableDictionary.cs" />
     <Compile Include="Components\ThreadingTimer.cs" />
     <Compile Include="ComposerUtilities.cs" />
@@ -220,8 +219,6 @@
     <Compile Include="Extensions\NoteExtensions.cs" />
     <Compile Include="Extensions\PageExtensions.cs" />
     <Compile Include="Fraction.cs" />
-    <Compile Include="GamingServices\NoteManipulator.cs" />
-    <Compile Include="GamingServices\ScoreManipulator.cs" />
     <Compile Include="Interop\NativeConstants.cs" />
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\NativeStructures.cs" />
