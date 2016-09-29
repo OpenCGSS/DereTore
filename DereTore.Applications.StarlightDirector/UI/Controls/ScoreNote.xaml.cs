@@ -10,7 +10,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// <summary>
     /// ScoreNote.xaml 的交互逻辑
     /// </summary>
-    partial class ScoreNote {
+    public partial class ScoreNote {
 
         public ScoreNote() {
             InitializeComponent();

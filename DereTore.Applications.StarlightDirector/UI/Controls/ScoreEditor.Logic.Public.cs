@@ -18,7 +18,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             EditableScoreBars = new List<ScoreBar>();
             ScoreNotes = EditableScoreNotes.AsReadOnly();
             ScoreBars = EditableScoreBars.AsReadOnly();
-            NoteRelations = new NoteRelationCollection();
 
             InitializeComponent();
             InitializeControls();
@@ -160,6 +159,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             ScrollOffset = y;
         }
 
+        public double GetBarsTotalHeight() {
+            var height = ScoreBars.Sum(scoreBar => scoreBar.ActualHeight);
+            return height;
+        }
+
         public void SelectScoreBar(ScoreBar scoreBar) {
             var previousSelected = GetSelectedScoreBar();
             if (previousSelected != null) {
@@ -222,26 +226,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(LargeChangeProperty, value); }
         }
 
-        public double NoteLineThickness {
-            get { return (double)GetValue(NoteLineThicknessProperty); }
-            set { SetValue(NoteLineThicknessProperty, value); }
-        }
-
-        public Brush SyncRelationBrush {
-            get { return (Brush)GetValue(SyncRelationBrushProperty); }
-            set { SetValue(SyncRelationBrushProperty, value); }
-        }
-
-        public Brush FlickRelationBrush {
-            get { return (Brush)GetValue(FlickRelationBrushProperty); }
-            set { SetValue(FlickRelationBrushProperty, value); }
-        }
-
-        public Brush HoldRelationBrush {
-            get { return (Brush)GetValue(HoldRelationBrushProperty); }
-            set { SetValue(HoldRelationBrushProperty, value); }
-        }
-
         public static readonly DependencyProperty ScrollOffsetProperty = DependencyProperty.Register(nameof(ScrollOffset), typeof(double), typeof(ScoreEditor),
             new PropertyMetadata(0d, OnScrollOffsetChanged));
 
@@ -268,18 +252,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty LargeChangeProperty = DependencyProperty.Register(nameof(LargeChange), typeof(double), typeof(ScoreEditor),
             new PropertyMetadata(50d));
-
-        public static readonly DependencyProperty NoteLineThicknessProperty = DependencyProperty.Register(nameof(NoteLineThickness), typeof(double), typeof(ScoreEditor),
-            new PropertyMetadata(4d));
-
-        public static readonly DependencyProperty SyncRelationBrushProperty = DependencyProperty.Register(nameof(SyncRelationBrush), typeof(Brush), typeof(ScoreEditor),
-            new PropertyMetadata(Brushes.DodgerBlue));
-
-        public static readonly DependencyProperty FlickRelationBrushProperty = DependencyProperty.Register(nameof(FlickRelationBrush), typeof(Brush), typeof(ScoreEditor),
-            new PropertyMetadata(Brushes.Orchid));
-
-        public static readonly DependencyProperty HoldRelationBrushProperty = DependencyProperty.Register(nameof(HoldRelationBrush), typeof(Brush), typeof(ScoreEditor),
-            new PropertyMetadata(Brushes.Yellow));
 
         private static void OnScrollOffsetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;

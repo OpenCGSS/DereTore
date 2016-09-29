@@ -10,6 +10,8 @@ using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 
+using NoteTuple = System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>;
+
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
 
@@ -18,8 +20,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             // These are presentation layer of the program, just clear them, and let the GC do the rest of the work.
             // Clearing these objects will not affect the underlying model.
             RemoveScoreBars(ScoreBars, false, true);
-            NoteRelations.Clear();
-            RegenerateLines();
+            LineLayer.NoteRelations.Clear();
             UpdateMaximumScrollOffset();
             if (toBeSet == null) {
                 return;
@@ -39,10 +40,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var processedNotes = new List<Note>();
             foreach (var note in allNotes) {
                 if (!processedNotes.Contains(note)) {
-                    ProcessNoteRelations(note, processedNotes, temporaryMap, NoteRelations);
+                    ProcessNoteRelations(note, processedNotes, temporaryMap, LineLayer.NoteRelations);
                 }
             }
-            RegenerateLines();
             UpdateMaximumScrollOffset();
             UpdateBarTexts();
             RecalcEditorLayout();
@@ -85,43 +85,37 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void ResizeBars() {
+            var barLayerWidth = BarLayer.ActualWidth;
             foreach (var scoreBar in ScoreBars) {
-                scoreBar.BarColumnWidth = BarLayer.ActualWidth * (TrackCenterXPositions[4] - TrackCenterXPositions[0]);
+                scoreBar.BarColumnWidth = barLayerWidth * (TrackCenterXPositions[4] - TrackCenterXPositions[0]);
             }
         }
 
         private void RepositionBars() {
-            var barLayer = BarLayer;
-            //barLayer.Children.Clear();
+            var barLayerWidth = BarLayer.ActualWidth;
             if (ScoreBars.Count == 0) {
                 return;
             }
             foreach (var scoreBar in ScoreBars) {
-                Canvas.SetLeft(scoreBar, BarLayer.ActualWidth * TrackCenterXPositions[0] - scoreBar.TextColumnWidth - scoreBar.SpaceColumnWidth);
+                Canvas.SetLeft(scoreBar, barLayerWidth * TrackCenterXPositions[0] - scoreBar.TextColumnWidth - scoreBar.SpaceColumnWidth);
                 Canvas.SetTop(scoreBar, ScrollOffset + scoreBar.Bar.Index * BarHeight);
             }
-            var score = Score;
-            if (score == null) {
-                return;
-            }
-            //throw new NotImplementedException();
         }
 
         private void RepositionNotes() {
             if (ScoreNotes.Count == 0) {
                 return;
             }
+            var scrollOffset = ScrollOffset;
+            var noteLayerWidth = NoteLayer.ActualWidth;
             foreach (var scoreNote in ScoreNotes) {
                 var note = scoreNote.Note;
                 var bar = note.Bar;
-                var baseY = ScrollOffset + bar.Index * BarHeight;
+                var baseY = scrollOffset + bar.Index * BarHeight;
                 var extraY = BarHeight * note.PositionInGrid / bar.GetTotalGridCount();
-                //Canvas.SetTop(scoreNote, baseY + extraY - scoreNote.Radius);
-                //Canvas.SetLeft(scoreNote, NoteLayer.ActualWidth * TrackCenterXPositions[(int)note.FinishPosition - 1] - scoreNote.Radius);
-                scoreNote.X = NoteLayer.ActualWidth * TrackCenterXPositions[(int)note.FinishPosition - 1];
+                scoreNote.X = noteLayerWidth * TrackCenterXPositions[(int)note.FinishPosition - 1];
                 scoreNote.Y = baseY + extraY;
             }
-            //throw new NotImplementedException();
         }
 
         private void RepositionAvatars() {
@@ -155,47 +149,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void RepositionLines() {
-            foreach (var child in LineLayer.Children) {
-                var line = child as Line;
-                if (line == null) {
-                    continue;
-                }
-                var s1 = LinePositioner.GetScoreNote1(line);
-                var s2 = LinePositioner.GetScoreNote2(line);
-                line.X1 = s1.X;
-                line.X2 = s2.X;
-                line.Y1 = s1.Y;
-                line.Y2 = s2.Y;
-            }
-        }
-
-        private void RegenerateLines() {
-            // We do it in a brutal but simple way.
-            LineLayer.Children.Clear();
-            foreach (var relation in NoteRelations) {
-                var line = new Line();
-                switch (relation.Relation) {
-                    case NoteRelation.Sync:
-                        line.Stroke = SyncRelationBrush;
-                        break;
-                    case NoteRelation.Flick:
-                        line.Stroke = FlickRelationBrush;
-                        break;
-                    case NoteRelation.Hold:
-                        line.Stroke = HoldRelationBrush;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(relation.Relation));
-                }
-                line.StrokeThickness = NoteLineThickness;
-                line.X1 = relation.ScoreNote1.X;
-                line.X2 = relation.ScoreNote2.X;
-                line.Y1 = relation.ScoreNote1.Y;
-                line.Y2 = relation.ScoreNote2.Y;
-                LinePositioner.SetScoreNote1(line, relation.ScoreNote1);
-                LinePositioner.SetScoreNote2(line, relation.ScoreNote2);
-                LineLayer.Children.Add(line);
-            }
+            LineLayer.Width = NoteLayer.ActualWidth;
+            LineLayer.Height = NoteLayer.ActualHeight;
+            Canvas.SetTop(LineLayer, ScrollOffset);
+            LineLayer.InvalidateVisual();
         }
 
         private Rect GetWorkingAreaRect() {
@@ -226,7 +183,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             scoreNote.MouseDoubleClick -= ScoreNote_MouseDoubleClick;
             scoreNote.ContextMenu = null;
             EditableScoreNotes.Remove(scoreNote);
-            NoteRelations.RemoveAll(scoreNote);
+            LineLayer.NoteRelations.RemoveAll(scoreNote);
             if (modifiesModel) {
                 var note = scoreNote.Note;
                 if (Score.Bars.Contains(note.Bar)) {
@@ -238,7 +195,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             NoteLayer.Children.Remove(scoreNote);
             // TODO: Query if there is a need to do that.
             if (repositionLines) {
-                RegenerateLines();
                 RepositionLines();
             }
             if (modifiesModel) {
@@ -253,7 +209,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 RemoveScoreNote(scoreNote, modifiesModel, false);
             }
             if (recalcLayout) {
-                RegenerateLines();
                 RepositionLines();
             }
             if (modifiesModel) {
@@ -365,7 +320,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             TrimScoreNotes(scoreBar, modifiesModel);
             if (recalcLayout) {
                 UpdateBarTexts();
-                RegenerateLines();
                 RecalcEditorLayout();
                 UpdateMaximumScrollOffset();
             }
@@ -381,7 +335,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             if (recalcLayout) {
                 UpdateBarTexts();
-                RegenerateLines();
                 RecalcEditorLayout();
                 UpdateMaximumScrollOffset();
             }
@@ -425,8 +378,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private List<ScoreBar> EditableScoreBars { get; }
 
         private List<ScoreNote> EditableScoreNotes { get; }
-
-        private NoteRelationCollection NoteRelations { get; }
 
         private ScoreNote[] Avatars { get; set; }
 

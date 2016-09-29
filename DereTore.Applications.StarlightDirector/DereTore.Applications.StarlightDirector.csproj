@@ -144,6 +144,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Controls\LineLayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\ScoreBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -222,6 +226,9 @@
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\NativeStructures.cs" />
     <Compile Include="ResourceKeys.cs" />
+    <Compile Include="UI\Controls\LineLayer.xaml.cs">
+      <DependentUpon>LineLayer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
     <Compile Include="UI\EditMode.cs" />
     <Compile Include="UI\Controls\ScoreBar.xaml.cs">

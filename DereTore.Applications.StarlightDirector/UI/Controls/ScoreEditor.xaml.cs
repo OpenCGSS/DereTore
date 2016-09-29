@@ -14,7 +14,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// <summary>
     /// ScoreEditor.xaml 的交互逻辑
     /// </summary>
-    partial class ScoreEditor {
+    public partial class ScoreEditor {
 
         private void FrameLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
             var path = FrameLayer.Children[0] as Path;
@@ -28,10 +28,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private void BarLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
             ResizeBars();
             RepositionBars();
-        }
-
-        private void LineLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
-            // Wait until NoteLayer_OnSizeChanged(). See the notes in that one.
         }
 
         private void AvatarLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -114,13 +110,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (scoreNote.IsSelected && EditMode != EditMode.Select && EditMode != EditMode.Clear) {
                 switch (EditMode) {
                     case EditMode.Sync:
-                        EditingLine.Stroke = SyncRelationBrush;
+                        EditingLine.Stroke = LineLayer.SyncRelationBrush;
                         break;
                     case EditMode.Flick:
-                        EditingLine.Stroke = FlickRelationBrush;
+                        EditingLine.Stroke = LineLayer.FlickRelationBrush;
                         break;
                     case EditMode.Hold:
-                        EditingLine.Stroke = HoldRelationBrush;
+                        EditingLine.Stroke = LineLayer.HoldRelationBrush;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(EditMode));
@@ -153,15 +149,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var ne = end.Note;
                 if (mode == EditMode.Clear) {
                     ns.Reset();
-                    NoteRelations.RemoveAll(start);
+                    LineLayer.NoteRelations.RemoveAll(start);
                     if (!DraggingStartNote.Equals(DraggingEndNote)) {
                         ne.Reset();
-                        NoteRelations.RemoveAll(end);
+                        LineLayer.NoteRelations.RemoveAll(end);
                     }
-                    RegenerateLines();
+                    LineLayer.InvalidateVisual();
                     Project.IsChanged = true;
                 } else if (!DraggingStartNote.Equals(DraggingEndNote)) {
-                    if (NoteRelations.ContainsPair(start, end)) {
+                    if (LineLayer.NoteRelations.ContainsPair(start, end)) {
                         MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.NoteRelationAlreadyExists), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
                     }
@@ -173,8 +169,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             }
                             ns.SyncTarget = ne;
                             ne.SyncTarget = ns;
-                            NoteRelations.Add(start, end, NoteRelation.Sync);
-                            RegenerateLines();
+                            LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
+                            LineLayer.InvalidateVisual();
                             break;
                         case EditMode.Flick:
                             if ((ns.Bar == ne.Bar && ns.PositionInGrid == ne.PositionInGrid) ||
@@ -186,8 +182,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             var second = first.Equals(ns) ? ne : ns;
                             first.NextFlickNote = second;
                             second.PrevFlickNote = first;
-                            NoteRelations.Add(start, end, NoteRelation.Flick);
-                            RegenerateLines();
+                            LineLayer.NoteRelations.Add(start, end, NoteRelation.Flick);
+                            LineLayer.InvalidateVisual();
                             break;
                         case EditMode.Hold:
                             if (ns.FinishPosition != ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart) {
@@ -221,8 +217,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             }
                             ns.HoldTarget = ne;
                             ne.HoldTarget = ns;
-                            NoteRelations.Add(start, end, NoteRelation.Hold);
-                            RegenerateLines();
+                            LineLayer.NoteRelations.Add(start, end, NoteRelation.Hold);
+                            LineLayer.InvalidateVisual();
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(mode));
