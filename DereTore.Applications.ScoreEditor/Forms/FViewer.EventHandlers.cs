@@ -200,7 +200,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private void Progress_KeyUp(object sender, KeyEventArgs e) {
             --_userSeekingStack;
             if (_userSeekingStack <= 0) {
-                SoundManager.Instance.IsUserSeeking = false;
+                SfxManager.Instance.IsUserSeeking = false;
                 if (btnPause.Enabled) {
                     _player?.Play();
                 }
@@ -209,14 +209,14 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private void Progress_KeyDown(object sender, KeyEventArgs e) {
             ++_userSeekingStack;
-            SoundManager.Instance.IsUserSeeking = true;
+            SfxManager.Instance.IsUserSeeking = true;
             _player?.Pause();
         }
 
         private void Progress_MouseUp(object sender, MouseEventArgs e) {
             --_userSeekingStack;
             if (_userSeekingStack <= 0) {
-                SoundManager.Instance.IsUserSeeking = false;
+                SfxManager.Instance.IsUserSeeking = false;
                 if (btnPause.Enabled) {
                     _player?.Play();
                 }
@@ -225,7 +225,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private void Progress_MouseDown(object sender, MouseEventArgs e) {
             ++_userSeekingStack;
-            SoundManager.Instance.IsUserSeeking = true;
+            SfxManager.Instance.IsUserSeeking = true;
             _player?.Pause();
         }
 
@@ -257,9 +257,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             }
             var note = e.Note;
             if (note.IsFlick) {
-                SoundManager.Instance.PlayHca(FlickSoundFileName);
+                SfxManager.Instance.PlayHca(_currentFlickHcaFileName);
             } else if (note.IsTap || note.IsHold) {
-                SoundManager.Instance.PlayHca(TapSoundFileName);
+                SfxManager.Instance.PlayHca(_currentTapHcaFileName);
             }
         }
 
@@ -310,6 +310,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                 return;
             }
             _acbStream = File.Open(txtAcbFileName.Text, FileMode.Open, FileAccess.Read);
+            var sfxAcbFileName = string.Format(SoundEffectAcbFileNameFormat, cboSoundEffect.SelectedIndex.ToString("00"));
+            _currentTapHcaFileName = $"{sfxAcbFileName}/{TapHcaName}";
+            _currentFlickHcaFileName = $"{sfxAcbFileName}/{FlickHcaName}";
             _player = LiveMusicPlayer.FromStream(_acbStream, txtAcbFileName.Text, DecodeParams);
             _player.PlaybackStopped += Player_PlaybackStopped;
             Score score;

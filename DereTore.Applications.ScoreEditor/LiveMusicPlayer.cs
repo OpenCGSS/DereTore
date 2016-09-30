@@ -144,7 +144,6 @@ namespace DereTore.Applications.ScoreEditor {
 
         private LiveMusicPlayer(Stream stream, string acbFileName, DecodeParams decodeParams) {
             _acb = AcbFile.FromStream(stream, acbFileName, false);
-            _acb.Initialize();
             var names = _acb.GetFileNames();
             _internalName = names[0];
             _hcaDataStream = _acb.OpenDataStream(_internalName);

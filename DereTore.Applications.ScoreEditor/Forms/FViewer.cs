@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using DereTore.ACB;
 using DereTore.Applications.ScoreEditor.Model;
 using DereTore.HCA;
 using DereTore.StarlightStage;
@@ -49,7 +50,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         }
 
         private void ClosePlayers() {
-            SoundManager.Instance.Dispose();
+            SfxManager.Instance.Dispose();
         }
 
         private bool ConfirmNoteEdition(NoteEdition edition, Note note, Note newValue) {
@@ -57,45 +58,21 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             var prompts = new List<string>();
             switch (edition) {
                 case NoteEdition.Remove:
-                    //if (note.HasNextFlick || note.HasPrevFlick) {
-                    //    prompts.Add("* The note has related flick notes. Removing it may cause flick notes reordering.");
-                    //}
-                    //if (note.IsHold) {
-                    //    prompts.Add("* The note is a hold note. Removing it will set its paired hold note back to a tap note.");
-                    //}
                     if (note.IsSync) {
                         prompts.Add("* The note is a sync note. Removing it will break the sync property of its paired sync note.");
                     }
                     break;
                 case NoteEdition.Edit:
-                    //if (note.HasNextFlick || note.HasPrevFlick) {
-                    //    prompts.Add("* The note has related flick notes. Editing it may cause flick notes reordering.");
-                    //}
-                    //if (note.IsHold) {
-                    //    prompts.Add("* The note is a hold note. Editing it will set its paired hold note back to a tap note.");
-                    //}
                     if (note.IsSync && !note.HitTiming.Equals(newValue.HitTiming)) {
                         prompts.Add("* The note is a sync note. Editing it will break the sync property of its paired sync note.");
                     }
                     break;
                 case NoteEdition.ResetType:
-                    //if (note.HasNextFlick || note.HasPrevFlick) {
-                    //    prompts.Add("* The note has related flick notes. Resetting its type may cause flick notes reordering.");
-                    //}
-                    //if (note.IsHold) {
-                    //    prompts.Add("* The note is a hold note. Resetting its type will set its paired hold note back to a tap note.");
-                    //}
                     if (note.IsSync) {
                         prompts.Add("* The note is a sync note. Resetting its type will break the sync property of its paired sync note.");
                     }
                     break;
                 case NoteEdition.ResetTiming:
-                    //if (note.HasNextFlick || note.HasPrevFlick) {
-                    //    prompts.Add("* The note has related flick notes. Resetting its timing may cause flick notes reordering.");
-                    //}
-                    //if (note.IsHold) {
-                    //    prompts.Add("* The note is a hold note. Resetting its timing will set its paired hold note back to a tap note.");
-                    //}
                     if (note.IsSync && !note.HitTiming.Equals(newValue.HitTiming)) {
                         prompts.Add("* The note is a sync note. Resetting its timing will break the sync property of its paired sync note.");
                     }
@@ -119,12 +96,24 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             openFileDialog.ShowReadOnly = false;
             openFileDialog.ValidateNames = true;
             cboDifficulty.SelectedIndex = 0;
+            cboSoundEffect.SelectedIndex = 0;
             SetControlsEnabled(ViewerState.Initialized);
         }
 
         private void PreloadNoteSounds() {
-            SoundManager.Instance.PreloadHca(FlickSoundFileName);
-            SoundManager.Instance.PreloadHca(TapSoundFileName);
+            const int sfxTypeCount = 4;
+            for (var i = 0; i < sfxTypeCount; ++i) {
+                var acbFileName = string.Format(SoundEffectAcbFileNameFormat, i.ToString("00"));
+                using (var fileStream = File.Open(acbFileName, FileMode.Open, FileAccess.Read)) {
+                    using (var acbFile = AcbFile.FromStream(fileStream, false)) {
+                        foreach (var hcaName in new[] { TapHcaName, FlickHcaName }) {
+                            using (var dataStream = acbFile.OpenDataStream(hcaName)) {
+                                SfxManager.Instance.PreloadHca(dataStream, $"{acbFileName}/{hcaName}");
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void SetControlsEnabled(ViewerState state) {
@@ -133,6 +122,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     btnSelectAcb.Enabled = true;
                     btnSelectScore.Enabled = true;
                     cboDifficulty.Enabled = true;
+                    cboSoundEffect.Enabled = true;
                     progress.Enabled = false;
                     btnScoreLoad.Enabled = true;
                     btnScoreUnload.Enabled = false;
@@ -156,6 +146,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     btnSelectAcb.Enabled = false;
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
+                    cboSoundEffect.Enabled = false;
                     progress.Enabled = true;
                     btnScoreLoad.Enabled = false;
                     btnScoreUnload.Enabled = true;
@@ -179,6 +170,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     btnSelectAcb.Enabled = false;
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
+                    cboSoundEffect.Enabled = false;
                     progress.Enabled = true;
                     btnScoreLoad.Enabled = false;
                     btnScoreUnload.Enabled = true;
@@ -191,6 +183,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     btnSelectAcb.Enabled = false;
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
+                    cboSoundEffect.Enabled = false;
                     progress.Enabled = true;
                     btnScoreLoad.Enabled = false;
                     btnScoreUnload.Enabled = true;
@@ -213,8 +206,11 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private static readonly string SongTipFormat = "Song: {0}";
 
-        private static readonly string FlickSoundFileName = "Resources/se_live_flic_perfect.hca";
-        private static readonly string TapSoundFileName = "Resources/se_live_tap_perfect.hca";
+        private static readonly string SoundEffectAcbFileNameFormat = "Resources/SFX/se_live_{0}.acb";
+        private static readonly string FlickHcaName = "se_live_flic_perfect.hca";
+        private static readonly string TapHcaName = "se_live_tap_perfect.hca";
+        private string _currentFlickHcaFileName;
+        private string _currentTapHcaFileName;
 
         private readonly Timer timer = new Timer(5);
 

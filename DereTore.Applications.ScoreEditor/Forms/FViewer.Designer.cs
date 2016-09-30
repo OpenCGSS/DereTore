@@ -54,7 +54,8 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.tsbScoreCreate = new System.Windows.Forms.ToolStripButton();
             this.tsbScoreSave = new System.Windows.Forms.ToolStripButton();
             this.tsbScoreSaveAs = new System.Windows.Forms.ToolStripButton();
-            this.editor = new ScoreEditorControl();
+            this.editor = new DereTore.Applications.ScoreEditor.Controls.ScoreEditorControl();
+            this.cboSoundEffect = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.progress)).BeginInit();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.editor)).BeginInit();
@@ -328,18 +329,35 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.editor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.editor.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.editor.IsPreview = false;
             this.editor.Location = new System.Drawing.Point(12, 113);
+            this.editor.MouseEventsEnabled = true;
             this.editor.Name = "editor";
             this.editor.Score = null;
             this.editor.Size = new System.Drawing.Size(734, 409);
             this.editor.TabIndex = 0;
             this.editor.TabStop = false;
             // 
+            // cboSoundEffect
+            // 
+            this.cboSoundEffect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSoundEffect.FormattingEnabled = true;
+            this.cboSoundEffect.Items.AddRange(new object[] {
+            "SE 1",
+            "SE 2",
+            "SE 3",
+            "SE 4"});
+            this.cboSoundEffect.Location = new System.Drawing.Point(722, 20);
+            this.cboSoundEffect.Name = "cboSoundEffect";
+            this.cboSoundEffect.Size = new System.Drawing.Size(82, 20);
+            this.cboSoundEffect.TabIndex = 26;
+            // 
             // FViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1026, 534);
+            this.Controls.Add(this.cboSoundEffect);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.btnScoreUnload);
             this.Controls.Add(this.btnScoreLoad);
@@ -403,6 +421,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private System.Windows.Forms.ToolStripButton tsbScoreSave;
         private System.Windows.Forms.ToolStripButton tsbScoreSaveAs;
         private System.Windows.Forms.ToolStripButton tsbRetimingToNow;
+        private System.Windows.Forms.ComboBox cboSoundEffect;
     }
 }
 

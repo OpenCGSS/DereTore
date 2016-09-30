@@ -145,7 +145,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\Renderer.cs" />
-    <Compile Include="SoundManager.cs" />
+    <Compile Include="SfxManager.cs" />
     <Compile Include="ThreadingTimer.cs" />
     <EmbeddedResource Include="Forms\FEditNote.resx">
       <DependentUpon>FEditNote.cs</DependentUpon>
@@ -178,28 +178,34 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="README.md" />
-    <None Include="Resources\hotel.acb">
+    <None Include="Resources\SFX\se_live_03.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\hotel.bdb">
+    <None Include="Resources\SFX\se_live_02.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\onedari.acb">
+    <None Include="Resources\SFX\se_live_01.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\onedari.bdb">
+    <None Include="Resources\SFX\se_live_00.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\oneshin.acb">
+    <None Include="Resources\Live\hotel.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\oneshin.bdb">
+    <None Include="Resources\Live\hotel.bdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\se_live_flic_perfect.hca">
+    <None Include="Resources\Live\onedari.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\se_live_tap_perfect.hca">
+    <None Include="Resources\Live\onedari.bdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Live\oneshin.acb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Live\oneshin.bdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

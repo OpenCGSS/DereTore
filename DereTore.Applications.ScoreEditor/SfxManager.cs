@@ -1,38 +1,48 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using DereTore.HCA;
 using DereTore.StarlightStage;
 using AudioOut = NAudio.Wave.DirectSoundOut;
 
 namespace DereTore.Applications.ScoreEditor {
-    public sealed class SoundManager : DisposableBase {
+    public sealed class SfxManager : DisposableBase {
 
-        static SoundManager() {
+        static SfxManager() {
             SyncObject = new object();
         }
 
-        public static SoundManager Instance {
+        public static SfxManager Instance {
             get {
                 lock (SyncObject) {
                     if (_instance == null) {
-                        _instance = new SoundManager();
+                        _instance = new SfxManager();
                     }
                 }
                 return _instance;
             }
         }
 
-        public void PreloadHca(string fileName) {
+        public AudioOut PreloadHca(string fileName) {
+            return PreloadHca(null, fileName);
+        }
+
+        public AudioOut PreloadHca(Stream dataStream, string fileName) {
             int index;
-            var @out = GetFreeOutput(fileName, out index) ?? CreateOutput(fileName, out index);
+            var @out = GetFreeOutput(fileName, out index) ?? (dataStream != null ? CreateOutput(dataStream, fileName, out index) : CreateOutput(fileName, out index));
+            return @out;
         }
 
         public void PlayHca(string fileName) {
+            PlayHca(null, fileName);
+        }
+
+        public void PlayHca(Stream dataStream, string fileName) {
             if (IsUserSeeking) {
                 return;
             }
             int index;
-            var @out = GetFreeOutput(fileName, out index) ?? CreateOutput(fileName, out index);
+            var @out = GetFreeOutput(fileName, out index) ?? (dataStream != null ? CreateOutput(dataStream, fileName, out index) : CreateOutputForceUsingCache(fileName, out index));
             _hcaWaveProviders[index].Seek(0, SeekOrigin.Begin);
             _playingList[index] = true;
             @out.Play();
@@ -81,31 +91,34 @@ namespace DereTore.Applications.ScoreEditor {
             return null;
         }
 
-        private AudioOut CreateOutput(string fileName, out int index) {
+        private AudioOut CreateOutput(Stream dataStream, string fileName, out int index) {
+            var fileNames = _fileNames;
+            var soundStreams = _soundStreams;
             MemoryStream templateMemory = null;
-            if (_fileNames.Contains(fileName)) {
-                for (var i = 0; i < _soundStreams.Count; ++i) {
-                    if (_fileNames[i] == fileName) {
-                        templateMemory = _soundStreams[i];
+            if (fileNames.Contains(fileName)) {
+                for (var i = 0; i < fileNames.Count; ++i) {
+                    if (fileNames[i] == fileName) {
+                        templateMemory = soundStreams[i];
                         break;
                     }
                 }
             }
 
-            _fileNames.Add(fileName);
+            fileNames.Add(fileName);
             MemoryStream memory;
             if (templateMemory != null) {
                 memory = new MemoryStream(templateMemory.Capacity);
                 templateMemory.WriteTo(memory);
             } else {
-                using (var fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                    memory = new MemoryStream((int)fs.Length);
-                    fs.CopyTo(memory);
+                if (dataStream == null) {
+                    throw new ArgumentNullException(nameof(dataStream), "When not using a cache, the data stream must not be null.");
                 }
+                memory = new MemoryStream((int)dataStream.Length);
+                dataStream.CopyTo(memory);
             }
             memory.Seek(0, SeekOrigin.Begin);
             memory.Capacity = (int)memory.Length;
-            _soundStreams.Add(memory);
+            soundStreams.Add(memory);
 
             var waveProvider = new HcaWaveProvider(memory, new DecodeParams {
                 Key1 = CgssCipher.Key1,
@@ -124,7 +137,17 @@ namespace DereTore.Applications.ScoreEditor {
             return @out;
         }
 
-        private SoundManager() {
+        private AudioOut CreateOutput(string fileName, out int index) {
+            using (var fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+                return CreateOutput(fs, fileName, out index);
+            }
+        }
+
+        private AudioOut CreateOutputForceUsingCache(string fileName, out int index) {
+            return CreateOutput(null, fileName, out index);
+        }
+
+        private SfxManager() {
             _soundStreams = new List<MemoryStream>();
             _fileNames = new List<string>();
             _hcaWaveProviders = new List<HcaWaveProvider>();
@@ -138,7 +161,7 @@ namespace DereTore.Applications.ScoreEditor {
         private readonly List<AudioOut> _audioOuts;
         private readonly List<bool> _playingList;
 
-        private static SoundManager _instance;
+        private static SfxManager _instance;
         private static readonly object SyncObject;
 
     }
