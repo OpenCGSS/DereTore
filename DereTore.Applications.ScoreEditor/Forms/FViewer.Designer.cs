@@ -56,6 +56,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.tsbScoreSaveAs = new System.Windows.Forms.ToolStripButton();
             this.editor = new DereTore.Applications.ScoreEditor.Controls.ScoreEditorControl();
             this.cboSoundEffect = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.progress)).BeginInit();
             this.toolStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.editor)).BeginInit();
@@ -116,7 +117,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             // lblSong
             // 
             this.lblSong.AutoSize = true;
-            this.lblSong.Location = new System.Drawing.Point(521, 23);
+            this.lblSong.Location = new System.Drawing.Point(491, 23);
             this.lblSong.Name = "lblSong";
             this.lblSong.Size = new System.Drawing.Size(35, 12);
             this.lblSong.TabIndex = 7;
@@ -134,7 +135,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             "Master+"});
             this.cboDifficulty.Location = new System.Drawing.Point(389, 20);
             this.cboDifficulty.Name = "cboDifficulty";
-            this.cboDifficulty.Size = new System.Drawing.Size(126, 20);
+            this.cboDifficulty.Size = new System.Drawing.Size(96, 20);
             this.cboDifficulty.TabIndex = 9;
             // 
             // lblTime
@@ -352,11 +353,21 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.cboSoundEffect.Size = new System.Drawing.Size(82, 20);
             this.cboSoundEffect.TabIndex = 26;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(687, 23);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 12);
+            this.label1.TabIndex = 27;
+            this.label1.Text = "SFX:";
+            // 
             // FViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1026, 534);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.cboSoundEffect);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.btnScoreUnload);
@@ -422,6 +433,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private System.Windows.Forms.ToolStripButton tsbScoreSaveAs;
         private System.Windows.Forms.ToolStripButton tsbRetimingToNow;
         private System.Windows.Forms.ComboBox cboSoundEffect;
+        private System.Windows.Forms.Label label1;
     }
 }
 
