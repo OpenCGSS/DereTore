@@ -276,7 +276,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var barStartPen = new Pen(Brushes.Red, GridStrokeThickness);
             var barSignaturePen = new Pen(stressStroke, GridStrokeThickness);
             var barNormalPen = new Pen(stroke, GridStrokeThickness);
-            for (var i = 0; i < rowCount; ++i) {
+            for (var i = 0; i <= rowCount; ++i) {
                 var y = height * i / rowCount;
                 var pen = i % signature == 0 ? (i == 0 ? barStartPen : barSignaturePen) : barNormalPen;
                 var startPoint = new Point(0 + xOffset, y);

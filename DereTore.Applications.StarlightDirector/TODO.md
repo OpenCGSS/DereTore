@@ -3,11 +3,11 @@
 - [ ] More detailed division in beats (24/beat)
 - [ ] Variant BPM
 - [ ] Zooming
-- [ ] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
+- [x] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
 - [ ] Copy and paste
 - [ ] Live preview
 - [ ] Edge scrolling (for inter-measure hold notes)
-- [ ] Changeable sound effect in preview
+- [x] Changeable sound effect in preview
 - [ ] Auto handling sync notes
 - [ ] Globalization
 - [ ] Score image generation

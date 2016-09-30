@@ -95,18 +95,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             } else {
                 scoreNote.IsSelected = true;
             }
-            var hitPosition = e.GetPosition(BarLayer);
-            var hitResult = VisualTreeHelper.HitTest(BarLayer, hitPosition);
-            var visual = hitResult.VisualHit as FrameworkElement;
-            ScoreBar hitScoreBar = null;
-            while (visual != null) {
-                if (visual is ScoreBar) {
-                    hitScoreBar = visual as ScoreBar;
-                    break;
-                }
-                visual = visual.Parent as FrameworkElement;
-            }
-            SelectScoreBar(hitScoreBar);
             if (scoreNote.IsSelected && EditMode != EditMode.Select && EditMode != EditMode.Clear) {
                 switch (EditMode) {
                     case EditMode.Sync:

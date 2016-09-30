@@ -175,6 +175,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
+        public ScoreBar GetScoreBarAtPosition(Point position, UIElement sourceElement) {
+            var hitPosition = sourceElement.TranslatePoint(position, BarLayer);
+            var hitResult = VisualTreeHelper.HitTest(BarLayer, hitPosition);
+            var visual = hitResult.VisualHit as FrameworkElement;
+            ScoreBar hitScoreBar = null;
+            while (visual != null) {
+                if (visual is ScoreBar) {
+                    hitScoreBar = visual as ScoreBar;
+                    break;
+                }
+                visual = visual.Parent as FrameworkElement;
+            }
+            return hitScoreBar;
+        }
+
         public void SetGlobalBpm(double bpm) {
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.SetGlobalBpm(bpm);
@@ -183,7 +198,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public double ScrollOffset {
             get { return (double)GetValue(ScrollOffsetProperty); }
-            set { SetValue(ScrollOffsetProperty, value); }
+            set {
+                value = -MathHelper.Clamp(-value, MinimumScrollOffset, MaximumScrollOffset);
+                SetValue(ScrollOffsetProperty, value);
+            }
         }
 
         public double MinimumScrollOffset {

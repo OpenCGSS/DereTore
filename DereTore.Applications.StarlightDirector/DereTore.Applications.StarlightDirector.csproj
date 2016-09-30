@@ -261,6 +261,7 @@
     </Compile>
     <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Background.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Misc.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.Bar.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.cs" />
