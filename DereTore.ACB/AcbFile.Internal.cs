@@ -5,13 +5,11 @@ using System.IO;
 namespace DereTore.ACB {
     public partial class AcbFile {
 
-        private AcbFile(Stream stream, long offset, long size, string acbFileName, bool disposeStream)
-           : this(stream, offset, size, acbFileName, false, disposeStream) {
-        }
-
-        private AcbFile(Stream stream, long offset, long size, string acbFileName, bool includeCueIdInFileName, bool disposeStream)
-            : base(stream, offset, size, acbFileName, disposeStream) {
-            _includeCueIdInFileName = includeCueIdInFileName;
+        internal override void Initialize() {
+            base.Initialize();
+            InitializeAcbTables();
+            InitializeCueNameToWaveformTable();
+            InitializeAwbArchives();
         }
 
         protected override void Dispose(bool disposing) {
@@ -19,7 +17,17 @@ namespace DereTore.ACB {
             _externalAwb?.Dispose();
             base.Dispose(disposing);
         }
-        
+
+        private AcbFile(Stream stream, long offset, long size, string acbFileName, bool disposeStream)
+           : this(stream, offset, size, acbFileName, false, disposeStream) {
+        }
+
+        private AcbFile(Stream stream, long offset, long size, string acbFileName, bool includeCueIdInFileName, bool disposeStream)
+            : base(stream, offset, size, acbFileName, disposeStream) {
+            _includeCueIdInFileName = includeCueIdInFileName;
+            Initialize();
+        }
+
         private void InitializeAcbTables() {
             var stream = Stream;
             long refItemOffset = 0, refItemSize = 0, refCorrection = 0;

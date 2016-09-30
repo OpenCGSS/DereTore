@@ -19,7 +19,6 @@ namespace DereTore.ACB.Test {
             }
 
             var acb = AcbFile.FromFile(fileName);
-            acb.Initialize();
             var fileNames = acb.GetFileNames();
             foreach (var s in fileNames) {
                 var extractName = Path.Combine(fullDirPath, s);

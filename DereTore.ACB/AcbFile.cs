@@ -39,15 +39,9 @@ namespace DereTore.ACB {
         }
 
         public static AcbFile FromFile(string fileName) {
-            var fs = File.Open(fileName, FileMode.Open, FileAccess.Read);
-            return FromStream(fs, true);
-        }
-
-        public override void Initialize() {
-            base.Initialize();
-            InitializeAcbTables();
-            InitializeCueNameToWaveformTable();
-            InitializeAwbArchives();
+            using (var fs = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
+                return FromStream(fs, false);
+            }
         }
 
         public Dictionary<string, UtfTable> Tables => _tables;
