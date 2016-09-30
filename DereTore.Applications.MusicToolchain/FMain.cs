@@ -271,11 +271,19 @@ namespace DereTore.Applications.MusicToolchain {
                 LogError("Please enter the song name.");
                 return false;
             }
-            foreach (var c in txtSongName.Text) {
-                if (c > 127) {
-                    LogError("Unsupported song name. Please make sure the name consists only ASCII characters.");
-                    return false;
-                }
+            var songName = txtSongName.Text;
+            if (songName.Any(c => c > 127)) {
+                LogError("Unsupported song name. Please make sure the name consists only ASCII characters.");
+                return false;
+            }
+            if (songName.Any(c => c < '0' || c > '9')) {
+                LogError("Song name must be 'song_####' where '#' is a digit.");
+                return false;
+            }
+            if (songName.Length != 4) {
+                LogError("Song name must constist of 4 digits.");
+                return false;
+
             }
             var keyRegex = new Regex(@"^[0-9A-Fa-f]{8}$", RegexOptions.CultureInvariant);
             if (txtKey1.TextLength > 0) {
@@ -296,7 +304,7 @@ namespace DereTore.Applications.MusicToolchain {
         private void InitializeControls() {
             txtKey1.Text = CgssKey1.ToString("x8");
             txtKey2.Text = CgssKey2.ToString("x8");
-            txtSongName.Text = DefaultSongName;
+            txtSongName.Text = DefaultSongNumber.ToString();
             txtSourceWaveFile.AllowDrop = true;
             openFileDialog.CheckFileExists = true;
             openFileDialog.CheckPathExists = true;
@@ -348,7 +356,7 @@ namespace DereTore.Applications.MusicToolchain {
 
         private static readonly uint CgssKey1 = 0xF27E3B22;
         private static readonly uint CgssKey2 = 0x00003657;
-        private static readonly string DefaultSongName = "song_1001";
+        private static readonly int DefaultSongNumber = 1001;
         private static readonly char[] CommandlineEscapeChars = { ' ', '&', '%', '#', '@', '!', ',', '~', '+', '=', '(', ')' };
         private Action<string> _logDelegate;
         private Action _enableControlsDelegate;

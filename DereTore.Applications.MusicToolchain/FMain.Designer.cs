@@ -29,7 +29,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtKey1 = new System.Windows.Forms.TextBox();
             this.txtKey2 = new System.Windows.Forms.TextBox();
-            this.txtSongName = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtLog = new System.Windows.Forms.TextBox();
             this.btnGo = new System.Windows.Forms.Button();
@@ -39,6 +38,8 @@
             this.btnBrowseSaveLocation = new System.Windows.Forms.Button();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.chkAlsoCreateLz4 = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.txtSongName = new System.Windows.Forms.MaskedTextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -88,13 +89,6 @@
             this.txtKey2.Name = "txtKey2";
             this.txtKey2.Size = new System.Drawing.Size(133, 21);
             this.txtKey2.TabIndex = 5;
-            // 
-            // txtSongName
-            // 
-            this.txtSongName.Location = new System.Drawing.Point(146, 123);
-            this.txtSongName.Name = "txtSongName";
-            this.txtSongName.Size = new System.Drawing.Size(272, 21);
-            this.txtSongName.TabIndex = 6;
             // 
             // label3
             // 
@@ -152,18 +146,37 @@
             // chkAlsoCreateLz4
             // 
             this.chkAlsoCreateLz4.AutoSize = true;
-            this.chkAlsoCreateLz4.Location = new System.Drawing.Point(203, 217);
+            this.chkAlsoCreateLz4.Location = new System.Drawing.Point(197, 217);
             this.chkAlsoCreateLz4.Name = "chkAlsoCreateLz4";
-            this.chkAlsoCreateLz4.Size = new System.Drawing.Size(174, 16);
+            this.chkAlsoCreateLz4.Size = new System.Drawing.Size(180, 16);
             this.chkAlsoCreateLz4.TabIndex = 13;
-            this.chkAlsoCreateLz4.Text = "Also create a &LZ4 archive";
+            this.chkAlsoCreateLz4.Text = "Also create an &LZ4 archive";
             this.chkAlsoCreateLz4.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(144, 126);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(35, 12);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "song_";
+            // 
+            // txtSongName
+            // 
+            this.txtSongName.Location = new System.Drawing.Point(178, 123);
+            this.txtSongName.Mask = "9999";
+            this.txtSongName.Name = "txtSongName";
+            this.txtSongName.Size = new System.Drawing.Size(33, 21);
+            this.txtSongName.TabIndex = 15;
             // 
             // FMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(498, 392);
+            this.Controls.Add(this.txtSongName);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.chkAlsoCreateLz4);
             this.Controls.Add(this.btnBrowseSaveLocation);
             this.Controls.Add(this.label4);
@@ -171,7 +184,6 @@
             this.Controls.Add(this.btnGo);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.txtSongName);
             this.Controls.Add(this.txtKey2);
             this.Controls.Add(this.txtKey1);
             this.Controls.Add(this.label2);
@@ -196,7 +208,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtKey1;
         private System.Windows.Forms.TextBox txtKey2;
-        private System.Windows.Forms.TextBox txtSongName;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.Button btnGo;
@@ -206,6 +217,8 @@
         private System.Windows.Forms.Button btnBrowseSaveLocation;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.CheckBox chkAlsoCreateLz4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.MaskedTextBox txtSongName;
     }
 }
 
