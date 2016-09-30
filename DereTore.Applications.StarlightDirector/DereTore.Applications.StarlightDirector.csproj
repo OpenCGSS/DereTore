@@ -334,6 +334,7 @@
     <None Include="Resources\Testing\song_1001_gokuraku.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="TODO.md" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Cards\sagisawa_fumika_75.jpg" />
