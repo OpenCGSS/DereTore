@@ -16,7 +16,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollUpSmall_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollOffset += Editor.SmallChange;
+            Editor.ScrollUpSmall();
         }
 
         private void CmdBgScrollDownSmall_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -24,7 +24,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollDownSmall_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollOffset -= Editor.SmallChange;
+            Editor.ScrollDownSmall();
         }
 
         private void CmdBgScrollUpLarge_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -32,7 +32,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollUpLarge_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollOffset += Editor.LargeChange;
+            Editor.ScrollUpLarge();
         }
 
         private void CmdBgScrollDownLarge_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -40,7 +40,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollDownLarge_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollOffset -= Editor.LargeChange;
+            Editor.ScrollDownLarge();
         }
 
         private void CmdBgScrollToStart_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -48,7 +48,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollToStart_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollOffset = -Editor.MinimumScrollOffset;
+            Editor.ScrollToStart();
         }
 
         private void CmdBgScrollToEnd_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -56,7 +56,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollToEnd_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollOffset = -Editor.MaximumScrollOffset;
+            Editor.ScrollToEnd();
         }
 
     }

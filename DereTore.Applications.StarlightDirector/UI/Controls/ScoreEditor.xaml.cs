@@ -58,16 +58,20 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void ScoreEditor_OnMouseWheel(object sender, MouseWheelEventArgs e) {
-            double change;
-            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) {
-                change = LargeChange;
+            var large = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
+            var up = e.Delta > 0;
+            if (large) {
+                if (up) {
+                    ScrollUpLarge();
+                } else {
+                    ScrollDownLarge();
+                }
             } else {
-                change = SmallChange;
-            }
-            var targetOffset = ScrollOffset + change * (e.Delta < 0 ? -1 : 1);
-            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
-            if (!targetOffset.Equals(ScrollOffset)) {
-                ScrollOffset = targetOffset;
+                if (up) {
+                    ScrollUpSmall();
+                } else {
+                    ScrollDownSmall();
+                }
             }
         }
 

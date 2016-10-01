@@ -196,6 +196,54 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
+        public void ScrollUpSmall() {
+            var targetOffset = ScrollOffset + SmallChange;
+            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
+            if (!targetOffset.Equals(ScrollOffset)) {
+                ScrollOffset = targetOffset;
+            }
+        }
+
+        public void ScrollUpLarge() {
+            var targetOffset = ScrollOffset + LargeChange;
+            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
+            if (!targetOffset.Equals(ScrollOffset)) {
+                ScrollOffset = targetOffset;
+            }
+        }
+
+        public void ScrollDownSmall() {
+            var targetOffset = ScrollOffset - SmallChange;
+            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
+            if (!targetOffset.Equals(ScrollOffset)) {
+                ScrollOffset = targetOffset;
+            }
+        }
+
+        public void ScrollDownLarge() {
+            var targetOffset = ScrollOffset - LargeChange;
+            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
+            if (!targetOffset.Equals(ScrollOffset)) {
+                ScrollOffset = targetOffset;
+            }
+        }
+
+        public void ScrollToStart() {
+            var targetOffset = -MinimumScrollOffset;
+            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
+            if (!targetOffset.Equals(ScrollOffset)) {
+                ScrollOffset = targetOffset;
+            }
+        }
+
+        public void ScrollToEnd() {
+            var targetOffset = -MaximumScrollOffset;
+            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
+            if (!targetOffset.Equals(ScrollOffset)) {
+                ScrollOffset = targetOffset;
+            }
+        }
+
         public double ScrollOffset {
             get { return (double)GetValue(ScrollOffsetProperty); }
             set {
