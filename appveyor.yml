@@ -7,7 +7,7 @@ branches:
 skip_tags: true
 image: Visual Studio 2015
 platform:
-  - Any CPU
+  - AnyCPU
   - x86
   - x64
 configuration:
@@ -16,3 +16,5 @@ configuration:
 build:
   parallel: true
   project: DereTore.sln
+environment:
+  EnableNuGetPackageRestore: true
