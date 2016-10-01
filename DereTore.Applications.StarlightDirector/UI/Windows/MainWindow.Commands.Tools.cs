@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Components;
+using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 using Microsoft.Win32;
 
@@ -81,13 +82,25 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             var result = openDialog.ShowDialog();
             if (result ?? false) {
                 var inputFileName = openDialog.FileName;
+                var projectVersion = ProjectIO.CheckProjectFileVersion(inputFileName);
+                string prompt;
+                switch (projectVersion) {
+                    case ProjectVersion.Unknown:
+                        prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ProjectVersionInvalidPromptTemplate), inputFileName);
+                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        return;
+                    case ProjectVersion.V0_2:
+                        prompt = Application.Current.FindResource<string>(App.ResourceKeys.ProjectVersionUpToDatePrompt);
+                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                }
                 var fileInfo = new FileInfo(inputFileName);
                 var rawFileName = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
                 rawFileName = rawFileName + "-" + Entities.Project.CurrentVersion + fileInfo.Extension;
                 var outputFileName = Path.Combine(fileInfo.DirectoryName ?? string.Empty, rawFileName);
                 var project = ProjectIO.LoadFromV01(inputFileName);
                 ProjectIO.Save(project, outputFileName, true);
-                var prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ConvertSaveFormatCompletePromptTemplate), inputFileName, outputFileName);
+                prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ConvertSaveFormatCompletePromptTemplate), inputFileName, outputFileName);
                 MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }

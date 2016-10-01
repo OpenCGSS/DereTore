@@ -138,7 +138,7 @@
                         <fluent:MenuItem Header="_Current Score to CSV" Command="{x:Static local:MainWindow.CmdToolsExportScoreToCsv}"/>
                     </fluent:DropDownButton>
                     <fluent:DropDownButton Header="Utilities" LargeIcon="{StaticResource RibbonIconUtilities}">
-                        <fluent:MenuItem Header="_Convert Save Format From v0.1" Command="{x:Static local:MainWindow.CmdToolsUtilitiesConvertSaveFormatV01}"/>
+                        <fluent:MenuItem Header="_Convert Save Format from v0.1" Command="{x:Static local:MainWindow.CmdToolsUtilitiesConvertSaveFormatV01}"/>
                     </fluent:DropDownButton>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>

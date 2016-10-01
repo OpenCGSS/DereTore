@@ -212,6 +212,7 @@
     <Compile Include="Entities\NoteType.cs" />
     <Compile Include="Entities\Party.cs" />
     <Compile Include="Entities\Project.cs" />
+    <Compile Include="Entities\ProjectVersion.cs" />
     <Compile Include="Entities\Score.cs" />
     <Compile Include="Entities\ScoreSettings.cs" />
     <Compile Include="Entities\Serialization\ScoreCsvMap.cs" />
@@ -229,6 +230,8 @@
     <Compile Include="UI\Controls\LineLayer.xaml.cs">
       <DependentUpon>LineLayer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\ScoreBar.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
     <Compile Include="UI\EditMode.cs" />
     <Compile Include="UI\Controls\ScoreBar.xaml.cs">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace DereTore {
@@ -80,6 +81,15 @@ namespace DereTore {
             data.CopyTo(buffer, 0);
             buffer[buffer.Length - 1] = toAppend;
             return buffer;
+        }
+
+        public static int IndexOf<T>(this T[] array, T item) {
+            for (var i = 0; i < array.Length; ++i) {
+                if (EqualityComparer<T>.Default.Equals(array[i], item)) {
+                    return i;
+                }
+            }
+            return -1;
         }
 
     }

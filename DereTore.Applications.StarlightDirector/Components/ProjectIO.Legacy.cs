@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SQLite;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,37 @@ using Newtonsoft.Json.Linq;
 
 namespace DereTore.Applications.StarlightDirector.Components {
     partial class ProjectIO {
+
+        internal static ProjectVersion CheckProjectFileVersion(string fileName) {
+            try {
+                using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
+                    var buffer = new byte[128];
+                    fileStream.Read(buffer, 0, buffer.Length);
+                    var separatorIndex = buffer.IndexOf((byte)'\n');
+                    if (separatorIndex >= 0) {
+                        if (separatorIndex > 0 && buffer[separatorIndex - 1] == '\r') {
+                            --separatorIndex;
+                        }
+                        var stringBuffer = buffer.Take(separatorIndex).ToArray();
+                        var versionString = Encoding.UTF8.GetString(stringBuffer);
+                        const string standardVersionString = "// DereTore Composer Project, version 0.1";
+                        if (versionString == standardVersionString) {
+                            return ProjectVersion.V0_1;
+                        }
+                    }
+                }
+            } catch (Exception) {
+            }
+            try {
+                using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
+                    connection.Open();
+                    connection.Close();
+                }
+                return ProjectVersion.V0_2;
+            } catch (Exception) {
+            }
+            return ProjectVersion.Unknown;
+        }
 
         internal static Project LoadFromV01(string fileInput) {
             Project project;

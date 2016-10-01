@@ -47,6 +47,9 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string InvalidHoldCreationPrompt;
         public readonly string ExportToCsvCompletePromptTemplate;
         public readonly string ConvertSaveFormatCompletePromptTemplate;
+        public readonly string ProjectUpgradeNeededPromptTemplate;
+        public readonly string ProjectVersionInvalidPromptTemplate;
+        public readonly string ProjectVersionUpToDatePrompt;
 
         public readonly string SummaryTotalNotes;
         public readonly string SummaryTotalBars;
