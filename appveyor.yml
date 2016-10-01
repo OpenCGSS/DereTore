@@ -18,3 +18,5 @@ build:
   project: DereTore.sln
 environment:
   EnableNuGetPackageRestore: true
+before_build:
+  nuget restore
