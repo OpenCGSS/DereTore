@@ -86,6 +86,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             if (Bars == null) {
                 return;
             }
+            Project = project;
             foreach (var bar in Bars) {
                 if (bar.Notes != null) {
                     foreach (var note in bar.Notes) {
@@ -109,7 +110,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     note.HoldTarget = FindNoteByID(note.HoldTargetID);
                 }
             }
-            Project = project;
         }
 
         internal CompiledScore Compile() {

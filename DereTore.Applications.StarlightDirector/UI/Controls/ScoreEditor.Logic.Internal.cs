@@ -100,9 +100,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (ScoreBars.Count == 0) {
                 return;
             }
+            var currentY = ScrollOffset;
             foreach (var scoreBar in ScoreBars) {
                 Canvas.SetLeft(scoreBar, barLayerWidth * TrackCenterXPositions[0] - scoreBar.TextColumnWidth - scoreBar.SpaceColumnWidth);
-                Canvas.SetTop(scoreBar, ScrollOffset + scoreBar.Bar.Index * BarHeight);
+                Canvas.SetTop(scoreBar, currentY);
+                currentY += scoreBar.Height;
             }
         }
 
@@ -112,11 +114,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             var scrollOffset = ScrollOffset;
             var noteLayerWidth = NoteLayer.ActualWidth;
+            var barHeight = ScoreBars[0].Height;
             foreach (var scoreNote in ScoreNotes) {
                 var note = scoreNote.Note;
                 var bar = note.Bar;
-                var baseY = scrollOffset + bar.Index * BarHeight;
-                var extraY = BarHeight * note.PositionInGrid / bar.GetTotalGridCount();
+                var baseY = scrollOffset + bar.Index * barHeight;
+                var extraY = barHeight * note.PositionInGrid / bar.GetTotalGridCount();
                 scoreNote.X = noteLayerWidth * TrackCenterXPositions[(int)note.FinishPosition - 1];
                 scoreNote.Y = baseY + extraY;
             }
@@ -170,7 +173,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             for (var i = 0; i < 5; ++i) {
                 var image = Application.Current.FindResource<ImageSource>($"CardAvatar{i + 1}");
                 var avatar = new ScoreNote();
-                avatar.Radius = NoteRadius;
                 avatar.Image = image;
                 avatars[i] = avatar;
                 AvatarLayer.Children.Add(avatar);
@@ -236,10 +238,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (scoreNote != null) {
                 return scoreNote;
             }
-            var baseY = ScrollOffset + bar.Index * BarHeight;
-            var extraY = BarHeight * row / bar.GetTotalGridCount();
+            var barHeight = ScoreBars[0].Height;
+            var baseY = ScrollOffset + bar.Index * barHeight;
+            var extraY = barHeight * row / bar.GetTotalGridCount();
             scoreNote = new ScoreNote();
-            scoreNote.Radius = NoteRadius;
             Note note;
             if (dataTemplate != null) {
                 note = dataTemplate;
@@ -287,7 +289,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             var scoreBar = new ScoreBar();
             scoreBar.Bar = bar;
-            scoreBar.Height = BarHeight;
+            if (ScoreBars.Count == 0) {
+                scoreBar.Height = ScoreBar.DefaultHeight;
+            } else {
+                scoreBar.Height = ScoreBars[0].Height;
+            }
             scoreBar.ScoreBarHitTest += ScoreBar_ScoreBarHitTest;
             scoreBar.MouseDoubleClick += ScoreBar_MouseDoubleClick;
             scoreBar.MouseDown += ScoreBar_MouseDown;
@@ -366,7 +372,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void UpdateMaximumScrollOffset() {
-            MaximumScrollOffset = BarHeight * ScoreBars.Count;
+            var scoreBars = ScoreBars;
+            if (scoreBars.Count == 0) {
+                MaximumScrollOffset = 0;
+            } else {
+                MaximumScrollOffset = scoreBars[0].Height * ScoreBars.Count;
+            }
         }
 
         private void TrimScoreNotes(ScoreBar willBeDeleted, bool modifiesModel) {
@@ -393,9 +404,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         //private static readonly double BaseLineYPosition = 1d / 6;
         private static readonly double BaseLineYPosition = 0.1;
         private static readonly double WorkingAreaPadding = 2;
-        private static readonly double BarHeight = 550;
-        private static readonly double NoteDiameter = 30;
-        private static readonly double NoteRadius = NoteDiameter / 2;
         private static readonly double FutureTimeWindow = 1;
         private static readonly double PastTimeWindow = 0.2;
         // Then we know the bottom is <AvatarCenterY + (PastWindow / FutureWindow) * (AvatarCenterY - Ceiling))>.

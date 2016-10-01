@@ -1,8 +1,8 @@
 ﻿# TODO List
 
-- [ ] More detailed division in beats (24/beat)
+- [x] More detailed division in beats (24/beat)
 - [ ] Variant BPM
-- [ ] Zooming
+- [x] Zooming
 - [x] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
 - [ ] Copy and paste
 - [ ] Live preview

@@ -155,7 +155,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public void ScrollToScoreBar(ScoreBar scoreBar) {
-            var y = Math.Abs(MinimumScrollOffset) + scoreBar.Bar.Index * BarHeight;
+            var barHeight = ScoreBars[0].Height;
+            var y = Math.Abs(MinimumScrollOffset) + scoreBar.Bar.Index * barHeight;
             ScrollOffset = y;
         }
 

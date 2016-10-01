@@ -231,6 +231,7 @@
       <DependentUpon>LineLayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\ScoreBar.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScoreBar.Placeholder.cs" />
     <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
     <Compile Include="UI\EditMode.cs" />

@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities"
              mc:Ignorable="d"
-             d:DesignHeight="50" d:DesignWidth="50"
+             d:DesignHeight="30" d:DesignWidth="30"
              Name="Me"
              SizeChanged="ScoreNote_OnSizeChanged">
     <UserControl.Resources>
@@ -30,7 +30,7 @@
             <Grid.Clip>
                 <EllipseGeometry Center="23 23" RadiusX="23" RadiusY="23" />
             </Grid.Clip>
-            <Image Name="ImageContent" Stretch="Uniform" RenderTransformOrigin="0.5 0.5">
+            <Image Name="ImageContent" Stretch="Uniform"  RenderTransformOrigin="0.5 0.5">
                 <Image.RenderTransform>
                     <!-- Notes will be upside down in ScoreEditor, so we should flip the image again. -->
                     <ScaleTransform ScaleY="-1" />

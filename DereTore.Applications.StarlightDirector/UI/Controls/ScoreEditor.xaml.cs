@@ -58,6 +58,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void ScoreEditor_OnMouseWheel(object sender, MouseWheelEventArgs e) {
+            // Zooming
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
+                foreach (var scoreBar in ScoreBars) {
+                    if (e.Delta > 0) {
+                        scoreBar.ZoomIn();
+                    } else {
+                        scoreBar.ZoomOut();
+                    }
+                }
+                UpdateMaximumScrollOffset();
+                RecalcEditorLayout();
+                return;
+            }
+
+            // Normal scrolling
             var large = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
             var up = e.Delta > 0;
             if (large) {
