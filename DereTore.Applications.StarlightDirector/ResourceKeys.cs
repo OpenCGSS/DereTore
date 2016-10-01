@@ -32,17 +32,21 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string CardAvatar5;
 
         public readonly string ProjectFileFilter;
+        public readonly string ProjectFileV01Filter;
         public readonly string CsvFileFilter;
         public readonly string WaveFileFilter;
         public readonly string AcbFileFilter;
         public readonly string BdbFileFilter;
+
         public readonly string ProjectChangedPrompt;
-        public readonly string PreviewNotImplemented;
-        public readonly string ConfirmDeleteBar;
-        public readonly string NoteRelationAlreadyExists;
-        public readonly string InvalidSyncCreation;
-        public readonly string InvalidFlickCreation;
-        public readonly string InvalidHoldCreation;
+        public readonly string PreviewNotImplementedPrompt;
+        public readonly string ConfirmDeleteBarPrompt;
+        public readonly string NoteRelationAlreadyExistsPrompt;
+        public readonly string InvalidSyncCreationPrompt;
+        public readonly string InvalidFlickCreationPrompt;
+        public readonly string InvalidHoldCreationPrompt;
+        public readonly string ExportToCsvCompletePromptTemplate;
+        public readonly string ConvertSaveFormatCompletePromptTemplate;
 
         public readonly string SummaryTotalNotes;
         public readonly string SummaryTotalBars;

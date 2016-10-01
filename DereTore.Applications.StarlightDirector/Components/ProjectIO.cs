@@ -9,7 +9,7 @@ using DereTore.Applications.StarlightDirector.Entities;
 using Newtonsoft.Json;
 
 namespace DereTore.Applications.StarlightDirector.Components {
-    public static class ProjectIO {
+    public static partial class ProjectIO {
 
         public static void Save(Project project) {
             Save(project, project.SaveFileName);
@@ -119,7 +119,6 @@ namespace DereTore.Applications.StarlightDirector.Components {
                     }
                     score.ResolveReferences(project);
                     score.Difficulty = difficulty;
-                    score.Project = project;
                     project.Scores.Add(difficulty, score);
                 }
 

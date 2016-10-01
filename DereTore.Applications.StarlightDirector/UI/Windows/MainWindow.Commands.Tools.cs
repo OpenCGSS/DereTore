@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Components;
@@ -13,6 +14,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdToolsImportMusicArchive = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsImportScoreDatabase = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsExportScoreToCsv = CommandHelper.RegisterCommand();
+        public static readonly ICommand CmdToolsUtilitiesConvertSaveFormatV01 = CommandHelper.RegisterCommand();
 
         private void CmdToolsBuildMusicArchive_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.Project?.HasMusic ?? false;
@@ -55,7 +57,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsExportScoreToCsv_Executed(object sender, ExecutedRoutedEventArgs e) {
-            //var difficulty = (Difficulty)(DifficultySelector.SelectedIndex + 1);
             var saveDialog = new SaveFileDialog();
             saveDialog.OverwritePrompt = true;
             saveDialog.ValidateNames = true;
@@ -63,6 +64,31 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             var result = saveDialog.ShowDialog();
             if (result ?? false) {
                 Project.ExportScoreToCsv(Project.Difficulty, saveDialog.FileName);
+                var prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ExportToCsvCompletePromptTemplate), saveDialog.FileName);
+                MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void CmdToolsUtilitiesConvertSaveFormatV01_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = true;
+        }
+
+        private void CmdToolsUtilitiesConvertSaveFormatV01_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var openDialog = new OpenFileDialog();
+            openDialog.CheckPathExists = true;
+            openDialog.ValidateNames = true;
+            openDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.ProjectFileV01Filter);
+            var result = openDialog.ShowDialog();
+            if (result ?? false) {
+                var inputFileName = openDialog.FileName;
+                var fileInfo = new FileInfo(inputFileName);
+                var rawFileName = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
+                rawFileName = rawFileName + "-" + Entities.Project.CurrentVersion + fileInfo.Extension;
+                var outputFileName = Path.Combine(fileInfo.DirectoryName ?? string.Empty, rawFileName);
+                var project = ProjectIO.LoadFromV01(inputFileName);
+                ProjectIO.Save(project, outputFileName, true);
+                var prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ConvertSaveFormatCompletePromptTemplate), inputFileName, outputFileName);
+                MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 

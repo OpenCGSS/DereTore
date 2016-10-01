@@ -195,6 +195,7 @@
     <Compile Include="Components\NoteRelationCollection.cs" />
     <Compile Include="Components\ObservableDictionary.cs" />
     <Compile Include="Components\ProjectIO.cs" />
+    <Compile Include="Components\ProjectIO.Legacy.cs" />
     <Compile Include="Components\ThreadingTimer.cs" />
     <Compile Include="ComposerUtilities.cs" />
     <Compile Include="Entities\Bar.cs" />
@@ -376,6 +377,7 @@
     <Resource Include="Resources\Icons\FilePreferences.png" />
     <Resource Include="Resources\Icons\BarAppendMany.png" />
     <Resource Include="Resources\Icons\EditSelectAll.png" />
+    <Resource Include="Resources\Icons\Utilities.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

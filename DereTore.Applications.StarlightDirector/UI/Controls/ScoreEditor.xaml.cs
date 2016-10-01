@@ -150,13 +150,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     Project.IsChanged = true;
                 } else if (!DraggingStartNote.Equals(DraggingEndNote)) {
                     if (LineLayer.NoteRelations.ContainsPair(start, end)) {
-                        MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.NoteRelationAlreadyExists), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.NoteRelationAlreadyExistsPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
                     }
                     switch (mode) {
                         case EditMode.Sync:
                             if (ns.Bar != ne.Bar || ns.PositionInGrid != ne.PositionInGrid) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidSyncCreation), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidSyncCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
                             ns.SyncTarget = ne;
@@ -167,7 +167,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                         case EditMode.Flick:
                             if ((ns.Bar == ne.Bar && ns.PositionInGrid == ne.PositionInGrid) ||
                                 ns.FinishPosition == ne.FinishPosition || ns.StartPosition == ne.StartPosition) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidFlickCreation), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidFlickCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
                             var first = ns < ne ? ns : ne;
@@ -179,7 +179,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             break;
                         case EditMode.Hold:
                             if (ns.FinishPosition != ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreation), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
                             var anyObstacles = ScoreNotes.Any(scoreNote => {
@@ -204,7 +204,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                                 }
                             });
                             if (anyObstacles) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreation), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
                             ns.HoldTarget = ne;

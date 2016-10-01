@@ -76,7 +76,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty DifficultyProperty = DependencyProperty.Register(nameof(Difficulty), typeof(Difficulty), typeof(Project),
             new PropertyMetadata(Difficulty.Master, OnDifficultyChanged));
 
-        private static readonly string CurrentVersion = "0.2";
+        public static string CurrentVersion => "0.2";
 
         private static void OnDifficultyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var project = obj as Project;

@@ -26,4 +26,5 @@
     <BitmapImage x:Key="RibbonIconBuildScoreDatabase" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/BuildScoreDatabase.png"/>
     <BitmapImage x:Key="RibbonIconImport" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Import.png"/>
     <BitmapImage x:Key="RibbonIconExport" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Export.png"/>
+    <BitmapImage x:Key="RibbonIconUtilities" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Utilities.png"/>
 </ResourceDictionary>

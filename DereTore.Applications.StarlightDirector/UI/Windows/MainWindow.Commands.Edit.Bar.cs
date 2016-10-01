@@ -63,7 +63,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdEditBarDelete_Executed(object sender, ExecutedRoutedEventArgs e) {
             var scoreBar = Editor.GetSelectedScoreBar();
             if (scoreBar != null) {
-                var result = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.ConfirmDeleteBar), App.Title, MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                var result = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.ConfirmDeleteBarPrompt), App.Title, MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
                 switch (result) {
                     case MessageBoxResult.Yes:
                         Editor.RemoveScoreBar(scoreBar);

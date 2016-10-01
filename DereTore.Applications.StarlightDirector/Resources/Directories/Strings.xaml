@@ -2,18 +2,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="ProjectFileFilter">Starlight Director Project (*.sldproj)|*.sldproj</system:String>
+    <system:String x:Key="ProjectFileV01Filter">Starlight Director Project v0.1 (*.sldproj)|*.sldproj</system:String>
     <system:String x:Key="CsvFileFilter">Comma Separated Values (*.csv)|*.csv</system:String>
     <system:String x:Key="WaveFileFilter">Wave Audio (*.wav)|*.wav</system:String>
     <system:String x:Key="AcbFileFilter">CRI ACB Archive (*.acb)|*.acb</system:String>
     <system:String x:Key="BdbFileFilter">Score Database (*.bdb)|*.bdb</system:String>
+
     <system:String x:Key="ProjectChangedPrompt">The project is changed. Do you want to save it first?</system:String>
-    <system:String x:Key="PreviewNotImplemented">The Preview function is not implemented yet. You can export the score to a CSV file and use ScoreEditor to view it.</system:String>
-    <system:String x:Key="ConfirmDeleteBar">You are going to delete a measure. This operation cannot be reverted. Proceed?</system:String>
-    <system:String x:Key="NoteRelationAlreadyExists">There is already a relation between these notes. Please clear it before adding new relations.</system:String>
-    <system:String x:Key="InvalidSyncCreation">Sync notes should be on the same row.</system:String>
-    <system:String x:Key="InvalidFlickCreation">Flick notes should be on different rows and different columns (start AND finish).</system:String>
-    <system:String x:Key="InvalidHoldCreation">Hold note should be on the same column. One note can only have one hold target. There should be no other notes between two hold notes.</system:String>
-    
+    <system:String x:Key="PreviewNotImplementedPrompt">The Preview function is not implemented yet. You can export the score to a CSV file and use ScoreEditor to view it.</system:String>
+    <system:String x:Key="ConfirmDeleteBarPrompt">You are going to delete a measure. This operation cannot be reverted. Proceed?</system:String>
+    <system:String x:Key="NoteRelationAlreadyExistsPrompt">There is already a relation between these notes. Please clear it before adding new relations.</system:String>
+    <system:String x:Key="InvalidSyncCreationPrompt">Sync notes should be on the same row.</system:String>
+    <system:String x:Key="InvalidFlickCreationPrompt">Flick notes should be on different rows and different columns (start AND finish).</system:String>
+    <system:String x:Key="InvalidHoldCreationPrompt">Hold note should be on the same column. One note can only have one hold target. There should be no other notes between two hold notes.</system:String>
+    <system:String x:Key="ExportToCsvCompletePromptTemplate">Score exported to CSV file '{0}'.</system:String>
+    <system:String x:Key="ConvertSaveFormatCompletePromptTemplate">Save file '{0}' converted to '{1}'.</system:String>
+
     <system:String x:Key="SummaryTotalNotes">Total Notes in Current Score</system:String>
     <system:String x:Key="SummaryTotalBars">Total Measures in Current Score</system:String>
     <system:String x:Key="SummaryMusicFile">Music File</system:String>
