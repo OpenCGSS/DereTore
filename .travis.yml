@@ -1,2 +1,3 @@
 language: csharp
 solution: DereTore.sln
+os: windows
