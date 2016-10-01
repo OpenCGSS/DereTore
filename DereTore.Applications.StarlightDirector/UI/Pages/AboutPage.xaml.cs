@@ -37,7 +37,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Pages {
             VersionText.Text = fileVersionAttribute?.Version;
         }
 
-        public static string VersionExtra => "Alpha";
+        public static string VersionPrerelease => "alpha";
+        public static string CodeName => "Uzuki";
 
     }
 }
