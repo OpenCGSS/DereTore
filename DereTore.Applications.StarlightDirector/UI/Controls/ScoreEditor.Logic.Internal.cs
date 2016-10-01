@@ -45,7 +45,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             UpdateMaximumScrollOffset();
             UpdateBarTexts();
-            RecalcEditorLayout();
+            var originalOffset = ScrollOffset;
+            ScrollOffset = 0;
+            if (originalOffset.Equals(ScrollOffset)) {
+                RecalcEditorLayout();
+            }
             Debug.Print("Done: ScoreEditor.ReloadScore().");
         }
 

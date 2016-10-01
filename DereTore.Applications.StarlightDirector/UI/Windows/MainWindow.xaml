@@ -120,8 +120,8 @@
                             <Run Text="{Binding ElementName=Editor, Path=Score.Difficulty, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type entities:Difficulty}, Mode=OneWay}"/>
                         </Bold>
                     </TextBlock>
-                    <fluent:TextBox Header="BPM:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Editor, Path=Score.Settings.GlobalBpm, Converter={StaticResource PositiveDoubleToStringConverter}}"/>
-                    <fluent:TextBox Header="Start Offset:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Editor, Path=Score.Settings.StartTimeOffset, Converter={StaticResource DoubleToStringConverter}}"/>
+                    <fluent:TextBox Header="BPM:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Editor, Path=Project.Settings.GlobalBpm, Converter={StaticResource PositiveDoubleToStringConverter}}"/>
+                    <fluent:TextBox Header="Start Offset:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Editor, Path=Project.Settings.StartTimeOffset, Converter={StaticResource DoubleToStringConverter}}"/>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
             <fluent:RibbonTabItem Header="Tools">

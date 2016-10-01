@@ -346,14 +346,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private static void OnScoreChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;
             Debug.Assert(editor != null, "editor != null");
-            var oldScore = (Score)e.OldValue;
             var newScore = (Score)e.NewValue;
-            if (oldScore != null) {
-                oldScore.GlobalSettingsChanged -= editor.OnScoreGlobalSettingsChanged;
-            }
-            if (newScore != null) {
-                newScore.GlobalSettingsChanged += editor.OnScoreGlobalSettingsChanged;
-            }
             editor.ReloadScore(newScore);
         }
 
@@ -362,9 +355,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             Debug.Assert(editor != null, "editor != null");
             var party = (Party)e.NewValue;
 
-            ScoreNote note;
             foreach (var child in editor.AvatarLayer.Children) {
-                note = child as ScoreNote;
+                var note = child as ScoreNote;
                 if (note != null) {
                     note.Party = party;
                 }
@@ -392,6 +384,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private static void OnProjectChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var editor = (ScoreEditor)obj;
+            var oldproject = (Project)e.OldValue;
+            var newProject = (Project)e.NewValue;
+            if (oldproject != null) {
+                oldproject.GlobalSettingsChanged -= editor.OnScoreGlobalSettingsChanged;
+            }
+            if (newProject != null) {
+                newProject.GlobalSettingsChanged += editor.OnScoreGlobalSettingsChanged;
+            }
             CommandManager.InvalidateRequerySuggested();
         }
 

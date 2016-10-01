@@ -8,19 +8,14 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace DereTore.Applications.StarlightDirector.Entities {
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy), MemberSerialization = MemberSerialization.OptIn)]
     public sealed class Score {
 
-        public event EventHandler<EventArgs> GlobalSettingsChanged;
-
+        [JsonProperty]
         public InternalList<Bar> Bars { get; }
 
-        public ScoreSettings Settings { get; set; }
-
-        [JsonIgnore]
         public Project Project { get; internal set; }
 
-        [JsonIgnore]
         public Difficulty Difficulty { get; internal set; }
 
         public Bar AddBar() {
@@ -84,13 +79,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Bars = new InternalList<Bar>();
             Project = project;
             Difficulty = difficulty;
-            Settings = ScoreSettings.CreateDefault();
             IDGenerators = new IDGenerators();
-            Settings.SettingChanged += OnGlobalSettingsChanged;
-        }
-
-        ~Score() {
-            Settings.SettingChanged -= OnGlobalSettingsChanged;
         }
 
         internal void ResolveReferences(Project project) {
@@ -121,7 +110,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 }
             }
             Project = project;
-            Settings.SettingChanged += OnGlobalSettingsChanged;
         }
 
         internal CompiledScore Compile() {
@@ -131,7 +119,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         internal void CompileTo(CompiledScore compiledScore) {
-            var settings = Settings;
+            var settings = Project.Settings;
             IDGenerators.ResetCompiled();
             IDGenerators.ResetOriginal();
             var compiledNotes = compiledScore.Notes;
@@ -225,11 +213,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 }
             }
             return null;
-        }
-
-        private void OnGlobalSettingsChanged(object sender, EventArgs e) {
-            Project.IsChanged = true;
-            GlobalSettingsChanged.Raise(sender, e);
         }
 
         private IDGenerators IDGenerators { get; }

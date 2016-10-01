@@ -68,7 +68,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             openDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.ProjectFileFilter);
             var dialogResult = openDialog.ShowDialog();
             if (dialogResult ?? false) {
-                var project = Project.Load(openDialog.FileName);
+                var project = ProjectIO.Load(openDialog.FileName);
                 Project = Editor.Project = Project.Current = project;
                 // Caution! The property is set to true on deserialization.
                 project.IsChanged = false;
@@ -89,7 +89,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                     throw new InvalidOperationException();
                 }
             } else {
-                project.Save();
+                ProjectIO.Save(project);
                 CmdFileSaveProject.RaiseCanExecuteChanged();
             }
         }
@@ -105,7 +105,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             saveDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.ProjectFileFilter);
             var result = saveDialog.ShowDialog();
             if (result ?? false) {
-                Project.Save(saveDialog.FileName);
+                ProjectIO.Save(Project, saveDialog.FileName, true);
                 CmdFileSaveProjectAs.RaiseCanExecuteChanged();
             }
         }

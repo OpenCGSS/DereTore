@@ -62,7 +62,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             saveDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.CsvFileFilter);
             var result = saveDialog.ShowDialog();
             if (result ?? false) {
-                Project.SaveScoreToCsv(Project.Difficulty, saveDialog.FileName);
+                Project.ExportScoreToCsv(Project.Difficulty, saveDialog.FileName);
             }
         }
 

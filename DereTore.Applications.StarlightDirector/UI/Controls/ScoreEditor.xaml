@@ -56,7 +56,7 @@
                     </Grid.RowDefinitions>
                     <Canvas Grid.Row="1" Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
                     <Canvas Grid.Row="1" Name="EditingLineLayer">
-                        <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=LineContainer, Path=NoteLineThickness, Mode=OneWay}"/>
+                        <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=LineLayer, Path=NoteLineThickness, Mode=OneWay}"/>
                     </Canvas>
                     <!-- This layout is weird but it is working! It's... magic! -->
                     <local:LineLayer Grid.Row="1" x:Name="LineLayer"/>

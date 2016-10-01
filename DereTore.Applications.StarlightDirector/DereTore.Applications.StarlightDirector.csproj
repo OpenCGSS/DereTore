@@ -194,6 +194,7 @@
     <Compile Include="Components\NoteRelation.cs" />
     <Compile Include="Components\NoteRelationCollection.cs" />
     <Compile Include="Components\ObservableDictionary.cs" />
+    <Compile Include="Components\ProjectIO.cs" />
     <Compile Include="Components\ThreadingTimer.cs" />
     <Compile Include="ComposerUtilities.cs" />
     <Compile Include="Entities\Bar.cs" />
