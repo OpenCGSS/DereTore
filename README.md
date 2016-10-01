@@ -1,5 +1,7 @@
 # DereTore
 
+[![Build Status](https://travis-ci.org/hozuki/DereTore.svg?branch=master)](https://travis-ci.org/hozuki/DereTore)
+
 The goal of DereTore is to improve gaming experience in [The Idolmaster Cinderella Girls Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
 (CGSS), or even to customize it a little bit.
 
