@@ -54,6 +54,9 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string ProjectUpgradeNeededPromptTemplate;
         public readonly string ProjectVersionInvalidPromptTemplate;
         public readonly string ProjectVersionUpToDatePrompt;
+        public readonly string NoCorrespondingDifficultyExistsPromptTemplate;
+        public readonly string ExportAndReplaceBdbCompletePromptTemplate;
+        public readonly string ErrorOccurredPrompt;
 
         public readonly string SummaryTotalNotes;
         public readonly string SummaryTotalBars;

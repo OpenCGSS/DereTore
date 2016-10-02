@@ -1,5 +1,10 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Components;
@@ -15,6 +20,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdToolsImportMusicArchive = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsImportScoreDatabase = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsExportScoreToCsv = CommandHelper.RegisterCommand();
+        public static readonly ICommand CmdToolsExportScoreToInsideBdb = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsUtilitiesConvertSaveFormatV01 = CommandHelper.RegisterCommand();
 
         private void CmdToolsBuildMusicArchive_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -67,6 +73,75 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 Project.ExportScoreToCsv(Project.Difficulty, saveDialog.FileName);
                 var prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ExportToCsvCompletePromptTemplate), saveDialog.FileName);
                 MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void CmdToolsExportScoreToInsideBdb_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.Score != null;
+        }
+
+        private void CmdToolsExportScoreToInsideBdb_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var saveDialog = new SaveFileDialog();
+            saveDialog.OverwritePrompt = true;
+            saveDialog.ValidateNames = true;
+            saveDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.BdbFileFilter);
+            var saveResult = saveDialog.ShowDialog();
+            if (saveResult ?? false) {
+                var difficulty = Project.Difficulty;
+                var csv = Project.ExportScoreToCsv(difficulty);
+                var fileName = saveDialog.FileName;
+                try {
+                    string prompt;
+                    bool operationSucceeded = false;
+                    using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
+                        connection.Open();
+                        using (var command = connection.CreateCommand()) {
+                            command.CommandText = $@"SELECT name FROM blobs WHERE name LIKE 'musicscores/m___/%\_{(int)difficulty}.csv' ESCAPE '\';";
+                            using (var adapter = new SQLiteDataAdapter(command)) {
+                                using (var dataTable = new DataTable()) {
+                                    adapter.Fill(dataTable);
+                                    if (dataTable.Rows.Count > 0) {
+                                        string nameToReplace = null;
+                                        var testRegex = new Regex($@"^musicscores/m[\d]+/[\d]+_{(int)difficulty}.csv$");
+                                        foreach (DataRow row in dataTable.Rows) {
+                                            var name = (string)row[0];
+                                            if (testRegex.IsMatch(name)) {
+                                                nameToReplace = name;
+                                                break;
+                                            }
+                                        }
+                                        if (nameToReplace != null) {
+                                            command.CommandText = "UPDATE blobs SET data = @value WHERE name = @name;";
+                                            command.Parameters.Add("name", DbType.AnsiString).Value = nameToReplace;
+                                            command.Parameters.Add("value", DbType.AnsiString).Value = csv;
+                                            command.ExecuteNonQuery();
+                                            operationSucceeded = true;
+                                        } else {
+                                            prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.NoCorrespondingDifficultyExistsPromptTemplate),
+                                                DescribedEnumReader.Read(difficulty, typeof(Difficulty)), fileName);
+                                            MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                        }
+                                    } else {
+                                        prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.NoCorrespondingDifficultyExistsPromptTemplate),
+                                            DescribedEnumReader.Read(difficulty, typeof(Difficulty)), fileName);
+                                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                    }
+                                }
+                            }
+                        }
+                        connection.Close();
+                    }
+                    if (operationSucceeded) {
+                        prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ExportAndReplaceBdbCompletePromptTemplate), fileName,
+                            DescribedEnumReader.Read(difficulty, typeof(Difficulty)));
+                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                    } else {
+                        prompt = Application.Current.FindResource<string>(App.ResourceKeys.ErrorOccurredPrompt);
+                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    }
+                } catch (Exception ex) {
+                    MessageBox.Show(ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
             }
         }
 

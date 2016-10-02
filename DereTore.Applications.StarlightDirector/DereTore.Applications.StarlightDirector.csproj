@@ -190,7 +190,7 @@
     </Compile>
     <Compile Include="Components\ColorizationHelper.cs" />
     <Compile Include="Components\CommandHelper.cs" />
-    <Compile Include="Components\DescribedEnumConverter.cs" />
+    <Compile Include="Components\DescribedEnumReader.cs" />
     <Compile Include="Components\IntegerIDGenerator.cs" />
     <Compile Include="Components\InternalList.cs" />
     <Compile Include="Components\LinePositioner.cs" />
@@ -316,40 +316,10 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Resources\Testing\song_1001_gokuraku.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\song_1001_gokuraku.sldproj">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\song_3034_hotel.acb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\song_3034_hotel.bdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\song_3010_onedari.acb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\song_3010_onedari.bdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\song_1001_oneshin.acb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\song_1001_oneshin.bdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\se_live_flic_perfect.hca">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Testing\se_live_tap_perfect.hca">
+    <None Include="Resources\Testing\musicscores_m001.bdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="UI\Controls\ScoreEditor.Logic.Public.cs" />
-    <None Include="Resources\Testing\song_1001_gokuraku.acb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="TODO.md" />
   </ItemGroup>
   <ItemGroup>

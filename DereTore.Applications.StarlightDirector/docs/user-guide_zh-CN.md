@@ -58,3 +58,15 @@
 创作完成后，不要忘了保存！\_(:з」∠)\_
 
 *MusicToolchain* 和 *ScoreViewer* 的使用方式很简单，自己摸索一下很快就知道了。
+
+## 替换曲目
+
+使用“工具”-“导出到 BDB 并替换”快速导出并替换所选择 BDB 中的谱面，自动导出到**制谱时所选择的难度**，如果没有对应难度存在则会报错。
+
+在接下来的方法中，假设你用 `Resources/Testing/musicscores_m001.bdb`（お願い！シンデレラ）进行了替换。
+
+1. 准备 `song_1001.acb`，这可以通过 *MusicToolchain* 制作。注意**制作时曲目编号填写“1001”**。制作完成后直接改名为 `song_1001.acb.lz4`（不要压缩）。
+2. 将 `song_1001.acb.lz4` 放到 IdolProxy 的 `dl/resources/High/Sound/Common/l`（看清楚是小写“l”不是数字“1”）目录下，如果没有这个目录则需要新建。
+3. 将替换后的 `musicscores_m001.bdb` 拖放到工具中的 `LZ4.exe` 上，生成 `musicscores_m001.bdb.lz4`。
+4. 将 `musicscores_m001.bdb.lz4` 放到 IdolProxy 的 `dl/resources/Generic` 目录下。
+5. 启动 IdolProxy，进入游戏。此时《お願い！シンデレラ》的曲目，和对应难度谱面应该已经被替换并可以自由玩。

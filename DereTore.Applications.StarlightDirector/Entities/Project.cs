@@ -68,6 +68,13 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             writer.Write(csvString);
         }
 
+        public string ExportScoreToCsv(Difficulty difficulty) {
+            var score = GetScore(difficulty);
+            var compiledScore = score.Compile();
+            var csvString = compiledScore.GetCsvString();
+            return csvString;
+        }
+
         public Difficulty Difficulty {
             get { return (Difficulty)GetValue(DifficultyProperty); }
             set { SetValue(DifficultyProperty, value); }
