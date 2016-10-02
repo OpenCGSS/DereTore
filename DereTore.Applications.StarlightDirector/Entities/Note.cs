@@ -158,7 +158,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         internal bool TryGetFlickGroupID(out FlickGroupModificationResult modificationResult, out int knownGroupID, out Note groupStart) {
-            if (!IsFlick) {
+            if (!IsFlick || (IsHoldEnd && !HasNextFlick)) {
                 knownGroupID = EntityID.Invalid;
                 modificationResult = FlickGroupModificationResult.Declined;
                 groupStart = null;

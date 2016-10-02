@@ -154,14 +154,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     ns.Reset();
                     LineLayer.NoteRelations.RemoveAll(start);
                     start.UpdateIndicators();
-                    if (!DraggingStartNote.Equals(DraggingEndNote)) {
+                    if (!start.Equals(end)) {
                         ne.Reset();
                         LineLayer.NoteRelations.RemoveAll(end);
+                    }
+                    if (!start.Equals(end)) {
+                        // For sync notes.
                         end.UpdateIndicators();
                     }
                     LineLayer.InvalidateVisual();
                     Project.IsChanged = true;
-                } else if (!DraggingStartNote.Equals(DraggingEndNote)) {
+                } else if (!start.Equals(end)) {
                     if (LineLayer.NoteRelations.ContainsPair(start, end)) {
                         MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.NoteRelationAlreadyExistsPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
@@ -235,7 +238,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             throw new ArgumentOutOfRangeException(nameof(mode));
                     }
                     Project.IsChanged = true;
-                    DraggingEndNote.IsSelected = true;
+                    end.IsSelected = true;
                 }
             }
             DraggingStartNote = DraggingEndNote = null;
