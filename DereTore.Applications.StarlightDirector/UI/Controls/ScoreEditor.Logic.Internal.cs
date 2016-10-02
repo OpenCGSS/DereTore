@@ -391,6 +391,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
+        private void OnScoreGlobalSettingsChanged(object sender, EventArgs e) {
+            UpdateBarTexts();
+        }
+
         private List<ScoreBar> EditableScoreBars { get; }
 
         private List<ScoreNote> EditableScoreNotes { get; }

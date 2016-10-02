@@ -227,12 +227,14 @@
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\NativeStructures.cs" />
     <Compile Include="ResourceKeys.cs" />
+    <Compile Include="UI\Controls\LineLayer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\LineLayer.xaml.cs">
       <DependentUpon>LineLayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\ScoreBar.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreBar.Placeholder.cs" />
     <Compile Include="UI\Controls\ScoreBar.TextAndLocation.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
     <Compile Include="UI\EditMode.cs" />
@@ -279,6 +281,7 @@
     <Compile Include="UI\Windows\MainWindow.Commands.Music.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Tools.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.View.cs" />
+    <Compile Include="UI\Windows\MainWindow.DependencyProperties.cs" />
     <Compile Include="UI\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
