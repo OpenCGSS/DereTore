@@ -6,7 +6,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public sealed class Bar {
 
-        public Note AddNote(int id) {
+        public Note AddNote() {
+            var id = MathHelper.NextRandomPositiveInt32();
+            while (NoteIDs.ExistingIDs.Contains(id)) {
+                id = MathHelper.NextRandomPositiveInt32();
+            }
             var note = new Note(id, this);
             Notes.Add(note);
             return note;

@@ -5,12 +5,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
-
-using NoteTuple = System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
@@ -22,6 +19,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             RemoveScoreBars(ScoreBars, false, true);
             LineLayer.NoteRelations.Clear();
             UpdateMaximumScrollOffset();
+            NoteIDs.ExistingIDs.Clear();
             if (toBeSet == null) {
                 return;
             }
@@ -32,6 +30,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             foreach (var bar in toBeSet.Bars) {
                 var scoreBar = AddScoreBar(null, false, bar);
                 foreach (var note in bar.Notes) {
+                    NoteIDs.ExistingIDs.Add(note.ID);
                     var scoreNote = AddScoreNote(scoreBar, note.PositionInGrid, note.FinishPosition, note);
                     temporaryMap.Add(note, scoreNote);
                     allNotes.Add(note);
@@ -196,6 +195,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 if (Score.Bars.Contains(note.Bar)) {
                     // The Reset() call is necessary.
                     note.Reset();
+                    NoteIDs.ExistingIDs.Remove(note.ID);
                     note.Bar.Notes.Remove(note);
                 }
             }
@@ -248,7 +248,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (dataTemplate != null) {
                 note = dataTemplate;
             } else {
-                note = bar.AddNote(MathHelper.NextRandomPositiveInt32());
+                note = bar.AddNote();
                 note.StartPosition = note.FinishPosition = (NotePosition)(column + 1);
                 note.PositionInGrid = row;
             }

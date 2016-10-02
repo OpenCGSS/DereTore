@@ -79,7 +79,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Bars = new InternalList<Bar>();
             Project = project;
             Difficulty = difficulty;
-            IDGenerators = new IDGenerators();
+            _flickGroupIDGenerator = new IntegerIDGenerator(1);
         }
 
         internal void ResolveReferences(Project project) {
@@ -120,8 +120,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         internal void CompileTo(CompiledScore compiledScore) {
             var settings = Project.Settings;
-            IDGenerators.ResetCompiled();
-            IDGenerators.ResetOriginal();
+            var flickGroupIDGenerator = _flickGroupIDGenerator;
+            flickGroupIDGenerator.Reset();
             var compiledNotes = compiledScore.Notes;
             compiledNotes.Clear();
             var endTimeOfLastBar = settings.StartTimeOffset;
@@ -144,7 +144,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 bar.Notes.Sort(Note.TimingComparison);
                 foreach (var note in bar.Notes) {
                     var compiledNote = new CompiledNote();
-                    compiledNote.ID = IDGenerators.CompiledNoteIDGenerator.Next(); // WTF?
                     compiledNote.Type = note.Type;
                     compiledNote.StartPosition = note.StartPosition;
                     compiledNote.FinishPosition = note.FinishPosition;
@@ -163,7 +162,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                                     note.GroupID = compiledNote.FlickGroupID = groupID;
                                     break;
                                 case FlickGroupModificationResult.CreationPending:
-                                    groupID = IDGenerators.FlickGroupIDGenerator.Next();
+                                    groupID = flickGroupIDGenerator.Next();
                                     groupStart.GroupID = note.GroupID = compiledNote.FlickGroupID = groupID;
                                     break;
                                 default:
@@ -215,7 +214,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return null;
         }
 
-        private IDGenerators IDGenerators { get; }
+        private readonly IntegerIDGenerator _flickGroupIDGenerator;
 
     }
 }

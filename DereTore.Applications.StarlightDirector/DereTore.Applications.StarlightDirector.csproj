@@ -208,7 +208,6 @@
     <Compile Include="Entities\Difficulty.cs" />
     <Compile Include="Entities\EntityID.cs" />
     <Compile Include="Entities\FlickGroupModificationResult.cs" />
-    <Compile Include="Entities\IDGenerators.cs" />
     <Compile Include="Entities\Note.cs" />
     <Compile Include="Entities\NoteFlickType.cs" />
     <Compile Include="Entities\NotePosition.cs" />
@@ -225,10 +224,10 @@
     <Compile Include="Extensions\NotifyPropertyChangedExtensions.cs" />
     <Compile Include="Extensions\NoteExtensions.cs" />
     <Compile Include="Extensions\PageExtensions.cs" />
-    <Compile Include="Fraction.cs" />
     <Compile Include="Interop\NativeConstants.cs" />
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\NativeStructures.cs" />
+    <Compile Include="NoteIDs.cs" />
     <Compile Include="ResourceKeys.cs" />
     <Compile Include="UI\Controls\LineLayer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\LineLayer.xaml.cs">
