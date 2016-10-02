@@ -88,6 +88,8 @@ Viewing and editing scores (collections of notes) of live music. Here is its [re
 The new score composer (still in alpha phase), the successor of ScoreEditor. Detailed readme and user manual will be written
 in the future. Let's celebrate its alpha release!
 
+There is a simple user guide in Simplified Chinese: [here](DereTore.Applications.StarlightDirector/docs/user-guide_zh-CN.md).
+
 ### Other
 
 **DereTore.Utilities.LZ4**
