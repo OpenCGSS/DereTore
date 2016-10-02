@@ -39,10 +39,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static ScoreSettings CreateDefault() {
             return new ScoreSettings {
-                GlobalBpm = 120,
-                StartTimeOffset = 0,
-                GlobalGridPerSignature = 24, // 最高分辨率为九十六分音符
-                GlobalSignature = 4 // 4/4拍
+                GlobalBpm = DefaultGlobalBpm,
+                StartTimeOffset = DefaultStartTimeOffset,
+                GlobalGridPerSignature = DefaultGlobalGridPerSignature, // 最高分辨率为九十六分音符
+                GlobalSignature = DefaultGlobalSignature // 4/4拍
             };
         }
 
@@ -51,6 +51,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static readonly DependencyProperty StartTimeOffsetProperty = DependencyProperty.Register(nameof(StartTimeOffset), typeof(double), typeof(ScoreSettings),
             new PropertyMetadata(0d, OnStartTimeOffsetChanged));
+
+        public static readonly double DefaultGlobalBpm = 120;
+        public static readonly double DefaultStartTimeOffset = 0;
+        public static readonly int DefaultGlobalGridPerSignature = 24;
+        public static readonly int DefaultGlobalSignature = 4;
 
         private static void OnGlobalBpmChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var settings = (ScoreSettings)obj;

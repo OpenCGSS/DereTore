@@ -22,7 +22,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
                             --separatorIndex;
                         }
                         var stringBuffer = buffer.Take(separatorIndex).ToArray();
-                        var versionString = Encoding.UTF8.GetString(stringBuffer);
+                        var versionString = Encoding.ASCII.GetString(stringBuffer);
                         const string standardVersionString = "// DereTore Composer Project, version 0.1";
                         if (versionString == standardVersionString) {
                             return ProjectVersion.V0_1;
@@ -45,7 +45,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
         internal static Project LoadFromV01(string fileInput) {
             Project project;
             using (var fileStream = File.Open(fileInput, FileMode.Open, FileAccess.Read)) {
-                using (var reader = new StreamReader(fileStream, Encoding.UTF8)) {
+                using (var reader = new StreamReader(fileStream, Encoding.ASCII)) {
                     reader.ReadLine();
                     JObject p;
                     var jsonSerializer = JsonSerializer.Create();
@@ -79,6 +79,26 @@ namespace DereTore.Applications.StarlightDirector.Components {
                     }
                 }
             }
+
+            // Signature fix-up
+            var newGrids = ScoreSettings.DefaultGlobalGridPerSignature * ScoreSettings.DefaultGlobalSignature;
+            var oldGrids = project.Settings.GlobalGridPerSignature * project.Settings.GlobalSignature;
+            if (newGrids % oldGrids == 0) {
+                project.Settings.GlobalGridPerSignature = ScoreSettings.DefaultGlobalGridPerSignature;
+                project.Settings.GlobalSignature = ScoreSettings.DefaultGlobalSignature;
+                var k = newGrids / oldGrids;
+                foreach (var difficulty in Difficulties) {
+                    if (project.Scores.ContainsKey(difficulty)) {
+                        var score = project.GetScore(difficulty);
+                        foreach (var bar in score.Bars) {
+                            foreach (var note in bar.Notes) {
+                                note.PositionInGrid *= k;
+                            }
+                        }
+                    }
+                }
+            }
+
             return project;
         }
 

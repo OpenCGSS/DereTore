@@ -53,11 +53,11 @@ namespace DereTore.Applications.StarlightDirector.Components {
                         // Damn JsonSerializer
                         var tempFileName = Path.GetTempFileName();
                         using (var fileStream = File.Open(tempFileName, FileMode.Open, FileAccess.Write)) {
-                            using (var writer = new StreamWriter(fileStream, Encoding.UTF8)) {
+                            using (var writer = new StreamWriter(fileStream, Encoding.ASCII)) {
                                 jsonSerializer.Serialize(writer, score);
                             }
                         }
-                        var s = File.ReadAllText(tempFileName, Encoding.UTF8);
+                        var s = File.ReadAllText(tempFileName, Encoding.ASCII);
                         File.Delete(tempFileName);
                         transaction.SetValue(ScoresTableName, ((int)difficulty).ToString("00"), s, createNewDatabase, ref setValue);
                     }
@@ -66,7 +66,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
                     var settings = project.Settings;
                     transaction.SetValue(ScoreSettingsTableName, "global_bpm", settings.GlobalBpm.ToString(CultureInfo.InvariantCulture), createNewDatabase, ref setValue);
                     transaction.SetValue(ScoreSettingsTableName, "start_time_offset", settings.StartTimeOffset.ToString(CultureInfo.InvariantCulture), createNewDatabase, ref setValue);
-                    transaction.SetValue(ScoreSettingsTableName, "global_grid_per_signature", settings.GlobalSignature.ToString(), createNewDatabase, ref setValue);
+                    transaction.SetValue(ScoreSettingsTableName, "global_grid_per_signature", settings.GlobalGridPerSignature.ToString(), createNewDatabase, ref setValue);
                     transaction.SetValue(ScoreSettingsTableName, "global_signature", settings.GlobalSignature.ToString(), createNewDatabase, ref setValue);
 
                     // Commit!
@@ -108,7 +108,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
                     var indexString = ((int)difficulty).ToString("00");
                     var scoreJson = scoreValues[indexString];
                     Score score;
-                    var scoreJsonBytes = Encoding.UTF8.GetBytes(scoreJson);
+                    var scoreJsonBytes = Encoding.ASCII.GetBytes(scoreJson);
                     using (var memoryStream = new MemoryStream(scoreJsonBytes)) {
                         using (var reader = new StreamReader(memoryStream)) {
                             using (var jsonReader = new JsonTextReader(reader)) {
@@ -157,8 +157,8 @@ namespace DereTore.Applications.StarlightDirector.Components {
             if (command == null) {
                 command = connection.CreateCommand();
                 command.CommandText = $"INSERT INTO {tableName} (key, value) VALUES (@key, @value);";
-                command.Parameters.Add("key", DbType.String).Value = key;
-                command.Parameters.Add("value", DbType.String).Value = value;
+                command.Parameters.Add("key", DbType.AnsiString).Value = key;
+                command.Parameters.Add("value", DbType.AnsiString).Value = value;
             } else {
                 command.CommandText = $"INSERT INTO {tableName} (key, value) VALUES (@key, @value);";
                 command.Parameters["key"].Value = key;
@@ -175,8 +175,8 @@ namespace DereTore.Applications.StarlightDirector.Components {
             if (command == null) {
                 command = connection.CreateCommand();
                 command.CommandText = $"UPDATE {tableName} SET value = @value WHERE key = @key;";
-                command.Parameters.Add("key", DbType.String).Value = key;
-                command.Parameters.Add("value", DbType.String).Value = value;
+                command.Parameters.Add("key", DbType.AnsiString).Value = key;
+                command.Parameters.Add("value", DbType.AnsiString).Value = value;
             } else {
                 command.CommandText = $"UPDATE {tableName} SET value = @value WHERE key = @key;";
                 command.Parameters["key"].Value = key;
@@ -193,7 +193,7 @@ namespace DereTore.Applications.StarlightDirector.Components {
             if (command == null) {
                 command = connection.CreateCommand();
                 command.CommandText = $"SELECT value FROM {tableName} WHERE key = @key;";
-                command.Parameters.Add("key", DbType.String).Value = key;
+                command.Parameters.Add("key", DbType.AnsiString).Value = key;
             } else {
                 command.CommandText = $"SELECT value FROM {tableName} WHERE key = @key;";
                 command.Parameters["key"].Value = key;
@@ -229,7 +229,8 @@ namespace DereTore.Applications.StarlightDirector.Components {
             if (command == null) {
                 command = connection.CreateCommand();
             }
-            command.CommandText = $"CREATE TABLE {tableName} (key TEXT, value TEXT);";
+            // Have to use LONGTEXT (2^31-1) rather than TEXT (32768).
+            command.CommandText = $"CREATE TABLE {tableName} (key LONGTEXT PRIMARY KEY, value LONGTEXT);";
             command.ExecuteNonQuery();
         }
 

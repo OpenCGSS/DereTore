@@ -118,7 +118,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             saveDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.ProjectFileFilter);
             var result = saveDialog.ShowDialog();
             if (result ?? false) {
-                ProjectIO.Save(Project, saveDialog.FileName, true);
+                ProjectIO.Save(Project, saveDialog.FileName);
                 CmdFileSaveProjectAs.RaiseCanExecuteChanged();
             }
         }

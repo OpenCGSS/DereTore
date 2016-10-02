@@ -230,7 +230,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (row < 0 || column < 0 || column >= 5) {
                 return null;
             }
-            if (row >= scoreBar.Bar.GetTotalGridCount()) {
+            var gridCount = scoreBar.Bar.GetTotalGridCount();
+            if (row >= gridCount) {
                 return null;
             }
             var bar = scoreBar.Bar;

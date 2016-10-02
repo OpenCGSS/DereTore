@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows;
 using System.Windows.Media;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
@@ -7,11 +10,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         // http://stackoverflow.com/questions/24825132/how-to-blur-drawing-using-the-drawingcontext-wpf
         private sealed class Placeholder : FrameworkElement {
 
-            public FormattedText FormattedText { get; set; }
+            public Placeholder() {
+                DrawingElements = new BindingList<TextAndLocation>();
+            }
+
+            public Collection<TextAndLocation> DrawingElements { get; }
 
             protected override void OnRender(DrawingContext drawingContext) {
                 base.OnRender(drawingContext);
-                drawingContext.DrawText(FormattedText, new Point());
+                foreach (var drawingElement in DrawingElements) {
+                    drawingContext.DrawText(drawingElement.Text, drawingElement.Location);
+                }
             }
 
         }

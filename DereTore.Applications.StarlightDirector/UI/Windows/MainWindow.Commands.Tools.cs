@@ -99,7 +99,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 rawFileName = rawFileName + "-" + Entities.Project.CurrentVersion + fileInfo.Extension;
                 var outputFileName = Path.Combine(fileInfo.DirectoryName ?? string.Empty, rawFileName);
                 var project = ProjectIO.LoadFromV01(inputFileName);
-                ProjectIO.Save(project, outputFileName, true);
+                ProjectIO.Save(project, outputFileName);
                 prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ConvertSaveFormatCompletePromptTemplate), inputFileName, outputFileName);
                 MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
             }

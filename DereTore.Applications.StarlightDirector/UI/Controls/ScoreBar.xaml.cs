@@ -137,6 +137,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 LayoutTransform = new ScaleTransform(1, -1),
                 RenderTransformOrigin = new Point(0.5, 0.5)
             };
+            var visualBrush = new VisualBrush(placeholder);
+            var maxTextWidth = double.MinValue;
+            var maxHeight = double.MinValue;
+            var textLineHeight = double.NaN;
             for (var i = 0; i <= rowCount; ++i) {
                 if (i % zoomMod != 0 && i != rowCount) {
                     // Only draws key beats.
@@ -149,22 +153,28 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 context.DrawLine(pen, startPoint, endPoint);
                 if (i < rowCount) {
                     var formattedText = new FormattedText($"{i + 1}/{SignatureBase}", culture, flowDirection, typeFace, textEmSize, pen.Brush);
+                    maxTextWidth = Math.Max(maxTextWidth, formattedText.Width);
                     var location = new Point(xOffset - textMargin - formattedText.Width, y - textEmSize / 2);
+                    if (double.IsNaN(textLineHeight)) {
+                        textLineHeight = formattedText.Height;
+                    }
                     // http://stackoverflow.com/questions/24825132/how-to-blur-drawing-using-the-drawingcontext-wpf
-                    var elementRect = new Rect(0, 0, formattedText.Width, formattedText.Height);
-                    placeholder.Width = elementRect.Width;
-                    placeholder.Height = elementRect.Height;
-                    placeholder.FormattedText = formattedText;
-                    placeholder.Arrange(elementRect);
-                    placeholder.InvalidateVisual();
-                    var renderTarget = new RenderTargetBitmap((int)Math.Round(elementRect.Width), (int)Math.Round(elementRect.Height), 96, 96, PixelFormats.Default);
-                    // If there are two render targets of the same size, WPF will reuse them. So remember to clear the background first.
-                    renderTarget.Clear();
-                    renderTarget.Render(placeholder);
-                    var finalRect = new Rect(location, elementRect.Size);
-                    context.DrawImage(renderTarget, finalRect);
-                    placeholder.FormattedText = null;
+                    // Later https://blogs.msdn.microsoft.com/jaimer/2009/07/03/rendertargetbitmap-tips/ (final version)
+                    placeholder.DrawingElements.Add(new TextAndLocation {
+                        Text = formattedText,
+                        Location = location
+                    });
+                    maxHeight = Math.Max(maxHeight, location.Y + formattedText.Height);
                 }
+            }
+            if (placeholder.DrawingElements.Count > 0) {
+                foreach (var drawingElement in placeholder.DrawingElements) {
+                    var location = drawingElement.Location;
+                    location.Y = maxHeight - location.Y;
+                    drawingElement.Location = location;
+                }
+                placeholder.InvalidateVisual();
+                context.DrawRectangle(visualBrush, null, new Rect(xOffset - textMargin - maxTextWidth, -textLineHeight / 2, maxTextWidth, maxHeight));
             }
         }
 
@@ -213,9 +223,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public static readonly double DefaultHeight = 550;
-
-        private static readonly int[] ZoomLevels = { 96, 48, 32, 24, 16, 12, 4, 1 };
-        private static readonly int SignatureBase = 96;
+        public static readonly int[] ZoomLevels = { 96, 48, 32, 24, 16, 12, 4, 1 };
+        public static readonly int SignatureBase = ScoreSettings.DefaultGlobalGridPerSignature * ScoreSettings.DefaultGlobalSignature; // 96
 
     }
 }
