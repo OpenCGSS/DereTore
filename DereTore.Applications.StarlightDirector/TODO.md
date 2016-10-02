@@ -14,3 +14,4 @@
 - [ ] Support for building score database
 - [ ] Support for building music archive
 - [ ] Importing existing compiled score(s)
+- [ ] Spectrum view for audio
