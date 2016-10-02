@@ -121,6 +121,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var stressStroke = (Brush)Application.Current.FindResource(App.ResourceKeys.BarStrokeStressBrush);
             var rowCount = TotalRowCount = bar.GetActualSignature() * bar.GetActualGridPerSignature();
             var signature = bar.GetActualSignature();
+            var signatureInterval = SignatureBase / signature;
             var barStartBrush = Brushes.Red;
             var barSignatureBrush = stressStroke;
             var barNormalBrush = stroke;
@@ -147,7 +148,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     continue;
                 }
                 var y = height * i / rowCount;
-                var pen = i % signature == 0 ? (i == 0 ? barStartPen : barSignaturePen) : barNormalPen;
+                var pen = i % signatureInterval == 0 ? (i == 0 ? barStartPen : barSignaturePen) : barNormalPen;
                 var startPoint = new Point(0 + xOffset, y);
                 var endPoint = new Point(width + xOffset, y);
                 context.DrawLine(pen, startPoint, endPoint);
