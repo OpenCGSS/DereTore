@@ -10,7 +10,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdEditNoteDelete = CommandHelper.RegisterCommand("Delete");
 
         private void CmdEditNoteAdd_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = Editor.HasSingleSelectedScoreBar;
+            e.CanExecute = Editor.HasSingleSelectedScoreBar && false;
         }
 
         private void CmdEditNoteAdd_Executed(object sender, ExecutedRoutedEventArgs e) {
@@ -19,7 +19,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdEditNoteEdit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = Editor.HasSingleSelectedScoreNote;
+            e.CanExecute = Editor.HasSingleSelectedScoreNote && false;
         }
 
         private void CmdEditNoteEdit_Executed(object sender, ExecutedRoutedEventArgs e) {
