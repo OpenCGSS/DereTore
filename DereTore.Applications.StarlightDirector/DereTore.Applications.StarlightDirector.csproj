@@ -278,6 +278,7 @@
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.Note.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Music.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Tools.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.View.cs" />
     <Compile Include="UI\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -383,6 +384,8 @@
     <Resource Include="Resources\Icons\BarAppendMany.png" />
     <Resource Include="Resources\Icons\EditSelectAll.png" />
     <Resource Include="Resources\Icons\Utilities.png" />
+    <Resource Include="Resources\Icons\ViewZoomIn.png" />
+    <Resource Include="Resources\Icons\ViewZoomOut.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

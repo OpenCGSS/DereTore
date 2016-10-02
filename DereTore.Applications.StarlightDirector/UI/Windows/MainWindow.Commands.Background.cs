@@ -4,12 +4,12 @@ using DereTore.Applications.StarlightDirector.Components;
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {
 
-        public static ICommand CmdBgScrollUpSmall = CommandHelper.RegisterCommand("Up");
-        public static ICommand CmdBgScrollDownSmall = CommandHelper.RegisterCommand("Down");
-        public static ICommand CmdBgScrollUpLarge = CommandHelper.RegisterCommand("PageUp");
-        public static ICommand CmdBgScrollDownLarge = CommandHelper.RegisterCommand("PageDown");
-        public static ICommand CmdBgScrollToStart = CommandHelper.RegisterCommand("Home");
-        public static ICommand CmdBgScrollToEnd = CommandHelper.RegisterCommand("End");
+        public static readonly ICommand CmdBgScrollUpSmall = CommandHelper.RegisterCommand("Up");
+        public static readonly ICommand CmdBgScrollDownSmall = CommandHelper.RegisterCommand("Down");
+        public static readonly ICommand CmdBgScrollUpLarge = CommandHelper.RegisterCommand("PageUp");
+        public static readonly ICommand CmdBgScrollDownLarge = CommandHelper.RegisterCommand("PageDown");
+        public static readonly ICommand CmdBgScrollToStart = CommandHelper.RegisterCommand("Home");
+        public static readonly ICommand CmdBgScrollToEnd = CommandHelper.RegisterCommand("End");
 
         private void CmdBgScrollUpSmall_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.Score != null;

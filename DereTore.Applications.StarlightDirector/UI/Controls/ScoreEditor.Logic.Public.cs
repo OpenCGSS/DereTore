@@ -245,6 +245,22 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
+        public void ZoomOut() {
+            foreach (var scoreBar in ScoreBars) {
+                scoreBar.ZoomOut();
+            }
+            UpdateMaximumScrollOffset();
+            RecalcEditorLayout();
+        }
+
+        public void ZoomIn() {
+            foreach (var scoreBar in ScoreBars) {
+                scoreBar.ZoomIn();
+            }
+            UpdateMaximumScrollOffset();
+            RecalcEditorLayout();
+        }
+
         public double ScrollOffset {
             get { return (double)GetValue(ScrollOffsetProperty); }
             set {

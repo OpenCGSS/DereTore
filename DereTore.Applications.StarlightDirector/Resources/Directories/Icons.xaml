@@ -27,4 +27,6 @@
     <BitmapImage x:Key="RibbonIconImport" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Import.png"/>
     <BitmapImage x:Key="RibbonIconExport" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Export.png"/>
     <BitmapImage x:Key="RibbonIconUtilities" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Utilities.png"/>
+    <BitmapImage x:Key="RibbonIconViewZoomIn" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewZoomIn.png"/>
+    <BitmapImage x:Key="RibbonIconViewZoomOut" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewZoomOut.png"/>
 </ResourceDictionary>

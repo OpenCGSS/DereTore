@@ -60,15 +60,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private void ScoreEditor_OnMouseWheel(object sender, MouseWheelEventArgs e) {
             // Zooming
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
-                foreach (var scoreBar in ScoreBars) {
-                    if (e.Delta > 0) {
-                        scoreBar.ZoomIn();
-                    } else {
-                        scoreBar.ZoomOut();
-                    }
+                if (e.Delta > 0) {
+                    ZoomOut();
+                } else {
+                    ZoomIn();
                 }
-                UpdateMaximumScrollOffset();
-                RecalcEditorLayout();
                 return;
             }
 

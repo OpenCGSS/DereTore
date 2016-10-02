@@ -124,7 +124,13 @@
                     <fluent:TextBox Header="Start Offset:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Editor, Path=Project.Settings.StartTimeOffset, Converter={StaticResource DoubleToStringConverter}}"/>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
-            <fluent:RibbonTabItem Header="Tools">
+            <fluent:RibbonTabItem Header="View" KeyTip="V">
+                <fluent:RibbonGroupBox Header="Zoom">
+                    <fluent:Button Header="Zoom In" Size="Middle" Command="{x:Static local:MainWindow.CmdViewZoomIn}" Icon="{StaticResource RibbonIconViewZoomIn}"/>
+                    <fluent:Button Header="Zoom Out" Size="Middle" Command="{x:Static local:MainWindow.CmdViewZoomOut}" Icon="{StaticResource RibbonIconViewZoomOut}"/>
+                </fluent:RibbonGroupBox>
+            </fluent:RibbonTabItem>
+            <fluent:RibbonTabItem Header="Tools" KeyTip="T">
                 <fluent:RibbonGroupBox Header="Build">
                     <fluent:Button Header="Music Archive" Command="{x:Static local:MainWindow.CmdToolsBuildMusicArchive}" LargeIcon="{StaticResource RibbonIconBuildMusicArchive}"/>
                     <fluent:Button Header="Score Database" Command="{x:Static local:MainWindow.CmdToolsBuildScoreDatabase}" LargeIcon="{StaticResource RibbonIconBuildScoreDatabase}"/>
