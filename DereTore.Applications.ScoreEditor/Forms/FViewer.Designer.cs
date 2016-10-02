@@ -25,9 +25,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         /// 使用代码编辑器修改此方法的内容。
         /// </summary>
         private void InitializeComponent() {
-            this.btnSelectAcb = new System.Windows.Forms.Button();
+            this.btnSelectAudio = new System.Windows.Forms.Button();
             this.btnSelectScore = new System.Windows.Forms.Button();
-            this.txtAcbFileName = new System.Windows.Forms.TextBox();
+            this.txtAudioFileName = new System.Windows.Forms.TextBox();
             this.txtScoreFileName = new System.Windows.Forms.TextBox();
             this.btnPlay = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
@@ -62,14 +62,14 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             ((System.ComponentModel.ISupportInitialize)(this.editor)).BeginInit();
             this.SuspendLayout();
             // 
-            // btnSelectAcb
+            // btnSelectAudio
             // 
-            this.btnSelectAcb.Location = new System.Drawing.Point(12, 12);
-            this.btnSelectAcb.Name = "btnSelectAcb";
-            this.btnSelectAcb.Size = new System.Drawing.Size(107, 35);
-            this.btnSelectAcb.TabIndex = 1;
-            this.btnSelectAcb.Text = "Select A&CB...";
-            this.btnSelectAcb.UseVisualStyleBackColor = true;
+            this.btnSelectAudio.Location = new System.Drawing.Point(12, 12);
+            this.btnSelectAudio.Name = "btnSelectAudio";
+            this.btnSelectAudio.Size = new System.Drawing.Size(107, 35);
+            this.btnSelectAudio.TabIndex = 1;
+            this.btnSelectAudio.Text = "Select &Audio...";
+            this.btnSelectAudio.UseVisualStyleBackColor = true;
             // 
             // btnSelectScore
             // 
@@ -77,16 +77,16 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.btnSelectScore.Name = "btnSelectScore";
             this.btnSelectScore.Size = new System.Drawing.Size(107, 35);
             this.btnSelectScore.TabIndex = 2;
-            this.btnSelectScore.Text = "Select sco&re...";
+            this.btnSelectScore.Text = "Select Sco&re...";
             this.btnSelectScore.UseVisualStyleBackColor = true;
             // 
-            // txtAcbFileName
+            // txtAudioFileName
             // 
-            this.txtAcbFileName.Location = new System.Drawing.Point(125, 20);
-            this.txtAcbFileName.Name = "txtAcbFileName";
-            this.txtAcbFileName.ReadOnly = true;
-            this.txtAcbFileName.Size = new System.Drawing.Size(244, 21);
-            this.txtAcbFileName.TabIndex = 3;
+            this.txtAudioFileName.Location = new System.Drawing.Point(125, 20);
+            this.txtAudioFileName.Name = "txtAudioFileName";
+            this.txtAudioFileName.ReadOnly = true;
+            this.txtAudioFileName.Size = new System.Drawing.Size(244, 21);
+            this.txtAudioFileName.TabIndex = 3;
             // 
             // txtScoreFileName
             // 
@@ -381,9 +381,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnPlay);
             this.Controls.Add(this.txtScoreFileName);
-            this.Controls.Add(this.txtAcbFileName);
+            this.Controls.Add(this.txtAudioFileName);
             this.Controls.Add(this.btnSelectScore);
-            this.Controls.Add(this.btnSelectAcb);
+            this.Controls.Add(this.btnSelectAudio);
             this.Controls.Add(this.editor);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -403,9 +403,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         #endregion
 
         private Controls.ScoreEditorControl editor;
-        private System.Windows.Forms.Button btnSelectAcb;
+        private System.Windows.Forms.Button btnSelectAudio;
         private System.Windows.Forms.Button btnSelectScore;
-        private System.Windows.Forms.TextBox txtAcbFileName;
+        private System.Windows.Forms.TextBox txtAudioFileName;
         private System.Windows.Forms.TextBox txtScoreFileName;
         private System.Windows.Forms.Button btnPlay;
         private System.Windows.Forms.Button btnStop;

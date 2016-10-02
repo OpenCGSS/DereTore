@@ -19,7 +19,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         }
 
         private bool CheckPlayEnvironment() {
-            if (txtAcbFileName.TextLength == 0) {
+            if (txtAudioFileName.TextLength == 0) {
                 this.ShowMessageBox("Please select the ACB file.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
             }
@@ -119,7 +119,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private void SetControlsEnabled(ViewerState state) {
             switch (state) {
                 case ViewerState.Initialized:
-                    btnSelectAcb.Enabled = true;
+                    btnSelectAudio.Enabled = true;
                     btnSelectScore.Enabled = true;
                     cboDifficulty.Enabled = true;
                     cboSoundEffect.Enabled = true;
@@ -143,7 +143,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     tsbScoreSaveAs.Enabled = false;
                     break;
                 case ViewerState.Loaded:
-                    btnSelectAcb.Enabled = false;
+                    btnSelectAudio.Enabled = false;
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
                     cboSoundEffect.Enabled = false;
@@ -167,7 +167,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     tsbScoreSaveAs.Enabled = false;
                     break;
                 case ViewerState.LoadedAndPlaying:
-                    btnSelectAcb.Enabled = false;
+                    btnSelectAudio.Enabled = false;
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
                     cboSoundEffect.Enabled = false;
@@ -180,7 +180,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     propertyGrid.Enabled = true;
                     break;
                 case ViewerState.LoadedAndPaused:
-                    btnSelectAcb.Enabled = false;
+                    btnSelectAudio.Enabled = false;
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
                     cboSoundEffect.Enabled = false;
@@ -197,10 +197,12 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             }
         }
 
-        private static readonly string AcbFilter = "ACB Files (*.acb)|*.acb";
+        private static readonly string AudioFilter = "All Supported Audio Formats (*.wav;*.acb;*.hca)|*.wav;*.acb;*.hca|ACB Archive (*.acb)|*.acb|Wave Audio (*.wav)|*.wav|HCA Audio (*.hca)|*.hca";
         private static readonly string ScoreFilter = "All Supported Score Formats (*.bdb;*.csv)|*.bdb;*.csv|Score Database (*.bdb)|*.bdb|Single Score (*.csv)|*.csv";
 
         private static readonly string ExtensionAcb = ".acb";
+        private static readonly string ExtensionWav = ".wav";
+        private static readonly string ExtensionHca = ".hca";
         private static readonly string ExtensionBdb = ".bdb";
         private static readonly string ExtensionCsv = ".csv";
 
@@ -216,11 +218,11 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private LiveMusicPlayer _player;
         private Score _score;
-        private Stream _acbStream;
+        private Stream _audioFileStream;
 
         private int _userSeekingStack = 0;
 
-        private static readonly DecodeParams DecodeParams = new DecodeParams {
+        private static readonly DecodeParams DefaultCgssDecodeParams = new DecodeParams {
             Key1 = CgssCipher.Key1,
             Key2 = CgssCipher.Key2
         };

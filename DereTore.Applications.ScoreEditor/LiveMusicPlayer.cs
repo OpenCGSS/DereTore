@@ -9,12 +9,24 @@ using AudioOut = NAudio.Wave.WasapiOut;
 namespace DereTore.Applications.ScoreEditor {
     public sealed class LiveMusicPlayer : DisposableBase {
 
-        public static LiveMusicPlayer FromStream(Stream stream, string acbFileName) {
+        public static LiveMusicPlayer FromAcbStream(Stream stream, string acbFileName) {
             return new LiveMusicPlayer(stream, acbFileName, DecodeParams.Default);
         }
 
-        public static LiveMusicPlayer FromStream(Stream stream, string acbFileName, DecodeParams decodeParams) {
+        public static LiveMusicPlayer FromAcbStream(Stream stream, string acbFileName, DecodeParams decodeParams) {
             return new LiveMusicPlayer(stream, acbFileName, decodeParams);
+        }
+
+        public static LiveMusicPlayer FromWaveStream(Stream stream) {
+            return new LiveMusicPlayer(stream);
+        }
+
+        public static LiveMusicPlayer FromHcaStream(Stream stream) {
+            return new LiveMusicPlayer(stream, DecodeParams.Default);
+        }
+
+        public static LiveMusicPlayer FromHcaStream(Stream stream, DecodeParams decodeParams) {
+            return new LiveMusicPlayer(stream, decodeParams);
         }
 
         public event EventHandler<StoppedEventArgs> PlaybackStopped {
@@ -56,9 +68,9 @@ namespace DereTore.Applications.ScoreEditor {
         }
 
         public TimeSpan CurrentTime {
-            get { return _hca.CurrentTime; }
+            get { return _waveStream.CurrentTime; }
             set {
-                var waveStream = _hca;
+                var waveStream = _waveStream;
                 waveStream.CurrentTime = value;
                 var position = waveStream.Position;
                 var blockAlign = waveStream.BlockAlign;
@@ -132,36 +144,60 @@ namespace DereTore.Applications.ScoreEditor {
         protected override void Dispose(bool disposing) {
             _soundPlayer?.Stop();
             _soundPlayer?.Dispose();
-            _hca?.Dispose();
+            _waveStream?.Dispose();
             _hcaDataStream?.Dispose();
             _acb?.Dispose();
             _soundPlayer = null;
-            _hca = null;
+            _waveStream = null;
             _hcaDataStream = null;
             _acb = null;
             _soundPlayer = null;
         }
 
-        private LiveMusicPlayer(Stream stream, string acbFileName, DecodeParams decodeParams) {
-            _acb = AcbFile.FromStream(stream, acbFileName, false);
+        private LiveMusicPlayer(Stream acbStream, string acbFileName, DecodeParams decodeParams) {
+            _acb = AcbFile.FromStream(acbStream, acbFileName, false);
             var names = _acb.GetFileNames();
             _internalName = names[0];
             _hcaDataStream = _acb.OpenDataStream(_internalName);
-            _hca = new RawSourceWaveStream(new HcaAudioStream(_hcaDataStream, decodeParams), HcaWaveProvider.DefaultWaveFormat);
+            _waveStream = new RawSourceWaveStream(new HcaAudioStream(_hcaDataStream, decodeParams), HcaWaveProvider.DefaultWaveFormat);
             _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
             //_soundPlayer = new AudioOut();
-            _soundPlayer.Init(_hca);
-            _sourceStream = stream;
+            _soundPlayer.Init(_waveStream);
+            _sourceStream = acbStream;
             _isPlaying = false;
             _syncObject = new object();
-            var lengthInSeconds = (float)_hca.TotalTime.TotalSeconds;
+            var lengthInSeconds = (float)_waveStream.TotalTime.TotalSeconds;
+            _totalLength = float.IsPositiveInfinity(lengthInSeconds) ? TimeSpan.MaxValue : TimeSpan.FromSeconds(lengthInSeconds);
+        }
+
+        private LiveMusicPlayer(Stream hcaStream, DecodeParams decodeParams) {
+            _waveStream = new RawSourceWaveStream(new HcaAudioStream(hcaStream, decodeParams), HcaWaveProvider.DefaultWaveFormat);
+            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
+            //_soundPlayer = new AudioOut();
+            _soundPlayer.Init(_waveStream);
+            _sourceStream = hcaStream;
+            _isPlaying = false;
+            _syncObject = new object();
+            var lengthInSeconds = (float)_waveStream.TotalTime.TotalSeconds;
+            _totalLength = float.IsPositiveInfinity(lengthInSeconds) ? TimeSpan.MaxValue : TimeSpan.FromSeconds(lengthInSeconds);
+        }
+
+        private LiveMusicPlayer(Stream waveStream) {
+            _waveStream = new RawSourceWaveStream(waveStream, HcaWaveProvider.DefaultWaveFormat);
+            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
+            //_soundPlayer = new AudioOut();
+            _soundPlayer.Init(_waveStream);
+            _sourceStream = waveStream;
+            _isPlaying = false;
+            _syncObject = new object();
+            var lengthInSeconds = (float)_waveStream.TotalTime.TotalSeconds;
             _totalLength = float.IsPositiveInfinity(lengthInSeconds) ? TimeSpan.MaxValue : TimeSpan.FromSeconds(lengthInSeconds);
         }
 
         private readonly Stream _sourceStream;
         private AcbFile _acb;
         private Stream _hcaDataStream;
-        private WaveStream _hca;
+        private WaveStream _waveStream;
         private AudioOut _soundPlayer;
         private bool _isPlaying;
         private bool _isPaused;

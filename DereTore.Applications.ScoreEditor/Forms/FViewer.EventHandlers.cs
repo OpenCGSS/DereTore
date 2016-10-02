@@ -13,7 +13,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             btnPlay.Click -= BtnPlay_Click;
             btnStop.Click -= BtnStop_Click;
             btnPause.Click -= BtnPause_Click;
-            btnSelectAcb.Click -= BtnSelectAcb_Click;
+            btnSelectAudio.Click -= BtnSelectAudio_Click;
             btnSelectScore.Click -= BtnSelectScore_Click;
             btnScoreLoad.Click -= BtnScoreLoad_Click;
             btnScoreUnload.Click -= BtnScoreUnload_Click;
@@ -41,7 +41,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             btnPlay.Click += BtnPlay_Click;
             btnStop.Click += BtnStop_Click;
             btnPause.Click += BtnPause_Click;
-            btnSelectAcb.Click += BtnSelectAcb_Click;
+            btnSelectAudio.Click += BtnSelectAudio_Click;
             btnSelectScore.Click += BtnSelectScore_Click;
             btnScoreLoad.Click += BtnScoreLoad_Click;
             btnScoreUnload.Click += BtnScoreUnload_Click;
@@ -278,11 +278,11 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             }
         }
 
-        private void BtnSelectAcb_Click(object sender, EventArgs e) {
-            openFileDialog.Filter = AcbFilter;
+        private void BtnSelectAudio_Click(object sender, EventArgs e) {
+            openFileDialog.Filter = AudioFilter;
             var result = openFileDialog.ShowDialog();
             if (result != DialogResult.Cancel && openFileDialog.FileName.Length > 0) {
-                txtAcbFileName.Text = openFileDialog.FileName;
+                txtAudioFileName.Text = openFileDialog.FileName;
             }
         }
 
@@ -294,9 +294,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                 _player.Dispose();
                 _player = null;
             }
-            if (_acbStream != null) {
-                _acbStream.Dispose();
-                _acbStream = null;
+            if (_audioFileStream != null) {
+                _audioFileStream.Dispose();
+                _audioFileStream = null;
             }
             _score = null;
             editor.Score = null;
@@ -309,12 +309,25 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             if (!CheckPlayEnvironment()) {
                 return;
             }
-            _acbStream = File.Open(txtAcbFileName.Text, FileMode.Open, FileAccess.Read);
+            var audioFileName = txtAudioFileName.Text;
+            var audioFileInfo = new FileInfo(audioFileName);
+            var audioFileExtension = audioFileInfo.Extension.ToLowerInvariant();
+            if (audioFileExtension == ExtensionAcb) {
+                _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
+                _player = LiveMusicPlayer.FromAcbStream(_audioFileStream, audioFileName, DefaultCgssDecodeParams);
+            } else if (audioFileExtension == ExtensionWav) {
+                _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
+                _player = LiveMusicPlayer.FromWaveStream(_audioFileStream);
+            } else if (audioFileExtension == ExtensionHca) {
+                _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
+                _player = LiveMusicPlayer.FromHcaStream(_audioFileStream, DefaultCgssDecodeParams);
+            } else {
+                throw new ArgumentOutOfRangeException(nameof(audioFileExtension), $"Unsupported audio format: '{audioFileExtension}'.");
+            }
+            _player.PlaybackStopped += Player_PlaybackStopped;
             var sfxAcbFileName = string.Format(SoundEffectAcbFileNameFormat, cboSoundEffect.SelectedIndex.ToString("00"));
             _currentTapHcaFileName = $"{sfxAcbFileName}/{TapHcaName}";
             _currentFlickHcaFileName = $"{sfxAcbFileName}/{FlickHcaName}";
-            _player = LiveMusicPlayer.FromStream(_acbStream, txtAcbFileName.Text, DecodeParams);
-            _player.PlaybackStopped += Player_PlaybackStopped;
             Score score;
             var scoreFileName = txtScoreFileName.Text;
             var scoreFileExtension = new FileInfo(scoreFileName).Extension.ToLowerInvariant();
