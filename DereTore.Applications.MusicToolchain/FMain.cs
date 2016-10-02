@@ -59,7 +59,7 @@ namespace DereTore.Applications.MusicToolchain {
                 Key1 = txtKey1.Text,
                 Key2 = txtKey2.Text,
                 AcbFileName = txtSaveLocation.Text,
-                SongName = txtSongName.Text,
+                SongName = "song_" + txtSongName.Text,
                 ShouldCreateLz4 = chkAlsoCreateLz4.Checked
             });
         }
