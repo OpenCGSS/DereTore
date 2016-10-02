@@ -8,7 +8,7 @@
     <SolidColorBrush x:Key="CuteStrokeBrush" Color="{StaticResource CuteStrokeColor}"/>
     <SolidColorBrush x:Key="CoolStrokeBrush" Color="{StaticResource CoolStrokeColor}"/>
     <SolidColorBrush x:Key="PassionStrokeBrush" Color="{StaticResource PassionStrokeColor}"/>
-    <Color x:Key="NeutralFillColor" A="#C0" R="#23" G="#E0" B="#18"/>
+    <Color x:Key="NeutralFillColor" A="#FF" R="#FF" G="#00" B="#00"/>
     <Color x:Key="CuteFillColor" A="#C0" R="#FF" G="#C0" B="#CB"/>
     <Color x:Key="CoolFillColor" A="#C0" R="#35" G="#7A" B="#E8"/>
     <Color x:Key="PassionFillColor" A="#C0" R="#FF" G="#90" B="#90"/>
@@ -20,4 +20,11 @@
     <Color x:Key="BarStrokeStressColor" A="#FF" R="#EE" G="#88" B="#10"/>
     <SolidColorBrush x:Key="BarStrokeBrush" Color="{StaticResource BarStrokeColor}"/>
     <SolidColorBrush x:Key="BarStrokeStressBrush" Color="{StaticResource BarStrokeStressColor}"/>
+
+    <!-- DodgerBlue -->
+    <SolidColorBrush x:Key="SyncNoteBorderBrush" Color="#FF1E90FF"/>
+    <!-- Orchid -->
+    <SolidColorBrush x:Key="FlickNoteBorderBrush" Color="#FFDA70D6"/>
+    <!-- OrangeRed -->
+    <SolidColorBrush x:Key="HoldNoteBorderBrush" Color="#FFFFD700"/>
 </ResourceDictionary>

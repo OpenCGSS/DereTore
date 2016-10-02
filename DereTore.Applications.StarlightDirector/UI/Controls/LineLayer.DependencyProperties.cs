@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class LineLayer {
@@ -28,13 +29,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             new PropertyMetadata(4d));
 
         public static readonly DependencyProperty SyncRelationBrushProperty = DependencyProperty.Register(nameof(SyncRelationBrush), typeof(Brush), typeof(LineLayer),
-            new PropertyMetadata(Brushes.DodgerBlue));
+            new PropertyMetadata(Application.Current.FindResource<Brush>(App.ResourceKeys.SyncNoteBorderBrush)));
 
         public static readonly DependencyProperty FlickRelationBrushProperty = DependencyProperty.Register(nameof(FlickRelationBrush), typeof(Brush), typeof(LineLayer),
-            new PropertyMetadata(Brushes.Orchid));
+            new PropertyMetadata(Application.Current.FindResource<Brush>(App.ResourceKeys.FlickNoteBorderBrush)));
 
         public static readonly DependencyProperty HoldRelationBrushProperty = DependencyProperty.Register(nameof(HoldRelationBrush), typeof(Brush), typeof(LineLayer),
-            new PropertyMetadata(Brushes.Yellow));
+            new PropertyMetadata(Application.Current.FindResource<Brush>(App.ResourceKeys.HoldNoteBorderBrush)));
 
     }
 }

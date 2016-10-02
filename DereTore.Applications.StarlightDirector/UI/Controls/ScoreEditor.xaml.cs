@@ -153,9 +153,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 if (mode == EditMode.Clear) {
                     ns.Reset();
                     LineLayer.NoteRelations.RemoveAll(start);
+                    start.UpdateIndicators();
                     if (!DraggingStartNote.Equals(DraggingEndNote)) {
                         ne.Reset();
                         LineLayer.NoteRelations.RemoveAll(end);
+                        end.UpdateIndicators();
                     }
                     LineLayer.InvalidateVisual();
                     Project.IsChanged = true;
@@ -174,6 +176,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             ne.SyncTarget = ns;
                             LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
                             LineLayer.InvalidateVisual();
+                            start.UpdateIndicators();
+                            end.UpdateIndicators();
                             break;
                         case EditMode.Flick:
                             if ((ns.Bar == ne.Bar && ns.PositionInGrid == ne.PositionInGrid) ||
@@ -187,6 +191,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             second.PrevFlickNote = first;
                             LineLayer.NoteRelations.Add(start, end, NoteRelation.Flick);
                             LineLayer.InvalidateVisual();
+                            start.UpdateIndicators();
+                            end.UpdateIndicators();
                             break;
                         case EditMode.Hold:
                             if (ns.FinishPosition != ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart) {
@@ -222,6 +228,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             ne.HoldTarget = ns;
                             LineLayer.NoteRelations.Add(start, end, NoteRelation.Hold);
                             LineLayer.InvalidateVisual();
+                            start.UpdateIndicators();
+                            end.UpdateIndicators();
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(mode));

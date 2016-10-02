@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 
@@ -10,9 +12,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public ScoreNote() {
             InitializeComponent();
-            //Fill = Circle.Fill;
-            //Stroke = Circle.Stroke;
             Radius = DefaultRadius;
+            _noteTypeIndicators = new[] { NoteTypeIndicatorSync, NoteTypeIndicatorFlick, NoteTypeIndicatorHold };
+        }
+
+        public void UpdateIndicators() {
+            var note = Note;
+            NoteTypeIndicatorSync.Visibility = note.IsSync ? Visibility.Visible : Visibility.Hidden;
+            NoteTypeIndicatorFlick.Visibility = note.IsFlick ? Visibility.Visible : Visibility.Hidden;
+            NoteTypeIndicatorHold.Visibility = note.IsHold ? Visibility.Visible : Visibility.Hidden;
         }
 
         private Brush GetBorderBrush() {
@@ -76,9 +84,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             clip.Center = new Point((width - margin.Left - margin.Right) / 2 + margin.Left, (height - margin.Top - margin.Bottom) / 2 + margin.Top);
             clip.RadiusX = width / 2;
             clip.RadiusY = height / 2;
+
+            var controlWidth = ActualWidth;
+            var controlHeight = ActualHeight;
+            foreach (var noteTypeIndicator in _noteTypeIndicators) {
+                var geometry = (RectangleGeometry)noteTypeIndicator.Clip;
+                var rect = geometry.Rect;
+                rect.Width = controlWidth / 2;
+                rect.Height = controlHeight / 2;
+                geometry.Rect = rect;
+                var rotateTransform = (RotateTransform)geometry.Transform;
+                rotateTransform.CenterX = controlWidth / 2;
+                rotateTransform.CenterY = controlHeight / 2;
+            }
         }
 
         private static readonly double DefaultRadius = 15;
+        private readonly Ellipse[] _noteTypeIndicators;
 
     }
 }

@@ -53,10 +53,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public static readonly DependencyProperty FillProperty = DependencyProperty.Register(nameof(Fill), typeof(Brush), typeof(ScoreNote),
-            new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.NeutralFillBrush), OnFillChanged));
+            new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.NeutralFillBrush)));
 
         public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(nameof(Stroke), typeof(Brush), typeof(ScoreNote),
-            new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.NeutralStrokeBrush), OnBorderChanged));
+            new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.NeutralStrokeBrush)));
 
         public static readonly DependencyProperty ImageProperty = DependencyProperty.Register(nameof(Image), typeof(ImageSource), typeof(ScoreNote),
             new PropertyMetadata(null, OnImageChanged));
@@ -78,18 +78,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty YProperty = DependencyProperty.Register(nameof(Y), typeof(double), typeof(ScoreNote),
           new PropertyMetadata(0d, OnYChanged));
-
-        private static void OnFillChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            var note = obj as ScoreNote;
-            Debug.Assert(note != null, "note != null");
-            note.Circle.Fill = (Brush)e.NewValue;
-        }
-
-        private static void OnBorderChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            var note = obj as ScoreNote;
-            Debug.Assert(note != null, "note != null");
-            note.Circle.Stroke = (Brush)e.NewValue;
-        }
 
         private static void OnImageChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = obj as ScoreNote;

@@ -25,6 +25,10 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string BarStrokeStressColor;
         public readonly string BarStrokeStressBrush;
 
+        public readonly string SyncNoteBorderBrush;
+        public readonly string FlickNoteBorderBrush;
+        public readonly string HoldNoteBorderBrush;
+
         public readonly string CardAvatar1;
         public readonly string CardAvatar2;
         public readonly string CardAvatar3;

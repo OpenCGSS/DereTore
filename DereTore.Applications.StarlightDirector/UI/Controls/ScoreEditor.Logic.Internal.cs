@@ -122,6 +122,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var extraY = barHeight * note.PositionInGrid / bar.GetTotalGridCount();
                 scoreNote.X = noteLayerWidth * TrackCenterXPositions[(int)note.FinishPosition - 1];
                 scoreNote.Y = baseY + extraY;
+                scoreNote.UpdateIndicators();
             }
         }
 
