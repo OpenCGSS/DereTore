@@ -21,10 +21,6 @@ namespace DereTore.HCA {
             return HasMore(ref _status);
         }
 
-        public void GenerateWaveDataBlocks(Stream source, byte[] destination, uint count, byte[] buffer, DecodeToBufferFunc modeFunc, out int bytesDecoded) {
-            GenerateWaveDataBlocks(source, destination, count, buffer, modeFunc, ref _status, out bytesDecoded);
-        }
-
         private DecodeStatus _status;
 
     }
