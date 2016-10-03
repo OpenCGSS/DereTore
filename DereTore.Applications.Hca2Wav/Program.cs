@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using DereTore.HCA;
+using DereTore.StarlightStage;
 
 namespace DereTore.Applications.Hca2Wav {
     internal static class Program {
@@ -13,7 +14,7 @@ namespace DereTore.Applications.Hca2Wav {
             }
             var inputFileName = args[0];
             var outputFileName = args[1];
-            uint key1 = 0, key2 = 0;
+            uint key1 = CgssCipher.Key1, key2 = CgssCipher.Key2;
             for (var i = 2; i < args.Length; ++i) {
                 var arg = args[i];
                 if (arg[0] == '-' || arg[0] == '/') {
