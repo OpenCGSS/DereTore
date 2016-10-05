@@ -39,9 +39,8 @@ namespace DereTore.ACB {
         }
 
         public static AcbFile FromFile(string fileName) {
-            using (var fs = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
-                return FromStream(fs, false);
-            }
+            var fs = File.Open(fileName, FileMode.Open, FileAccess.Read);
+            return FromStream(fs, false);
         }
 
         public Dictionary<string, UtfTable> Tables => _tables;

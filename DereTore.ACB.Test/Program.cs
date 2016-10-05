@@ -11,23 +11,24 @@ namespace DereTore.ACB.Test {
             var fileName = args[0];
             var fileInfo = new FileInfo(fileName);
 
-            var fullDirPath = Path.Combine(fileInfo.DirectoryName, string.Format(DirTemplate, fileInfo.Name));
+            var fullDirPath = Path.Combine(fileInfo.DirectoryName ?? string.Empty, string.Format(DirTemplate, fileInfo.Name));
             fullDirPath = Path.Combine(fullDirPath, "acb");
             fullDirPath = Path.Combine(fullDirPath, "awb");
             if (!Directory.Exists(fullDirPath)) {
                 Directory.CreateDirectory(fullDirPath);
             }
 
-            var acb = AcbFile.FromFile(fileName);
-            var fileNames = acb.GetFileNames();
-            foreach (var s in fileNames) {
-                var extractName = Path.Combine(fullDirPath, s);
-                using (var fs = new FileStream(extractName, FileMode.Create, FileAccess.Write)) {
-                    using (var source = acb.OpenDataStream(s)) {
-                        WriteFile(source, fs);
+            using (var acb = AcbFile.FromFile(fileName)) {
+                var fileNames = acb.GetFileNames();
+                foreach (var s in fileNames) {
+                    var extractName = Path.Combine(fullDirPath, s);
+                    using (var fs = new FileStream(extractName, FileMode.Create, FileAccess.Write)) {
+                        using (var source = acb.OpenDataStream(s)) {
+                            WriteFile(source, fs);
+                        }
                     }
+                    Console.WriteLine(s);
                 }
-                Console.WriteLine(s);
             }
         }
 
@@ -43,5 +44,6 @@ namespace DereTore.ACB.Test {
         }
 
         private static readonly string DirTemplate = "_deretore_acb_extract_{0}";
+
     }
 }
