@@ -81,15 +81,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsExportScoreToInsideBdb_Executed(object sender, ExecutedRoutedEventArgs e) {
-            var saveDialog = new SaveFileDialog();
-            saveDialog.OverwritePrompt = true;
-            saveDialog.ValidateNames = true;
-            saveDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.BdbFileFilter);
-            var saveResult = saveDialog.ShowDialog();
+            var openDialog = new OpenFileDialog();
+            openDialog.CheckFileExists = true;
+            openDialog.ValidateNames = true;
+            openDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.BdbFileFilter);
+            var saveResult = openDialog.ShowDialog();
             if (saveResult ?? false) {
                 var difficulty = Project.Difficulty;
                 var csv = Project.ExportScoreToCsv(difficulty);
-                var fileName = saveDialog.FileName;
+                var fileName = openDialog.FileName;
                 try {
                     string prompt;
                     bool operationSucceeded = false;
