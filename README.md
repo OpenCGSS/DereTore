@@ -14,6 +14,10 @@ Wonder [how this name comes from](#the-name)?
 3. Open `DereTore.sln` in Visual Studio (VS2010 SP1 or later is required);
 4. Build the solution.
 
+## TODO List
+
+[TODO List for Starlight Director](DereTore.Applications.StarlightDirector/TODO.md)
+
 ## Projects
 
 ### Common Libraries
