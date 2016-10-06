@@ -12,7 +12,10 @@
 - [x] Zooming
   - [ ] Auto re-aligning when zooming
 - [x] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
-- [ ] Copy and paste
+- [ ] Editing
+  - [ ] Area selection
+  - [ ] Copy, cut and paste
+  - [ ] Undo and redo
 - [ ] Live preview
   - [ ] Audio spectrum inside
 - [ ] `StartPosition`
