@@ -61,9 +61,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             // Zooming
             if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
                 if (e.Delta > 0) {
-                    ZoomOut();
-                } else {
                     ZoomIn();
+                } else {
+                    ZoomOut();
                 }
                 return;
             }
