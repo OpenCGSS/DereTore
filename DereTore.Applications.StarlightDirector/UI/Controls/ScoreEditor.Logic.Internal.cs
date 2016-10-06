@@ -84,7 +84,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             ResizeBars();
             RepositionBars();
             RepositionNotes();
-            RepositionLines();
+            RepositionLineLayer();
+            RepositionEditingLine();
         }
 
         private void ResizeBars() {
@@ -154,11 +155,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             AvatarLine.Y1 = AvatarLine.Y2 = y;
         }
 
-        private void RepositionLines() {
+        private void RepositionLineLayer() {
             LineLayer.Width = NoteLayer.ActualWidth;
             LineLayer.Height = NoteLayer.ActualHeight;
             Canvas.SetTop(LineLayer, ScrollOffset);
             LineLayer.InvalidateVisual();
+        }
+
+        private void RepositionEditingLine() {
+            var originalPoint = _editingLineAbsoluteStartPoint;
+            if (!originalPoint.HasValue) {
+                return;
+            }
+            var relativePoint = new Point(originalPoint.Value.X, originalPoint.Value.Y + ScrollOffset);
+            EditingLine.X1 = relativePoint.X;
+            EditingLine.Y1 = relativePoint.Y;
         }
 
         private Rect GetWorkingAreaRect() {
@@ -201,7 +212,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             NoteLayer.Children.Remove(scoreNote);
             // TODO: Query if there is a need to do that.
             if (repositionLines) {
-                RepositionLines();
+                RepositionLineLayer();
             }
             if (modifiesModel) {
                 Project.IsChanged = true;
@@ -215,7 +226,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 RemoveScoreNote(scoreNote, modifiesModel, false);
             }
             if (recalcLayout) {
-                RepositionLines();
+                RepositionLineLayer();
             }
             if (modifiesModel) {
                 Project.IsChanged = true;
@@ -413,6 +424,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private static readonly double PastTimeWindow = 0.2;
         // Then we know the bottom is <AvatarCenterY + (PastWindow / FutureWindow) * (AvatarCenterY - Ceiling))>.
         private static readonly double FutureNoteCeiling = 5d / 6;
+
+        private Point? _editingLineAbsoluteStartPoint;
 
     }
 }

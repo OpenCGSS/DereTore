@@ -38,7 +38,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private void NoteLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
             RepositionNotes();
             // We have to be sure the lines reposition after the notes did.
-            RepositionLines();
+            RepositionLineLayer();
         }
 
         private void WorkingAreaClip_OnSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -126,6 +126,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 }
                 EditingLine.X1 = EditingLine.X2 = scoreNote.X;
                 EditingLine.Y1 = EditingLine.Y2 = scoreNote.Y;
+                _editingLineAbsoluteStartPoint = new Point(scoreNote.X, scoreNote.Y - ScrollOffset);
                 EditingLine.Visibility = Visibility.Visible;
             }
             var note = scoreNote.Note;
@@ -278,6 +279,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ScoreEditor_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
             EditingLine.Visibility = Visibility.Hidden;
+            _editingLineAbsoluteStartPoint = null;
         }
 
         private void ScoreEditor_OnPreviewMouseMove(object sender, MouseEventArgs e) {
