@@ -16,7 +16,7 @@ Wonder [how this name comes from](#the-name)?
 
 ## TODO List
 
-[TODO List for Starlight Director](DereTore.Applications.StarlightDirector/TODO.md)
+[TODO List](TODO.md)
 
 ## Projects
 

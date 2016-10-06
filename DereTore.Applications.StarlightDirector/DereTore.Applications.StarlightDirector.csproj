@@ -320,7 +320,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="UI\Controls\ScoreEditor.Logic.Public.cs" />
-    <None Include="TODO.md" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Cards\sagisawa_fumika_75.jpg" />

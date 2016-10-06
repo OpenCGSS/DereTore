@@ -1,14 +1,21 @@
 ﻿# TODO List
 
+## Score Editor
+
+- [ ] Note hit volume adjustment
+- [ ] Note falling speed adjustment
+
+## Starlight Director
+
 - [x] More detailed division in beats (24/beat)
 - [ ] Variant BPM
 - [x] Zooming
 - [x] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
 - [ ] Copy and paste
-- [ ] `StartPosition`
-  - [ ] Translucent indicator layer for Director.
 - [ ] Live preview
   - [ ] Audio spectrum inside
+- [ ] `StartPosition`
+  - [ ] Translucent indicator layer for Director.
 - [ ] Convenient start time offset calibration (e.g. moving the time forward by 1 measure)
 - [ ] Edge scrolling (for inter-measure hold notes)
 - [x] Changeable sound effect in preview
