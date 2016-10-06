@@ -16,7 +16,7 @@
                 </Ellipse.Effect>
             </Ellipse>
             <Grid>
-                <Ellipse Name="NoteTypeIndicatorSync" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="Hidden">
+                <Ellipse Name="NoteTypeIndicatorSync" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                     <Ellipse.Clip>
                         <RectangleGeometry Rect="0 0 15 15">
                             <RectangleGeometry.Transform>
@@ -25,7 +25,7 @@
                         </RectangleGeometry>
                     </Ellipse.Clip>
                 </Ellipse>
-                <Ellipse  Name="NoteTypeIndicatorFlick" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="Hidden">
+                <Ellipse  Name="NoteTypeIndicatorFlick" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                     <Ellipse.Clip>
                         <RectangleGeometry Rect="0 0 15 15">
                             <RectangleGeometry.Transform>
@@ -34,7 +34,7 @@
                         </RectangleGeometry>
                     </Ellipse.Clip>
                 </Ellipse>
-                <Ellipse  Name="NoteTypeIndicatorHold" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="Hidden">
+                <Ellipse  Name="NoteTypeIndicatorHold" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                     <Ellipse.Clip>
                         <RectangleGeometry Rect="0 0 15 15">
                             <RectangleGeometry.Transform>

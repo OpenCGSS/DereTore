@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using DereTore.Applications.StarlightDirector.Extensions;
 using Newtonsoft.Json;
@@ -15,7 +14,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         [JsonProperty]
         public int PositionInGrid { get; set; }
 
-        public NoteType Type { get; private set; }
+        public NoteType Type {
+            get { return (NoteType)GetValue(TypeProperty); }
+            private set { SetValue(TypeProperty, value); }
+        }
 
         [JsonProperty]
         public NotePosition StartPosition { get; set; }
@@ -29,11 +31,17 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             set { SetValue(FlickTypeProperty, value); }
         }
 
-        public bool IsSync { get; private set; }
+        public bool IsSync {
+            get { return (bool)GetValue(IsSyncProperty); }
+            private set { SetValue(IsSyncProperty, value); }
+        }
 
         public Bar Bar { get; internal set; }
 
-        public bool IsFlick => Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
+        public bool IsFlick {
+            get { return (bool)GetValue(IsFlickProperty); }
+            private set { SetValue(IsFlickProperty, value); }
+        }
 
         [JsonProperty]
         public int PrevFlickNoteID { get; private set; }
@@ -115,7 +123,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
         }
 
-        public bool IsHold => HoldTarget != null;
+        public bool IsHold {
+            get { return (bool)GetValue(IsHoldProperty); }
+            private set { SetValue(IsHoldProperty, value); }
+        }
 
         public bool IsHoldStart => Type == NoteType.Hold && HoldTarget != null;
 
@@ -130,6 +141,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
             set {
                 _holdTarget = value;
+                IsHold = value != null;
                 // Only the former of the hold pair is considered as a hold note. The other is a tap or flick note.
                 Type = (value != null && value > this) ? NoteType.Hold : NoteType.TapOrFlick;
                 HoldTargetID = value?.ID ?? EntityID.Invalid;
@@ -138,8 +150,20 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public bool IsGamingNote => Type == NoteType.TapOrFlick || Type == NoteType.Hold;
 
+        public static readonly DependencyProperty TypeProperty = DependencyProperty.Register(nameof(Type), typeof(NoteType), typeof(Note),
+            new PropertyMetadata(NoteType.Invalid, OnTypeChanged));
+
         public static readonly DependencyProperty FlickTypeProperty = DependencyProperty.Register(nameof(FlickType), typeof(NoteFlickType), typeof(Note),
-            new PropertyMetadata(NoteFlickType.Tap));
+            new PropertyMetadata(NoteFlickType.Tap, OnFlickTypeChanged));
+
+        public static readonly DependencyProperty IsSyncProperty = DependencyProperty.Register(nameof(IsSync), typeof(bool), typeof(Note),
+            new PropertyMetadata(false));
+
+        public static readonly DependencyProperty IsFlickProperty = DependencyProperty.Register(nameof(IsFlick), typeof(bool), typeof(Note),
+            new PropertyMetadata(false));
+
+        public static readonly DependencyProperty IsHoldProperty = DependencyProperty.Register(nameof(IsHold), typeof(bool), typeof(Note),
+            new PropertyMetadata(false));
 
         public static readonly Comparison<Note> TimingComparison = (n1, n2) => {
             if (n1.Bar == n2.Bar) {
@@ -229,6 +253,20 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
             FlickType = NoteFlickType.Tap;
             HoldTarget = null;
+        }
+
+        private static void OnTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var note = (Note)obj;
+            note.IsFlick = note.IsFlickInternal();
+        }
+
+        private static void OnFlickTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var note = (Note)obj;
+            note.IsFlick = note.IsFlickInternal();
+        }
+
+        private bool IsFlickInternal() {
+            return Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
         }
 
         private Note _prevFlickNote;

@@ -16,13 +16,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             _noteTypeIndicators = new[] { NoteTypeIndicatorSync, NoteTypeIndicatorFlick, NoteTypeIndicatorHold };
         }
 
-        public void UpdateIndicators() {
-            var note = Note;
-            NoteTypeIndicatorSync.Visibility = note.IsSync ? Visibility.Visible : Visibility.Hidden;
-            NoteTypeIndicatorFlick.Visibility = note.IsFlick ? Visibility.Visible : Visibility.Hidden;
-            NoteTypeIndicatorHold.Visibility = note.IsHold ? Visibility.Visible : Visibility.Hidden;
-        }
-
         private Brush GetBorderBrush() {
             return GetBorderBrush(Party);
         }
