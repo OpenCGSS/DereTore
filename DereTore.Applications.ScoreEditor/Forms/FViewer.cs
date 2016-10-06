@@ -27,6 +27,14 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                 this.ShowMessageBox("Please select the score file.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return false;
             }
+            if (!File.Exists(txtAudioFileName.Text)) {
+                this.ShowMessageBox($"The audio file '{txtAudioFileName.Text}' does not exist.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return false;
+            }
+            if (!File.Exists(txtScoreFileName.Text)) {
+                this.ShowMessageBox($"The score file '{txtScoreFileName.Text}' does not exist.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return false;
+            }
             var scoreFileName = txtScoreFileName.Text;
             var scoreFileExtension = new FileInfo(scoreFileName).Extension.ToLowerInvariant();
             if (scoreFileExtension == ExtensionBdb) {
