@@ -10,9 +10,9 @@
 - [x] More detailed division in beats (24/beat)
 - [ ] Variant BPM
 - [x] Zooming
-  - [ ] Auto re-aligning when zooming
+  - [x] Auto re-aligning when zooming
 - [x] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
-- [ ] Editing
+- [x] Editing
   - [ ] Area selection
   - [ ] Copy, cut and paste
   - [ ] Undo and redo
