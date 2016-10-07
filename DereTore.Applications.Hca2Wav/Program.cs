@@ -8,14 +8,23 @@ namespace DereTore.Applications.Hca2Wav {
     internal static class Program {
 
         private static void Main(string[] args) {
-            if (args.Length < 2) {
+            if (args.Length < 1 || args.Length > 6) {
                 Console.WriteLine(HelpMessage);
                 return;
             }
             var inputFileName = args[0];
-            var outputFileName = args[1];
+            var varArgStart = 1;
+            string outputFileName;
+            if (args.Length > 1 && args[1][0] != '-') {
+                outputFileName = args[1];
+                varArgStart = 2;
+            } else {
+                var fileInfo = new FileInfo(inputFileName);
+                outputFileName = fileInfo.FullName.Substring(0, fileInfo.FullName.Length - fileInfo.Extension.Length);
+                outputFileName += ".wav";
+            }
             uint key1 = CgssCipher.Key1, key2 = CgssCipher.Key2;
-            for (var i = 2; i < args.Length; ++i) {
+            for (var i = varArgStart; i < args.Length; ++i) {
                 var arg = args[i];
                 if (arg[0] == '-' || arg[0] == '/') {
                     switch (arg.Substring(1)) {
@@ -51,7 +60,7 @@ namespace DereTore.Applications.Hca2Wav {
             }
         }
 
-        private static readonly string HelpMessage = "Usage: hca2wav.exe <input HCA> <output WAVE> [-a <key 1>] [-b <key 2>]";
+        private static readonly string HelpMessage = "Usage: hca2wav.exe <input HCA> [<output WAVE = <input HCA>.wav>] [-a <key 1>] [-b <key 2>]";
 
     }
 }
