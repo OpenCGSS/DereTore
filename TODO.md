@@ -29,3 +29,6 @@
 - [ ] Support for building score database
 - [ ] Support for building music archive
 - [ ] Importing existing compiled score(s)
+- [ ] Save format
+  - [ ] Auto validation (by primary key)
+  - [ ] Metadata (creator, BPM, etc.)
