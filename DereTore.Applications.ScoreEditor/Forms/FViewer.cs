@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using DereTore.ACB;
 using DereTore.Applications.ScoreEditor.Model;
 using DereTore.HCA;
 using DereTore.StarlightStage;
@@ -128,7 +127,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     btnSelectScore.Enabled = true;
                     cboDifficulty.Enabled = true;
                     cboSoundEffect.Enabled = true;
-                    progress.Enabled = false;
+                    trkProgress.Enabled = false;
                     btnScoreLoad.Enabled = true;
                     btnScoreUnload.Enabled = false;
                     btnPlay.Enabled = false;
@@ -152,7 +151,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
                     cboSoundEffect.Enabled = false;
-                    progress.Enabled = true;
+                    trkProgress.Enabled = true;
                     btnScoreLoad.Enabled = false;
                     btnScoreUnload.Enabled = true;
                     btnPlay.Enabled = true;
@@ -176,7 +175,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
                     cboSoundEffect.Enabled = false;
-                    progress.Enabled = true;
+                    trkProgress.Enabled = true;
                     btnScoreLoad.Enabled = false;
                     btnScoreUnload.Enabled = true;
                     btnPlay.Enabled = false;
@@ -189,7 +188,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     btnSelectScore.Enabled = false;
                     cboDifficulty.Enabled = false;
                     cboSoundEffect.Enabled = false;
-                    progress.Enabled = true;
+                    trkProgress.Enabled = true;
                     btnScoreLoad.Enabled = false;
                     btnScoreUnload.Enabled = true;
                     btnPlay.Enabled = true;
@@ -221,7 +220,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private readonly Timer timer = new Timer(5);
 
-        private LiveMusicPlayer _player;
+        private LiveMusicPlayer _musicPlayer;
         private Score _score;
         private Stream _audioFileStream;
 

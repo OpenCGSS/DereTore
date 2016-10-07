@@ -235,16 +235,14 @@ namespace DereTore.Applications.ScoreEditor.Controls {
             Passed
         }
 
-        public static readonly float FutureTimeWindow = 1f;
+        public static float FutureTimeWindow = 1f;
         public static readonly float PastTimeWindow = 0.2f;
         public static readonly float AvatarCircleDiameter = 50;
         public static readonly float AvatarCircleRadius = AvatarCircleDiameter / 2;
         public static readonly float[] AvatarCenterXPositions = { 0.2f, 0.35f, 0.5f, 0.65f, 0.8f };
         public static readonly float BaseLineYPosition = 5f / 6;
-        // Then we know the bottom is <AvatarCenterY + (PastWindow / FutureWindow) * (AvatarCenterY - Ceiling))>.
-        public static readonly float FutureNoteCeiling = 1f / 6;
-
-        public static float GetBottomYPosition() => BaseLineYPosition + (PastTimeWindow / FutureTimeWindow) * (BaseLineYPosition - FutureNoteCeiling);
+        // Then we know the bottom is <BaseLineYPosition + (PastWindow / FutureWindow) * (BaseLineYPosition - Ceiling))>.
+        public static readonly float FutureNoteCeiling = 1 - BaseLineYPosition;
 
     }
 }

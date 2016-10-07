@@ -35,7 +35,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.lblSong = new System.Windows.Forms.Label();
             this.cboDifficulty = new System.Windows.Forms.ComboBox();
             this.lblTime = new System.Windows.Forms.Label();
-            this.progress = new System.Windows.Forms.TrackBar();
+            this.trkProgress = new System.Windows.Forms.TrackBar();
             this.btnPause = new System.Windows.Forms.Button();
             this.propertyGrid = new System.Windows.Forms.PropertyGrid();
             this.btnScoreLoad = new System.Windows.Forms.Button();
@@ -54,11 +54,15 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.tsbScoreCreate = new System.Windows.Forms.ToolStripButton();
             this.tsbScoreSave = new System.Windows.Forms.ToolStripButton();
             this.tsbScoreSaveAs = new System.Windows.Forms.ToolStripButton();
-            this.editor = new DereTore.Applications.ScoreEditor.Controls.ScoreEditorControl();
             this.cboSoundEffect = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.progress)).BeginInit();
+            this.trkFallingSpeed = new System.Windows.Forms.TrackBar();
+            this.label2 = new System.Windows.Forms.Label();
+            this.editor = new DereTore.Applications.ScoreEditor.Controls.ScoreEditorControl();
+            this.chkSfxOn = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.trkProgress)).BeginInit();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trkFallingSpeed)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.editor)).BeginInit();
             this.SuspendLayout();
             // 
@@ -85,7 +89,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.txtAudioFileName.Location = new System.Drawing.Point(125, 20);
             this.txtAudioFileName.Name = "txtAudioFileName";
             this.txtAudioFileName.ReadOnly = true;
-            this.txtAudioFileName.Size = new System.Drawing.Size(244, 21);
+            this.txtAudioFileName.Size = new System.Drawing.Size(149, 21);
             this.txtAudioFileName.TabIndex = 3;
             // 
             // txtScoreFileName
@@ -93,12 +97,12 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.txtScoreFileName.Location = new System.Drawing.Point(125, 71);
             this.txtScoreFileName.Name = "txtScoreFileName";
             this.txtScoreFileName.ReadOnly = true;
-            this.txtScoreFileName.Size = new System.Drawing.Size(244, 21);
+            this.txtScoreFileName.Size = new System.Drawing.Size(149, 21);
             this.txtScoreFileName.TabIndex = 4;
             // 
             // btnPlay
             // 
-            this.btnPlay.Location = new System.Drawing.Point(809, 63);
+            this.btnPlay.Location = new System.Drawing.Point(700, 63);
             this.btnPlay.Name = "btnPlay";
             this.btnPlay.Size = new System.Drawing.Size(59, 35);
             this.btnPlay.TabIndex = 5;
@@ -107,7 +111,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(939, 63);
+            this.btnStop.Location = new System.Drawing.Point(830, 63);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(59, 35);
             this.btnStop.TabIndex = 6;
@@ -117,7 +121,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             // lblSong
             // 
             this.lblSong.AutoSize = true;
-            this.lblSong.Location = new System.Drawing.Point(491, 23);
+            this.lblSong.Location = new System.Drawing.Point(382, 23);
             this.lblSong.Name = "lblSong";
             this.lblSong.Size = new System.Drawing.Size(35, 12);
             this.lblSong.TabIndex = 7;
@@ -133,7 +137,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             "Pro",
             "Master",
             "Master+"});
-            this.cboDifficulty.Location = new System.Drawing.Point(389, 20);
+            this.cboDifficulty.Location = new System.Drawing.Point(280, 20);
             this.cboDifficulty.Name = "cboDifficulty";
             this.cboDifficulty.Size = new System.Drawing.Size(96, 20);
             this.cboDifficulty.TabIndex = 9;
@@ -141,25 +145,25 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             // lblTime
             // 
             this.lblTime.AutoSize = true;
-            this.lblTime.Location = new System.Drawing.Point(387, 86);
+            this.lblTime.Location = new System.Drawing.Point(278, 86);
             this.lblTime.Name = "lblTime";
             this.lblTime.Size = new System.Drawing.Size(35, 12);
             this.lblTime.TabIndex = 10;
             this.lblTime.Text = "Time:";
             // 
-            // progress
+            // trkProgress
             // 
-            this.progress.LargeChange = 30;
-            this.progress.Location = new System.Drawing.Point(389, 47);
-            this.progress.Maximum = 65536;
-            this.progress.Name = "progress";
-            this.progress.Size = new System.Drawing.Size(415, 45);
-            this.progress.TabIndex = 12;
-            this.progress.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.trkProgress.LargeChange = 30;
+            this.trkProgress.Location = new System.Drawing.Point(280, 47);
+            this.trkProgress.Maximum = 65536;
+            this.trkProgress.Name = "trkProgress";
+            this.trkProgress.Size = new System.Drawing.Size(415, 45);
+            this.trkProgress.TabIndex = 12;
+            this.trkProgress.TickStyle = System.Windows.Forms.TickStyle.None;
             // 
             // btnPause
             // 
-            this.btnPause.Location = new System.Drawing.Point(874, 63);
+            this.btnPause.Location = new System.Drawing.Point(765, 63);
             this.btnPause.Name = "btnPause";
             this.btnPause.Size = new System.Drawing.Size(59, 35);
             this.btnPause.TabIndex = 13;
@@ -169,7 +173,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             // propertyGrid
             // 
             this.propertyGrid.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.propertyGrid.Location = new System.Drawing.Point(752, 142);
+            this.propertyGrid.Location = new System.Drawing.Point(311, 154);
             this.propertyGrid.Name = "propertyGrid";
             this.propertyGrid.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
             this.propertyGrid.Size = new System.Drawing.Size(262, 308);
@@ -177,7 +181,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             // 
             // btnScoreLoad
             // 
-            this.btnScoreLoad.Location = new System.Drawing.Point(809, 12);
+            this.btnScoreLoad.Location = new System.Drawing.Point(700, 12);
             this.btnScoreLoad.Name = "btnScoreLoad";
             this.btnScoreLoad.Size = new System.Drawing.Size(59, 35);
             this.btnScoreLoad.TabIndex = 24;
@@ -186,7 +190,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             // 
             // btnScoreUnload
             // 
-            this.btnScoreUnload.Location = new System.Drawing.Point(874, 12);
+            this.btnScoreUnload.Location = new System.Drawing.Point(765, 12);
             this.btnScoreUnload.Name = "btnScoreUnload";
             this.btnScoreUnload.Size = new System.Drawing.Size(59, 35);
             this.btnScoreUnload.TabIndex = 25;
@@ -211,7 +215,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.tsbScoreCreate,
             this.tsbScoreSave,
             this.tsbScoreSaveAs});
-            this.toolStrip1.Location = new System.Drawing.Point(749, 114);
+            this.toolStrip1.Location = new System.Drawing.Point(434, 126);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(268, 25);
             this.toolStrip1.TabIndex = 0;
@@ -325,6 +329,49 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.tsbScoreSaveAs.Size = new System.Drawing.Size(23, 22);
             this.tsbScoreSaveAs.Text = "Save score as...";
             // 
+            // cboSoundEffect
+            // 
+            this.cboSoundEffect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboSoundEffect.FormattingEnabled = true;
+            this.cboSoundEffect.Items.AddRange(new object[] {
+            "SE 1",
+            "SE 2",
+            "SE 3",
+            "SE 4"});
+            this.cboSoundEffect.Location = new System.Drawing.Point(807, 113);
+            this.cboSoundEffect.Name = "cboSoundEffect";
+            this.cboSoundEffect.Size = new System.Drawing.Size(82, 20);
+            this.cboSoundEffect.TabIndex = 26;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(772, 116);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(29, 12);
+            this.label1.TabIndex = 27;
+            this.label1.Text = "SFX:";
+            // 
+            // trkFallingSpeed
+            // 
+            this.trkFallingSpeed.Location = new System.Drawing.Point(843, 154);
+            this.trkFallingSpeed.Maximum = 40;
+            this.trkFallingSpeed.Minimum = 2;
+            this.trkFallingSpeed.Name = "trkFallingSpeed";
+            this.trkFallingSpeed.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.trkFallingSpeed.Size = new System.Drawing.Size(45, 368);
+            this.trkFallingSpeed.TabIndex = 28;
+            this.trkFallingSpeed.Value = 2;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(772, 322);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(47, 24);
+            this.label2.TabIndex = 29;
+            this.label2.Text = "Falling\r\nspeed:";
+            // 
             // editor
             // 
             this.editor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -335,47 +382,37 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.editor.MouseEventsEnabled = true;
             this.editor.Name = "editor";
             this.editor.Score = null;
-            this.editor.Size = new System.Drawing.Size(734, 409);
+            this.editor.Size = new System.Drawing.Size(747, 409);
             this.editor.TabIndex = 0;
             this.editor.TabStop = false;
             // 
-            // cboSoundEffect
+            // chkSfxOn
             // 
-            this.cboSoundEffect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboSoundEffect.FormattingEnabled = true;
-            this.cboSoundEffect.Items.AddRange(new object[] {
-            "SE 1",
-            "SE 2",
-            "SE 3",
-            "SE 4"});
-            this.cboSoundEffect.Location = new System.Drawing.Point(722, 20);
-            this.cboSoundEffect.Name = "cboSoundEffect";
-            this.cboSoundEffect.Size = new System.Drawing.Size(82, 20);
-            this.cboSoundEffect.TabIndex = 26;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(687, 23);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(29, 12);
-            this.label1.TabIndex = 27;
-            this.label1.Text = "SFX:";
+            this.chkSfxOn.AutoSize = true;
+            this.chkSfxOn.Checked = true;
+            this.chkSfxOn.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSfxOn.Location = new System.Drawing.Point(807, 139);
+            this.chkSfxOn.Name = "chkSfxOn";
+            this.chkSfxOn.Size = new System.Drawing.Size(36, 16);
+            this.chkSfxOn.TabIndex = 30;
+            this.chkSfxOn.Text = "On";
+            this.chkSfxOn.UseVisualStyleBackColor = true;
             // 
             // FViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(1026, 534);
+            this.ClientSize = new System.Drawing.Size(900, 534);
+            this.Controls.Add(this.chkSfxOn);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.trkFallingSpeed);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cboSoundEffect);
-            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.btnScoreUnload);
             this.Controls.Add(this.btnScoreLoad);
-            this.Controls.Add(this.propertyGrid);
             this.Controls.Add(this.btnPause);
             this.Controls.Add(this.lblTime);
-            this.Controls.Add(this.progress);
+            this.Controls.Add(this.trkProgress);
             this.Controls.Add(this.cboDifficulty);
             this.Controls.Add(this.lblSong);
             this.Controls.Add(this.btnStop);
@@ -385,15 +422,18 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             this.Controls.Add(this.btnSelectScore);
             this.Controls.Add(this.btnSelectAudio);
             this.Controls.Add(this.editor);
+            this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.propertyGrid);
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "FViewer";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DereTore: Score Editor";
-            ((System.ComponentModel.ISupportInitialize)(this.progress)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trkProgress)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trkFallingSpeed)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.editor)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -413,7 +453,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private System.Windows.Forms.Label lblSong;
         private System.Windows.Forms.ComboBox cboDifficulty;
         private System.Windows.Forms.Label lblTime;
-        private System.Windows.Forms.TrackBar progress;
+        private System.Windows.Forms.TrackBar trkProgress;
         private System.Windows.Forms.Button btnPause;
         private System.Windows.Forms.PropertyGrid propertyGrid;
         private System.Windows.Forms.Button btnScoreLoad;
@@ -434,6 +474,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private System.Windows.Forms.ToolStripButton tsbRetimingToNow;
         private System.Windows.Forms.ComboBox cboSoundEffect;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TrackBar trkFallingSpeed;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.CheckBox chkSfxOn;
     }
 }
 

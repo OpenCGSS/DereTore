@@ -2,8 +2,8 @@
 
 ## Score Editor
 
-- [ ] Note hit volume adjustment
-- [ ] Note falling speed adjustment
+- [ ] <del>Note hit volume adjustment</del> (not possible)
+- [x] Note falling speed adjustment
 
 ## Starlight Director
 

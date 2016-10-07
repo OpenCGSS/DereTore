@@ -160,7 +160,7 @@ namespace DereTore.Applications.ScoreEditor {
             _internalName = names[0];
             _hcaDataStream = _acb.OpenDataStream(_internalName);
             _waveStream = new RawSourceWaveStream(new HcaAudioStream(_hcaDataStream, decodeParams), HcaWaveProvider.DefaultWaveFormat);
-            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
+            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 40);
             //_soundPlayer = new AudioOut();
             _soundPlayer.Init(_waveStream);
             _sourceStream = acbStream;
@@ -172,7 +172,7 @@ namespace DereTore.Applications.ScoreEditor {
 
         private LiveMusicPlayer(Stream hcaStream, DecodeParams decodeParams) {
             _waveStream = new RawSourceWaveStream(new HcaAudioStream(hcaStream, decodeParams), HcaWaveProvider.DefaultWaveFormat);
-            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
+            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 40);
             //_soundPlayer = new AudioOut();
             _soundPlayer.Init(_waveStream);
             _sourceStream = hcaStream;
@@ -184,7 +184,8 @@ namespace DereTore.Applications.ScoreEditor {
 
         private LiveMusicPlayer(Stream waveStream) {
             _waveStream = new RawSourceWaveStream(waveStream, HcaWaveProvider.DefaultWaveFormat);
-            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 0);
+            // See DirectSoundOut.cs in NAudio. Use 40 for WasapiOut to compsentate the latency in DirectSoundOut.
+            _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 40);
             //_soundPlayer = new AudioOut();
             _soundPlayer.Init(_waveStream);
             _sourceStream = waveStream;

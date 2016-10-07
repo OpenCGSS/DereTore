@@ -148,7 +148,7 @@ namespace DereTore.Applications.ScoreEditor {
             _audioOuts = new List<AudioOut>();
             _playingList = new List<bool>();
         }
-
+        
         private readonly List<MemoryStream> _soundStreams;
         private readonly List<WaveStream> _waveStreams;
         private readonly List<string> _fileNames;
