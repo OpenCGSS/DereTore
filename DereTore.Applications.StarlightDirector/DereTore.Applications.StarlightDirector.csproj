@@ -188,7 +188,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Components\ColorizationHelper.cs" />
+    <Compile Include="Components\UIHelper.cs" />
     <Compile Include="Components\CommandHelper.cs" />
     <Compile Include="Components\DescribedEnumReader.cs" />
     <Compile Include="Components\IntegerIDGenerator.cs" />
@@ -223,7 +223,7 @@
     <Compile Include="Extensions\CommandExtensions.cs" />
     <Compile Include="Extensions\NotifyPropertyChangedExtensions.cs" />
     <Compile Include="Extensions\NoteExtensions.cs" />
-    <Compile Include="Extensions\PageExtensions.cs" />
+    <Compile Include="Extensions\VisualExtensions.cs" />
     <Compile Include="Interop\NativeConstants.cs" />
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\NativeStructures.cs" />

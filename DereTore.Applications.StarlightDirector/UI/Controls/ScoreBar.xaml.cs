@@ -84,12 +84,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public void ZoomIn() {
-            Height += 50;
+            Height *= ZoomFactor;
         }
 
         public void ZoomOut() {
-            if (Height > 50) {
-                Height -= 50;
+            if (Height > MinimumZoomHeight) {
+                Height /= ZoomFactor;
             }
         }
 
@@ -226,6 +226,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public static readonly double DefaultHeight = 550;
         public static readonly int[] ZoomLevels = { 96, 48, 32, 24, 16, 12, 4, 1 };
         public static readonly int SignatureBase = ScoreSettings.DefaultGlobalGridPerSignature * ScoreSettings.DefaultGlobalSignature; // 96
+        public static readonly double ZoomFactor = 1.2;
 
     }
 }

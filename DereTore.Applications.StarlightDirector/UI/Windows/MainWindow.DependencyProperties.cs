@@ -21,7 +21,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             new PropertyMetadata(null, OnProjectChanged));
 
         public static readonly DependencyProperty AccentColorBrushProperty = DependencyProperty.Register(nameof(AccentColorBrush), typeof(Brush), typeof(MainWindow),
-            new PropertyMetadata(ColorizationHelper.GetWindowColorizationBrush()));
+            new PropertyMetadata(UIHelper.GetWindowColorizationBrush()));
 
         private static void OnProjectChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var window = obj as MainWindow;

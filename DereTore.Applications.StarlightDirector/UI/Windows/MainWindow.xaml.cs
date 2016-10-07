@@ -55,7 +55,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void OnDwmColorizationColorChanged(object sender, EventArgs e) {
-            AccentColorBrush = ColorizationHelper.GetWindowColorizationBrush();
+            AccentColorBrush = UIHelper.GetWindowColorizationBrush();
         }
 
         private IntPtr WndProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam, ref bool handled) {

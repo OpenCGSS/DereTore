@@ -1,23 +1,27 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.UI.Pages;
 using DereTore.Applications.StarlightDirector.UI.Windows;
 
 namespace DereTore.Applications.StarlightDirector.Extensions {
-    internal static class PageExtensions {
+    internal static class VisualExtensions {
 
-        public static MainWindow FindMainWindow<T>(this T page) where T : Page, IDirectorPage {
-            var mainWindowType = typeof(MainWindow);
-            var parent = page.GetVisualParent();
+        public static TParent FindVisualParent<TParent>(this FrameworkElement element) where TParent : FrameworkElement {
+            var mainWindowType = typeof(TParent);
+            var parent = element.GetVisualParent();
             while (parent != null) {
                 if (parent.GetType() == mainWindowType) {
-                    return parent as MainWindow;
+                    return parent as TParent;
                 }
                 parent = parent.GetVisualParent();
             }
             return null;
+        }
+
+        public static MainWindow FindMainWindow<T>(this T page) where T : Page, IDirectorPage {
+            return FindVisualParent<MainWindow>(page);
         }
 
         private static FrameworkElement GetVisualParent(this FrameworkElement element) {

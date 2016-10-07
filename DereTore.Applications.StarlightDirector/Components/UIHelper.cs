@@ -5,7 +5,7 @@ using DereTore.Applications.StarlightDirector.Interop;
 using System.Windows.Interop;
 
 namespace DereTore.Applications.StarlightDirector.Components {
-    public static class ColorizationHelper {
+    public static class UIHelper {
 
         public static void RegisterWndProc(this Window window, HwndSourceHook hook) {
             var interopHelper = new WindowInteropHelper(window);

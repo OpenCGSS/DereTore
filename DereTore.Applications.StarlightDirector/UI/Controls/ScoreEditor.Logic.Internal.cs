@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
@@ -390,6 +391,24 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             } else {
                 MaximumScrollOffset = scoreBars[0].Height * ScoreBars.Count;
             }
+        }
+
+        private ScoreBar GetScoreBarUnderMouseForZooming(out double heightPercentage, out double height) {
+            heightPercentage = 0;
+            height = 0;
+            var pt = Mouse.GetPosition(this);
+            var hit = VisualTreeHelper.HitTest(this, pt);
+            var element = hit.VisualHit as FrameworkElement;
+            var scoreBar = element?.FindVisualParent<ScoreBar>();
+            if (scoreBar == null) {
+                return null;
+            }
+            pt = TranslatePoint(pt, BarLayer);
+            var y = Canvas.GetTop(scoreBar);
+            var delta = pt.Y - y;
+            height = scoreBar.Height;
+            heightPercentage = delta / height;
+            return scoreBar;
         }
 
         private void TrimScoreNotes(ScoreBar willBeDeleted, bool modifiesModel) {

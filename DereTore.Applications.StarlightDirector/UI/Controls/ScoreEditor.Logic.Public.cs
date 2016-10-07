@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities;
 
@@ -242,20 +245,42 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public void ZoomOut() {
+            double heightPercentage, scoreBarHeight;
+            var originalScoreBar = GetScoreBarUnderMouseForZooming(out heightPercentage, out scoreBarHeight);
+            double top = 0;
+            if (originalScoreBar != null) {
+                top = Canvas.GetTop(originalScoreBar);
+            }
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.ZoomOut();
             }
             UpdateMaximumScrollOffset();
             RecalcEditorLayout();
+            if (originalScoreBar != null) {
+                var newTop = Canvas.GetTop(originalScoreBar);
+                var diff = newTop - top;
+                ScrollOffset = ScrollOffset - diff - (originalScoreBar.Height - scoreBarHeight) * heightPercentage;
+            }
         }
 
         public void ZoomIn() {
+            double heightPercentage, scoreBarHeight;
+            var originalScoreBar = GetScoreBarUnderMouseForZooming(out heightPercentage, out scoreBarHeight);
+            double top = 0;
+            if (originalScoreBar != null) {
+                top = Canvas.GetTop(originalScoreBar);
+            }
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.ZoomIn();
             }
             UpdateMaximumScrollOffset();
             RecalcEditorLayout();
+            if (originalScoreBar != null) {
+                var newTop = Canvas.GetTop(originalScoreBar);
+                var diff = newTop - top;
+                ScrollOffset = ScrollOffset - diff - (originalScoreBar.Height - scoreBarHeight) * heightPercentage;
+            }
         }
-        
+
     }
 }
