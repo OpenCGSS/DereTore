@@ -111,14 +111,11 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private void PreloadNoteSounds() {
             const int sfxTypeCount = 4;
             for (var i = 0; i < sfxTypeCount; ++i) {
-                var acbFileName = string.Format(SoundEffectAcbFileNameFormat, i.ToString("00"));
-                using (var fileStream = File.Open(acbFileName, FileMode.Open, FileAccess.Read)) {
-                    using (var acbFile = AcbFile.FromStream(fileStream, false)) {
-                        foreach (var hcaName in new[] { TapHcaName, FlickHcaName }) {
-                            using (var dataStream = acbFile.OpenDataStream(hcaName)) {
-                                SfxManager.Instance.PreloadHca(dataStream, $"{acbFileName}/{hcaName}");
-                            }
-                        }
+                var sfxDirName = string.Format(SoundEffectAudioDirectoryNameFormat, i.ToString("00"));
+                foreach (var waveAudioName in new[] { TapHcaName, FlickHcaName }) {
+                    var key = $"{sfxDirName}/{waveAudioName}";
+                    using (var dataStream = File.Open(key, FileMode.Open, FileAccess.Read)) {
+                        SfxManager.Instance.PreloadWave(dataStream, key);
                     }
                 }
             }
@@ -216,9 +213,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private static readonly string SongTipFormat = "Song: {0}";
 
-        private static readonly string SoundEffectAcbFileNameFormat = "Resources/SFX/se_live_{0}.acb";
-        private static readonly string FlickHcaName = "se_live_flic_perfect.hca";
-        private static readonly string TapHcaName = "se_live_tap_perfect.hca";
+        private static readonly string SoundEffectAudioDirectoryNameFormat = "Resources/SFX/se_live_{0}";
+        private static readonly string FlickHcaName = "se_live_flic_perfect.wav";
+        private static readonly string TapHcaName = "se_live_tap_perfect.wav";
         private string _currentFlickHcaFileName;
         private string _currentTapHcaFileName;
 

@@ -242,7 +242,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private void FViewer_FormClosing(object sender, FormClosingEventArgs e) {
             if (btnScoreUnload.Enabled) {
-                this.ShowMessageBox("Please unload the score and the ACB before exiting.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                this.ShowMessageBox("Please unload the score and the audio file before exiting.", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 e.Cancel = true;
                 return;
             }
@@ -257,9 +257,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             }
             var note = e.Note;
             if (note.IsFlick) {
-                SfxManager.Instance.PlayHca(_currentFlickHcaFileName);
+                SfxManager.Instance.PlayWave(_currentFlickHcaFileName);
             } else if (note.IsTap || note.IsHold) {
-                SfxManager.Instance.PlayHca(_currentTapHcaFileName);
+                SfxManager.Instance.PlayWave(_currentTapHcaFileName);
             }
         }
 
@@ -325,9 +325,9 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                 throw new ArgumentOutOfRangeException(nameof(audioFileExtension), $"Unsupported audio format: '{audioFileExtension}'.");
             }
             _player.PlaybackStopped += Player_PlaybackStopped;
-            var sfxAcbFileName = string.Format(SoundEffectAcbFileNameFormat, cboSoundEffect.SelectedIndex.ToString("00"));
-            _currentTapHcaFileName = $"{sfxAcbFileName}/{TapHcaName}";
-            _currentFlickHcaFileName = $"{sfxAcbFileName}/{FlickHcaName}";
+            var sfxDirName = string.Format(SoundEffectAudioDirectoryNameFormat, cboSoundEffect.SelectedIndex.ToString("00"));
+            _currentTapHcaFileName = $"{sfxDirName}/{TapHcaName}";
+            _currentFlickHcaFileName = $"{sfxDirName}/{FlickHcaName}";
             Score score;
             var scoreFileName = txtScoreFileName.Text;
             var scoreFileExtension = new FileInfo(scoreFileName).Extension.ToLowerInvariant();
