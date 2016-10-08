@@ -404,8 +404,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             height = 0;
             var pt = pointRelativeToThis;
             var hit = VisualTreeHelper.HitTest(this, pt);
-            var element = hit.VisualHit as FrameworkElement;
-            var scoreBar = element?.FindVisualParent<ScoreBar>();
+            var scoreBar = (hit?.VisualHit as FrameworkElement)?.FindVisualParent<ScoreBar>();
             if (scoreBar == null) {
                 return null;
             }
@@ -428,6 +427,54 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var processing = ScoreNotes.Where(matchFunc).ToArray();
             foreach (var scoreNote in processing) {
                 RemoveScoreNote(scoreNote, modifiesModel, false);
+            }
+        }
+
+        private void ZoomOut(Point? specifiedPoint) {
+            double heightPercentage, scoreBarHeight;
+            ScoreBar originalScoreBar;
+            if (specifiedPoint.HasValue) {
+                originalScoreBar = GetScoreBarGeomInfoForZooming(specifiedPoint.Value, out heightPercentage, out scoreBarHeight);
+            } else {
+                originalScoreBar = GetScoreBarGeomInfoForZooming(out heightPercentage, out scoreBarHeight);
+            }
+            double top = 0;
+            if (originalScoreBar != null) {
+                top = Canvas.GetTop(originalScoreBar);
+            }
+            foreach (var scoreBar in ScoreBars) {
+                scoreBar.ZoomOut();
+            }
+            UpdateMaximumScrollOffset();
+            RecalcEditorLayout();
+            if (originalScoreBar != null) {
+                var newTop = Canvas.GetTop(originalScoreBar);
+                var diff = newTop - top;
+                ScrollOffset = ScrollOffset - diff - (originalScoreBar.Height - scoreBarHeight) * heightPercentage;
+            }
+        }
+
+        private void ZoomIn(Point? specifiedPoint) {
+            double heightPercentage, scoreBarHeight;
+            ScoreBar originalScoreBar;
+            if (specifiedPoint.HasValue) {
+                originalScoreBar = GetScoreBarGeomInfoForZooming(specifiedPoint.Value, out heightPercentage, out scoreBarHeight);
+            } else {
+                originalScoreBar = GetScoreBarGeomInfoForZooming(out heightPercentage, out scoreBarHeight);
+            }
+            double top = 0;
+            if (originalScoreBar != null) {
+                top = Canvas.GetTop(originalScoreBar);
+            }
+            foreach (var scoreBar in ScoreBars) {
+                scoreBar.ZoomIn();
+            }
+            UpdateMaximumScrollOffset();
+            RecalcEditorLayout();
+            if (originalScoreBar != null) {
+                var newTop = Canvas.GetTop(originalScoreBar);
+                var diff = newTop - top;
+                ScrollOffset = ScrollOffset - diff - (originalScoreBar.Height - scoreBarHeight) * heightPercentage;
             }
         }
 

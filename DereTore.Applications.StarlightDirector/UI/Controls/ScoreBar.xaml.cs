@@ -93,6 +93,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
+        public void ZoomToHeight(double height) {
+            if (height > MinimumZoomHeight) {
+                Height = height;
+            }
+        }
+
         public int TotalRowCount { get; private set; }
 
         protected override void OnRender(DrawingContext drawingContext) {

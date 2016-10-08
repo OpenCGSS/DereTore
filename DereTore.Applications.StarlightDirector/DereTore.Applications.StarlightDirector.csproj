@@ -367,6 +367,7 @@
     <Resource Include="Resources\Icons\EditModeHold.png" />
     <Resource Include="Resources\Icons\EditModeSelect.png" />
     <Resource Include="Resources\Icons\EditModeSync.png" />
+    <Resource Include="Resources\Icons\ViewZoomToBeat.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

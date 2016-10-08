@@ -34,4 +34,5 @@
     <BitmapImage x:Key="RibbonIconUtilities" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/Utilities.png"/>
     <BitmapImage x:Key="RibbonIconViewZoomIn" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewZoomIn.png"/>
     <BitmapImage x:Key="RibbonIconViewZoomOut" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewZoomOut.png"/>
+    <BitmapImage x:Key="RibbonIconViewZoomToBeat" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewZoomToBeat.png"/>
 </ResourceDictionary>

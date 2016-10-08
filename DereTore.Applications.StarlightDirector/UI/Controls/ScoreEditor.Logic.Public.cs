@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities;
+using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
@@ -244,34 +245,37 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
+        public void ZoomOutByCenter() {
+            var pt = new Point(ActualWidth / 2, ActualHeight / 2);
+            ZoomOut(pt);
+        }
+
+        public void ZoomInByCenter() {
+            var pt = new Point(ActualWidth / 2, ActualHeight / 2);
+            ZoomIn(pt);
+        }
+
         public void ZoomOut() {
-            double heightPercentage, scoreBarHeight;
-            var originalScoreBar = GetScoreBarGeomInfoForZooming(out heightPercentage, out scoreBarHeight);
-            double top = 0;
-            if (originalScoreBar != null) {
-                top = Canvas.GetTop(originalScoreBar);
-            }
-            foreach (var scoreBar in ScoreBars) {
-                scoreBar.ZoomOut();
-            }
-            UpdateMaximumScrollOffset();
-            RecalcEditorLayout();
-            if (originalScoreBar != null) {
-                var newTop = Canvas.GetTop(originalScoreBar);
-                var diff = newTop - top;
-                ScrollOffset = ScrollOffset - diff - (originalScoreBar.Height - scoreBarHeight) * heightPercentage;
-            }
+            ZoomOut(null);
         }
 
         public void ZoomIn() {
+            ZoomIn(null);
+        }
+
+        public void ZoomTo(int oneNthBeat) {
+            var centerPoint = new Point(ActualWidth / 2, ActualHeight / 2);
             double heightPercentage, scoreBarHeight;
-            var originalScoreBar = GetScoreBarGeomInfoForZooming(out heightPercentage, out scoreBarHeight);
+            var originalScoreBar = GetScoreBarGeomInfoForZooming(centerPoint, out heightPercentage, out scoreBarHeight);
             double top = 0;
+            const double conflictAvoidingLevel = 1.05;
             if (originalScoreBar != null) {
                 top = Canvas.GetTop(originalScoreBar);
             }
             foreach (var scoreBar in ScoreBars) {
-                scoreBar.ZoomIn();
+                var expectedHeight = scoreBar.NoteRadius * 2 * oneNthBeat / 4 * scoreBar.Bar.GetActualSignature();
+                expectedHeight *= conflictAvoidingLevel;
+                scoreBar.ZoomToHeight(expectedHeight);
             }
             UpdateMaximumScrollOffset();
             RecalcEditorLayout();
