@@ -181,9 +181,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void InitializeControls() {
             var avatars = new ScoreNote[5];
+            var dummyNote = new Note(0, null) {
+                StartPosition = NotePosition.Nowhere,
+                FinishPosition = NotePosition.Nowhere
+            };
             for (var i = 0; i < 5; ++i) {
                 var image = Application.Current.FindResource<ImageSource>($"CardAvatar{i + 1}");
                 var avatar = new ScoreNote();
+                // To hide the note indicators appearing on avatars.
+                avatar.Note = dummyNote;
                 avatar.Image = image;
                 avatars[i] = avatar;
                 AvatarLayer.Children.Add(avatar);

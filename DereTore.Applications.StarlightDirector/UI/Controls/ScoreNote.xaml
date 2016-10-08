@@ -10,40 +10,32 @@
              SizeChanged="ScoreNote_OnSizeChanged">
     <Grid>
         <Grid ZIndex="0">
+            <Grid Margin="-5 -3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="8"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="8"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="8"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="8"/>
+                </Grid.ColumnDefinitions>
+                <Ellipse Grid.Row="0" Grid.Column="2" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+                <Ellipse Grid.Row="0" Grid.Column="0" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+                <Ellipse Grid.Row="2" Grid.Column="0" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+                <TextBlock Grid.Row="2" Grid.Column="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" RenderTransformOrigin="0.5 0.5"
+                           Text="{Binding ElementName=Me, Path=Note.StartPosition, Converter={StaticResource NotePositionToTextConverter}, Mode=OneWay}">
+                    <TextBlock.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="-1"/>
+                    </TextBlock.RenderTransform>
+                </TextBlock>
+            </Grid>
             <Ellipse Name="Circle" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="3" Fill="{Binding ElementName=Me, Path=Fill, Mode=OneWay}">
                 <Ellipse.Effect>
                     <DropShadowEffect x:Name="DropShadow" ShadowDepth="0" BlurRadius="15" Color="LawnGreen" Opacity="0"/>
                 </Ellipse.Effect>
             </Ellipse>
-            <Grid>
-                <Ellipse Name="NoteTypeIndicatorSync" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    <Ellipse.Clip>
-                        <RectangleGeometry Rect="0 0 15 15">
-                            <RectangleGeometry.Transform>
-                                <RotateTransform Angle="135" CenterX="15" CenterY="15"/>
-                            </RectangleGeometry.Transform>
-                        </RectangleGeometry>
-                    </Ellipse.Clip>
-                </Ellipse>
-                <Ellipse  Name="NoteTypeIndicatorFlick" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    <Ellipse.Clip>
-                        <RectangleGeometry Rect="0 0 15 15">
-                            <RectangleGeometry.Transform>
-                                <RotateTransform Angle="45" CenterX="15" CenterY="15"/>
-                            </RectangleGeometry.Transform>
-                        </RectangleGeometry>
-                    </Ellipse.Clip>
-                </Ellipse>
-                <Ellipse  Name="NoteTypeIndicatorHold" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                    <Ellipse.Clip>
-                        <RectangleGeometry Rect="0 0 15 15">
-                            <RectangleGeometry.Transform>
-                                <RotateTransform Angle="-45" CenterX="15" CenterY="15"/>
-                            </RectangleGeometry.Transform>
-                        </RectangleGeometry>
-                    </Ellipse.Clip>
-                </Ellipse>
-            </Grid>
             <Grid Margin="6 10">
                 <Path Stretch="Fill" Fill="{Binding ElementName=Circle, Path=Stroke}" Data="F1 M 57,42L 57,34L 32.25,34L 42.25,24L 31.75,24L 17.75,38L 31.75,52L 42.25,52L 32.25,42L 57,42 Z "
                   Visibility="{Binding ElementName=Me, Path=Note.FlickType, Converter={StaticResource NoteFlickTypeToVisibilityConverter}, ConverterParameter={x:Static entities:NoteFlickType.FlickLeft}, Mode=OneWay}"/>

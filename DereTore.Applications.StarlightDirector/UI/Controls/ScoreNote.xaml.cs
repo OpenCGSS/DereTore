@@ -13,7 +13,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public ScoreNote() {
             InitializeComponent();
             Radius = DefaultRadius;
-            _noteTypeIndicators = new[] { NoteTypeIndicatorSync, NoteTypeIndicatorFlick, NoteTypeIndicatorHold };
         }
 
         private Brush GetBorderBrush() {
@@ -77,23 +76,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             clip.Center = new Point((width - margin.Left - margin.Right) / 2 + margin.Left, (height - margin.Top - margin.Bottom) / 2 + margin.Top);
             clip.RadiusX = width / 2;
             clip.RadiusY = height / 2;
-
-            var controlWidth = ActualWidth;
-            var controlHeight = ActualHeight;
-            foreach (var noteTypeIndicator in _noteTypeIndicators) {
-                var geometry = (RectangleGeometry)noteTypeIndicator.Clip;
-                var rect = geometry.Rect;
-                rect.Width = controlWidth / 2;
-                rect.Height = controlHeight / 2;
-                geometry.Rect = rect;
-                var rotateTransform = (RotateTransform)geometry.Transform;
-                rotateTransform.CenterX = controlWidth / 2;
-                rotateTransform.CenterY = controlHeight / 2;
-            }
         }
 
         private static readonly double DefaultRadius = 15;
-        private readonly Ellipse[] _noteTypeIndicators;
 
     }
 }

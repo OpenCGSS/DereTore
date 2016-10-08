@@ -9,4 +9,6 @@
     <converters:PositiveInt32ToStringConverter x:Key="PositiveInt32ToStringConverter"/>
     <converters:DoubleToStringConverter x:Key="DoubleToStringConverter"/>
     <converters:NoteFlickTypeToVisibilityConverter x:Key="NoteFlickTypeToVisibilityConverter"/>
+    <converters:NullableBooleanToVisibilityConverter x:Key="NullableBooleanToVisibilityConverter"/>
+    <converters:NotePositionToTextConverter x:Key="NotePositionToTextConverter"/>
 </ResourceDictionary>

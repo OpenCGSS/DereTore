@@ -20,10 +20,16 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         [JsonProperty]
-        public NotePosition StartPosition { get; set; }
+        public NotePosition StartPosition {
+            get { return (NotePosition)GetValue(StartPositionProperty); }
+            set { SetValue(StartPositionProperty, value); }
+        }
 
         [JsonProperty]
-        public NotePosition FinishPosition { get; set; }
+        public NotePosition FinishPosition {
+            get { return (NotePosition)GetValue(FinishPositionProperty); }
+            set { SetValue(FinishPositionProperty, value); }
+        }
 
         [JsonProperty]
         public NoteFlickType FlickType {
@@ -164,6 +170,12 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static readonly DependencyProperty IsHoldProperty = DependencyProperty.Register(nameof(IsHold), typeof(bool), typeof(Note),
             new PropertyMetadata(false));
+
+        public static readonly DependencyProperty StartPositionProperty = DependencyProperty.Register(nameof(StartPosition), typeof(NotePosition), typeof(Note),
+            new PropertyMetadata(NotePosition.Nowhere));
+
+        public static readonly DependencyProperty FinishPositionProperty = DependencyProperty.Register(nameof(FinishPosition), typeof(NotePosition), typeof(Note),
+            new PropertyMetadata(NotePosition.Nowhere));
 
         public static readonly Comparison<Note> TimingComparison = (n1, n2) => {
             if (n1.Bar == n2.Bar) {

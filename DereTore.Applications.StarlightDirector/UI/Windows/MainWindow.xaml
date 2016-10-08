@@ -49,16 +49,16 @@
             </fluent:Ribbon.Menu>
             <fluent:RibbonTabItem Header="Home" KeyTip="H">
                 <fluent:RibbonGroupBox Header="Edit">
-                    <fluent:DropDownButton Header="Edit Mode" Size="Large" LargeIcon="{StaticResource RibbonIconEditMode}">
-                        <fluent:MenuItem Header="_Select" Command="{x:Static local:MainWindow.CmdEditModeSelect}"
+                    <fluent:DropDownButton Header="Mode" Size="Large" LargeIcon="{StaticResource RibbonIconEditMode}">
+                        <fluent:MenuItem Header="_Select" Command="{x:Static local:MainWindow.CmdEditModeSelect}" Icon="{StaticResource RibbonIconEditModeSelect}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Select}}"/>
-                        <fluent:MenuItem Header="Sy_nc" Command="{x:Static local:MainWindow.CmdEditModeEditSync}"
+                        <fluent:MenuItem Header="Create Sy_nc" Command="{x:Static local:MainWindow.CmdEditModeEditSync}" Icon="{StaticResource RibbonIconEditModeSync}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Sync}}"/>
-                        <fluent:MenuItem Header="_Flick" Command="{x:Static local:MainWindow.CmdEditModeEditFlick}"
+                        <fluent:MenuItem Header="Create _Flick" Command="{x:Static local:MainWindow.CmdEditModeEditFlick}" Icon="{StaticResource RibbonIconEditModeFlick}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Flick}}"/>
-                        <fluent:MenuItem Header="_Hold" Command="{x:Static local:MainWindow.CmdEditModeEditHold}"
+                        <fluent:MenuItem Header="Create _Hold" Command="{x:Static local:MainWindow.CmdEditModeEditHold}" Icon="{StaticResource RibbonIconEditModeHold}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Hold}}"/>
-                        <fluent:MenuItem Header="_Clear" Command="{x:Static local:MainWindow.CmdEditModeClear}"
+                        <fluent:MenuItem Header="_Clear" Command="{x:Static local:MainWindow.CmdEditModeClear}" Icon="{StaticResource RibbonIconEditModeClear}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Clear}}"/>
                     </fluent:DropDownButton>
                     <TextBlock Padding="4 2">
@@ -84,14 +84,20 @@
                                            Icon="{StaticResource RibbonIconBarAppendMany}"/>
                         </Grid>
                     </fluent:SplitButton>
-                    <fluent:Button Header="Insert" Command="{x:Static local:MainWindow.CmdEditBarInsert}" LargeIcon="{StaticResource RibbonIconBarInsert}"/>
-                    <fluent:Button Header="Edit" Command="{x:Static local:MainWindow.CmdEditBarEdit}" LargeIcon="{StaticResource RibbonIconBarEdit}"/>
-                    <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditBarDelete}" LargeIcon="{StaticResource RibbonIconBarDelete}"/>
+                    <fluent:Button Header="Insert" Command="{x:Static local:MainWindow.CmdEditBarInsert}" Size="Middle" Icon="{StaticResource RibbonIconBarInsert}"/>
+                    <fluent:Button Header="Edit" Command="{x:Static local:MainWindow.CmdEditBarEdit}" Size="Middle" Icon="{StaticResource RibbonIconBarEdit}"/>
+                    <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditBarDelete}" Size="Middle" Icon="{StaticResource RibbonIconBarDelete}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Note">
                     <fluent:Button Header="Add" Command="{x:Static local:MainWindow.CmdEditNoteAdd}" LargeIcon="{StaticResource RibbonIconNoteAdd}"/>
-                    <fluent:Button Header="Edit" Command="{x:Static local:MainWindow.CmdEditNoteEdit}" LargeIcon="{StaticResource RibbonIconNoteEdit}"/>
-                    <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditNoteDelete}" LargeIcon="{StaticResource RibbonIconNoteDelete}"/>
+                    <fluent:DropDownButton Header="Start Position" Size="Middle" Icon="{StaticResource RibbonIconNoteEdit}">
+                        <fluent:MenuItem Header="Left (1)" Command="{x:Static local:MainWindow.CmdEditNoteStartPosition1}"/>
+                        <fluent:MenuItem Header="Center Left (2)" Command="{x:Static local:MainWindow.CmdEditNoteStartPosition2}"/>
+                        <fluent:MenuItem Header="Center (3)" Command="{x:Static local:MainWindow.CmdEditNoteStartPosition3}"/>
+                        <fluent:MenuItem Header="Center Right (4)" Command="{x:Static local:MainWindow.CmdEditNoteStartPosition4}"/>
+                        <fluent:MenuItem Header="Right (5)" Command="{x:Static local:MainWindow.CmdEditNoteStartPosition5}"/>
+                    </fluent:DropDownButton>
+                    <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditNoteDelete}" Size="Middle" Icon="{StaticResource RibbonIconNoteDelete}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Preview">
                     <fluent:Button Header="Start Preview" Command="{x:Static local:MainWindow.CmdPreviewStart}" LargeIcon="{StaticResource RibbonIconPreviewStart}"/>

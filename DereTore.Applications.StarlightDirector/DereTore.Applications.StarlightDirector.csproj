@@ -239,6 +239,8 @@
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
+    <Compile Include="UI\Converters\NullableBooleanToVisibilityConverter.cs" />
+    <Compile Include="UI\Converters\NotePositionToTextConverter.cs" />
     <Compile Include="UI\EditMode.cs" />
     <Compile Include="UI\Controls\ScoreBar.xaml.cs">
       <DependentUpon>ScoreBar.xaml</DependentUpon>
@@ -332,19 +334,19 @@
     <None Include="Resources\Cards\kanzaki_ranko.jpg" />
     <Resource Include="Resources\Cards\jougasaki_rika_75.jpg" />
     <None Include="Resources\Cards\jougasaki_rika.jpg" />
+    <Resource Include="Resources\Icons\BarDelete.png" />
+    <Resource Include="Resources\Icons\BarEdit.png" />
+    <Resource Include="Resources\Icons\BarInsert.png" />
     <Resource Include="Resources\Icons\FileNew.png" />
     <Resource Include="Resources\Icons\FileOpen.png" />
     <Resource Include="Resources\Icons\FileSave.png" />
     <Resource Include="Resources\Icons\FileSaveAs.png" />
     <Resource Include="Resources\Icons\FileExit.png" />
     <Resource Include="Resources\Icons\EditMode.png" />
-    <Resource Include="Resources\Icons\PreviewStart.png" />
-    <Resource Include="Resources\Icons\BarDelete.png" />
-    <Resource Include="Resources\Icons\BarEdit.png" />
-    <Resource Include="Resources\Icons\BarInsert.png" />
-    <Resource Include="Resources\Icons\BarAppend.png" />
     <Resource Include="Resources\Icons\NoteDelete.png" />
     <Resource Include="Resources\Icons\NoteEdit.png" />
+    <Resource Include="Resources\Icons\PreviewStart.png" />
+    <Resource Include="Resources\Icons\BarAppend.png" />
     <Resource Include="Resources\Icons\NoteInsert.png" />
     <Resource Include="Resources\Icons\NoteAdd.png" />
     <Resource Include="Resources\Icons\MusicPlay.png" />
@@ -361,6 +363,11 @@
     <Resource Include="Resources\Icons\Utilities.png" />
     <Resource Include="Resources\Icons\ViewZoomIn.png" />
     <Resource Include="Resources\Icons\ViewZoomOut.png" />
+    <Resource Include="Resources\Icons\EditModeClear.png" />
+    <Resource Include="Resources\Icons\EditModeFlick.png" />
+    <Resource Include="Resources\Icons\EditModeHold.png" />
+    <Resource Include="Resources\Icons\EditModeSelect.png" />
+    <Resource Include="Resources\Icons\EditModeSync.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
