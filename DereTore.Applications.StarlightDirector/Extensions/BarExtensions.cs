@@ -23,7 +23,7 @@ namespace DereTore.Applications.StarlightDirector.Extensions {
         public static double GetLength(this Bar bar) {
             var bpm = bar.GetActualBpm();
             var signature = bar.GetActualSignature();
-            var seconds = ComposerUtilities.BpmToSeconds(bpm);
+            var seconds = DirectorUtilities.BpmToSeconds(bpm);
             return seconds * signature;
         }
 

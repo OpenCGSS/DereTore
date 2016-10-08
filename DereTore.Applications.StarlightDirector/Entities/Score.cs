@@ -138,7 +138,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 var bpm = bar.GetActualBpm();
                 var signature = bar.GetActualSignature();
                 var gridCountInBar = bar.GetActualGridPerSignature();
-                var barTimeInSeconds = ComposerUtilities.BpmToSeconds(bpm) * signature;
+                var barTimeInSeconds = DirectorUtilities.BpmToSeconds(bpm) * signature;
                 // Sorting is for flick group generation. We have to assure that the start of each group is
                 // processed first, at least in the group which it is in.
                 bar.Notes.Sort(Note.TimingComparison);

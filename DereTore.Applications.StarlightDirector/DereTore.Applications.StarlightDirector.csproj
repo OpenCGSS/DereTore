@@ -193,14 +193,13 @@
     <Compile Include="Components\DescribedEnumReader.cs" />
     <Compile Include="Components\IntegerIDGenerator.cs" />
     <Compile Include="Components\InternalList.cs" />
-    <Compile Include="Components\LinePositioner.cs" />
     <Compile Include="Components\NoteRelation.cs" />
     <Compile Include="Components\NoteRelationCollection.cs" />
     <Compile Include="Components\ObservableDictionary.cs" />
     <Compile Include="Components\ProjectIO.cs" />
     <Compile Include="Components\ProjectIO.Legacy.cs" />
     <Compile Include="Components\ThreadingTimer.cs" />
-    <Compile Include="ComposerUtilities.cs" />
+    <Compile Include="DirectorUtilities.cs" />
     <Compile Include="Entities\Bar.cs" />
     <Compile Include="Entities\BarParams.cs" />
     <Compile Include="Entities\CompiledNote.cs" />
