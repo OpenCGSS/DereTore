@@ -11,7 +11,7 @@
 - [ ] Variant BPM
 - [x] Zooming
   - [x] Auto re-aligning when zooming
-  - [ ] Quick zooming to the level of seeing 8th, 16th, 24th note, etc.
+  - [x] Quick zooming to the level of seeing 1/8, 1/16, 1/24 note, etc.
 - [x] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
 - [x] Editing
   - [ ] Select area
