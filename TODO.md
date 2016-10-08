@@ -18,8 +18,8 @@
   - [ ] Undo and redo
 - [ ] Live preview
   - [ ] Audio spectrum inside
-- [ ] `StartPosition`
-  - [ ] Translucent indicator layer for Director.
+- [x] `StartPosition`
+  - [x] Translucent indicator layer for Director. (implemented: at the corners)
 - [ ] Convenient start time offset calibration (e.g. moving the time forward by 1 measure)
 - [ ] Edge scrolling (for inter-measure hold notes)
 - [x] Changeable sound effect in preview
