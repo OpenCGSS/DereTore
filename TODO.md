@@ -11,11 +11,13 @@
 - [ ] Variant BPM
 - [x] Zooming
   - [x] Auto re-aligning when zooming
+  - [ ] Quick zooming to the level of seeing 8th, 16th, 24th note, etc.
 - [x] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
 - [x] Editing
-  - [ ] Area selection
+  - [ ] Select area
   - [ ] Copy, cut and paste
   - [ ] Undo and redo
+  - [ ] Drag note
 - [ ] Live preview
   - [ ] Audio spectrum inside
 - [x] `StartPosition`

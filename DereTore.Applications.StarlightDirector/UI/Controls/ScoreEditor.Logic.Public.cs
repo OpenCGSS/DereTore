@@ -246,7 +246,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public void ZoomOut() {
             double heightPercentage, scoreBarHeight;
-            var originalScoreBar = GetScoreBarUnderMouseForZooming(out heightPercentage, out scoreBarHeight);
+            var originalScoreBar = GetScoreBarGeomInfoForZooming(out heightPercentage, out scoreBarHeight);
             double top = 0;
             if (originalScoreBar != null) {
                 top = Canvas.GetTop(originalScoreBar);
@@ -265,7 +265,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public void ZoomIn() {
             double heightPercentage, scoreBarHeight;
-            var originalScoreBar = GetScoreBarUnderMouseForZooming(out heightPercentage, out scoreBarHeight);
+            var originalScoreBar = GetScoreBarGeomInfoForZooming(out heightPercentage, out scoreBarHeight);
             double top = 0;
             if (originalScoreBar != null) {
                 top = Canvas.GetTop(originalScoreBar);

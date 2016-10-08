@@ -399,10 +399,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
-        private ScoreBar GetScoreBarUnderMouseForZooming(out double heightPercentage, out double height) {
+        private ScoreBar GetScoreBarGeomInfoForZooming(Point pointRelativeToThis, out double heightPercentage, out double height) {
             heightPercentage = 0;
             height = 0;
-            var pt = Mouse.GetPosition(this);
+            var pt = pointRelativeToThis;
             var hit = VisualTreeHelper.HitTest(this, pt);
             var element = hit.VisualHit as FrameworkElement;
             var scoreBar = element?.FindVisualParent<ScoreBar>();
@@ -415,6 +415,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             height = scoreBar.Height;
             heightPercentage = delta / height;
             return scoreBar;
+        }
+
+        private ScoreBar GetScoreBarGeomInfoForZooming(out double heightPercentage, out double height) {
+            return GetScoreBarGeomInfoForZooming(Mouse.GetPosition(this), out heightPercentage, out height);
         }
 
         private void TrimScoreNotes(ScoreBar willBeDeleted, bool modifiesModel) {
