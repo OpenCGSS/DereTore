@@ -81,15 +81,22 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsExportScoreToInsideBdb_Executed(object sender, ExecutedRoutedEventArgs e) {
-            var openDialog = new OpenFileDialog();
-            openDialog.CheckFileExists = true;
-            openDialog.ValidateNames = true;
-            openDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.BdbFileFilter);
-            var saveResult = openDialog.ShowDialog();
+            var saveDialog = new SaveFileDialog();
+            saveDialog.OverwritePrompt = true;
+            saveDialog.ValidateNames = true;
+            saveDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.BdbFileFilter);
+            var saveResult = saveDialog.ShowDialog();
             if (saveResult ?? false) {
+                try {
+                    const string templateBdbPath = "Resources/Testing/musicscores_m001.bdb";
+                    var templateFileInfo = new FileInfo(templateBdbPath);
+                    File.Copy(templateFileInfo.FullName, saveDialog.FileName, true);
+                } catch (Exception ex) {
+                    MessageBox.Show(ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                }
                 var difficulty = Project.Difficulty;
                 var csv = Project.ExportScoreToCsv(difficulty);
-                var fileName = openDialog.FileName;
+                var fileName = saveDialog.FileName;
                 try {
                     string prompt;
                     bool operationSucceeded = false;
