@@ -165,6 +165,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                         MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.NoteRelationAlreadyExistsPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
                     }
+                    Note first;
                     switch (mode) {
                         case EditMode.Sync:
                             if (ns.Bar != ne.Bar || ns.PositionInGrid != ne.PositionInGrid) {
@@ -177,18 +178,20 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             break;
                         case EditMode.Flick:
                             if ((ns.Bar == ne.Bar && ns.PositionInGrid == ne.PositionInGrid) ||
-                                ns.FinishPosition == ne.FinishPosition || ns.StartPosition == ne.StartPosition) {
+                                ns.FinishPosition == ne.FinishPosition || ns.StartPosition == ne.StartPosition ||
+                                ns.IsHoldStart || ne.IsHoldStart) {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidFlickCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
-                            var first = ns < ne ? ns : ne;
+                            first = ns < ne ? ns : ne;
                             var second = first.Equals(ns) ? ne : ns;
                             Note.ConnectFlick(first, second);
                             LineLayer.NoteRelations.Add(start, end, NoteRelation.Flick);
                             LineLayer.InvalidateVisual();
                             break;
                         case EditMode.Hold:
-                            if (ns.FinishPosition != ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart) {
+                            first = ns < ne ? ns : ne;
+                            if (ns.FinishPosition != ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart || first.IsFlick) {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
