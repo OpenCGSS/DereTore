@@ -7,8 +7,9 @@ using DereTore.Applications.StarlightDirector.Entities;
 namespace DereTore.Applications.StarlightDirector.Conversion {
     public static class ScoreIO {
 
-        public static Score LoadFromDelesteBeatmap(Project temporaryProject, Difficulty difficulty, string fileName, out string[] warnings) {
+        public static Score LoadFromDelesteBeatmap(Project temporaryProject, Difficulty difficulty, string fileName, out string[] warnings, out bool hasErrors) {
             warnings = null;
+            hasErrors = false;
             var encoding = DelesteHelper.TryDetectDelesteBeatmapEncoding(fileName);
             using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
                 using (var streamReader = new StreamReader(fileStream, encoding, true)) {
@@ -26,7 +27,11 @@ namespace DereTore.Applications.StarlightDirector.Conversion {
                             continue;
                         }
                         ++entryCounter;
-                        var entry = DelesteHelper.ReadEntry(temporaryProject, line, entryCounter, noteCache, warningList);
+                        var entry = DelesteHelper.ReadEntry(temporaryProject, line, entryCounter, noteCache, warningList, ref hasErrors);
+                        if (hasErrors) {
+                            warnings = warningList.ToArray();
+                            return null;
+                        }
                         if (entry != null) {
                             entryCache.Add(entry);
                         }

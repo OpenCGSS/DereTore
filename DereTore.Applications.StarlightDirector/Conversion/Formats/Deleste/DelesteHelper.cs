@@ -152,7 +152,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             //}
         }
 
-        public static DelesteBeatmapEntry ReadEntry(Project temporaryProject, string line, int entryCounter, List<DelesteBasicNote> noteCache, List<string> warnings) {
+        public static DelesteBeatmapEntry ReadEntry(Project temporaryProject, string line, int entryCounter, List<DelesteBasicNote> noteCache, List<string> warnings, ref bool hasErrors) {
             line = line.ToLowerInvariant();
             if (line.StartsWithOfGroup(Deleste.BeatmapCommands)) {
                 line = line.Substring(0, line.IndexOf(' '));
@@ -180,6 +180,12 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
                 return null;
             }
 
+            if (line.IndexOf('.') >= 0) {
+                hasErrors = true;
+                var warning = Application.Current.FindResource<string>(App.ResourceKeys.DelesteTxtFormat2IsNotSupportedPrompt);
+                warnings.Add(warning);
+                return null;
+            }
             // #gid,mid:types&indices:sp[:fp]
             var colonStringValues = line.Substring(1).Split(':');
             var commaStringValues = colonStringValues[0].Split(',');

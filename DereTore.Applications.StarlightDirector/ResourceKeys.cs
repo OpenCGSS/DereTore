@@ -64,6 +64,7 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string DelesteCommandIsNotYetSupportedPromptTemplate;
         public readonly string DelesteNoteCountInconsistentPromptTemplate;
         public readonly string DelesteUnfitGridSizePromptTemplate;
+        public readonly string DelesteTxtFormat2IsNotSupportedPrompt;
 
         public readonly string SummaryTotalNotes;
         public readonly string SummaryTotalBars;

@@ -77,14 +77,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             var dialogResult = openDialog.ShowDialog();
             if (dialogResult ?? false) {
                 string[] warnings;
+                bool hasErrors;
                 var project = Project;
                 var tempProject = new Project();
                 tempProject.Settings.CopyFrom(project.Settings);
-                var score = ScoreIO.LoadFromDelesteBeatmap(tempProject, Project.Difficulty, openDialog.FileName, out warnings);
+                var score = ScoreIO.LoadFromDelesteBeatmap(tempProject, Project.Difficulty, openDialog.FileName, out warnings, out hasErrors);
                 if (warnings != null) {
-                    MessageBox.Show(warnings.BuildString(Environment.NewLine), Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    messageBoxResult = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.DelesteWarningsAppearedPrompt), Title, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
-                    if (messageBoxResult == MessageBoxResult.No) {
+                    MessageBox.Show(warnings.BuildString(Environment.NewLine), Title, MessageBoxButton.OK, hasErrors ? MessageBoxImage.Error : MessageBoxImage.Exclamation);
+                    if (!hasErrors) {
+                        messageBoxResult = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.DelesteWarningsAppearedPrompt), Title, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
+                        if (messageBoxResult == MessageBoxResult.No) {
+                            return;
+                        }
+                    } else {
                         return;
                     }
                 }
