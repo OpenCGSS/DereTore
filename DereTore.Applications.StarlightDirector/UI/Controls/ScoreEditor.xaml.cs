@@ -132,7 +132,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var note = scoreNote.Note;
             var barIndex = note.Bar.Index;
             var row = note.PositionInGrid;
-            var column = (int)note.FinishPosition - 1;
+            var column = note.PositionInTrack;
             Debug.Print($"Note @ bar#{barIndex}, row={row}, column={column}");
             DraggingStartNote = scoreNote;
             // Prevent broadcasting this event to ScoreEditor.
@@ -171,8 +171,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidSyncCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
-                            ns.SyncTarget = ne;
-                            ne.SyncTarget = ns;
+                            Note.ConnectSync(ns, ne);
                             LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
                             LineLayer.InvalidateVisual();
                             break;
@@ -184,8 +183,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             }
                             var first = ns < ne ? ns : ne;
                             var second = first.Equals(ns) ? ne : ns;
-                            first.NextFlickNote = second;
-                            second.PrevFlickNote = first;
+                            Note.ConnectFlick(first, second);
                             LineLayer.NoteRelations.Add(start, end, NoteRelation.Flick);
                             LineLayer.InvalidateVisual();
                             break;
@@ -219,8 +217,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
-                            ns.HoldTarget = ne;
-                            ne.HoldTarget = ns;
+                            Note.ConnectHold(ns, ne);
                             LineLayer.NoteRelations.Add(start, end, NoteRelation.Hold);
                             LineLayer.InvalidateVisual();
                             break;

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
@@ -8,9 +7,11 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Components;
+using DereTore.Applications.StarlightDirector.Conversion;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 using Microsoft.Win32;
+using ProjectIO = DereTore.Applications.StarlightDirector.Conversion.ProjectIO;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {
@@ -19,6 +20,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdToolsBuildScoreDatabase = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsImportMusicArchive = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsImportScoreDatabase = CommandHelper.RegisterCommand();
+        public static readonly ICommand CmdToolsImportDelesteBeatmap = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsExportScoreToCsv = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsExportScoreToInsideBdb = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsUtilitiesConvertSaveFormatV01 = CommandHelper.RegisterCommand();
@@ -57,6 +59,32 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdToolsImportScoreDatabase_Executed(object sender, ExecutedRoutedEventArgs e) {
             Debug.Print("Not implemented: import score database");
             NotifyProjectChanged();
+        }
+
+        private void CmdToolsImportDelesteBeatmap_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.Project != null;
+        }
+
+        private void CmdToolsImportDelesteBeatmap_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var openDialog = new OpenFileDialog();
+            openDialog.CheckFileExists = true;
+            openDialog.ValidateNames = true;
+            openDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.DelesteTxtFileFilter);
+            var dialogResult = openDialog.ShowDialog();
+            if (dialogResult ?? false) {
+                string[] warnings;
+                var score = ScoreIO.LoadFromDelesteBeatmap(Project, Project.Difficulty, openDialog.FileName, out warnings);
+                if (warnings != null) {
+                    MessageBox.Show(warnings.BuildString(Environment.NewLine), Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    var messageBoxResult = MessageBox.Show("Continue?", Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    if (messageBoxResult == MessageBoxResult.No) {
+                        return;
+                    }
+                }
+                Project.SetScore(Project.Difficulty, score);
+                Editor.Score = score;
+                NotifyProjectChanged();
+            }
         }
 
         private void CmdToolsExportScoreToCsv_CanExecute(object sender, CanExecuteRoutedEventArgs e) {

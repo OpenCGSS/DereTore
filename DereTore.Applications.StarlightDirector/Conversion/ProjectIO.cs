@@ -7,7 +7,7 @@ using System.Text;
 using DereTore.Applications.StarlightDirector.Entities;
 using Newtonsoft.Json;
 
-namespace DereTore.Applications.StarlightDirector.Components {
+namespace DereTore.Applications.StarlightDirector.Conversion {
     public static partial class ProjectIO {
 
         public static void Save(Project project) {

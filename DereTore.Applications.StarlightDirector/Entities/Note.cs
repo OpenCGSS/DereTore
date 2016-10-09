@@ -31,6 +31,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             set { SetValue(FinishPositionProperty, value); }
         }
 
+        public int PositionInTrack => (int)FinishPosition - 1;
+
         [JsonProperty]
         public NoteFlickType FlickType {
             get { return (NoteFlickType)GetValue(FlickTypeProperty); }
@@ -123,7 +125,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 return _syncTarget;
             }
             set {
+                var origSyncTarget = _syncTarget;
                 _syncTarget = value;
+                if (origSyncTarget != null && origSyncTarget.SyncTarget.Equals(this)) {
+                    origSyncTarget.SyncTarget = null;
+                }
                 IsSync = value != null;
                 SyncTargetID = value?.ID ?? EntityID.Invalid;
             }
@@ -146,7 +152,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 return _holdTarget;
             }
             set {
+                var origHoldTarget = _holdTarget;
                 _holdTarget = value;
+                if (origHoldTarget != null && origHoldTarget.HoldTarget.Equals(this)) {
+                    origHoldTarget.HoldTarget = null;
+                }
                 IsHold = value != null;
                 // Only the former of the hold pair is considered as a hold note. The other is a tap or flick note.
                 Type = (value != null && value > this) ? NoteType.Hold : NoteType.TapOrFlick;
@@ -191,6 +201,33 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static bool operator <(Note left, Note right) {
             return TimingComparison(left, right) < 0;
+        }
+
+        public static void ConnectSync(Note n1, Note n2) {
+            if (n1 != null) {
+                n1.SyncTarget = n2;
+            }
+            if (n2 != null) {
+                n2.SyncTarget = n1;
+            }
+        }
+
+        public static void ConnectFlick(Note first, Note second) {
+            if (first != null) {
+                first.NextFlickNote = second;
+            }
+            if (second != null) {
+                second.PrevFlickNote = first;
+            }
+        }
+
+        public static void ConnectHold(Note n1, Note n2) {
+            if (n1 != null) {
+                n1.HoldTarget = n2;
+            }
+            if (n2 != null) {
+                n2.HoldTarget = n1;
+            }
         }
 
         internal bool TryGetFlickGroupID(out FlickGroupModificationResult modificationResult, out int knownGroupID, out Note groupStart) {

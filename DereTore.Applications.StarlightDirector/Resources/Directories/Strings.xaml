@@ -7,6 +7,7 @@
     <system:String x:Key="WaveFileFilter">Wave Audio (*.wav)|*.wav</system:String>
     <system:String x:Key="AcbFileFilter">CRI ACB Archive (*.acb)|*.acb</system:String>
     <system:String x:Key="BdbFileFilter">Score Database (*.bdb)|*.bdb</system:String>
+    <system:String x:Key="DelesteTxtFileFilter">Deleste Beatmap (*.txt)|*.txt</system:String>
 
     <system:String x:Key="ProjectChangedPrompt">The project is changed. Do you want to save it first?</system:String>
     <system:String x:Key="PreviewNotImplementedPrompt">The Preview function is not implemented yet. You can export the score to a CSV file and use ScoreEditor to view it.</system:String>
@@ -23,6 +24,10 @@
     <system:String x:Key="NoCorrespondingDifficultyExistsPromptTemplate">The difficulty '{0}' does not exist in score '{1}'.</system:String>
     <system:String x:Key="ExportAndReplaceBdbCompletePromptTemplate">Export to score file '{0}' difficulty '{1}' completed.</system:String>
     <system:String x:Key="ErrorOccurredPrompt">An error occurred from the last operation.</system:String>
+
+    <system:String x:Key="DelesteCommandIsNotYetSupportedPromptTemplate">Entry #{0}: Deleste command '{1}' is not supported yet. Ignoring this entry.</system:String>
+    <system:String x:Key="DelesteNoteCountInconsistentPromptTemplate">Entry #{0} @ Measure #{1}: Note counts are inconsistent ({2}/{3}/{4}). Ignoring this entry.</system:String>
+    <system:String x:Key="DelesteUnfitGridSizePromptTemplate">Measure #{0}: Measure grid size {1} cannot fit in DereTore grid size {2}. Ignoring this measure.</system:String>
 
     <system:String x:Key="SummaryTotalNotes">Total Notes in Current Score</system:String>
     <system:String x:Key="SummaryTotalBars">Total Measures in Current Score</system:String>

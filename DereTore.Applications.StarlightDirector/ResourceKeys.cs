@@ -41,6 +41,7 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string WaveFileFilter;
         public readonly string AcbFileFilter;
         public readonly string BdbFileFilter;
+        public readonly string DelesteTxtFileFilter;
 
         public readonly string ProjectChangedPrompt;
         public readonly string PreviewNotImplementedPrompt;
@@ -57,6 +58,10 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string NoCorrespondingDifficultyExistsPromptTemplate;
         public readonly string ExportAndReplaceBdbCompletePromptTemplate;
         public readonly string ErrorOccurredPrompt;
+
+        public readonly string DelesteCommandIsNotYetSupportedPromptTemplate;
+        public readonly string DelesteNoteCountInconsistentPromptTemplate;
+        public readonly string DelesteUnfitGridSizePromptTemplate;
 
         public readonly string SummaryTotalNotes;
         public readonly string SummaryTotalBars;

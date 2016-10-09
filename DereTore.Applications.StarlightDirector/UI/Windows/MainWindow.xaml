@@ -152,6 +152,8 @@
                     <fluent:DropDownButton Header="Import" LargeIcon="{StaticResource RibbonIconImport}">
                         <fluent:MenuItem Header="_Music Archive" Command="{x:Static local:MainWindow.CmdToolsImportMusicArchive}"/>
                         <fluent:MenuItem Header="_Score Database" Command="{x:Static local:MainWindow.CmdToolsImportScoreDatabase}"/>
+                        <Separator/>
+                        <fluent:MenuItem Header="Deleste Beatmap to Current Score" Command="{x:Static local:MainWindow.CmdToolsImportDelesteBeatmap}"/>
                     </fluent:DropDownButton>
                     <fluent:DropDownButton Header="Export" LargeIcon="{StaticResource RibbonIconExport}">
                         <fluent:MenuItem Header="Current Score to _CSV" Command="{x:Static local:MainWindow.CmdToolsExportScoreToCsv}"/>

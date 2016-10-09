@@ -188,6 +188,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Components\ObjectMatrix.cs" />
+    <Compile Include="Conversion\Formats\Deleste\Deleste.cs" />
+    <Compile Include="Conversion\Formats\Deleste\DelesteBasicNote.cs" />
+    <Compile Include="Conversion\Formats\Deleste\DelesteBeatmapEntry.cs" />
+    <Compile Include="Conversion\Formats\Deleste\DelesteGroupID.cs" />
+    <Compile Include="Conversion\Formats\Deleste\DelesteHelper.cs" />
+    <Compile Include="Conversion\Formats\Deleste\DelesteHelperExtensions.cs" />
+    <Compile Include="Conversion\Formats\Deleste\DelesteNoteType.cs" />
+    <Compile Include="Conversion\ScoreIO.cs" />
     <Compile Include="Components\UIHelper.cs" />
     <Compile Include="Components\CommandHelper.cs" />
     <Compile Include="Components\DescribedEnumReader.cs" />
@@ -196,8 +205,8 @@
     <Compile Include="Components\NoteRelation.cs" />
     <Compile Include="Components\NoteRelationCollection.cs" />
     <Compile Include="Components\ObservableDictionary.cs" />
-    <Compile Include="Components\ProjectIO.cs" />
-    <Compile Include="Components\ProjectIO.Legacy.cs" />
+    <Compile Include="Conversion\ProjectIO.cs" />
+    <Compile Include="Conversion\ProjectIO.Legacy.cs" />
     <Compile Include="Components\ThreadingTimer.cs" />
     <Compile Include="DirectorUtilities.cs" />
     <Compile Include="Entities\Bar.cs" />

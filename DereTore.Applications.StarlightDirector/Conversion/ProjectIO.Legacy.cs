@@ -8,7 +8,7 @@ using DereTore.Applications.StarlightDirector.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace DereTore.Applications.StarlightDirector.Components {
+namespace DereTore.Applications.StarlightDirector.Conversion {
     partial class ProjectIO {
 
         internal static ProjectVersion CheckProjectFileVersion(string fileName) {

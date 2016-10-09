@@ -43,6 +43,50 @@ namespace DereTore {
             return Random.NextDouble();
         }
 
+        public static uint GreatestCommonFactor(uint a, uint b) {
+            while (true) {
+                if (a < b) {
+                    var t = a;
+                    a = b;
+                    b = t;
+                }
+                var m = a % b;
+                if (m == 0 || m == 1) {
+                    return b;
+                } else {
+                    a = b;
+                    b = m;
+                }
+            }
+        }
+
+        public static uint GreatestCommonFactor(params uint[] numbers) {
+            if (numbers.Length == 0) {
+                throw new ArgumentException();
+            }
+            if (numbers.Length == 1) {
+                return numbers[0];
+            }
+            var gcd = GreatestCommonFactor(numbers[0], numbers[1]);
+            if (numbers.Length == 2) {
+                return gcd;
+            }
+            var currentIndex = 2;
+            while (currentIndex < numbers.Length) {
+                if (gcd == 1) {
+                    break;
+                }
+                // Please note the param order.
+                gcd = GreatestCommonFactor(numbers[currentIndex], gcd);
+                ++currentIndex;
+            }
+            return gcd;
+        }
+
+        public static bool IsMultipleOf(this int a, int b) {
+            return a / b * b == a;
+        }
+
         private static readonly Random Random;
 
     }

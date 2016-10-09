@@ -63,20 +63,28 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 }
                 processedNotes.Add(note);
                 if (note.IsSync) {
-                    relations.Add(map[note], map[note.SyncTarget], NoteRelation.Sync);
-                    waitingList.Enqueue(note.SyncTarget);
+                    if (!relations.ContainsPair(map[note], map[note.SyncTarget])) {
+                        relations.Add(map[note], map[note.SyncTarget], NoteRelation.Sync);
+                        waitingList.Enqueue(note.SyncTarget);
+                    }
                 }
                 if (note.HasNextFlick) {
-                    relations.Add(map[note], map[note.NextFlickNote], NoteRelation.Flick);
-                    waitingList.Enqueue(note.NextFlickNote);
+                    if (!relations.ContainsPair(map[note], map[note.NextFlickNote])) {
+                        relations.Add(map[note], map[note.NextFlickNote], NoteRelation.Flick);
+                        waitingList.Enqueue(note.NextFlickNote);
+                    }
                 }
                 if (note.HasPrevFlick) {
-                    relations.Add(map[note], map[note.PrevFlickNote], NoteRelation.Flick);
-                    waitingList.Enqueue(note.PrevFlickNote);
+                    if (!relations.ContainsPair(map[note], map[note.PrevFlickNote])) {
+                        relations.Add(map[note], map[note.PrevFlickNote], NoteRelation.Flick);
+                        waitingList.Enqueue(note.PrevFlickNote);
+                    }
                 }
                 if (note.IsHoldStart) {
-                    relations.Add(map[note], map[note.HoldTarget], NoteRelation.Hold);
-                    waitingList.Enqueue(note.HoldTarget);
+                    if (!relations.ContainsPair(map[note], map[note.HoldTarget])) {
+                        relations.Add(map[note], map[note.HoldTarget], NoteRelation.Hold);
+                        waitingList.Enqueue(note.HoldTarget);
+                    }
                 }
             }
         }
@@ -121,7 +129,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var bar = note.Bar;
                 var baseY = scrollOffset + bar.Index * barHeight;
                 var extraY = barHeight * note.PositionInGrid / bar.GetTotalGridCount();
-                scoreNote.X = noteLayerWidth * TrackCenterXPositions[(int)note.FinishPosition - 1];
+                scoreNote.X = noteLayerWidth * TrackCenterXPositions[note.PositionInTrack];
                 scoreNote.Y = baseY + extraY;
             }
         }

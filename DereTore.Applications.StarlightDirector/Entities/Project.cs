@@ -53,6 +53,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return Scores[difficulty];
         }
 
+        public void SetScore(Difficulty difficulty, Score score) {
+            Scores[difficulty] = score;
+        }
+
         public void ExportScoreToCsv(Difficulty difficulty, string fileName) {
             using (var stream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
                 using (var writer = new StreamWriter(stream)) {
