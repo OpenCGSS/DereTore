@@ -127,7 +127,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             set {
                 var origSyncTarget = _syncTarget;
                 _syncTarget = value;
-                if (origSyncTarget != null && origSyncTarget.SyncTarget.Equals(this)) {
+                if (origSyncTarget?.SyncTarget != null && origSyncTarget.SyncTarget.Equals(this)) {
                     origSyncTarget.SyncTarget = null;
                 }
                 IsSync = value != null;
@@ -154,7 +154,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             set {
                 var origHoldTarget = _holdTarget;
                 _holdTarget = value;
-                if (origHoldTarget != null && origHoldTarget.HoldTarget.Equals(this)) {
+                if (origHoldTarget?.HoldTarget != null && origHoldTarget.HoldTarget.Equals(this)) {
                     origHoldTarget.HoldTarget = null;
                 }
                 IsHold = value != null;
