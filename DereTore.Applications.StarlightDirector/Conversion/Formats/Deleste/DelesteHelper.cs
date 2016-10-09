@@ -18,7 +18,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             foreach (var entry in entries) {
                 if (entry.MeasureIndex + 1 > score.Bars.Count) {
                     for (var i = score.Bars.Count; i < entry.MeasureIndex + 1; ++i) {
-                        score.Bars.Add(new Bar(score, entry.MeasureIndex));
+                        score.Bars.Add(new Bar(score, i));
                     }
                 }
                 var bar = score.Bars[entry.MeasureIndex];
