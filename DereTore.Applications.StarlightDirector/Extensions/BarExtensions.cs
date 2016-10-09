@@ -5,10 +5,10 @@ namespace DereTore.Applications.StarlightDirector.Extensions {
 
         public static double GetStartTime(this Bar bar) {
             var score = bar.Score;
-            var scoreSettings = score.Project.Settings;
             var bars = score.Bars;
+            var settings = bar.Score.Project.Settings;
             var index = bars.IndexOf(bar);
-            var time = scoreSettings.StartTimeOffset;
+            var time = settings.StartTimeOffset;
             var i = 0;
             foreach (var b in bars) {
                 if (i >= index) {

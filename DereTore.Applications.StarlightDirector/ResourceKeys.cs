@@ -59,6 +59,8 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string ExportAndReplaceBdbCompletePromptTemplate;
         public readonly string ErrorOccurredPrompt;
 
+        public readonly string DelesteImportingWillReplaceCurrentScorePrompt;
+        public readonly string DelesteWarningsAppearedPrompt;
         public readonly string DelesteCommandIsNotYetSupportedPromptTemplate;
         public readonly string DelesteNoteCountInconsistentPromptTemplate;
         public readonly string DelesteUnfitGridSizePromptTemplate;

@@ -25,9 +25,11 @@
     <system:String x:Key="ExportAndReplaceBdbCompletePromptTemplate">Export to score file '{0}' difficulty '{1}' completed.</system:String>
     <system:String x:Key="ErrorOccurredPrompt">An error occurred from the last operation.</system:String>
 
+    <system:String x:Key="DelesteImportingWillReplaceCurrentScorePrompt">Importing a Delestue beatmap will replace current score and change your project settings like BPM or start time offset. Do you want to save your work first?</system:String>
+    <system:String x:Key="DelesteWarningsAppearedPrompt">Some warnings were raised during the importing process. You can stop and try to edit the source file to eliminate those warnings, or continue and let Starlight Director modify the measures/notes automatically. Automatic modification may cause unexpected results in note positions or relations. &#x0a;Do you want to continue loading the modified score?</system:String>
     <system:String x:Key="DelesteCommandIsNotYetSupportedPromptTemplate">Entry #{0}: Deleste command '{1}' is not supported yet. Ignoring this entry.</system:String>
     <system:String x:Key="DelesteNoteCountInconsistentPromptTemplate">Entry #{0} @ Measure #{1}: Note counts are inconsistent ({2}/{3}/{4}). Ignoring this entry.</system:String>
-    <system:String x:Key="DelesteUnfitGridSizePromptTemplate">Measure #{0}: Measure grid size {1} cannot fit in DereTore grid size {2}. Ignoring this measure.</system:String>
+    <system:String x:Key="DelesteUnfitGridSizePromptTemplate">Measure #{0}: Grid size {1} of current measure cannot fit in Starlight Director's grid size {2}. Ignoring some or all notes in this measure.</system:String>
 
     <system:String x:Key="SummaryTotalNotes">Total Notes in Current Score</system:String>
     <system:String x:Key="SummaryTotalBars">Total Measures in Current Score</system:String>

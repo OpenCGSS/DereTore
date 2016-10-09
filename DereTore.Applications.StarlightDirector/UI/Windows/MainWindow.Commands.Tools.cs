@@ -66,6 +66,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsImportDelesteBeatmap_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var messageBoxResult = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.DelesteImportingWillReplaceCurrentScorePrompt), Title, MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+            if (messageBoxResult == MessageBoxResult.Yes) {
+                CmdFileSaveProject.Execute(null);
+            }
             var openDialog = new OpenFileDialog();
             openDialog.CheckFileExists = true;
             openDialog.ValidateNames = true;
@@ -73,15 +77,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             var dialogResult = openDialog.ShowDialog();
             if (dialogResult ?? false) {
                 string[] warnings;
-                var score = ScoreIO.LoadFromDelesteBeatmap(Project, Project.Difficulty, openDialog.FileName, out warnings);
+                var project = Project;
+                var tempProject = new Project();
+                tempProject.Settings.CopyFrom(project.Settings);
+                var score = ScoreIO.LoadFromDelesteBeatmap(tempProject, Project.Difficulty, openDialog.FileName, out warnings);
                 if (warnings != null) {
                     MessageBox.Show(warnings.BuildString(Environment.NewLine), Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    var messageBoxResult = MessageBox.Show("Continue?", Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+                    messageBoxResult = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.DelesteWarningsAppearedPrompt), Title, MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.No);
                     if (messageBoxResult == MessageBoxResult.No) {
                         return;
                     }
                 }
-                Project.SetScore(Project.Difficulty, score);
+                // Redirect project reference.
+                score.Project = project;
+                project.SetScore(project.Difficulty, score);
+                project.Settings.CopyFrom(tempProject.Settings);
                 Editor.Score = score;
                 NotifyProjectChanged();
             }

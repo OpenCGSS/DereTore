@@ -5,7 +5,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace DereTore.Applications.StarlightDirector.Entities {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy), MemberSerialization = MemberSerialization.OptIn)]
-    public sealed class ScoreSettings : DependencyObject {
+    public sealed class ScoreSettings : DependencyObject, ICloneable {
 
         public event EventHandler<EventArgs> SettingChanged;
 
@@ -57,6 +57,25 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly int DefaultGlobalGridPerSignature = 24;
         public static readonly int DefaultGlobalSignature = 4;
 
+        public ScoreSettings Clone() {
+            return new ScoreSettings {
+                GlobalBpm = GlobalBpm,
+                StartTimeOffset = StartTimeOffset,
+                GlobalGridPerSignature = GlobalGridPerSignature,
+                GlobalSignature = GlobalSignature
+            };
+        }
+
+        public void CopyFrom(ScoreSettings settings) {
+            if (settings == null) {
+                throw new ArgumentNullException(nameof(settings));
+            }
+            GlobalBpm = settings.GlobalBpm;
+            StartTimeOffset = settings.StartTimeOffset;
+            GlobalGridPerSignature = settings.GlobalGridPerSignature;
+            GlobalSignature = settings.GlobalSignature;
+        }
+
         private static void OnGlobalBpmChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var settings = (ScoreSettings)obj;
             settings.SettingChanged.Raise(obj, EventArgs.Empty);
@@ -69,6 +88,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         [JsonConstructor]
         private ScoreSettings() {
+        }
+
+        object ICloneable.Clone() {
+            return Clone();
         }
 
     }

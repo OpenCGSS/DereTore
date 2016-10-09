@@ -7,15 +7,15 @@ using DereTore.Applications.StarlightDirector.Entities;
 namespace DereTore.Applications.StarlightDirector.Conversion {
     public static class ScoreIO {
 
-        public static Score LoadFromDelesteBeatmap(Project project, Difficulty difficulty, string fileName, out string[] warnings) {
+        public static Score LoadFromDelesteBeatmap(Project temporaryProject, Difficulty difficulty, string fileName, out string[] warnings) {
             warnings = null;
-            var encoding = TryDetectDelesteBeatmapEncoding(fileName);
+            var encoding = DelesteHelper.TryDetectDelesteBeatmapEncoding(fileName);
             using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
                 using (var streamReader = new StreamReader(fileStream, encoding, true)) {
                     if (streamReader.EndOfStream) {
                         return null;
                     }
-                    var score = new Score(project, difficulty);
+                    var score = new Score(temporaryProject, difficulty);
                     var noteCache = new List<DelesteBasicNote>();
                     var entryCache = new List<DelesteBeatmapEntry>();
                     var warningList = new List<string>();
@@ -26,7 +26,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion {
                             continue;
                         }
                         ++entryCounter;
-                        var entry = DelesteHelper.ReadEntry(score, line, entryCounter, noteCache, warningList);
+                        var entry = DelesteHelper.ReadEntry(temporaryProject, line, entryCounter, noteCache, warningList);
                         if (entry != null) {
                             entryCache.Add(entry);
                         }
@@ -36,35 +36,6 @@ namespace DereTore.Applications.StarlightDirector.Conversion {
                         warnings = warningList.ToArray();
                     }
                     return score;
-                }
-            }
-        }
-
-        private static Encoding TryDetectDelesteBeatmapEncoding(string fileName) {
-            using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
-                // Fallback to default platform encoding.
-                using (var streamReader = new StreamReader(fileStream, Encoding.Default)) {
-                    string line = string.Empty;
-                    if (!streamReader.EndOfStream) {
-                        do {
-                            line = streamReader.ReadLine();
-                        } while (line.Length > 0 && line[0] != '#' && !streamReader.EndOfStream);
-                    }
-                    line = line.ToLowerInvariant();
-                    if (!string.IsNullOrEmpty(line)) {
-                        if (line == "#utf8" || line == "#utf-8") {
-                            return Encoding.UTF8;
-                        } else {
-                            // According to the help of Deleste:
-                            // 
-                            // > 譜面ファイルの文字コードは原則「Shift-JIS」を使用してください。
-                            // > 例外的に「UTF-8」のみ使用できます。
-                            // > 使用する場合、テキストファイルの先頭に「#utf8」又は「#utf-8」と記述してください。
-                            return Encoding.GetEncoding("Shift-JIS");
-                        }
-                    } else {
-                        return Encoding.GetEncoding("Shift-JIS");
-                    }
                 }
             }
         }

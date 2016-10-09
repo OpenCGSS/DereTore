@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
-using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 
@@ -60,7 +60,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
 
                     if (basicNote.IsHoldStart) {
                         if (currentHoldingNotes[positionInTrack] != null) {
-                            // Invalid holding notes: I haven't release my finger yet!
+                            // Invalid holding notes: I haven't released my finger yet!
                             // OK, accept it, set the newly added note as hold end.
                             Note.ConnectHold(currentHoldingNotes[positionInTrack], note);
                             currentHoldingNotes[positionInTrack] = null;
@@ -152,7 +152,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             //}
         }
 
-        public static DelesteBeatmapEntry ReadEntry(Score score, string line, int entryCounter, List<DelesteBasicNote> noteCache, List<string> warnings) {
+        public static DelesteBeatmapEntry ReadEntry(Project temporaryProject, string line, int entryCounter, List<DelesteBasicNote> noteCache, List<string> warnings) {
             line = line.ToLowerInvariant();
             if (line.StartsWithOfGroup(Deleste.BeatmapCommands)) {
                 line = line.Substring(0, line.IndexOf(' '));
@@ -165,14 +165,14 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             if (line.StartsWith(Deleste.BpmCommand)) {
                 var dataText = line.Substring(Deleste.BpmCommand.Length + 1);
                 var bpm = double.Parse(dataText);
-                score.Project.Settings.GlobalBpm = bpm;
+                temporaryProject.Settings.GlobalBpm = bpm;
                 return null;
             }
             if (line.StartsWith(Deleste.OffsetCommand)) {
                 var dataText = line.Substring(Deleste.OffsetCommand.Length + 1);
                 var offset = int.Parse(dataText);
                 // msec -> sec
-                score.Project.Settings.StartTimeOffset = (double)offset / 1000;
+                temporaryProject.Settings.StartTimeOffset = (double)offset / 1000;
                 return null;
             }
             if (line.Length < 2 || !char.IsNumber(line, 1)) {
@@ -221,6 +221,35 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             }
             entry.Notes = noteCache.ToArray();
             return entry;
+        }
+
+        public static Encoding TryDetectDelesteBeatmapEncoding(string fileName) {
+            using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
+                // Fallback to default platform encoding.
+                using (var streamReader = new StreamReader(fileStream, Encoding.Default)) {
+                    string line = string.Empty;
+                    if (!streamReader.EndOfStream) {
+                        do {
+                            line = streamReader.ReadLine();
+                        } while (line.Length > 0 && line[0] != '#' && !streamReader.EndOfStream);
+                    }
+                    line = line.ToLowerInvariant();
+                    if (!string.IsNullOrEmpty(line)) {
+                        if (line == "#utf8" || line == "#utf-8") {
+                            return Encoding.UTF8;
+                        } else {
+                            // According to the help of Deleste:
+                            // 
+                            // > 譜面ファイルの文字コードは原則「Shift-JIS」を使用してください。
+                            // > 例外的に「UTF-8」のみ使用できます。
+                            // > 使用する場合、テキストファイルの先頭に「#utf8」又は「#utf-8」と記述してください。
+                            return Encoding.GetEncoding("Shift-JIS");
+                        }
+                    } else {
+                        return Encoding.GetEncoding("Shift-JIS");
+                    }
+                }
+            }
         }
 
     }
