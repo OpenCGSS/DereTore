@@ -71,14 +71,16 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                         FlickType = NoteFlickType.Tap;
                     }
                 } else {
-                    if (n1 != null && n2 == null) {
-                        // Currently there isn't an example of quick 'Z' turn appeared in CGSS (as shown below),
-                        // so the following completion method is good enough.
-                        //     -->
-                        //      ^
-                        //       \
-                        //      -->
-                        FlickType = n1.FlickType;
+                    // Currently there isn't an example of quick 'Z' turn appeared in CGSS (as shown below),
+                    // so the following completion method is good enough.
+                    //     -->
+                    //      ^
+                    //       \
+                    //      -->
+                    if (n2 != null) {
+                        FlickType = n2.FinishPosition > FinishPosition ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
+                    } else {
+                        FlickType = n1.FinishPosition > FinishPosition ? NoteFlickType.FlickLeft : NoteFlickType.FlickRight;
                     }
                 }
                 PrevFlickNoteID = value?.ID ?? EntityID.Invalid;
@@ -109,6 +111,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 } else {
                     if (n2 != null) {
                         FlickType = n2.FinishPosition > FinishPosition ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
+                    } else {
+                        FlickType = n1.FinishPosition > FinishPosition ? NoteFlickType.FlickLeft : NoteFlickType.FlickRight;
                     }
                 }
                 NextFlickNoteID = value?.ID ?? EntityID.Invalid;
