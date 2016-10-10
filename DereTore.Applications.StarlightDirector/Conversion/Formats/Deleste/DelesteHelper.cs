@@ -186,20 +186,34 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
                 warnings.Add(warning);
                 return null;
             }
+
             // #gid,mid:types&indices:sp[:fp]
             var colonStringValues = line.Substring(1).Split(':');
             var commaStringValues = colonStringValues[0].Split(',');
-            var groupNumberString = commaStringValues[0];
-            var measureIndexString = commaStringValues[1];
-            var noteSpreading = colonStringValues[1];
-            var finishPositions = colonStringValues.Length > 3 ? colonStringValues[3] : colonStringValues[2];
-            // Abbreviated format & full format
+            var noteDistribution = colonStringValues[1];
+            var standardNoteCount = noteDistribution.Count(ch => ch != '0');
+
+            // Abbreviated format (1, 2) & full format
+            // #0,000:2
             // #0,000:2222:1234
             // #0,001:2222:3333:3333
-            var startPositions = colonStringValues[2];
+            var groupNumberString = commaStringValues[0];
+            var measureIndexString = commaStringValues[1];
+            string finishPositions, startPositions;
+            switch (colonStringValues.Length) {
+                case 2:
+                    startPositions = finishPositions = new string('3', standardNoteCount);
+                    break;
+                case 3:
+                    startPositions = finishPositions = colonStringValues[2];
+                    break;
+                default:
+                    startPositions = colonStringValues[2];
+                    finishPositions = colonStringValues[3];
+                    break;
+            }
             noteCache.Clear();
 
-            var standardNoteCount = noteSpreading.Count(ch => ch != '0');
             var measureIndex = Convert.ToInt32(measureIndexString);
             if (standardNoteCount != startPositions.Length || startPositions.Length != finishPositions.Length) {
                 var warning = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.DelesteNoteCountInconsistentPromptTemplate),
@@ -210,9 +224,9 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             var entry = new DelesteBeatmapEntry();
             entry.GroupID = Convert.ToInt32(groupNumberString);
             entry.MeasureIndex = measureIndex;
-            entry.FullLength = noteSpreading.Length;
+            entry.FullLength = noteDistribution.Length;
             int i = -1, j = -1;
-            foreach (var ch in noteSpreading) {
+            foreach (var ch in noteDistribution) {
                 ++j;
                 if (ch == '0') {
                     continue;
