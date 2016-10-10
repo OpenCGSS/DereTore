@@ -178,8 +178,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             break;
                         case EditMode.Flick:
                             if ((ns.Bar == ne.Bar && ns.PositionInGrid == ne.PositionInGrid) ||
-                                ns.FinishPosition == ne.FinishPosition || ns.StartPosition == ne.StartPosition ||
-                                ns.IsHoldStart || ne.IsHoldStart) {
+                                ns.FinishPosition == ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart) {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidFlickCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
