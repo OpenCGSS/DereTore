@@ -18,7 +18,13 @@ namespace DereTore.Applications.StarlightDirector.Extensions {
 
         public sealed class ComparisonChain<T> {
 
-            public int Compare(T x, T y) {
+            public Comparison<T> Comparison => Compare;
+
+            internal void Add(Comparison<T> comparison) {
+                _comparisons.Add(comparison);
+            }
+
+            private int Compare(T x, T y) {
                 var value = 0;
                 foreach (var comparison in _comparisons) {
                     if (comparison != null) {
@@ -29,10 +35,6 @@ namespace DereTore.Applications.StarlightDirector.Extensions {
                     }
                 }
                 return value;
-            }
-
-            internal void Add(Comparison<T> comparison) {
-                _comparisons.Add(comparison);
             }
 
             private readonly List<Comparison<T>> _comparisons = new List<Comparison<T>>();

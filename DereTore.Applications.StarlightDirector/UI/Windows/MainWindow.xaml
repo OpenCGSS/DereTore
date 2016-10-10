@@ -158,6 +158,8 @@
                     <fluent:DropDownButton Header="Export" LargeIcon="{StaticResource RibbonIconExport}">
                         <fluent:MenuItem Header="Current Score to _CSV" Command="{x:Static local:MainWindow.CmdToolsExportScoreToCsv}"/>
                         <fluent:MenuItem Header="Current Score to _BDB (based on template)" Command="{x:Static local:MainWindow.CmdToolsExportScoreToInsideBdb}"/>
+                        <Separator/>
+                        <fluent:MenuItem Header="Current Score to Deleste Beatmap (for viewing only)" Command="{x:Static local:MainWindow.CmdToolsExportScoreToDelesteBeatmap}"/>
                     </fluent:DropDownButton>
                     <fluent:DropDownButton Header="Utilities" LargeIcon="{StaticResource RibbonIconUtilities}">
                         <fluent:MenuItem Header="_Convert Save Format from v0.1" Command="{x:Static local:MainWindow.CmdToolsUtilitiesConvertSaveFormatV01}"/>

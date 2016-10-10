@@ -229,6 +229,7 @@
     <Compile Include="Extensions\ApplicationExtensions.cs" />
     <Compile Include="Extensions\BarExtensions.cs" />
     <Compile Include="Extensions\CommandExtensions.cs" />
+    <Compile Include="Extensions\ComparisonExtensions.cs" />
     <Compile Include="Extensions\NotifyPropertyChangedExtensions.cs" />
     <Compile Include="Extensions\NoteExtensions.cs" />
     <Compile Include="Extensions\VisualExtensions.cs" />

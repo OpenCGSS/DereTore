@@ -3,6 +3,10 @@
 namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
     internal sealed class DelesteBasicNote {
 
+        public DelesteBasicNote()
+            : this(null) {
+        }
+
         public DelesteBasicNote(DelesteBeatmapEntry entry) {
             Entry = entry;
         }
@@ -27,7 +31,10 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
 
         public int PositionInTrack => (int)FinishPosition - 1;
 
-        public DelesteBeatmapEntry Entry { get; }
+        public DelesteBeatmapEntry Entry { get; internal set; }
+
+        // For usage in compiling to Deleste beatmap only.
+        internal int GroupID { get; set; } = -1;
 
     }
 }

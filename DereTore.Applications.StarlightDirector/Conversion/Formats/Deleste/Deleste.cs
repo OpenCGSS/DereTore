@@ -15,5 +15,8 @@
 
         public static readonly int DefaultSignature = 4;
 
+        // We avoid using Environment.NewLine, for format consistency.
+        public static readonly string NewLine = "\n";
+
     }
 }

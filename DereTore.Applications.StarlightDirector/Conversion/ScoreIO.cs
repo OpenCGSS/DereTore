@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste;
@@ -10,7 +11,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion {
         public static Score LoadFromDelesteBeatmap(Project temporaryProject, Difficulty difficulty, string fileName, out string[] warnings, out bool hasErrors) {
             warnings = null;
             hasErrors = false;
-            var encoding = DelesteHelper.TryDetectDelesteBeatmapEncoding(fileName);
+            var encoding = DelesteHelper.TryDetectBeatmapEncoding(fileName);
             using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
                 using (var streamReader = new StreamReader(fileStream, encoding, true)) {
                     if (streamReader.EndOfStream) {
@@ -36,11 +37,22 @@ namespace DereTore.Applications.StarlightDirector.Conversion {
                             entryCache.Add(entry);
                         }
                     } while (!streamReader.EndOfStream);
-                    DelesteHelper.AnalyzeDelesteBeatmap(score, entryCache, warningList);
+                    DelesteHelper.AnalyzeBeatmap(score, entryCache, warningList);
                     if (warningList.Count > 0) {
                         warnings = warningList.ToArray();
                     }
                     return score;
+                }
+            }
+        }
+
+        public static void ExportToDelesteBeatmap(Score score, string fileName) {
+            using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
+                // Is there any way to achieve UTF-8 w/o BOM?
+                using (var streamWriter = new StreamWriter(fileStream, Encoding.UTF8)) {
+                    streamWriter.NewLine = Deleste.NewLine;
+                    DelesteHelper.WriteBeatmapHeader(score, streamWriter);
+                    DelesteHelper.WriteEntries(score, streamWriter);
                 }
             }
         }

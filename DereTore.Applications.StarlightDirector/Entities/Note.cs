@@ -168,6 +168,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
         }
 
+        public bool IsTap => Type == NoteType.TapOrFlick && FlickType == NoteFlickType.Tap;
+
         public bool IsGamingNote => Type == NoteType.TapOrFlick || Type == NoteType.Hold;
 
         public static readonly DependencyProperty TypeProperty = DependencyProperty.Register(nameof(Type), typeof(NoteType), typeof(Note),
@@ -198,6 +200,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 return n1.GetHitTiming().CompareTo(n2.GetHitTiming());
             }
         };
+
+        public static readonly Comparison<Note> TrackPositionComparison = (n1, n2) => ((int)n1.FinishPosition).CompareTo((int)n2.FinishPosition);
 
         public static bool operator >(Note left, Note right) {
             return TimingComparison(left, right) > 0;

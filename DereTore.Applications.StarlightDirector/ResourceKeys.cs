@@ -51,6 +51,7 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string InvalidFlickCreationPrompt;
         public readonly string InvalidHoldCreationPrompt;
         public readonly string ExportToCsvCompletePromptTemplate;
+        public readonly string ExportToDelesteBeatmapCompletePromptTemplate;
         public readonly string ConvertSaveFormatCompletePromptTemplate;
         public readonly string ProjectUpgradeNeededPromptTemplate;
         public readonly string ProjectVersionInvalidPromptTemplate;

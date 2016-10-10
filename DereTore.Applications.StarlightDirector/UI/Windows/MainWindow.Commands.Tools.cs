@@ -23,6 +23,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdToolsImportDelesteBeatmap = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsExportScoreToCsv = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsExportScoreToInsideBdb = CommandHelper.RegisterCommand();
+        public static readonly ICommand CmdToolsExportScoreToDelesteBeatmap = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsUtilitiesConvertSaveFormatV01 = CommandHelper.RegisterCommand();
 
         private void CmdToolsBuildMusicArchive_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -192,6 +193,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 } catch (Exception ex) {
                     MessageBox.Show(ex.Message, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
+            }
+        }
+
+        private void CmdToolsExportScoreToDelesteBeatmap_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = Editor.Score != null;
+        }
+
+        private void CmdToolsExportScoreToDelesteBeatmap_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var saveDialog = new SaveFileDialog();
+            saveDialog.OverwritePrompt = true;
+            saveDialog.ValidateNames = true;
+            saveDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.DelesteTxtFileFilter);
+            var result = saveDialog.ShowDialog();
+            if (result ?? false) {
+                ScoreIO.ExportToDelesteBeatmap(Editor.Score, saveDialog.FileName);
+                var prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ExportToDelesteBeatmapCompletePromptTemplate), saveDialog.FileName);
+                MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
