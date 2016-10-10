@@ -183,6 +183,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidFlickCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
+                            if ((ns.IsFlick && ne.IsFlick) && ((ns.IsFlick && !ns.IsHoldEnd) || (ne.IsFlick && !ne.IsHold))) {
+                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationAlreadyExistsPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                return;
+                            }
                             first = ns < ne ? ns : ne;
                             var second = first.Equals(ns) ? ne : ns;
                             Note.ConnectFlick(first, second);

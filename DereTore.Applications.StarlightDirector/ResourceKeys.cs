@@ -49,6 +49,7 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string NoteRelationAlreadyExistsPrompt;
         public readonly string InvalidSyncCreationPrompt;
         public readonly string InvalidFlickCreationPrompt;
+        public readonly string FlickRelationAlreadyExistsPrompt;
         public readonly string InvalidHoldCreationPrompt;
         public readonly string ExportToCsvCompletePromptTemplate;
         public readonly string ExportToDelesteBeatmapCompletePromptTemplate;

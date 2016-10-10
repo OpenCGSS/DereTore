@@ -15,6 +15,7 @@
     <system:String x:Key="NoteRelationAlreadyExistsPrompt">There is already a relation between these notes. Please clear it before adding new relations.</system:String>
     <system:String x:Key="InvalidSyncCreationPrompt">Sync notes should be on the same row.</system:String>
     <system:String x:Key="InvalidFlickCreationPrompt">Flick notes should be on different rows and different columns (start AND finish). Also, both notes cannot be the start note of a hold pair.</system:String>
+    <system:String x:Key="FlickRelationAlreadyExistsPrompt">The note(s) is or are already in a flick group.</system:String>
     <system:String x:Key="InvalidHoldCreationPrompt">Hold note should be on the same column. One note can only have one hold target. There should be no other notes between two hold notes. Also, you cannot put a hold start on a flick note.</system:String>
     <system:String x:Key="ExportToCsvCompletePromptTemplate">Score exported to CSV file '{0}'.</system:String>
     <system:String x:Key="ExportToDelesteBeatmapCompletePromptTemplate">Score exported to Deleste TXT beatmap file '{0}'.</system:String>
