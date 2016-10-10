@@ -304,8 +304,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             PrevFlickNote = null;
             if (HoldTarget != null) {
                 HoldTarget.HoldTarget = null;
-                if (!HoldTarget.HasNextFlick && !HoldTarget.HasPrevFlick && HoldTarget.FlickType != NoteFlickType.Tap) {
-                    HoldTarget.FlickType = NoteFlickType.Tap;
+                if (HoldTarget != null) {
+                    if (!HoldTarget.HasNextFlick && !HoldTarget.HasPrevFlick && HoldTarget.FlickType != NoteFlickType.Tap) {
+                        HoldTarget.FlickType = NoteFlickType.Tap;
+                    }
                 }
             }
             FlickType = NoteFlickType.Tap;
