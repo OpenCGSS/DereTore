@@ -74,6 +74,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return true;
         }
 
+        public bool HasAnyNote => Bars.Count > 0 && Bars.Any(bar => bar.Notes.Count > 0);
+
         [JsonConstructor]
         internal Score(Project project, Difficulty difficulty) {
             Bars = new InternalList<Bar>();

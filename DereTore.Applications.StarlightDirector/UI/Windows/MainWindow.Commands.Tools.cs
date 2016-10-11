@@ -16,8 +16,7 @@ using ProjectIO = DereTore.Applications.StarlightDirector.Conversion.ProjectIO;
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {
 
-        public static readonly ICommand CmdToolsBuildMusicArchive = CommandHelper.RegisterCommand();
-        public static readonly ICommand CmdToolsBuildScoreDatabase = CommandHelper.RegisterCommand();
+
         public static readonly ICommand CmdToolsImportMusicArchive = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsImportScoreDatabase = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsImportDelesteBeatmap = CommandHelper.RegisterCommand();
@@ -25,24 +24,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdToolsExportScoreToInsideBdb = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsExportScoreToDelesteBeatmap = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdToolsUtilitiesConvertSaveFormatV01 = CommandHelper.RegisterCommand();
-
-        private void CmdToolsBuildMusicArchive_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = Editor.Project?.HasMusic ?? false;
-        }
-
-        private void CmdToolsBuildMusicArchive_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Debug.Print("Not implemented: build music archive");
-            NotifyProjectChanged();
-        }
-
-        private void CmdToolsBuildScoreDatabase_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = (Editor.Project?.Scores?.Count ?? 0) > 0 && false;
-        }
-
-        private void CmdToolsBuildScoreDatabase_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Debug.Print("Not implemented: build score database");
-            NotifyProjectChanged();
-        }
 
         private void CmdToolsImportMusicArchive_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = false;

@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="DereTore.Applications.StarlightDirector.UI.Controls.Pages.AboutPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
+             mc:Ignorable="d" 
+             d:DesignHeight="400" d:DesignWidth="600"
+             Loaded="AboutPage_OnLoaded">
+    <UserControl.Resources>
+        <Style TargetType="Hyperlink">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=CommandParameter, Mode=OneWay}"/>
+            <Setter Property="Command" Value="{x:Static local:AboutPage.CmdOpenLink}"/>
+        </Style>
+    </UserControl.Resources>
+    <Border Padding="40 40 0 0">
+        <StackPanel>
+            <TextBlock FontSize="15">
+                <Bold FontSize="30">Starlight Director</Bold> <Run>ver</Run> <Run Name="VersionText"/>
+                <Run Text="{x:Static local:AboutPage.VersionPrerelease}"/>
+                "<Run Text="{x:Static local:AboutPage.CodeName}"/>"
+                <LineBreak/>
+                Score and music creator for <Hyperlink CommandParameter="http://cinderella.idolmaster.jp/sl-stage/">Idolmaster Cinderella Girls: Starlight Stage</Hyperlink>
+                <LineBreak/>
+                Developed and maintained by <Hyperlink CommandParameter="https://github.com/hozuki">hozuki</Hyperlink>
+                at its <Hyperlink CommandParameter="https://github.com/hozuki/DereTore">GitHub repository</Hyperlink>
+                <LineBreak/><LineBreak/>
+                Powered by the open source projects:<LineBreak/>
+                ● <Hyperlink CommandParameter="http://sqlite.org">SQLite</Hyperlink><LineBreak/>
+                ● <Hyperlink CommandParameter="https://github.com/naudio/NAudio">NAudio</Hyperlink><LineBreak/>
+                ● <Hyperlink CommandParameter="http://www.newtonsoft.com/json">Json.NET</Hyperlink><LineBreak/>
+                ● <Hyperlink CommandParameter="https://github.com/JoshClose/CsvHelper">CsvHelper</Hyperlink><LineBreak/>
+                ● <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink>
+                <LineBreak/><LineBreak/>
+                <Run FontSize="10">The copyright of CGSS and its related content are held by</Run> <Hyperlink FontSize="10" CommandParameter="https://bandainamcoent.co.jp/">Bandai Namco Entertainment, Inc.</Hyperlink>
+                <LineBreak/>
+                <Run FontSize="10">Feedback and issue report:</Run> <Hyperlink FontSize="10" CommandParameter="https://github.com/hozuki/DereTore/issues">click here</Hyperlink>.
+            </TextBlock>
+        </StackPanel>
+    </Border>
+</UserControl>

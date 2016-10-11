@@ -29,18 +29,30 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         [JsonProperty]
         public Dictionary<Difficulty, Score> Scores { get; }
 
-        public ScoreSettings Settings { get; private set; }
+        public ScoreSettings Settings { get; }
 
         [JsonProperty]
-        public string MusicFileName { get; set; }
+        public string MusicFileName {
+            get { return (string)GetValue(MusicFileNameProperty); }
+            set { SetValue(MusicFileNameProperty, value); }
+        }
 
-        public bool HasMusic => !string.IsNullOrEmpty(MusicFileName) && File.Exists(MusicFileName);
+        public bool HasMusic {
+            get { return (bool)GetValue(HasMusicProperty); }
+            private set { SetValue(HasMusicProperty, value); }
+        }
 
         public bool IsChanged { get; internal set; }
 
-        public bool IsSaved => !string.IsNullOrEmpty(SaveFileName) && File.Exists(SaveFileName);
+        public bool IsSaved {
+            get { return (bool)GetValue(IsSavedProperty); }
+            private set { SetValue(IsSavedProperty, value); }
+        }
 
-        public string SaveFileName { get; internal set; }
+        public string SaveFileName {
+            get { return (string)GetValue(SaveFileNameProperty); }
+            internal set { SetValue(SaveFileNameProperty, value); }
+        }
 
         [JsonProperty]
         public string Version { get; internal set; }
@@ -87,6 +99,18 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty DifficultyProperty = DependencyProperty.Register(nameof(Difficulty), typeof(Difficulty), typeof(Project),
             new PropertyMetadata(Difficulty.Master, OnDifficultyChanged));
 
+        public static readonly DependencyProperty MusicFileNameProperty = DependencyProperty.Register(nameof(MusicFileName), typeof(string), typeof(Project),
+            new PropertyMetadata(null, OnMusicFileNameChanged));
+
+        public static readonly DependencyProperty HasMusicProperty = DependencyProperty.Register(nameof(HasMusic), typeof(bool), typeof(Project),
+           new PropertyMetadata(false));
+
+        public static readonly DependencyProperty SaveFileNameProperty = DependencyProperty.Register(nameof(SaveFileName), typeof(string), typeof(Project),
+            new PropertyMetadata(null, OnMusicFileNameChanged));
+
+        public static readonly DependencyProperty IsSavedProperty = DependencyProperty.Register(nameof(IsSaved), typeof(bool), typeof(Project),
+           new PropertyMetadata(false));
+
         public static string CurrentVersion => "0.2";
 
         private static void OnDifficultyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
@@ -94,6 +118,21 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Debug.Assert(project != null, "project != null");
             Debug.Print($"New difficulty: {e.NewValue}");
             project.DifficultyChanged.Raise(project, EventArgs.Empty);
+        }
+
+        private static void OnMusicFileNameChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var project = obj as Project;
+            Debug.Assert(project != null, "project != null");
+            var newValue = (string)e.NewValue;
+            project.HasMusic = !string.IsNullOrEmpty(newValue) && File.Exists(newValue);
+            project.OnSettingsChanged(project, EventArgs.Empty);
+        }
+
+        private static void OnSaveFileNameChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var project = obj as Project;
+            Debug.Assert(project != null, "project != null");
+            var newValue = (string)e.NewValue;
+            project.IsSaved = !string.IsNullOrEmpty(newValue) && File.Exists(newValue);
         }
 
         private void OnSettingsChanged(object sender, EventArgs e) {

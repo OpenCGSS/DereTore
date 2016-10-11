@@ -7,6 +7,7 @@
         xmlns:controls="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
         xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities"
         xmlns:ui="clr-namespace:DereTore.Applications.StarlightDirector.UI"
+        xmlns:pages="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
         xmlns:fluent="urn:fluent-ribbon"
         mc:Ignorable="d" Name="Me" WindowStartupLocation="CenterScreen"
         Title="Starlight Director" Width="920" Height="620" MinWidth="750" MinHeight="400"
@@ -32,13 +33,22 @@
                         <fluent:Button Header="Save Project As" KeyTip="A" Command="{x:Static local:MainWindow.CmdFileSaveProjectAs}"
                                        Icon="{StaticResource RibbonIconFileSaveAs}"/>
                         <fluent:BackstageTabItem Header="Summary" KeyTip="M">
-                            <Frame Source="../Pages/SummaryPage.xaml"/>
+                            <pages:SummaryPage/>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="Recent" KeyTip="R">
-                            <Frame Source="../Pages/RecentPage.xaml"/>
+                            <pages:RecentPage/>
+                        </fluent:BackstageTabItem>
+                        <fluent:BackstageTabItem Header="Build" KeyTip="B">
+                            <pages:BuildPage Project="{Binding ElementName=Me, Path=Project, Mode=OneWay}"/>
+                        </fluent:BackstageTabItem>
+                        <fluent:BackstageTabItem Header="Import" KeyTip="I">
+                            <pages:ImportPage/>
+                        </fluent:BackstageTabItem>
+                        <fluent:BackstageTabItem Header="Export" KeyTip="E">
+                            <pages:ExportPage/>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="About" KeyTip="T">
-                            <Frame Source="../Pages/AboutPage.xaml"/>
+                            <pages:AboutPage/>
                         </fluent:BackstageTabItem>
                         <fluent:Button Header="Preferences" KeyTip="C" Command="{x:Static local:MainWindow.CmdFilePreferences}"
                                        Icon="{StaticResource RibbonIconFilePreferences}"/>
@@ -100,7 +110,7 @@
                     <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditNoteDelete}" Size="Middle" Icon="{StaticResource RibbonIconNoteDelete}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Preview">
-                    <fluent:Button Header="Start Preview" Command="{x:Static local:MainWindow.CmdPreviewStart}" LargeIcon="{StaticResource RibbonIconPreviewStart}"/>
+                    <fluent:Button Header="Start" Command="{x:Static local:MainWindow.CmdPreviewStart}" LargeIcon="{StaticResource RibbonIconPreviewStart}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Music">
                     <fluent:Button Header="Select File" Command="{x:Static local:MainWindow.CmdMusicSelectWaveFile}" LargeIcon="{StaticResource RibbonIconMusicSelectWaveFile}"/>
@@ -144,10 +154,6 @@
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
             <fluent:RibbonTabItem Header="Tools" KeyTip="T">
-                <fluent:RibbonGroupBox Header="Build">
-                    <fluent:Button Header="Music Archive" Command="{x:Static local:MainWindow.CmdToolsBuildMusicArchive}" LargeIcon="{StaticResource RibbonIconBuildMusicArchive}"/>
-                    <fluent:Button Header="Score Database" Command="{x:Static local:MainWindow.CmdToolsBuildScoreDatabase}" LargeIcon="{StaticResource RibbonIconBuildScoreDatabase}"/>
-                </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Conversion">
                     <fluent:DropDownButton Header="Import" LargeIcon="{StaticResource RibbonIconImport}">
                         <fluent:MenuItem Header="_Music Archive" Command="{x:Static local:MainWindow.CmdToolsImportMusicArchive}"/>

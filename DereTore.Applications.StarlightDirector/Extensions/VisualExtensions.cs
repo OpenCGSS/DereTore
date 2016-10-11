@@ -1,8 +1,7 @@
 ﻿using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using DereTore.Applications.StarlightDirector.UI.Pages;
+using DereTore.Applications.StarlightDirector.UI.Controls.Pages;
 using DereTore.Applications.StarlightDirector.UI.Windows;
 
 namespace DereTore.Applications.StarlightDirector.Extensions {
@@ -20,7 +19,7 @@ namespace DereTore.Applications.StarlightDirector.Extensions {
             return null;
         }
 
-        public static MainWindow FindMainWindow<T>(this T page) where T : Page, IDirectorPage {
+        public static MainWindow GetMainWindow<T>(this T page) where T : Control, IDirectorPage {
             return FindVisualParent<MainWindow>(page);
         }
 
