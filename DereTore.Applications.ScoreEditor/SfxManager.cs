@@ -119,7 +119,8 @@ namespace DereTore.Applications.ScoreEditor {
             memory.Capacity = (int)memory.Length;
             soundStreams.Add(memory);
 
-            var waveProvider = new RawSourceWaveStream(memory, new WaveFormat());
+            // The SFX files were provided so just keep it the 44.1kHz/16bits/stereo.
+            var waveProvider = new RawSourceWaveStream(memory, DefaultWaveFormat);
             _waveStreams.Add(waveProvider);
             _playingList.Add(false);
             var @out = new AudioOut();
@@ -148,7 +149,7 @@ namespace DereTore.Applications.ScoreEditor {
             _audioOuts = new List<AudioOut>();
             _playingList = new List<bool>();
         }
-        
+
         private readonly List<MemoryStream> _soundStreams;
         private readonly List<WaveStream> _waveStreams;
         private readonly List<string> _fileNames;
@@ -157,6 +158,7 @@ namespace DereTore.Applications.ScoreEditor {
 
         private static SfxManager _instance;
         private static readonly object SyncObject;
+        private static readonly WaveFormat DefaultWaveFormat = new WaveFormat();
 
     }
 }
