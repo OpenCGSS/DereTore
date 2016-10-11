@@ -131,8 +131,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             var note = scoreNote.Note;
             var barIndex = note.Bar.Index;
-            var row = note.PositionInGrid;
-            var column = note.PositionInTrack;
+            var row = note.IndexInGrid;
+            var column = note.IndexInTrack;
             Debug.Print($"Note @ bar#{barIndex}, row={row}, column={column}");
             DraggingStartNote = scoreNote;
             // Prevent broadcasting this event to ScoreEditor.
@@ -168,7 +168,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     Note first;
                     switch (mode) {
                         case EditMode.Sync:
-                            if (ns.Bar != ne.Bar || ns.PositionInGrid != ne.PositionInGrid) {
+                            if (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidSyncCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
@@ -177,7 +177,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             LineLayer.InvalidateVisual();
                             break;
                         case EditMode.Flick:
-                            if ((ns.Bar == ne.Bar && ns.PositionInGrid == ne.PositionInGrid) ||
+                            if ((ns.Bar == ne.Bar && ns.IndexInGrid == ne.IndexInGrid) ||
                                 ns.FinishPosition == ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart) {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidFlickCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
@@ -198,27 +198,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;
                             }
-                            var anyObstacles = ScoreNotes.Any(scoreNote => {
-                                var n = scoreNote.Note;
-                                if (n.Equals(ns) || n.Equals(ne)) {
-                                    return false;
-                                }
-                                if (n.FinishPosition == ns.FinishPosition && ns.Bar.Index <= n.Bar.Index && n.Bar.Index <= ne.Bar.Index) {
-                                    if (ns.Bar.Index == ne.Bar.Index) {
-                                        return ns.PositionInGrid <= n.PositionInGrid && n.PositionInGrid <= ne.PositionInGrid;
-                                    } else {
-                                        if (ns.Bar.Index == n.Bar.Index) {
-                                            return ns.PositionInGrid <= n.PositionInGrid;
-                                        } else if (ne.Bar.Index == n.Bar.Index) {
-                                            return n.PositionInGrid <= ne.PositionInGrid;
-                                        } else {
-                                            return true;
-                                        }
-                                    }
-                                } else {
-                                    return false;
-                                }
-                            });
+                            var anyObstacles = Score.Notes.AnyNoteBetween(ns, ne);
                             if (anyObstacles) {
                                 MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                                 return;

@@ -92,7 +92,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion {
                         var score = project.GetScore(difficulty);
                         foreach (var bar in score.Bars) {
                             foreach (var note in bar.Notes) {
-                                note.PositionInGrid *= k;
+                                note.IndexInGrid *= k;
                             }
                         }
                     }

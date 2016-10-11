@@ -32,7 +32,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var scoreBar = AddScoreBar(null, false, bar);
                 foreach (var note in bar.Notes) {
                     NoteIDs.ExistingIDs.Add(note.ID);
-                    var scoreNote = AddScoreNote(scoreBar, note.PositionInGrid, note.FinishPosition, note);
+                    var scoreNote = AddScoreNote(scoreBar, note.IndexInGrid, note.FinishPosition, note);
                     temporaryMap.Add(note, scoreNote);
                     allNotes.Add(note);
                 }
@@ -128,8 +128,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var note = scoreNote.Note;
                 var bar = note.Bar;
                 var baseY = scrollOffset + bar.Index * barHeight;
-                var extraY = barHeight * note.PositionInGrid / bar.GetTotalGridCount();
-                scoreNote.X = noteLayerWidth * TrackCenterXPositions[note.PositionInTrack];
+                var extraY = barHeight * note.IndexInGrid / bar.GetTotalGridCount();
+                scoreNote.X = noteLayerWidth * TrackCenterXPositions[note.IndexInTrack];
                 scoreNote.Y = baseY + extraY;
             }
         }
@@ -221,7 +221,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     // The Reset() call is necessary.
                     note.Reset();
                     NoteIDs.ExistingIDs.Remove(note.ID);
-                    note.Bar.Notes.Remove(note);
+                    note.Bar.RemoveNote(note);
                 }
             }
             NoteLayer.Children.Remove(scoreNote);
@@ -275,7 +275,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             } else {
                 note = bar.AddNote();
                 note.StartPosition = note.FinishPosition = (NotePosition)(column + 1);
-                note.PositionInGrid = row;
+                note.IndexInGrid = row;
             }
             scoreNote.Note = note;
             EditableScoreNotes.Add(scoreNote);
@@ -383,7 +383,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private ScoreNote AnyNoteExistOnPosition(int barIndex, int column, int row) {
             foreach (var scoreNote in ScoreNotes) {
                 var note = scoreNote.Note;
-                if (note.Bar.Index == barIndex && (int)note.FinishPosition == column + 1 && note.PositionInGrid == row) {
+                if (note.Bar.Index == barIndex && (int)note.FinishPosition == column + 1 && note.IndexInGrid == row) {
                     return scoreNote;
                 }
             }

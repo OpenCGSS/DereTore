@@ -12,7 +12,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public int ID { get; private set; }
 
         [JsonProperty]
-        public int PositionInGrid { get; set; }
+        public int IndexInGrid { get; set; }
 
         public NoteType Type {
             get { return (NoteType)GetValue(TypeProperty); }
@@ -31,7 +31,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             set { SetValue(FinishPositionProperty, value); }
         }
 
-        public int PositionInTrack => (int)FinishPosition - 1;
+        public int IndexInTrack => (int)FinishPosition - 1;
 
         [JsonProperty]
         public NoteFlickType FlickType {
@@ -195,7 +195,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static readonly Comparison<Note> TimingComparison = (n1, n2) => {
             if (n1.Bar == n2.Bar) {
-                return n1.PositionInGrid.CompareTo(n2.PositionInGrid);
+                return n1.IndexInGrid.CompareTo(n2.IndexInGrid);
             } else {
                 return n1.GetHitTiming().CompareTo(n2.GetHitTiming());
             }
@@ -282,7 +282,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         internal Note(int id, Bar bar) {
             ID = id;
             Bar = bar;
-            PositionInGrid = 0;
+            IndexInGrid = 0;
             Type = NoteType.TapOrFlick;
             StartPosition = NotePosition.Nowhere;
             FinishPosition = NotePosition.Nowhere;

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace DereTore.Applications.StarlightDirector.Entities {
-    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+    [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy), MemberSerialization = MemberSerialization.OptIn)]
     public sealed class Bar {
 
         public Note AddNote() {
@@ -13,16 +13,28 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
             var note = new Note(id, this);
             Notes.Add(note);
+            Score.Notes.Add(note);
             return note;
         }
 
+        public bool RemoveNote(Note note) {
+            if (Notes.Contains(note)) {
+                return false;
+            }
+            Notes.Remove(note);
+            Score.Notes.Remove(note);
+            return true;
+        }
+
+        [JsonProperty]
         public InternalList<Note> Notes { get; }
 
+        [JsonProperty]
         public BarParams Params { get; internal set; }
 
+        [JsonProperty]
         public int Index { get; internal set; }
 
-        [JsonIgnore]
         public Score Score { get; internal set; }
 
         [JsonConstructor]
@@ -32,7 +44,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Index = index;
         }
 
-        public void SquashParams() {
+        internal void SquashParams() {
             if (Params?.CanBeSquashed ?? false) {
                 Params = null;
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,7 +27,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
                 var timePerBeat = DirectorUtilities.BpmToSeconds(bpm);
                 var totalBarGridCount = bar.GetTotalGridCount();
 
-                if (!totalBarGridCount.IsMultipleOf(entry.FullLength)) {
+                if (entry.FullLength > 0 && !totalBarGridCount.IsMultipleOf(entry.FullLength)) {
                     // Try to fit in the grid. E.g. Yumeiro Harmony measure #041.
                     var lengthFactors = new List<uint> {
                         (uint)entry.FullLength
@@ -53,13 +54,18 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
                         lastFlickNote = null;
                     }
                     var note = bar.AddNote();
-                    note.PositionInGrid = (int)(totalBarGridCount * ((float)basicNote.IndexInMeasure / entry.FullLength));
+                    note.IndexInGrid = (int)(totalBarGridCount * ((float)basicNote.IndexInMeasure / entry.FullLength));
                     note.StartPosition = basicNote.StartPosition;
                     note.FinishPosition = basicNote.FinishPosition;
-                    var positionInTrack = basicNote.PositionInTrack;
+                    var positionInTrack = basicNote.IndexInTrack;
 
                     if (basicNote.IsHoldStart) {
-                        if (currentHoldingNotes[positionInTrack] != null) {
+                        // The '<' part fixes this example: (credits to @inosuke01)
+                        // #0,043:330000002020*4*000:42511:12132
+                        // #1,043:4000202040002000:11211:44544
+                        // #4,043:0001*1*00000000000:32
+                        // Without this judgement, the two notes marked with '*' will be wrongly connected.
+                        if (currentHoldingNotes[positionInTrack] != null && currentHoldingNotes[positionInTrack] < note) {
                             // Invalid holding notes: I haven't released my finger yet!
                             // OK, accept it, set the newly added note as hold end.
                             Note.ConnectHold(currentHoldingNotes[positionInTrack], note);
@@ -71,7 +77,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
                         lastBasicFlickNote = null;
                         continue;
                     }
-                    if (currentHoldingNotes[positionInTrack] != null) {
+                    if (currentHoldingNotes[positionInTrack] != null && currentHoldingNotes[positionInTrack] < note) {
                         Note.ConnectHold(currentHoldingNotes[positionInTrack], note);
                         currentHoldingNotes[positionInTrack] = null;
                         if (basicNote.IsFlick) {
@@ -132,14 +138,14 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             // Fix sync notes.
             foreach (var bar in score.Bars) {
                 var notes = bar.Notes;
-                var distinctGridLineIndices = notes.Select(note => note.PositionInGrid).Distinct().ToArray();
+                var distinctGridLineIndices = notes.Select(note => note.IndexInGrid).Distinct().ToArray();
                 if (distinctGridLineIndices.Length == notes.Count) {
                     continue;
                 }
                 // There are sync notes in this bar.
                 notes.Sort(Note.TimingComparison);
                 for (var i = 0; i < bar.Notes.Count - 1; ++i) {
-                    if (notes[i].PositionInGrid == notes[i + 1].PositionInGrid) {
+                    if (notes[i].IndexInGrid == notes[i + 1].IndexInGrid) {
                         Note.ConnectSync(notes[i], notes[i + 1]);
                         ++i;
                     }
@@ -147,9 +153,14 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             }
 
             // Fix hold notes: if any line crosses other note(s). (Is it necessary? Deleste files seem to be organized well.)
-            //foreach (var bar in score.Bars) {
-            //    var notes = bar.Notes;
-            //}
+            foreach (var note in score.Notes) {
+                if (note.IsHoldStart) {
+                    var between = score.Notes.GetFirstNoteBetween(note, note.HoldTarget);
+                    if (between != null) {
+                        note.HoldTarget = between;
+                    }
+                }
+            }
         }
 
         public static DelesteBeatmapEntry ReadEntry(Project temporaryProject, string line, int entryCounter, List<DelesteBasicNote> noteCache, List<string> warnings, ref bool hasErrors) {

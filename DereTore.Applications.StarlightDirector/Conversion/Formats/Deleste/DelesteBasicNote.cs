@@ -29,7 +29,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
 
         public bool IsHoldStart => Type == DelesteNoteType.Hold;
 
-        public int PositionInTrack => (int)FinishPosition - 1;
+        public int IndexInTrack => (int)FinishPosition - 1;
 
         public DelesteBeatmapEntry Entry { get; internal set; }
 

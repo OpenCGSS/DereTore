@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Input;
+﻿using System.Linq;
 using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Extensions;
 using Newtonsoft.Json;
@@ -67,20 +64,35 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             if (index < 0 || index >= Bars.Count) {
                 return false;
             }
-            Bars.RemoveAt(index);
-            for (var i = index; i < Bars.Count; ++i) {
-                --Bars[i].Index;
+            return RemoveBar(Bars[index]);
+        }
+
+        public bool RemoveBar(Bar bar) {
+            var bars = Bars;
+            if (!bars.Contains(bar)) {
+                return false;
+            }
+            var index = bars.IndexOf(bar);
+            foreach (var note in bar.Notes) {
+                Notes.Remove(note);
+            }
+            bars.Remove(bar);
+            for (var i = index; i < bars.Count; ++i) {
+                --bars[i].Index;
             }
             return true;
         }
 
-        public bool HasAnyNote => Bars.Count > 0 && Bars.Any(bar => bar.Notes.Count > 0);
+        public bool HasAnyNote => Notes.Count > 0;
+
+        public InternalList<Note> Notes { get; }
 
         [JsonConstructor]
         internal Score(Project project, Difficulty difficulty) {
             Bars = new InternalList<Bar>();
             Project = project;
             Difficulty = difficulty;
+            Notes = new InternalList<Note>();
             _flickGroupIDGenerator = new IntegerIDGenerator(1);
         }
 
@@ -90,14 +102,13 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
             Project = project;
             foreach (var bar in Bars) {
-                if (bar.Notes != null) {
-                    foreach (var note in bar.Notes) {
-                        note.Bar = bar;
-                    }
+                foreach (var note in bar.Notes) {
+                    note.Bar = bar;
                 }
                 bar.Score = this;
             }
             var allNotes = Bars.SelectMany(bar => bar.Notes).ToArray();
+            Notes.AddRange(allNotes);
             foreach (var note in allNotes) {
                 if (note.SyncTargetID != EntityID.Invalid) {
                     note.SyncTarget = FindNoteByID(note.SyncTargetID);
@@ -151,7 +162,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     compiledNote.FinishPosition = note.FinishPosition;
                     compiledNote.FlickType = (int)note.FlickType;
                     compiledNote.IsSync = note.IsSync;
-                    compiledNote.HitTiming = endTimeOfLastBar + barTimeInSeconds * (note.PositionInGrid / (double)(signature * gridCountInBar));
+                    compiledNote.HitTiming = endTimeOfLastBar + barTimeInSeconds * (note.IndexInGrid / (double)(signature * gridCountInBar));
                     if (note.GroupID != EntityID.Invalid) {
                         compiledNote.FlickGroupID = note.GroupID;
                     } else {
