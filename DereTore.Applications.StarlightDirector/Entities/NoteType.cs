@@ -5,13 +5,15 @@
 
         TapOrFlick = 1,
         Hold = 2,
+        Slide = 3,
 
-        Debug1 = 81,
-        Debug2 = 82,
-        SongStart = 91,
-        SongEnd = 92,
-        ScoreInfo = 100,
+        FeverStart = 81,
+        FeverEnd = 82,
+        MusicStart = 91,
+        MusicEnd = 92,
+        NoteCount = 100,
 
+        // Starlight Director
         Avatar = 99999
 
     }

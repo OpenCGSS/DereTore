@@ -199,18 +199,18 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             var totalNoteCount = compiledNotes.Count;
             var scoreInfoNote = new CompiledNote {
                 ID = 1,
-                Type = NoteType.ScoreInfo,
+                Type = NoteType.NoteCount,
                 FlickType = totalNoteCount
             };
             var songStartNote = new CompiledNote {
                 ID = 2,
-                Type = NoteType.SongStart
+                Type = NoteType.MusicStart
             };
             compiledNotes.Insert(0, scoreInfoNote);
             compiledNotes.Insert(1, songStartNote);
             var songEndNote = new CompiledNote {
                 ID = i++,
-                Type = NoteType.SongEnd,
+                Type = NoteType.MusicEnd,
                 HitTiming = endTimeOfLastBar
             };
             compiledNotes.Add(songEndNote);
