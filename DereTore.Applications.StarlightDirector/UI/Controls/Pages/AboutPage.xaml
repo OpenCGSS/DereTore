@@ -14,9 +14,9 @@
             <Setter Property="Command" Value="{x:Static local:AboutPage.CmdOpenLink}"/>
         </Style>
     </UserControl.Resources>
-    <Border Padding="40 40 0 0">
+    <ScrollViewer Padding="40 40" VerticalScrollBarVisibility="Auto">
         <StackPanel>
-            <TextBlock FontSize="15">
+            <TextBlock FontSize="15" TextWrapping="Wrap">
                 <Bold FontSize="30">Starlight Director</Bold> <Run>ver</Run> <Run Name="VersionText"/>
                 <Run Text="{x:Static local:AboutPage.VersionPrerelease}"/>
                 "<Run Text="{x:Static local:AboutPage.CodeName}"/>"
@@ -26,17 +26,24 @@
                 Developed and maintained by <Hyperlink CommandParameter="https://github.com/hozuki">hozuki</Hyperlink>
                 at its <Hyperlink CommandParameter="https://github.com/hozuki/DereTore">GitHub repository</Hyperlink>
                 <LineBreak/><LineBreak/>
-                Powered by the open source projects:<LineBreak/>
-                ● <Hyperlink CommandParameter="http://sqlite.org">SQLite</Hyperlink><LineBreak/>
-                ● <Hyperlink CommandParameter="https://github.com/naudio/NAudio">NAudio</Hyperlink><LineBreak/>
-                ● <Hyperlink CommandParameter="http://www.newtonsoft.com/json">Json.NET</Hyperlink><LineBreak/>
-                ● <Hyperlink CommandParameter="https://github.com/JoshClose/CsvHelper">CsvHelper</Hyperlink><LineBreak/>
-                ● <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink>
+                <Bold>Powered by the open source projects:</Bold><LineBreak/>
+                <Hyperlink CommandParameter="http://sqlite.org">SQLite</Hyperlink><LineBreak/>
+                <Hyperlink CommandParameter="https://github.com/naudio/NAudio">NAudio</Hyperlink><LineBreak/>
+                <Hyperlink CommandParameter="http://www.newtonsoft.com/json">Json.NET</Hyperlink><LineBreak/>
+                <Hyperlink CommandParameter="https://github.com/JoshClose/CsvHelper">CsvHelper</Hyperlink><LineBreak/>
+                <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink>
+                <LineBreak/><LineBreak/>
+                <TextBlock FontSize="12">
+                    <Bold>Special thanks to:</Bold><LineBreak/>
+                    <TextBlock Name="ContributorsBlock" TextWrapping="Wrap"/>
+                    <LineBreak/>
+                    several others, and you.
+                </TextBlock>
                 <LineBreak/><LineBreak/>
                 <Run FontSize="10">The copyright of CGSS and its related content are held by</Run> <Hyperlink FontSize="10" CommandParameter="https://bandainamcoent.co.jp/">Bandai Namco Entertainment, Inc.</Hyperlink>
                 <LineBreak/>
                 <Run FontSize="10">Feedback and issue report:</Run> <Hyperlink FontSize="10" CommandParameter="https://github.com/hozuki/DereTore/issues">click here</Hyperlink>.
             </TextBlock>
         </StackPanel>
-    </Border>
+    </ScrollViewer>
 </UserControl>

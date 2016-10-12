@@ -10,7 +10,7 @@
     <system:String x:Key="DelesteTxtFileFilter">Deleste Beatmap (*.txt)|*.txt</system:String>
 
     <system:String x:Key="ProjectChangedPrompt">The project is changed. Do you want to save it first?</system:String>
-    <system:String x:Key="PreviewNotImplementedPrompt">The Preview function is not implemented yet. You can export the score to a CSV file and use ScoreEditor to view it.</system:String>
+    <system:String x:Key="PreviewNotImplementedPrompt">The Preview function is not implemented yet. For now you can export the score to a Deleste beatmap and use Deleste to view it.</system:String>
     <system:String x:Key="ConfirmDeleteBarPrompt">You are going to delete a measure. This operation cannot be reverted. Proceed?</system:String>
     <system:String x:Key="NoteRelationAlreadyExistsPrompt">There is already a relation between these notes. Please clear it before adding new relations.</system:String>
     <system:String x:Key="InvalidSyncCreationPrompt">Sync notes should be on the same row.</system:String>
