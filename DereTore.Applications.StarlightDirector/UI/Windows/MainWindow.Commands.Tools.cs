@@ -102,7 +102,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdToolsExportScoreToInsideBdb_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = Editor.Score != null;
+            e.CanExecute = Editor.Score != null && false;
         }
 
         private void CmdToolsExportScoreToInsideBdb_Executed(object sender, ExecutedRoutedEventArgs e) {

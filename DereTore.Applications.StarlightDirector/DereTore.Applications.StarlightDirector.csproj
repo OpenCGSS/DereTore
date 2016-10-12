@@ -357,9 +357,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Resources\Testing\musicscores_m001.bdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <Compile Include="UI\Controls\ScoreEditor.Logic.Public.cs" />
   </ItemGroup>
   <ItemGroup>

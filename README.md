@@ -2,6 +2,8 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/08drntgkuv3vxtom?svg=true)](https://ci.appveyor.com/project/hozuki/deretore)
 
+Downloads: [Latest CI build](https://ci.appveyor.com/api/projects/hozuki/DereTore/artifacts/deretore-toolkit-x86.zip?job=Platform%3A+x86) (Windows, x86); [Releases](https://github.com/hozuki/DereTore/releases).
+
 The goal of DereTore is to improve gaming experience in [The Idolmaster Cinderella Girls Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
 (CGSS), or even to customize it a little bit.
 
@@ -13,6 +15,13 @@ Wonder [how this name comes from](#the-name)?
 2. Install missing NuGet packages: `nuget restore DereTore.sln`;
 3. Open `DereTore.sln` in Visual Studio (VS2010 SP1 or later is required);
 4. Build the solution.
+
+## Usage
+
+**For licensing reasons, newer releases do not include a necessary library `hcaenc_lite.dll`.** Please download ADX2LE from its [download page](http://www.adx2le.com/download/index.html), and put
+`tools\hcaenc_lite.dll` to DereTore's application directory. If you encounter regional problems, you know there is a way to solve it.
+
+There is a simple [user guide](DereTore.Applications.StarlightDirector/docs/user-guide_zh-CN.md) for Chinese users. Versions in other languages are in progress.
 
 ## TODO List
 
@@ -90,8 +99,6 @@ Viewing and editing scores (collections of notes) of live music. Here is its [re
 
 The new score composer (still in alpha phase), the successor of ScoreEditor. Detailed readme and user manual will be written
 in the future. Let's celebrate its alpha release!
-
-There is a simple user guide in Simplified Chinese: [here](DereTore.Applications.StarlightDirector/docs/user-guide_zh-CN.md).
 
 ### Other
 

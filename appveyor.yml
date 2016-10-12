@@ -7,16 +7,43 @@ branches:
 skip_tags: true
 image: Visual Studio 2015
 platform:
-  - AnyCPU
+#  - AnyCPU
   - x86
   - x64
 configuration:
-  - Debug
   - Release
 build:
-  parallel: true
+#  parallel: true
   project: DereTore.sln
 environment:
   EnableNuGetPackageRestore: true
 before_build:
   nuget restore
+after_build:
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.ScoreEditor/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.ScoreEditor/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit-%PLATFORM%.zip %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/StarlightDirector.exe.config
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.mdb
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.ScoreEditor/bin/%PLATFORM%/%CONFIGURATION%/*.wav
+artifacts:
+  - path: deretore-toolkit-%PLATFORM%.zip
+    name: All
+deploy:
+  - provider: GitHub
+    tag: all-build_$(appveyor_build_version)-alpha
+    release: deretore-toolkit-build_$(appveyor_build_version)
+    description: 'DereTore Toolkit'
+    auth_token:
+      secure: u+MFjjY665AT4PHJ2bFMINBLnnnwSj1jLnNeFZoWfeYbomTNSPOmdahffmZa+dRH
+    artifact: All                    # upload all NuGet packages to release assets
+    draft: false
+    prerelease: true
+    on:
+      branch: master                 # release from master branch only
+      appveyor_repo_tag: true        # deploy on tag push only
