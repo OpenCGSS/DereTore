@@ -28,6 +28,9 @@
     <system:String x:Key="ErrorOccurredPrompt">An error occurred from the last operation.</system:String>
     <system:String x:Key="BdbBuildingCompletePromptTemplate1">Project is built and written to BDB file '{0}'.</system:String>
     <system:String x:Key="BdbBuildingCompletePromptTemplate2">Project is built and written to BDB file '{0}'. Created a copy with hashed file name '{1}'.</system:String>
+    <system:String x:Key="AcbEnvironmentFilesMissing">There are missing file(s):</system:String>
+    <system:String x:Key="AcbEnvironmentLogErrorTemplate">ERROR: {0}</system:String>
+    <system:String x:Key="AcbEnvironmentRechecking">Rechecking...</system:String>
 
     <system:String x:Key="DelesteImportingWillReplaceCurrentScorePrompt">Importing a Delestue beatmap will replace current score and change your project settings like BPM or start time offset. Do you want to save your work first?</system:String>
     <system:String x:Key="DelesteWarningsAppearedPrompt">Some warnings were raised during the importing process. You can stop and try to edit the source file to eliminate those warnings, or continue and let Starlight Director modify the measures/notes automatically. Automatic modification may cause unexpected results in note positions or relations. &#x0a;Do you want to continue loading the modified score?</system:String>

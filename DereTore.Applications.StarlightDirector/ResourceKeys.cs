@@ -62,6 +62,9 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string ErrorOccurredPrompt;
         public readonly string BdbBuildingCompletePromptTemplate1;
         public readonly string BdbBuildingCompletePromptTemplate2;
+        public readonly string AcbEnvironmentFilesMissing;
+        public readonly string AcbEnvironmentLogErrorTemplate;
+        public readonly string AcbEnvironmentRechecking;
 
         public readonly string DelesteImportingWillReplaceCurrentScorePrompt;
         public readonly string DelesteWarningsAppearedPrompt;

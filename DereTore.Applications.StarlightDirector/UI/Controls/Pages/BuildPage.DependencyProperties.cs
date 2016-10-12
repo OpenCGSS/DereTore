@@ -6,24 +6,29 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
 
         public Project Project {
             get { return (Project)GetValue(ProjectProperty); }
-            set { SetValue(ProjectProperty, value); }
+            internal set { SetValue(ProjectProperty, value); }
         }
 
         public bool CreateLz4CompressedAcbFile {
             get { return (bool)GetValue(CreateLz4CompressedAcbFileProperty); }
-            set { SetValue(CreateLz4CompressedAcbFileProperty, value); }
+            private set { SetValue(CreateLz4CompressedAcbFileProperty, value); }
         }
 
         public bool CreateNameHashedAcbFile {
             get { return (bool)GetValue(CreateNameHashedAcbFileProperty); }
-            set { SetValue(CreateNameHashedAcbFileProperty, value); }
+            private set { SetValue(CreateNameHashedAcbFileProperty, value); }
         }
 
         public bool CreateNameHashedBdbFile {
             get { return (bool)GetValue(CreateNameHashedBdbFileProperty); }
-            set { SetValue(CreateNameHashedBdbFileProperty, value); }
+            private set { SetValue(CreateNameHashedBdbFileProperty, value); }
         }
 
+        public bool IsAcbBuildingEnvironmentOK {
+            get { return (bool)GetValue(IsAcbBuildingEnvironmentOKProperty); }
+            private set { SetValue(IsAcbBuildingEnvironmentOKProperty, value); }
+        }
+        
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(nameof(Project), typeof(Project), typeof(BuildPage),
             new PropertyMetadata(null));
 
@@ -34,6 +39,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
             new PropertyMetadata(false));
 
         public static readonly DependencyProperty CreateNameHashedBdbFileProperty = DependencyProperty.Register(nameof(CreateNameHashedBdbFile), typeof(bool), typeof(BuildPage),
+            new PropertyMetadata(false));
+
+        public static readonly DependencyProperty IsAcbBuildingEnvironmentOKProperty = DependencyProperty.Register(nameof(IsAcbBuildingEnvironmentOK), typeof(bool), typeof(BuildPage),
             new PropertyMetadata(false));
 
     }

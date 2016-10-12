@@ -413,9 +413,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\Pages\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\DereTore.ACB\DereTore.ACB.csproj">
       <Project>{eecf4baa-9c9e-4687-a616-0f5c65c5f14b}</Project>
