@@ -41,7 +41,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
         }
 
         public static string VersionPrerelease => "alpha";
-        public static string CodeName => "Uzuki";
+        public static string CodeName => "Rin";
 
         private static readonly Dictionary<string, string> Contributors = new Dictionary<string, string> {
             { "CaiMiao", "https://github.com/CaiMiao" },
