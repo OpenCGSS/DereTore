@@ -172,7 +172,7 @@ namespace DereTore.Applications.ScoreEditor {
         }
 
         private LiveMusicPlayer(Stream hcaStream, DecodeParams decodeParams) {
-            var hcaWaveProvider = new HcaWaveProvider(_hcaDataStream, decodeParams);
+            var hcaWaveProvider = new HcaWaveProvider(hcaStream, decodeParams);
             _waveStream = new RawSourceWaveStream(hcaWaveProvider, hcaWaveProvider.WaveFormat);
             _soundPlayer = new AudioOut(AudioClientShareMode.Shared, 40);
             //_soundPlayer = new AudioOut();
