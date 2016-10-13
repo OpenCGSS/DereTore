@@ -188,6 +188,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                             }
                             first = ns < ne ? ns : ne;
                             var second = first.Equals(ns) ? ne : ns;
+                            if (first.HasNextFlick || second.HasPrevFlick) {
+                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationIsFullPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                                return;
+                            }
                             Note.ConnectFlick(first, second);
                             LineLayer.NoteRelations.Add(start, end, NoteRelation.Flick);
                             LineLayer.InvalidateVisual();
