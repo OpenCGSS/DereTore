@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Extensions;
 using Newtonsoft.Json;
@@ -86,6 +87,19 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public bool HasAnyNote => Notes.Count > 0;
 
         public InternalList<Note> Notes { get; }
+
+        public bool Validate(out string[] problems) {
+            // Rules:
+            // 1. [error] Hold lines do not cross on other notes;
+            // 2. [warning] Two notes on the same grid line have no sync relation;
+            // 3. [warning] Flick group contains only one flick note.
+            throw new NotImplementedException();
+        }
+
+        public bool Validate() {
+            string[] dummy;
+            return Validate(out dummy);
+        }
 
         [JsonConstructor]
         internal Score(Project project, Difficulty difficulty) {
