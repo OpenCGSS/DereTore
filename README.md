@@ -2,10 +2,13 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/08drntgkuv3vxtom?svg=true)](https://ci.appveyor.com/project/hozuki/deretore)
 
-Downloads: [Latest CI build](https://ci.appveyor.com/api/projects/hozuki/DereTore/artifacts/deretore-toolkit-x86.zip?job=Platform%3A+x86) (Windows, x86); [Releases](https://github.com/hozuki/DereTore/releases).
-
 The goal of DereTore is to improve gaming experience in [The Idolmaster Cinderella Girls Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
 (CGSS), or even to customize it a little bit.
+
+Downloads:
+
+- [Nightly build](https://ci.appveyor.com/api/projects/hozuki/DereTore/artifacts/deretore-toolkit-x86.zip?job=Platform%3A+x86) (Windows, x86)
+- [Releases](https://github.com/hozuki/DereTore/releases)
 
 Wonder [how this name comes from](#the-name)?
 
@@ -17,6 +20,11 @@ Wonder [how this name comes from](#the-name)?
 4. Build the solution.
 
 ## Usage
+
+Requirements:
+
+- Windows 7 or later (though some tools should be able to run on Mono)
+- .NET Framework 4.0
 
 **For licensing reasons, newer releases do not include a necessary library `hcaenc_lite.dll`.** Please download ADX2LE from its [download page](http://www.adx2le.com/download/index.html), and put
 `tools\hcaenc_lite.dll` to DereTore's application directory. If you encounter regional problems, you know there is a way to solve it.
