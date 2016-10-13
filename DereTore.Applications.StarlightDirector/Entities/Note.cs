@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Windows;
-using DereTore.Applications.StarlightDirector.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace DereTore.Applications.StarlightDirector.Entities {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy), MemberSerialization = MemberSerialization.OptIn)]
-    public sealed class Note : DependencyObject {
+    public sealed class Note : DependencyObject, IComparable<Note> {
 
         [JsonProperty]
         public int ID { get; private set; }
@@ -193,13 +192,33 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty FinishPositionProperty = DependencyProperty.Register(nameof(FinishPosition), typeof(NotePosition), typeof(Note),
             new PropertyMetadata(NotePosition.Nowhere));
 
-        public static readonly Comparison<Note> TimingComparison = (n1, n2) => {
-            if (n1.Bar == n2.Bar) {
-                return n1.IndexInGrid.CompareTo(n2.IndexInGrid);
+        public static readonly Comparison<Note> TimingComparison = (x, y) => {
+            if (x == null) {
+                throw new ArgumentNullException(nameof(x));
+            }
+            if (y == null) {
+                throw new ArgumentNullException(nameof(y));
+            }
+            if (x.Equals(y)) {
+                return 0;
+            }
+            if (x.Bar == y.Bar) {
+                return x.IndexInGrid.CompareTo(y.IndexInGrid);
             } else {
-                return n1.GetHitTiming().CompareTo(n2.GetHitTiming());
+                return x.Bar.Index.CompareTo(y.Bar.Index);
             }
         };
+
+        public int CompareTo(Note other) {
+            if (other == null) {
+                throw new ArgumentNullException(nameof(other));
+            }
+            if (Equals(other)) {
+                return 0;
+            } else {
+                return TimingComparison(this, other);
+            }
+        }
 
         public static readonly Comparison<Note> TrackPositionComparison = (n1, n2) => ((int)n1.FinishPosition).CompareTo((int)n2.FinishPosition);
 
