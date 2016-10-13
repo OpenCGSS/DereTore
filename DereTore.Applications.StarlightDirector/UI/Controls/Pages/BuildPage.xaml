@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
+             xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
              mc:Ignorable="d" Name="Me"
              d:DesignHeight="300" d:DesignWidth="300"
              Loaded="BuildPage_OnLoaded">
@@ -78,13 +79,15 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" IsEnabled="{Binding ElementName=Me, Path=Project.HasMusic, Mode=OneWay}">
+                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding ElementName=Me, Path=Project.HasMusic, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={x:Static converters:NullableBooleanToVisibilityConverter.Negate}}">You haven't selected a music file yet.</Label>
+                            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" IsEnabled="{Binding ElementName=Me, Path=Project.HasMusic, Mode=OneWay}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
@@ -101,9 +104,9 @@
                                 <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="With an LZ4-compressed copy" Margin="0 4" IsChecked="{Binding ElementName=Me, Path=CreateLz4CompressedAcbFile}"/>
                                 <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="With a copy renamed to CGSS style" Margin="0 4" IsChecked="{Binding ElementName=Me, Path=CreateNameHashedAcbFile}"/>
                             </Grid>
-                            <Button Grid.Row="1" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Build..." Command="{x:Static local:BuildPage.CmdBuildMusicArchive}" IsEnabled="{Binding ElementName=Me, Path=IsAcbBuildingEnvironmentOK, Mode=OneWay}"/>
-                            <Button Grid.Row="2" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Recheck" Command="{x:Static local:BuildPage.CmdRecheckAcbBuildEnvironment}"/>
-                            <ScrollViewer Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Name="AcbBuildLogScroller" VerticalScrollBarVisibility="Auto" Padding="40 0" MaxHeight="120">
+                            <Button Grid.Row="2" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Build..." Command="{x:Static local:BuildPage.CmdBuildMusicArchive}" IsEnabled="{Binding ElementName=Me, Path=IsAcbBuildingEnvironmentOK, Mode=OneWay}"/>
+                            <Button Grid.Row="3" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Recheck" Command="{x:Static local:BuildPage.CmdRecheckAcbBuildEnvironment}"/>
+                            <ScrollViewer Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Name="AcbBuildLogScroller" VerticalScrollBarVisibility="Auto" Padding="40 0" MaxHeight="120">
                                 <ItemsControl Name="AcbBuildLog"/>
                             </ScrollViewer>
                         </Grid>
