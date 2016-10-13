@@ -10,7 +10,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         [JsonProperty]
         public int ID { get; private set; }
 
-        [JsonProperty]
+        // "PositionInGrid" was the first name of this property used in serialization.
+        [JsonProperty("positionInGrid")]
         public int IndexInGrid { get; set; }
 
         public NoteType Type {
