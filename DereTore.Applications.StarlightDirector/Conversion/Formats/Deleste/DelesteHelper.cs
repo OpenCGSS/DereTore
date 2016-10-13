@@ -179,9 +179,10 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
             }
             if (line.StartsWith(Deleste.OffsetCommand)) {
                 var dataText = line.Substring(Deleste.OffsetCommand.Length + 1);
-                var offset = int.Parse(dataText);
+                var offset = double.Parse(dataText);
+                offset = Math.Abs(offset);
                 // msec -> sec
-                temporaryProject.Settings.StartTimeOffset = (double)offset / 1000;
+                temporaryProject.Settings.StartTimeOffset = offset / 1000;
                 return null;
             }
             if (line.Length < 2 || !char.IsNumber(line, 1)) {
