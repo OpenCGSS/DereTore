@@ -13,8 +13,10 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
 
         public static void AnalyzeBeatmap(Score score, List<DelesteBeatmapEntry> entries, List<string> warnings) {
             var currentHoldingNotes = new Note[5];
-            Note lastFlickNote = null;
-            DelesteBasicNote lastBasicFlickNote = null;
+            // key: Deleste Group Number
+            // value: (value)
+            var lastFlickNotes = new Dictionary<int, Note>();
+            var lastBasicFlickNotes = new Dictionary<int, DelesteBasicNote>();
 
             foreach (var entry in entries) {
                 if (entry.MeasureIndex + 1 > score.Bars.Count) {
@@ -51,7 +53,7 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
 
                 foreach (var basicNote in entry.Notes) {
                     if (!basicNote.IsFlick) {
-                        lastFlickNote = null;
+                        lastFlickNotes[entry.GroupID] = null;
                     }
                     var note = bar.AddNote();
                     note.IndexInGrid = (int)(totalBarGridCount * ((float)basicNote.IndexInMeasure / entry.FullLength));
@@ -73,8 +75,8 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
                         } else {
                             currentHoldingNotes[positionInTrack] = note;
                         }
-                        lastFlickNote = null;
-                        lastBasicFlickNote = null;
+                        lastFlickNotes[entry.GroupID] = null;
+                        lastBasicFlickNotes[entry.GroupID] = null;
                         continue;
                     }
                     if (currentHoldingNotes[positionInTrack] != null && currentHoldingNotes[positionInTrack] < note) {
@@ -85,52 +87,48 @@ namespace DereTore.Applications.StarlightDirector.Conversion.Formats.Deleste {
                         }
                     }
                     if (basicNote.IsTap) {
-                        lastFlickNote = null;
-                        lastBasicFlickNote = null;
+                        lastFlickNotes[entry.GroupID] = null;
+                        lastBasicFlickNotes[entry.GroupID] = null;
                         continue;
                     }
                     if (basicNote.IsFlick) {
-                        if (lastFlickNote == null || lastBasicFlickNote == null) {
-                            lastFlickNote = note;
-                            lastBasicFlickNote = basicNote;
+                        if (!lastFlickNotes.ContainsKey(entry.GroupID) || !lastBasicFlickNotes.ContainsKey(entry.GroupID) ||
+                            lastFlickNotes[entry.GroupID] == null || lastBasicFlickNotes[entry.GroupID] == null) {
+                            lastFlickNotes[entry.GroupID] = note;
+                            lastBasicFlickNotes[entry.GroupID] = basicNote;
                             continue;
                         }
                         // Whether the next note is a traditional flick or not, set it.
-                        lastFlickNote.FlickType = lastBasicFlickNote.IsFlickLeft ? NoteFlickType.FlickLeft : NoteFlickType.FlickRight;
-                        if (lastBasicFlickNote.Entry.GroupID != entry.GroupID) {
-                            lastFlickNote = note;
-                            lastBasicFlickNote = basicNote;
-                            continue;
-                        }
+                        lastFlickNotes[entry.GroupID].FlickType = lastBasicFlickNotes[entry.GroupID].IsFlickLeft ? NoteFlickType.FlickLeft : NoteFlickType.FlickRight;
                         // We haven implemented Free Flick Mode so we assume all the notes are in Restricted Flick Mode (as in real gaming).
-                        var requestedFlickDirection = lastBasicFlickNote.IsFlickLeft ? -1 : 1;
-                        var actualFlickDirection = (int)basicNote.FinishPosition - (int)lastBasicFlickNote.FinishPosition;
+                        var requestedFlickDirection = lastBasicFlickNotes[entry.GroupID].IsFlickLeft ? -1 : 1;
+                        var actualFlickDirection = (int)basicNote.FinishPosition - (int)lastBasicFlickNotes[entry.GroupID].FinishPosition;
                         // <0: Current note is not in the requested trail. (e.g. right vs 5->1)
                         // =0: Current note is not in the requested trail. (e.g. right vs 3->3)
                         // >0: Current note is in the requested trail. (e.g. right vs 1->2)
                         if (actualFlickDirection * requestedFlickDirection <= 0) {
-                            lastFlickNote = note;
-                            lastBasicFlickNote = basicNote;
+                            lastFlickNotes[entry.GroupID] = note;
+                            lastBasicFlickNotes[entry.GroupID] = basicNote;
                             continue;
                         }
                         // TODO: Here I use a simple way to calculate time difference. It only applies to constant BPM.
                         double timeDiff;
-                        if (basicNote.Entry.MeasureIndex != lastBasicFlickNote.Entry.MeasureIndex) {
-                            timeDiff = timePerBeat * Deleste.DefaultSignature * (basicNote.Entry.MeasureIndex - lastBasicFlickNote.Entry.MeasureIndex);
+                        if (basicNote.Entry.MeasureIndex != lastBasicFlickNotes[entry.GroupID].Entry.MeasureIndex) {
+                            timeDiff = timePerBeat * Deleste.DefaultSignature * (basicNote.Entry.MeasureIndex - lastBasicFlickNotes[entry.GroupID].Entry.MeasureIndex - 1);
                             timeDiff += timePerBeat * Deleste.DefaultSignature * ((float)basicNote.IndexInMeasure / entry.FullLength);
-                            timeDiff += timePerBeat * Deleste.DefaultSignature * (1 - (float)lastBasicFlickNote.IndexInMeasure / lastBasicFlickNote.Entry.FullLength);
+                            timeDiff += timePerBeat * Deleste.DefaultSignature * (1 - (float)lastBasicFlickNotes[entry.GroupID].IndexInMeasure / lastBasicFlickNotes[entry.GroupID].Entry.FullLength);
                         } else {
-                            timeDiff = timePerBeat * Deleste.DefaultSignature * ((float)basicNote.IndexInMeasure / entry.FullLength - (float)lastBasicFlickNote.IndexInMeasure / lastBasicFlickNote.Entry.FullLength);
+                            timeDiff = timePerBeat * Deleste.DefaultSignature * ((float)basicNote.IndexInMeasure / entry.FullLength - (float)lastBasicFlickNotes[entry.GroupID].IndexInMeasure / lastBasicFlickNotes[entry.GroupID].Entry.FullLength);
                         }
                         // > ※ただし、1000msを超えると接続されません
                         if (timeDiff > 1) {
-                            lastFlickNote = note;
-                            lastBasicFlickNote = basicNote;
+                            lastFlickNotes[entry.GroupID] = note;
+                            lastBasicFlickNotes[entry.GroupID] = basicNote;
                             continue;
                         }
-                        Note.ConnectFlick(lastFlickNote, note);
-                        lastFlickNote = note;
-                        lastBasicFlickNote = basicNote;
+                        Note.ConnectFlick(lastFlickNotes[entry.GroupID], note);
+                        lastFlickNotes[entry.GroupID] = note;
+                        lastBasicFlickNotes[entry.GroupID] = basicNote;
                     }
                 }
             }
