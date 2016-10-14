@@ -18,7 +18,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         public bool RemoveNote(Note note) {
-            if (Notes.Contains(note)) {
+            if (!Notes.Contains(note)) {
                 return false;
             }
             Notes.Remove(note);
