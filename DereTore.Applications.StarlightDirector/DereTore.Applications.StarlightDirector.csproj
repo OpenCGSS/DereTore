@@ -88,10 +88,6 @@
       <HintPath>..\packages\ControlzEx.2.1.2.3\lib\net40\ControlzEx.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CsvHelper, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
-      <HintPath>..\packages\CsvHelper.2.16.3.0\lib\net40\CsvHelper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Fluent, Version=4.0.3.394, Culture=neutral, PublicKeyToken=3e436e32a8c5546f, processorArchitecture=MSIL">
       <HintPath>..\packages\Fluent.Ribbon.4.0.3.394\lib\net40\Fluent.dll</HintPath>
       <Private>True</Private>
@@ -100,18 +96,10 @@
       <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net40\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Data.SQLite.Core.1.0.103\lib\net40\System.Data.SQLite.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq, Version=1.0.103.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Linq.1.0.103\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -121,7 +109,6 @@
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -204,56 +191,16 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Components\ObjectMatrix.cs" />
-    <Compile Include="Components\StringHasher.cs" />
-    <Compile Include="Conversion\Formats\Deleste\Deleste.cs" />
-    <Compile Include="Conversion\Formats\Deleste\DelesteBasicNote.cs" />
-    <Compile Include="Conversion\Formats\Deleste\DelesteBeatmapEntry.cs" />
-    <Compile Include="Conversion\Formats\Deleste\DelesteGroupID.cs" />
-    <Compile Include="Conversion\Formats\Deleste\DelesteHelper.cs" />
-    <Compile Include="Conversion\Formats\Deleste\DelesteHelperExtensions.cs" />
-    <Compile Include="Conversion\Formats\Deleste\DelesteNoteType.cs" />
-    <Compile Include="Conversion\ScoreIO.cs" />
-    <Compile Include="Components\UIHelper.cs" />
-    <Compile Include="Components\CommandHelper.cs" />
-    <Compile Include="Components\DescribedEnumReader.cs" />
-    <Compile Include="Components\IntegerIDGenerator.cs" />
-    <Compile Include="Components\InternalList.cs" />
-    <Compile Include="Components\NoteRelation.cs" />
-    <Compile Include="Components\NoteRelationCollection.cs" />
-    <Compile Include="Components\ObservableDictionary.cs" />
-    <Compile Include="Conversion\ProjectIO.cs" />
-    <Compile Include="Conversion\ProjectIO.Legacy.cs" />
-    <Compile Include="Components\ThreadingTimer.cs" />
-    <Compile Include="DirectorUtilities.cs" />
-    <Compile Include="Entities\Bar.cs" />
-    <Compile Include="Entities\BarParams.cs" />
-    <Compile Include="Entities\CompiledNote.cs" />
-    <Compile Include="Entities\CompiledScore.cs" />
-    <Compile Include="Entities\Difficulty.cs" />
-    <Compile Include="Entities\EntityID.cs" />
-    <Compile Include="Entities\FlickGroupModificationResult.cs" />
-    <Compile Include="Entities\Note.cs" />
-    <Compile Include="Entities\NoteFlickType.cs" />
-    <Compile Include="Entities\NotePosition.cs" />
-    <Compile Include="Entities\NoteType.cs" />
-    <Compile Include="Entities\Party.cs" />
-    <Compile Include="Entities\Project.cs" />
-    <Compile Include="Entities\ProjectVersion.cs" />
-    <Compile Include="Entities\Score.cs" />
-    <Compile Include="Entities\ScoreSettings.cs" />
-    <Compile Include="Entities\Serialization\ScoreCsvMap.cs" />
     <Compile Include="Extensions\ApplicationExtensions.cs" />
-    <Compile Include="Extensions\BarExtensions.cs" />
     <Compile Include="Extensions\CommandExtensions.cs" />
     <Compile Include="Extensions\ComparisonExtensions.cs" />
     <Compile Include="Extensions\NotifyPropertyChangedExtensions.cs" />
-    <Compile Include="Extensions\NoteExtensions.cs" />
     <Compile Include="Extensions\VisualExtensions.cs" />
+    <Compile Include="UIHelper.cs" />
+    <Compile Include="CommandHelper.cs" />
     <Compile Include="Interop\NativeConstants.cs" />
     <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="Interop\NativeStructures.cs" />
-    <Compile Include="NoteIDs.cs" />
     <Compile Include="ResourceKeys.cs" />
     <Compile Include="UI\Controls\LineLayer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\LineLayer.xaml.cs">
@@ -312,6 +259,7 @@
     <Compile Include="UI\Converters\PositiveInt32ToStringConverter.cs" />
     <Compile Include="UI\Controls\Pages\BuildPage.DependencyProperties.cs" />
     <Compile Include="UI\Controls\Pages\IDirectorPage.cs" />
+    <Compile Include="UI\NoteRelationCollection.cs" />
     <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Background.cs" />
@@ -415,17 +363,21 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\DereTore.ACB\DereTore.ACB.csproj">
-      <Project>{eecf4baa-9c9e-4687-a616-0f5c65c5f14b}</Project>
-      <Name>DereTore.ACB</Name>
+    <ProjectReference Include="..\DereTore.Applications.StarlightDirector.Core\DereTore.Applications.StarlightDirector.Core.csproj">
+      <Project>{7fb2a631-88c4-4c6b-9e8b-8eeeb40575d0}</Project>
+      <Name>DereTore.Applications.StarlightDirector.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Applications.StarlightDirector.Entities\DereTore.Applications.StarlightDirector.Entities.csproj">
+      <Project>{d78a4080-34f4-45ec-a8ef-87f95815e3bd}</Project>
+      <Name>DereTore.Applications.StarlightDirector.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Applications.StarlightDirector.Exchange\DereTore.Applications.StarlightDirector.Exchange.csproj">
+      <Project>{3ecdd0bb-215a-4437-b162-fc9d9285303d}</Project>
+      <Name>DereTore.Applications.StarlightDirector.Exchange</Name>
     </ProjectReference>
     <ProjectReference Include="..\DereTore.Common\DereTore.Common.csproj">
       <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
       <Name>DereTore.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DereTore.HCA\DereTore.HCA.csproj">
-      <Project>{7c6fadd7-a0bb-4bf3-8992-3d89ace1cc69}</Project>
-      <Name>DereTore.HCA</Name>
     </ProjectReference>
     <ProjectReference Include="..\DereTore.StarlightStage\DereTore.StarlightStage.csproj">
       <Project>{abd7f1b5-c4e3-4200-8e44-98b183dfee2c}</Project>

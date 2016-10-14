@@ -3,9 +3,8 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using DereTore.Applications.StarlightDirector.Entities;
-using DereTore.Applications.StarlightDirector.Extensions;
+using DereTore.Applications.StarlightDirector.Entities.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     public partial class ScoreBar {

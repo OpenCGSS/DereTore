@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Windows.Input;
-using DereTore.Applications.StarlightDirector.Components;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {

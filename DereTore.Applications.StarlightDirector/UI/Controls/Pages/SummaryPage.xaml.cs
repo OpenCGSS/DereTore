@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {

@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Windows.Data;
 using DereTore.Applications.StarlightDirector.Entities;
-using DereTore.Applications.StarlightDirector.UI.Controls;
 
 namespace DereTore.Applications.StarlightDirector.UI.Converters {
     public sealed class DifficultyToIndexConverter : IValueConverter {

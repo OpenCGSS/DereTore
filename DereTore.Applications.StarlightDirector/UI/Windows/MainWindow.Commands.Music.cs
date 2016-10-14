@@ -2,7 +2,6 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Extensions;
 using Microsoft.Win32;
 using NAudio.CoreAudioApi;

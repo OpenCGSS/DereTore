@@ -1,5 +1,4 @@
 ﻿using System.Windows.Input;
-using DereTore.Applications.StarlightDirector.Components;
 using DereTore.Applications.StarlightDirector.Entities;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {

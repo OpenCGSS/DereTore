@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Windows"
         xmlns:controls="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
-        xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities"
+        xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities;assembly=DereTore.Applications.StarlightDirector.Entities"
         xmlns:ui="clr-namespace:DereTore.Applications.StarlightDirector.UI"
         xmlns:pages="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
         xmlns:fluent="urn:fluent-ribbon"

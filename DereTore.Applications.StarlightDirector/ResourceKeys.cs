@@ -66,12 +66,8 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string AcbEnvironmentLogErrorTemplate;
         public readonly string AcbEnvironmentRechecking;
 
-        public readonly string DelesteImportingWillReplaceCurrentScorePrompt;
         public readonly string DelesteWarningsAppearedPrompt;
-        public readonly string DelesteCommandIsNotYetSupportedPromptTemplate;
-        public readonly string DelesteNoteCountInconsistentPromptTemplate;
-        public readonly string DelesteUnfitGridSizePromptTemplate;
-        public readonly string DelesteTxtFormat2IsNotSupportedPrompt;
+        public readonly string DelesteImportingWillReplaceCurrentScorePrompt;
 
         public readonly string SummaryTotalNotes;
         public readonly string SummaryTotalBars;

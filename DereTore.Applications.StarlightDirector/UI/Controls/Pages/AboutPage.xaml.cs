@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Documents;
-using DereTore.Applications.StarlightDirector.Components;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
     public partial class AboutPage : IDirectorPage {
