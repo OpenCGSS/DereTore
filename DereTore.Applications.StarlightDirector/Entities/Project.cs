@@ -106,7 +106,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
            new PropertyMetadata(false));
 
         public static readonly DependencyProperty SaveFileNameProperty = DependencyProperty.Register(nameof(SaveFileName), typeof(string), typeof(Project),
-            new PropertyMetadata(null, OnMusicFileNameChanged));
+            new PropertyMetadata(null, OnSaveFileNameChanged));
 
         public static readonly DependencyProperty IsSavedProperty = DependencyProperty.Register(nameof(IsSaved), typeof(bool), typeof(Project),
            new PropertyMetadata(false));
