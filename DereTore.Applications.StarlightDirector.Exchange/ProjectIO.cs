@@ -1,4 +1,6 @@
-﻿using System.Data.SQLite;
+﻿using System;
+using System.Data;
+using System.Data.SQLite;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -27,52 +29,56 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             fileName = fileInfo.FullName;
             if (createNewDatabase) {
                 SQLiteConnection.CreateFile(fileName);
+            } else {
+                File.Delete(fileName);
             }
             using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
                 connection.Open();
-                SQLiteCommand createTable = null, setValue = null;
+                SQLiteCommand createTable = null, setValue = null, insertNote = null, insertNoteID = null;
 
                 using (var transaction = connection.BeginTransaction()) {
                     // Table structure
-                    if (createNewDatabase) {
-                        SQLiteHelper.CreateTable(transaction, MainTableName, ref createTable);
-                        SQLiteHelper.CreateTable(transaction, ScoresTableName, ref createTable);
-                        SQLiteHelper.CreateTable(transaction, ScoreSettingsTableName, ref createTable);
-                    }
+                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_Main, ref createTable);
+                    SQLiteHelper.CreateScoresTables(transaction, ref createTable);
+                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_ScoreSettings, ref createTable);
+                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_Metadata, ref createTable);
 
                     // Main
-                    SQLiteHelper.SetValue(transaction, MainTableName, "music_file_name", project.MusicFileName ?? string.Empty, createNewDatabase, ref setValue);
-                    SQLiteHelper.SetValue(transaction, MainTableName, "vesion", project.Version, createNewDatabase, ref setValue);
+                    SQLiteHelper.InsertValue(transaction, Names.Table_Main, Names.Field_MusicFileName, project.MusicFileName ?? string.Empty, ref setValue);
+                    SQLiteHelper.InsertValue(transaction, Names.Table_Main, Names.Field_Version, project.Version, ref setValue);
 
-                    // Scores
-                    var jsonSerializer = JsonSerializer.Create();
+                    // Notes
+                    SQLiteHelper.InsertNoteID(transaction, EntityID.Invalid, ref insertNoteID);
                     foreach (var difficulty in Difficulties) {
                         var score = project.GetScore(difficulty);
-                        // Damn JsonSerializer
-                        var tempFileName = Path.GetTempFileName();
-                        using (var fileStream = File.Open(tempFileName, FileMode.Open, FileAccess.Write)) {
-                            using (var writer = new StreamWriter(fileStream, Encoding.ASCII)) {
-                                jsonSerializer.Serialize(writer, score);
-                            }
+                        foreach (var note in score.Notes) {
+                            SQLiteHelper.InsertNoteID(transaction, note.ID, ref insertNoteID);
                         }
-                        var s = File.ReadAllText(tempFileName, Encoding.ASCII);
-                        File.Delete(tempFileName);
-                        SQLiteHelper.SetValue(transaction, ScoresTableName, ((int)difficulty).ToString("00"), s, createNewDatabase, ref setValue);
+                    }
+                    foreach (var difficulty in Difficulties) {
+                        var score = project.GetScore(difficulty);
+                        foreach (var note in score.Notes) {
+                            SQLiteHelper.InsertNote(transaction, note, ref insertNote);
+                        }
                     }
 
                     // Score settings
                     var settings = project.Settings;
-                    SQLiteHelper.SetValue(transaction, ScoreSettingsTableName, "global_bpm", settings.GlobalBpm.ToString(CultureInfo.InvariantCulture), createNewDatabase, ref setValue);
-                    SQLiteHelper.SetValue(transaction, ScoreSettingsTableName, "start_time_offset", settings.StartTimeOffset.ToString(CultureInfo.InvariantCulture), createNewDatabase, ref setValue);
-                    SQLiteHelper.SetValue(transaction, ScoreSettingsTableName, "global_grid_per_signature", settings.GlobalGridPerSignature.ToString(), createNewDatabase, ref setValue);
-                    SQLiteHelper.SetValue(transaction, ScoreSettingsTableName, "global_signature", settings.GlobalSignature.ToString(), createNewDatabase, ref setValue);
+                    SQLiteHelper.InsertValue(transaction, Names.Table_ScoreSettings, Names.Field_GlobalBpm, settings.GlobalBpm.ToString(CultureInfo.InvariantCulture), ref setValue);
+                    SQLiteHelper.InsertValue(transaction, Names.Table_ScoreSettings, Names.Field_StartTimeOffset, settings.StartTimeOffset.ToString(CultureInfo.InvariantCulture), ref setValue);
+                    SQLiteHelper.InsertValue(transaction, Names.Table_ScoreSettings, Names.Field_GlobalGridPerSignature, settings.GlobalGridPerSignature.ToString(), ref setValue);
+                    SQLiteHelper.InsertValue(transaction, Names.Table_ScoreSettings, Names.Field_GlobalSignature, settings.GlobalSignature.ToString(), ref setValue);
+
+                    // Metadata (none for now)
 
                     // Commit!
                     transaction.Commit();
                 }
 
                 // Cleanup
-                setValue.Dispose();
+                insertNoteID?.Dispose();
+                insertNote?.Dispose();
+                setValue?.Dispose();
                 createTable?.Dispose();
                 connection.Close();
             }
@@ -81,6 +87,24 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
         }
 
         public static Project Load(string fileName) {
+            var version = CheckProjectFileVersion(fileName);
+            return Load(fileName, version);
+        }
+
+
+        internal static Project Load(string fileName, ProjectVersion versionOverride) {
+            switch (versionOverride) {
+                case ProjectVersion.Unknown:
+                    throw new ArgumentOutOfRangeException(nameof(versionOverride));
+                case ProjectVersion.V0_1:
+                    return LoadFromV01(fileName);
+                case ProjectVersion.V0_2:
+                    return LoadFromV02(fileName);
+            }
+            return LoadCurrentVersion(fileName);
+        }
+
+        private static Project LoadCurrentVersion(string fileName) {
             var fileInfo = new FileInfo(fileName);
             if (!fileInfo.Exists) {
                 throw new FileNotFoundException(string.Empty, fileName);
@@ -95,37 +119,28 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 SQLiteCommand getValues = null;
 
                 // Main
-                var mainValues = SQLiteHelper.GetValues(connection, MainTableName, ref getValues);
-                project.MusicFileName = mainValues["music_file_name"];
-                project.Version = mainValues["version"];
+                var mainValues = SQLiteHelper.GetValues(connection, Names.Table_Main, ref getValues);
+                project.MusicFileName = mainValues[Names.Field_MusicFileName];
+                project.Version = mainValues[Names.Field_Version];
 
                 // Scores
-                var scoreValues = SQLiteHelper.GetValues(connection, ScoresTableName, ref getValues);
-                var jsonSerializer = JsonSerializer.CreateDefault();
                 foreach (var difficulty in Difficulties) {
-                    var indexString = ((int)difficulty).ToString("00");
-                    var scoreJson = scoreValues[indexString];
-                    Score score;
-                    var scoreJsonBytes = Encoding.ASCII.GetBytes(scoreJson);
-                    using (var memoryStream = new MemoryStream(scoreJsonBytes)) {
-                        using (var reader = new StreamReader(memoryStream)) {
-                            using (var jsonReader = new JsonTextReader(reader)) {
-                                score = jsonSerializer.Deserialize<Score>(jsonReader);
-                            }
-                        }
-                    }
+                    var score = new Score(project, difficulty);
+                    ReadScore(connection, score);
                     score.ResolveReferences(project);
                     score.Difficulty = difficulty;
                     project.Scores.Add(difficulty, score);
                 }
 
                 // Score settings
-                var scoreSettingsValues = SQLiteHelper.GetValues(connection, ScoreSettingsTableName, ref getValues);
+                var scoreSettingsValues = SQLiteHelper.GetValues(connection, Names.Table_ScoreSettings, ref getValues);
                 var settings = project.Settings;
-                settings.GlobalBpm = double.Parse(scoreSettingsValues["global_bpm"]);
-                settings.StartTimeOffset = double.Parse(scoreSettingsValues["start_time_offset"]);
-                settings.GlobalGridPerSignature = int.Parse(scoreSettingsValues["global_grid_per_signature"]);
-                settings.GlobalSignature = int.Parse(scoreSettingsValues["global_signature"]);
+                settings.GlobalBpm = double.Parse(scoreSettingsValues[Names.Field_GlobalBpm]);
+                settings.StartTimeOffset = double.Parse(scoreSettingsValues[Names.Field_StartTimeOffset]);
+                settings.GlobalGridPerSignature = int.Parse(scoreSettingsValues[Names.Field_GlobalGridPerSignature]);
+                settings.GlobalSignature = int.Parse(scoreSettingsValues[Names.Field_GlobalSignature]);
+
+                // Metadata (none for now)
 
                 // Cleanup
                 getValues.Dispose();
@@ -155,9 +170,46 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             }
         }
 
-        private static readonly string MainTableName = "main";
-        private static readonly string ScoresTableName = "scores";
-        private static readonly string ScoreSettingsTableName = "score_settings";
+        private static void ReadScore(SQLiteConnection connection, Score score) {
+            using (var table = new DataTable()) {
+                SQLiteHelper.ReadNotesTable(connection, score.Difficulty, table);
+
+                foreach (DataRow row in table.Rows) {
+                    var id = (int)(long)row[Names.Column_ID];
+                    var bar = (int)(long)row[Names.Column_BarIndex];
+                    var grid = (int)(long)row[Names.Column_IndexInGrid];
+                    var start = (NotePosition)(long)row[Names.Column_StartPosition];
+                    var finish = (NotePosition)(long)row[Names.Column_FinishPosition];
+                    var flick = (NoteFlickType)(long)row[Names.Column_FlickType];
+                    var prevFlick = (int)(long)row[Names.Column_PrevFlickNoteID];
+                    var nextFlick = (int)(long)row[Names.Column_NextFlickNoteID];
+                    var sync = (int)(long)row[Names.Column_SyncTargetID];
+                    var hold = (int)(long)row[Names.Column_HoldTargetID];
+
+                    EnsureBarIndex(score, bar);
+                    var b = score.Bars[bar];
+                    var note = b.AddNote(id);
+                    note.IndexInGrid = grid;
+                    note.StartPosition = start;
+                    note.FinishPosition = finish;
+                    note.FlickType = flick;
+                    note.PrevFlickNoteID = prevFlick;
+                    note.NextFlickNoteID = nextFlick;
+                    note.SyncTargetID = sync;
+                    note.HoldTargetID = hold;
+                }
+            }
+        }
+
+        private static void EnsureBarIndex(Score score, int index) {
+            if (score.Bars.Count > index) {
+                return;
+            }
+            for (var i = score.Bars.Count; i <= index; ++i) {
+                var bar = new Bar(score, i);
+                score.Bars.Add(bar);
+            }
+        }
 
         private static readonly Difficulty[] Difficulties = { Difficulty.Debut, Difficulty.Regular, Difficulty.Pro, Difficulty.Master, Difficulty.MasterPlus };
 

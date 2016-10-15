@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 using System.IO;
 using System.Linq;
@@ -32,17 +33,36 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             } catch (Exception) {
             }
             try {
+                string versionString;
                 using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
                     connection.Open();
+                    var command = connection.CreateCommand();
+                    command.CommandText = $"SELECT value FROM {Names.Table_Main} WHERE key = @key;";
+                    command.Parameters.Add("key", DbType.AnsiString).Value = Names.Field_Version;
+                    var value = command.ExecuteScalar();
+                    versionString = (string)value;
+                    if (versionString == null) {
+                        command.Parameters["key"].Value = Names.Field_Vesion;
+                        value = command.ExecuteScalar();
+                        versionString = (string)value;
+                    }
                     connection.Close();
                 }
-                return ProjectVersion.V0_2;
-            } catch (Exception) {
+                double v;
+                double.TryParse(versionString, out v);
+                if (v.Equals(0.2)) {
+                    return ProjectVersion.V0_2;
+                } else if (v.Equals(0.3)) {
+                    return ProjectVersion.V0_3;
+                } else {
+                    return ProjectVersion.Unknown;
+                }
+            } catch (Exception ex) {
+                return ProjectVersion.Unknown;
             }
-            return ProjectVersion.Unknown;
         }
 
-        internal static Project LoadFromV01(string fileInput) {
+        private static Project LoadFromV01(string fileInput) {
             Project project;
             using (var fileStream = File.Open(fileInput, FileMode.Open, FileAccess.Read)) {
                 using (var reader = new StreamReader(fileStream, Encoding.ASCII)) {
@@ -78,6 +98,70 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                         project.Settings.StartTimeOffset = settings.StartTimeOffset;
                     }
                 }
+            }
+
+            foreach (var difficulty in Difficulties) {
+                var score = project.GetScore(difficulty);
+                score.ResolveReferences(project);
+                score.Difficulty = difficulty;
+            }
+
+            project.SaveFileName = fileInput;
+
+            GridLineFixup(project);
+            return project;
+        }
+
+        private static Project LoadFromV02(string fileName) {
+            var fileInfo = new FileInfo(fileName);
+            if (!fileInfo.Exists) {
+                throw new FileNotFoundException(string.Empty, fileName);
+            }
+            fileName = fileInfo.FullName;
+            var project = new Project {
+                IsChanged = false,
+                SaveFileName = fileName
+            };
+            using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
+                connection.Open();
+                SQLiteCommand getValues = null;
+
+                // Main
+                var mainValues = SQLiteHelper.GetValues(connection, Names.Table_Main, ref getValues);
+                project.MusicFileName = mainValues[Names.Field_MusicFileName];
+                project.Version = mainValues[Names.Field_Version];
+
+                // Scores
+                var scoreValues = SQLiteHelper.GetValues(connection, Names.Table_Scores, ref getValues);
+                var jsonSerializer = JsonSerializer.CreateDefault();
+                foreach (var difficulty in Difficulties) {
+                    var indexString = ((int)difficulty).ToString("00");
+                    var scoreJson = scoreValues[indexString];
+                    Score score;
+                    var scoreJsonBytes = Encoding.ASCII.GetBytes(scoreJson);
+                    using (var memoryStream = new MemoryStream(scoreJsonBytes)) {
+                        using (var reader = new StreamReader(memoryStream)) {
+                            using (var jsonReader = new JsonTextReader(reader)) {
+                                score = jsonSerializer.Deserialize<Score>(jsonReader);
+                            }
+                        }
+                    }
+                    score.ResolveReferences(project);
+                    score.Difficulty = difficulty;
+                    project.Scores.Add(difficulty, score);
+                }
+
+                // Score settings
+                var scoreSettingsValues = SQLiteHelper.GetValues(connection, Names.Table_ScoreSettings, ref getValues);
+                var settings = project.Settings;
+                settings.GlobalBpm = double.Parse(scoreSettingsValues[Names.Field_GlobalBpm]);
+                settings.StartTimeOffset = double.Parse(scoreSettingsValues[Names.Field_StartTimeOffset]);
+                settings.GlobalGridPerSignature = int.Parse(scoreSettingsValues[Names.Field_GlobalGridPerSignature]);
+                settings.GlobalSignature = int.Parse(scoreSettingsValues[Names.Field_GlobalSignature]);
+
+                // Cleanup
+                getValues.Dispose();
+                connection.Close();
             }
 
             GridLineFixup(project);

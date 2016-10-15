@@ -71,20 +71,22 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 var fileName = openDialog.FileName;
                 var projectVersion = ProjectIO.CheckProjectFileVersion(fileName);
                 string prompt;
+                var projectChanged = false;
                 switch (projectVersion) {
                     case ProjectVersion.Unknown:
                         prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ProjectVersionInvalidPromptTemplate), fileName);
                         MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
                     case ProjectVersion.V0_1:
+                    case ProjectVersion.V0_2:
                         prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ProjectUpgradeNeededPromptTemplate), fileName);
                         MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
+                        projectChanged = true;
+                        break;
                 }
-                var project = ProjectIO.Load(fileName);
+                var project = ProjectIO.Load(fileName, projectVersion);
                 Project = Editor.Project = Project.Current = project;
-                // Caution! The property is set to true on deserialization.
-                project.IsChanged = false;
+                project.IsChanged = projectChanged;
                 Editor.Score = project.GetScore(project.Difficulty);
             }
         }

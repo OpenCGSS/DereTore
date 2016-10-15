@@ -52,7 +52,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         [JsonProperty]
-        public int PrevFlickNoteID { get; private set; }
+        public int PrevFlickNoteID { get; internal set; }
 
         public Note PrevFlickNote {
             get {
@@ -90,7 +90,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public bool HasPrevFlick => Type == NoteType.TapOrFlick && PrevFlickNote != null;
 
         [JsonProperty]
-        public int NextFlickNoteID { get; private set; }
+        public int NextFlickNoteID { get; internal set; }
 
         public Note NextFlickNote {
             get {
@@ -122,7 +122,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public bool HasNextFlick => Type == NoteType.TapOrFlick && NextFlickNote != null;
 
         [JsonProperty]
-        public int SyncTargetID { get; private set; }
+        public int SyncTargetID { get; internal set; }
 
         public Note SyncTarget {
             get {
@@ -149,7 +149,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public bool IsHoldEnd => Type == NoteType.TapOrFlick && HoldTarget != null;
 
         [JsonProperty]
-        public int HoldTargetID { get; private set; }
+        public int HoldTargetID { get; internal set; }
 
         public Note HoldTarget {
             get {

@@ -10,10 +10,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             while (NoteIDs.ExistingIDs.Contains(id)) {
                 id = MathHelper.NextRandomPositiveInt32();
             }
-            var note = new Note(id, this);
-            Notes.Add(note);
-            Score.Notes.Add(note);
-            return note;
+            return AddNote(id);
         }
 
         public bool RemoveNote(Note note) {
@@ -41,6 +38,13 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Score = score;
             Notes = new InternalList<Note>();
             Index = index;
+        }
+
+        internal Note AddNote(int id) {
+            var note = new Note(id, this);
+            Notes.Add(note);
+            Score.Notes.Add(note);
+            return note;
         }
 
         internal void SquashParams() {

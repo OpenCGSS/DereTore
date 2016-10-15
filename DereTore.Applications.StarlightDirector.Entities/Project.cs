@@ -110,7 +110,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty IsSavedProperty = DependencyProperty.Register(nameof(IsSaved), typeof(bool), typeof(Project),
            new PropertyMetadata(false));
 
-        public static string CurrentVersion => "0.2";
+        public static string CurrentVersion => "0.3";
 
         private static void OnDifficultyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var project = obj as Project;
