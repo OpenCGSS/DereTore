@@ -33,20 +33,38 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             } catch (Exception) {
             }
             try {
-                string versionString;
+                string versionString = null;
                 using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
                     connection.Open();
                     var command = connection.CreateCommand();
                     command.CommandText = $"SELECT value FROM {Names.Table_Main} WHERE key = @key;";
                     command.Parameters.Add("key", DbType.AnsiString).Value = Names.Field_Version;
                     var value = command.ExecuteScalar();
-                    versionString = (string)value;
+                    if (value != DBNull.Value) {
+                        versionString = (string)value;
+                    }
                     if (versionString == null) {
                         command.Parameters["key"].Value = Names.Field_Vesion;
                         value = command.ExecuteScalar();
-                        versionString = (string)value;
+                        if (value != DBNull.Value) {
+                            versionString = (string)value;
+                        }
                     }
+                    if (versionString == null) {
+                        command.Dispose();
+                        command = connection.CreateCommand();
+                        command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'scores';";
+                        value = command.ExecuteScalar();
+                        if (value != DBNull.Value) {
+                            // This is a bug from v0.3.x (maybe also v0.4.x), which occasionally leaves out the version ('vesion') field in 'main' table.
+                            versionString = "0.2";
+                        }
+                    }
+                    command.Dispose();
                     connection.Close();
+                }
+                if (string.IsNullOrEmpty(versionString)) {
+                    return ProjectVersion.Unknown;
                 }
                 double v;
                 double.TryParse(versionString, out v);
