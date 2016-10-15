@@ -89,11 +89,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                 hashedFileName = Path.Combine((new FileInfo(saveDialog.FileName)).DirectoryName ?? string.Empty, hashedFileName);
             }
             try {
-                var warnings = new List<string>();
-                BuildBdb(Project, saveDialog.FileName, hashedFileName, selectedRecord, warnings);
-                if (warnings.Count > 0) {
-                    MessageBox.Show(warnings.BuildString(Environment.NewLine), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                }
+                var difficultyMappings = new Dictionary<Difficulty, Difficulty> {
+                    { Difficulty.Debut, MappingDebut },
+                    { Difficulty.Regular, MappingRegular },
+                    { Difficulty.Pro, MappingPro },
+                    { Difficulty.Master, MappingMaster },
+                    { Difficulty.MasterPlus, MappingMasterPlus }
+                };
+                BuildBdb(Project, saveDialog.FileName, hashedFileName, selectedRecord, difficultyMappings);
                 var format = string.IsNullOrEmpty(hashedFileName) ?
                     Application.Current.FindResource<string>(App.ResourceKeys.BdbBuildingCompletePromptTemplate1) :
                     Application.Current.FindResource<string>(App.ResourceKeys.BdbBuildingCompletePromptTemplate2);
@@ -104,7 +107,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
             }
         }
 
-        private static void BuildBdb(Project project, string bdbFileName, string hashedBdbFileName, LiveMusicRecord record, List<string> warnings) {
+        private static void BuildBdb(Project project, string bdbFileName, string hashedBdbFileName, LiveMusicRecord record, Dictionary<Difficulty, Difficulty> difficultyMappings) {
             var connectionString = $"Data Source={bdbFileName}";
             if (File.Exists(bdbFileName)) {
                 File.Delete(bdbFileName);
@@ -123,15 +126,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                         command.CommandText = "INSERT INTO blobs (name, data) VALUES (@name, @data);";
                         var nameParam = command.Parameters.Add("name", DbType.AnsiString);
                         var dataParam = command.Parameters.Add("data", DbType.Binary);
+                        // update: Create Master+ entry, regardless of its existence in original BDB.
                         for (var i = (int)Difficulty.Debut; i <= (int)Difficulty.MasterPlus; ++i) {
-                            var score = project.GetScore((Difficulty)i);
-                            if (!record.DifficultyExists[i - 1]) {
-                                if (score.HasAnyNote) {
-                                    var format = Application.Current.FindResource<string>(App.ResourceKeys.NoCorrespondingDifficultyExistsPromptTemplate);
-                                    warnings.Add(string.Format(format, DescribedEnumReader.Read((Difficulty)i, typeof(Difficulty)), record.LiveID.ToString("000")));
-                                }
-                                continue;
-                            }
+                            var entryDifficulty = (Difficulty)i;
+                            var userDifficulty = difficultyMappings[entryDifficulty];
+                            var score = project.GetScore(userDifficulty);
                             var compiledScore = score.Compile();
                             var csv = compiledScore.GetCsvString();
                             var csvData = Encoding.ASCII.GetBytes(csv);

@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
              xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
+             xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities;assembly=DereTore.Applications.StarlightDirector.Entities"
              mc:Ignorable="d" Name="Me"
              d:DesignHeight="300" d:DesignWidth="300"
              Loaded="BuildPage_OnLoaded">
@@ -124,13 +125,62 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
+                            <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Header="Difficulty mapping" Margin="0 4" Padding="4 2">
+                                <Grid>
+                                    <Grid.Resources>
+                                        <Style TargetType="ComboBox">
+                                            <Setter Property="ItemTemplate">
+                                                <Setter.Value>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type entities:Difficulty}}"/>
+                                                    </DataTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="ItemsSource" Value="{x:Static local:BuildPage.Difficulties}"/>
+                                            <Setter Property="SelectedIndex" Value="0"/>
+                                            <Setter Property="Margin" Value="10 2 0 2"/>
+                                            <Setter Property="MaxWidth" Value="80"/>
+                                            <Setter Property="HorizontalAlignment" Value="Left"/>
+                                        </Style>
+                                    </Grid.Resources>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center">
+                                        <Bold>BDB</Bold>
+                                    </TextBlock>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Margin="10 4 0 4">
+                                        <Bold>Your Score</Bold>
+                                    </TextBlock>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Debut" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Row="1" Grid.Column="1" SelectedValue="{Binding ElementName=Me, Path=MappingDebut}"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Regular" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Row="2" Grid.Column="1" SelectedValue="{Binding ElementName=Me, Path=MappingRegular}"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Pro" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Row="3" Grid.Column="1" SelectedValue="{Binding ElementName=Me, Path=MappingPro}"/>
+                                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Master" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Row="4" Grid.Column="1" SelectedValue="{Binding ElementName=Me, Path=MappingMaster}"/>
+                                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Master+" VerticalAlignment="Center"/>
+                                    <ComboBox Grid.Row="5" Grid.Column="1" SelectedValue="{Binding ElementName=Me, Path=MappingMasterPlus}"/>
+                                </Grid>
+                            </GroupBox>
+                            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
@@ -140,9 +190,7 @@
                                 </Grid.RowDefinitions>
                                 <CheckBox Grid.Row="0" Grid.Column="1" Content="With a copy renamed to CGSS style" Margin="0 4" IsChecked="{Binding ElementName=Me, Path=CreateNameHashedBdbFile}"/>
                             </Grid>
-                            <Grid Grid.Row="1" Grid.Column="1">
-                                <Button Margin="0 4" Padding="0 4" Content="Build..." Command="{x:Static local:BuildPage.CmdBuildScoreDatabase}"/>
-                            </Grid>
+                            <Button Grid.Row="2" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Build..." Command="{x:Static local:BuildPage.CmdBuildScoreDatabase}"/>
                         </Grid>
                     </Expander>
                 </Border>

@@ -20,12 +20,22 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
         }
 
         private void BuildPage_OnLoaded(object sender, RoutedEventArgs e) {
-            if (!_musicListInitialized) {
-                FillMusicComboBoxes();
-                CheckAcbBuildingEnvironment();
-                AcbBuildLogScroller.ScrollToEnd();
-                _musicListInitialized = true;
+            if (_musicListInitialized) {
+                return;
             }
+            FillDifficultyMappingComboBoxes();
+            FillMusicComboBoxes();
+            CheckAcbBuildingEnvironment();
+            AcbBuildLogScroller.ScrollToEnd();
+            _musicListInitialized = true;
+        }
+
+        private void FillDifficultyMappingComboBoxes() {
+            MappingDebut = Difficulty.Debut;
+            MappingRegular = Difficulty.Regular;
+            MappingPro = Difficulty.Pro;
+            MappingMaster = Difficulty.Master;
+            MappingMasterPlus = Difficulty.MasterPlus;
         }
 
         private void FillMusicComboBoxes() {
@@ -71,9 +81,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
         }
 
         private void CheckAcbBuildingEnvironment() {
-            var criticalFiles = new[] { "hcaenc.exe", "hcacc.exe", "AcbMaker.exe", "LZ4.exe", "hcaenc_lite.dll" };
-            var missingFiles = criticalFiles.Where(s => !File.Exists(s)).ToList();
-            if (missingFiles.Count > 0) {
+            var missingFiles = AcbMakerCriticalFiles.Where(s => !File.Exists(s)).ToArray();
+            if (missingFiles.Length > 0) {
                 LogError(Application.Current.FindResource<string>(App.ResourceKeys.AcbEnvironmentFilesMissing));
                 foreach (var missingFile in missingFiles) {
                     Log(missingFile);
@@ -111,6 +120,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
         }
 
         private bool _musicListInitialized;
+
+        public static readonly Difficulty[] Difficulties = { Difficulty.Debut, Difficulty.Regular, Difficulty.Pro, Difficulty.Master, Difficulty.MasterPlus };
 
         private static readonly string MasterMdbPath = "Resources/GameData/master.mdb";
 
