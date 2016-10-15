@@ -87,7 +87,10 @@
                                 <ColumnDefinition Width="80"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding ElementName=Me, Path=Project.HasMusic, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={x:Static converters:NullableBooleanToVisibilityConverter.Negate}}">You haven't selected a music file yet.</Label>
+                            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding ElementName=Me, Path=Project.HasMusic, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={x:Static converters:NullableBooleanToVisibilityConverter.Negate}}"
+                                   HorizontalAlignment="Center">
+                                You haven't selected a music file yet, or the file does not exist.
+                            </Label>
                             <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" IsEnabled="{Binding ElementName=Me, Path=Project.HasMusic, Mode=OneWay}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>

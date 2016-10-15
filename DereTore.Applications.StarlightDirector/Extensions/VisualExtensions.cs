@@ -19,7 +19,7 @@ namespace DereTore.Applications.StarlightDirector.Extensions {
             return null;
         }
 
-        public static MainWindow GetMainWindow<T>(this T page) where T : Control, IDirectorPage {
+        public static MainWindow GetMainWindow<T>(this T page) where T : UserControl, IDirectorPage {
             return FindVisualParent<MainWindow>(page);
         }
 

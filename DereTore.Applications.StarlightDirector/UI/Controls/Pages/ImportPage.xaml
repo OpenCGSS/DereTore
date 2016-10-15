@@ -31,17 +31,24 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Expander Grid.Row="0">
-                    <Expander.Header>
-                        <TextBlock>
+                <Border Grid.Row="0" BorderBrush="{x:Static SystemColors.ControlLightBrush}" BorderThickness="1" CornerRadius="5" Margin="3" Padding="5">
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock>
                                 <Run Text="Deleste Beatmap"/>
                                 <Run Text="(TXT)" Foreground="{x:Static SystemColors.GrayTextBrush}"/>
-                        </TextBlock>
-                    </Expander.Header>
-                    <Grid>
-                        <TextBlock Text="Sorry, this feature is under development."/>
-                    </Grid>
-                </Expander>
+                            </TextBlock>
+                        </Expander.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Row="0" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Import..." Command="{x:Static local:ImportPage.CmdImportDelesteBeatmap}"/>
+                        </Grid>
+                    </Expander>
+                </Border>
             </Grid>
         </Grid>
     </ScrollViewer>

@@ -20,7 +20,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <!-- Margins: hack for 'in-window' ribbon and backstage -->
-        <fluent:Ribbon IsQuickAccessToolBarVisible="False" Margin="0 -27 0 0" CanCustomizeRibbon="False">
+        <fluent:Ribbon IsQuickAccessToolBarVisible="False" Margin="0 -27 0 0" CanCustomizeRibbon="False" Name="Ribbon">
             <fluent:Ribbon.Menu>
                 <fluent:Backstage Header="File" KeyTip="F" Background="{Binding ElementName=Me, Path=AccentColorBrush, Mode=OneWay}">
                     <fluent:BackstageTabControl Margin="0 -4 0 0">
@@ -45,7 +45,7 @@
                             <pages:ImportPage/>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="Export" KeyTip="E">
-                            <pages:ExportPage/>
+                            <pages:ExportPage SelectedScore="{Binding ElementName=Editor, Path=Score, Mode=OneWay}"/>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="About" KeyTip="T">
                             <pages:AboutPage/>
@@ -150,25 +150,6 @@
                         <fluent:MenuItem Header="1/16" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="16"/>
                         <fluent:MenuItem Header="1/24" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="24"/>
                         <fluent:MenuItem Header="1/32" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="32"/>
-                    </fluent:DropDownButton>
-                </fluent:RibbonGroupBox>
-            </fluent:RibbonTabItem>
-            <fluent:RibbonTabItem Header="Tools" KeyTip="T">
-                <fluent:RibbonGroupBox Header="Conversion">
-                    <fluent:DropDownButton Header="Import" LargeIcon="{StaticResource RibbonIconImport}">
-                        <fluent:MenuItem Header="_Music Archive" Command="{x:Static local:MainWindow.CmdToolsImportMusicArchive}"/>
-                        <fluent:MenuItem Header="_Score Database" Command="{x:Static local:MainWindow.CmdToolsImportScoreDatabase}"/>
-                        <Separator/>
-                        <fluent:MenuItem Header="Deleste Beatmap to Current Score" Command="{x:Static local:MainWindow.CmdToolsImportDelesteBeatmap}"/>
-                    </fluent:DropDownButton>
-                    <fluent:DropDownButton Header="Export" LargeIcon="{StaticResource RibbonIconExport}">
-                        <fluent:MenuItem Header="Current Score to _CSV" Command="{x:Static local:MainWindow.CmdToolsExportScoreToCsv}"/>
-                        <fluent:MenuItem Header="Current Score to _BDB (based on template)" Command="{x:Static local:MainWindow.CmdToolsExportScoreToInsideBdb}"/>
-                        <Separator/>
-                        <fluent:MenuItem Header="Current Score to Deleste Beatmap (for viewing only)" Command="{x:Static local:MainWindow.CmdToolsExportScoreToDelesteBeatmap}"/>
-                    </fluent:DropDownButton>
-                    <fluent:DropDownButton Header="Utilities" LargeIcon="{StaticResource RibbonIconUtilities}">
-                        <fluent:MenuItem Header="_Convert Save Format from v0.1" Command="{x:Static local:MainWindow.CmdToolsUtilitiesConvertSaveFormatV01}"/>
                     </fluent:DropDownButton>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>

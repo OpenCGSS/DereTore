@@ -6,14 +6,17 @@ using DereTore.Applications.StarlightDirector.Extensions;
 using DereTore.Applications.StarlightDirector.Interop;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
-    /// <summary>
-    /// MainWindow.xaml 的交互逻辑
-    /// </summary>
     public partial class MainWindow {
 
         public MainWindow() {
             InitializeComponent();
             CommandHelper.InitializeCommandBindings(this);
+        }
+
+        internal void NotifyProjectChanged() {
+            if (Project != null) {
+                Project.IsChanged = true;
+            }
         }
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e) {
@@ -64,12 +67,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                     return IntPtr.Zero;
                 default:
                     return IntPtr.Zero;
-            }
-        }
-
-        private void NotifyProjectChanged() {
-            if (Project != null) {
-                Project.IsChanged = true;
             }
         }
 

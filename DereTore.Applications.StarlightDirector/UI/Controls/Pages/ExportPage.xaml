@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
-             mc:Ignorable="d" 
+             xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities;assembly=DereTore.Applications.StarlightDirector.Entities"
+             mc:Ignorable="d" Name="Me"
              d:DesignHeight="300" d:DesignWidth="300">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <Grid>
@@ -31,29 +32,54 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Expander Grid.Row="0">
-                    <Expander.Header>
+                <Border Grid.Row="0" BorderBrush="{x:Static SystemColors.ControlLightBrush}" BorderThickness="1" CornerRadius="5" Margin="3" Padding="5">
+                    <Label HorizontalContentAlignment="Center">
                         <TextBlock>
-                                <Run Text="Deleste Beatmap"/>
-                                <Run Text="(TXT)" Foreground="{x:Static SystemColors.GrayTextBrush}"/>
+                            Current difficulty:
+                            <Bold>
+                                <Run Text="{Binding ElementName=Me, Path=SelectedScore.Difficulty, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type entities:Difficulty}, Mode=OneWay}"/>
+                            </Bold>
                         </TextBlock>
-                    </Expander.Header>
-                    <Grid>
-                        <TextBlock Text="Sorry, this feature is under development."/>
-                    </Grid>
-                </Expander>
-                <Expander Grid.Row="1">
-                    <Expander.Header>
-                        <TextBlock>
+                    </Label>
+                </Border>
+                <Border Grid.Row="1" BorderBrush="{x:Static SystemColors.ControlLightBrush}" BorderThickness="1" CornerRadius="5" Margin="3" Padding="5">
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock>
                                 <Run Text="Raw CGSS Beatmap"/>
                                 <Run Text="(CSV)" Foreground="{x:Static SystemColors.GrayTextBrush}"/>
-                        </TextBlock>
-                    </Expander.Header>
-                    <Grid>
-                        <TextBlock Text="Sorry, this feature is under development."/>
-                    </Grid>
-                </Expander>
+                            </TextBlock>
+                        </Expander.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Row="0" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Export..." Command="{x:Static local:ExportPage.CmdExportToCsv}"/>
+                        </Grid>
+                    </Expander>
+                </Border>
+                <Border Grid.Row="2" BorderBrush="{x:Static SystemColors.ControlLightBrush}" BorderThickness="1" CornerRadius="5" Margin="3" Padding="5">
+                    <Expander>
+                        <Expander.Header>
+                            <TextBlock>
+                                <Run Text="Deleste Beatmap"/>
+                                <Run Text="(TXT)" Foreground="{x:Static SystemColors.GrayTextBrush}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Row="0" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Export..." Command="{x:Static local:ExportPage.CmdExportToDelesteBeatmap}"/>
+                        </Grid>
+                    </Expander>
+                </Border>
             </Grid>
         </Grid>
     </ScrollViewer>

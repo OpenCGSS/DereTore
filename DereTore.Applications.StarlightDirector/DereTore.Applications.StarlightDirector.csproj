@@ -215,9 +215,12 @@
     <Compile Include="UI\Controls\Pages\BuildPage.xaml.cs">
       <DependentUpon>BuildPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\Pages\ExportPage.Commands.cs" />
+    <Compile Include="UI\Controls\Pages\ExportPage.DependencyProperties.cs" />
     <Compile Include="UI\Controls\Pages\ExportPage.xaml.cs">
       <DependentUpon>ExportPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Controls\Pages\ImportPage.Commands.cs" />
     <Compile Include="UI\Controls\Pages\ImportPage.xaml.cs">
       <DependentUpon>ImportPage.xaml</DependentUpon>
     </Compile>
@@ -270,7 +273,6 @@
     <Compile Include="UI\Windows\MainWindow.Commands.File.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.Note.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Music.cs" />
-    <Compile Include="UI\Windows\MainWindow.Commands.Tools.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.View.cs" />
     <Compile Include="UI\Windows\MainWindow.DependencyProperties.cs" />
     <Compile Include="UI\Windows\MainWindow.xaml.cs">
