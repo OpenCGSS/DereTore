@@ -80,7 +80,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                     case ProjectVersion.V0_1:
                     case ProjectVersion.V0_2:
                         prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ProjectUpgradeNeededPromptTemplate), fileName);
-                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
                         projectChanged = true;
                         break;
                 }
