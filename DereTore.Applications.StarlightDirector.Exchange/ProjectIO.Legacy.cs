@@ -80,25 +80,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 }
             }
 
-            // Signature fix-up
-            var newGrids = ScoreSettings.DefaultGlobalGridPerSignature * ScoreSettings.DefaultGlobalSignature;
-            var oldGrids = project.Settings.GlobalGridPerSignature * project.Settings.GlobalSignature;
-            if (newGrids % oldGrids == 0) {
-                project.Settings.GlobalGridPerSignature = ScoreSettings.DefaultGlobalGridPerSignature;
-                project.Settings.GlobalSignature = ScoreSettings.DefaultGlobalSignature;
-                var k = newGrids / oldGrids;
-                foreach (var difficulty in Difficulties) {
-                    if (project.Scores.ContainsKey(difficulty)) {
-                        var score = project.GetScore(difficulty);
-                        foreach (var bar in score.Bars) {
-                            foreach (var note in bar.Notes) {
-                                note.IndexInGrid *= k;
-                            }
-                        }
-                    }
-                }
-            }
-
+            GridLineFixup(project);
             return project;
         }
 

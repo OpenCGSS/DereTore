@@ -95,6 +95,7 @@
     <Compile Include="Deleste\DelesteNoteType.cs" />
     <Compile Include="ProjectIO.cs" />
     <Compile Include="ProjectIO.Legacy.cs" />
+    <Compile Include="ProjectIO.SQLiteHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

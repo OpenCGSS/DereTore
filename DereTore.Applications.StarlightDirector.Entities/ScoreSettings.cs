@@ -54,7 +54,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static readonly double DefaultGlobalBpm = 120;
         public static readonly double DefaultStartTimeOffset = 0;
-        public static readonly int DefaultGlobalGridPerSignature = 24;
+        public static readonly int DefaultGlobalGridPerSignature = 96;
         public static readonly int DefaultGlobalSignature = 4;
 
         public ScoreSettings Clone() {
