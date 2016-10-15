@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Windows"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:controls="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
         xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities;assembly=DereTore.Applications.StarlightDirector.Entities"
         xmlns:ui="clr-namespace:DereTore.Applications.StarlightDirector.UI"
@@ -170,7 +171,14 @@
         <Grid Grid.Row="3" Margin="0 2 0 0">
             <StatusBar>
                 <StatusBarItem Padding="0">
-                    <Label>Ready.</Label>
+                    <TextBlock Margin="4" VerticalAlignment="Center">
+                        <Run Text="{Binding ElementName=Me, Path=Project.SaveFileName, Mode=OneWay, FallbackValue={StaticResource Unsaved}}"/>
+                        [
+                        <Bold>
+                            <Run Text="{Binding ElementName=Editor, Path=Score.Difficulty, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type entities:Difficulty}, Mode=OneWay}"/>
+                        </Bold>
+                        ]
+                    </TextBlock>
                 </StatusBarItem>
             </StatusBar>
         </Grid>

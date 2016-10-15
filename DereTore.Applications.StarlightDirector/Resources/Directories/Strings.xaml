@@ -39,4 +39,6 @@
     <system:String x:Key="SummaryTotalNotes">Total Notes in Current Score</system:String>
     <system:String x:Key="SummaryTotalBars">Total Measures in Current Score</system:String>
     <system:String x:Key="SummaryMusicFile">Music File</system:String>
+    
+    <system:String x:Key="Unsaved">Unsaved</system:String>
 </ResourceDictionary>
