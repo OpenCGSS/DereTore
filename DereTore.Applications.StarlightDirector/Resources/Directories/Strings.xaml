@@ -20,7 +20,7 @@
     <system:String x:Key="ExportToCsvCompletePromptTemplate">Score exported to CSV file '{0}'.</system:String>
     <system:String x:Key="ExportToDelesteBeatmapCompletePromptTemplate">Score exported to Deleste TXT beatmap file '{0}'.</system:String>
     <system:String x:Key="ConvertSaveFormatCompletePromptTemplate">Save file '{0}' converted to '{1}'.</system:String>
-    <system:String x:Key="ProjectUpgradeNeededPromptTemplate">The file '{0}' is of an obsolete version, please upgrade it to the latest version. Navigate to Tools > Conversion > Utilities.</system:String>
+    <system:String x:Key="ProjectUpgradeNeededPromptTemplate">The file '{0}' is of an obsolete version and it is not supported any more. You may find older versions of Starlight Director and use them to convert the save format.</system:String>
     <system:String x:Key="ProjectVersionInvalidPromptTemplate">Cannot detect the version of '{0}' as a project save file.</system:String>
     <system:String x:Key="ProjectVersionUpToDatePrompt">The version of the project is up to date.</system:String>
     <system:String x:Key="NoCorrespondingDifficultyExistsPromptTemplate">The difficulty '{0}' does not exist in score '{1}'.</system:String>
