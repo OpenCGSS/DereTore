@@ -26,7 +26,7 @@ namespace DereTore.Applications.ScoreEditor {
         }
 
         // Compensates for ~3ms silence at the beginning of SFX files
-        public static TimeSpan SfxOffset { get; set; } = new TimeSpan(0, 0, 0, 0, 0);
+        public static TimeSpan SfxOffset { get; set; } = new TimeSpan(0, 0, 0, 0, -3);
 
         private static float _musicVolume = 0.7f;
         private static float _sfxVolume = 0.5f;
