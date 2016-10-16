@@ -60,6 +60,7 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string NoCorrespondingDifficultyExistsPromptTemplate;
         public readonly string ExportAndReplaceBdbCompletePromptTemplate;
         public readonly string ErrorOccurredPrompt;
+        public readonly string ApplicationIsAlreadyRunningPrompt;
         public readonly string BdbBuildingCompletePromptTemplate1;
         public readonly string BdbBuildingCompletePromptTemplate2;
         public readonly string AcbEnvironmentFilesMissing;

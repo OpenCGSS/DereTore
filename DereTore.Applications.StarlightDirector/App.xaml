@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="UI/Windows/MainWindow.xaml"
              ShutdownMode="OnMainWindowClose"
-             Startup="App_OnStartup">
+             Startup="App_OnStartup" Exit="App_OnExit" DispatcherUnhandledException="App_OnDispatcherUnhandledException">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
