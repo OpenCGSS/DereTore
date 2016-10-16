@@ -57,7 +57,6 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         }
 
         private void ClosePlayers() {
-            SfxManager.Instance.Dispose();
         }
 
         private bool ConfirmNoteEdition(NoteEdition edition, Note note, Note newValue) {
@@ -114,7 +113,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                 foreach (var waveAudioName in new[] { TapHcaName, FlickHcaName }) {
                     var key = $"{sfxDirName}/{waveAudioName}";
                     using (var dataStream = File.Open(key, FileMode.Open, FileAccess.Read)) {
-                        SfxManager.Instance.PreloadWave(dataStream, key);
+                        _sfxManager.PreloadWave(dataStream, key);
                     }
                 }
             }
@@ -220,7 +219,10 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private readonly Timer timer = new Timer(5);
 
-        private LiveMusicPlayer _musicPlayer;
+        private ScorePlayer _scorePlayer;
+        private LiveMusicWaveStream _musicWaveStream;
+        private SfxManager _sfxManager;
+        private double _sfxBufferTime;
         private Score _score;
         private Stream _audioFileStream;
 
@@ -233,5 +235,6 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private bool _codeValueChange;
         private readonly object _liveMusicSyncObject = new object();
+        private readonly object _sfxSyncObject = new object();
     }
 }

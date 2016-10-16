@@ -97,7 +97,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
 
         private void TsbRetimingToNow_Click(object sender, EventArgs e) {
             var selectedNote = editor.SelectedNote;
-            var player = _musicPlayer;
+            var player = _scorePlayer;
             if (selectedNote != null && player != null) {
                 var timing = player.CurrentTime.TotalSeconds;
                 // Only used for confirmation.
@@ -142,7 +142,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         }
 
         private void TsbNoteCreate_Click(object sender, EventArgs e) {
-            var player = _musicPlayer;
+            var player = _scorePlayer;
             if (player == null) {
                 return;
             }
@@ -209,33 +209,29 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private void TrkProgress_KeyUp(object sender, KeyEventArgs e) {
             --_userSeekingStack;
             if (_userSeekingStack <= 0) {
-                SfxManager.Instance.IsUserSeeking = false;
                 if (btnPause.Enabled) {
-                    _musicPlayer?.Play();
+                    _scorePlayer?.Play();
                 }
             }
         }
 
         private void TrkProgress_KeyDown(object sender, KeyEventArgs e) {
             ++_userSeekingStack;
-            SfxManager.Instance.IsUserSeeking = true;
-            _musicPlayer?.Pause();
+            _scorePlayer?.Pause();
         }
 
         private void TrkProgress_MouseUp(object sender, MouseEventArgs e) {
             --_userSeekingStack;
             if (_userSeekingStack <= 0) {
-                SfxManager.Instance.IsUserSeeking = false;
                 if (btnPause.Enabled) {
-                    _musicPlayer?.Play();
+                    _scorePlayer?.Play();
                 }
             }
         }
 
         private void TrkProgress_MouseDown(object sender, MouseEventArgs e) {
             ++_userSeekingStack;
-            SfxManager.Instance.IsUserSeeking = true;
-            _musicPlayer?.Pause();
+            _scorePlayer?.Pause();
         }
 
         private void TrkProgress_ValueChanged(object sender, EventArgs e) {
@@ -244,8 +240,8 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                     return;
                 }
             }
-            if (_musicPlayer != null) {
-                _musicPlayer.CurrentTime = TimeSpan.FromSeconds(_musicPlayer.TotalLength.TotalSeconds * ((double)(trkProgress.Value - trkProgress.Minimum) / trkProgress.Maximum));
+            if (_scorePlayer != null) {
+                _scorePlayer.CurrentTime = TimeSpan.FromSeconds(_musicWaveStream.TotalTime.TotalSeconds * ((double)(trkProgress.Value - trkProgress.Minimum) / trkProgress.Maximum));
             }
         }
 
@@ -261,22 +257,44 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         }
 
         private void Editor_NoteUpdated(object sender, NoteEnteringOrExitingStageEventArgs e) {
-            if (e.IsEntering) {
-                return;
-            }
-            var note = e.Note;
-            if (chkSfxOn.Checked) {
-                if (note.IsFlick) {
-                    SfxManager.Instance.PlayWave(_currentFlickHcaFileName);
-                } else if (note.IsTap || note.IsHold) {
-                    SfxManager.Instance.PlayWave(_currentTapHcaFileName);
+        }
+
+        public void UpdateSfx(TimeSpan rawMusicTime) {
+            lock (_sfxSyncObject) {
+                if (_sfxManager == null) {
+                    return;
                 }
+                var now = (rawMusicTime + _sfxManager.BufferOffset).TotalSeconds;
+                if (now <= _sfxBufferTime) {
+                    return;
+                }
+                var prev = _sfxBufferTime;
+                if (chkSfxOn.Checked) {
+                    foreach (var note in _score.Notes) {
+                        if (!(note.HitTiming < prev) && (note.HitTiming < now)) {
+                            if (note.IsFlick) {
+                                _sfxManager.PlayWave(_currentFlickHcaFileName, TimeSpan.FromSeconds(note.HitTiming), PlayerSettings.SfxVolume);
+                            }
+                            else if (note.IsTap || note.IsHold) {
+                                _sfxManager.PlayWave(_currentTapHcaFileName, TimeSpan.FromSeconds(note.HitTiming), PlayerSettings.SfxVolume);
+                            }
+                        }
+                    }
+                }
+                _sfxBufferTime = now;
+            }
+        }
+
+        public void MusicPlayer_PositionChanged(object sender, EventArgs e) {
+            lock (_sfxSyncObject) {
+                _sfxBufferTime = _scorePlayer.CurrentTime.TotalSeconds;
+                _sfxManager?.StopAll();
+                UpdateSfx(_scorePlayer.CurrentTime);
             }
         }
 
         private void FMain_Load(object sender, EventArgs e) {
             InitializeControls();
-            PreloadNoteSounds();
             // Enable preview to see more realistic effects.
             editor.IsPreview = true;
             trkFallingSpeed.Value = trkFallingSpeed.Minimum + (int)((float)(trkFallingSpeed.Maximum - trkFallingSpeed.Minimum) / 2);
@@ -301,11 +319,16 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         private void BtnScoreUnload_Click(object sender, EventArgs e) {
             timer.Stop();
             BtnStop_Click(sender, e);
-            if (_musicPlayer != null) {
-                _musicPlayer.PlaybackStopped -= MusicPlayer_PlaybackStopped;
-                _musicPlayer.Dispose();
-                _musicPlayer = null;
+            _sfxManager?.Dispose();
+            _sfxManager = null;
+            if (_scorePlayer != null) {
+                _scorePlayer.PositionChanged -= MusicPlayer_PositionChanged;
+                _scorePlayer.PlaybackStopped -= MusicPlayer_PlaybackStopped;
+                _scorePlayer.Dispose();
+                _scorePlayer = null;
             }
+            _musicWaveStream?.Dispose();
+            _musicWaveStream = null;
             if (_audioFileStream != null) {
                 _audioFileStream.Dispose();
                 _audioFileStream = null;
@@ -326,17 +349,23 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             var audioFileExtension = audioFileInfo.Extension.ToLowerInvariant();
             if (audioFileExtension == ExtensionAcb) {
                 _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
-                _musicPlayer = LiveMusicPlayer.FromAcbStream(_audioFileStream, audioFileName, DefaultCgssDecodeParams);
+                _musicWaveStream = LiveMusicWaveStream.FromAcbStream(_audioFileStream, audioFileName, DefaultCgssDecodeParams);
             } else if (audioFileExtension == ExtensionWav) {
                 _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
-                _musicPlayer = LiveMusicPlayer.FromWaveStream(_audioFileStream);
+                _musicWaveStream = LiveMusicWaveStream.FromWaveStream(_audioFileStream);
             } else if (audioFileExtension == ExtensionHca) {
                 _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
-                _musicPlayer = LiveMusicPlayer.FromHcaStream(_audioFileStream, DefaultCgssDecodeParams);
+                _musicWaveStream = LiveMusicWaveStream.FromHcaStream(_audioFileStream, DefaultCgssDecodeParams);
             } else {
                 throw new ArgumentOutOfRangeException(nameof(audioFileExtension), $"Unsupported audio format: '{audioFileExtension}'.");
             }
-            _musicPlayer.PlaybackStopped += MusicPlayer_PlaybackStopped;
+            _scorePlayer = new ScorePlayer();
+            _scorePlayer.PlaybackStopped += MusicPlayer_PlaybackStopped;
+            _scorePlayer.AddInputStream(_musicWaveStream, PlayerSettings.MusicVolume);
+            _sfxManager = new SfxManager(_scorePlayer);
+            PreloadNoteSounds();
+            _sfxBufferTime = 0d;
+            _scorePlayer.PositionChanged += MusicPlayer_PositionChanged;
             var sfxDirName = string.Format(SoundEffectAudioDirectoryNameFormat, cboSoundEffect.SelectedIndex.ToString("00"));
             _currentTapHcaFileName = $"{sfxDirName}/{TapHcaName}";
             _currentFlickHcaFileName = $"{sfxDirName}/{FlickHcaName}";
@@ -353,7 +382,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             _score = score;
             editor.Score = _score;
             SetControlsEnabled(ViewerState.Loaded);
-            lblSong.Text = string.Format(SongTipFormat, _musicPlayer.HcaName);
+            lblSong.Text = string.Format(SongTipFormat, _musicWaveStream.HcaName);
             timer.Start();
         }
 
@@ -362,13 +391,13 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         }
 
         private void BtnStop_Click(object sender, EventArgs e) {
-            if (_musicPlayer == null) {
+            if (_scorePlayer == null) {
                 return;
             }
             // Neccessary. Sometimes the stack just doesn't clear.
             _userSeekingStack = 0;
-            _musicPlayer.Stop();
-            _musicPlayer.CurrentTime = TimeSpan.Zero;
+            _scorePlayer.Stop();
+            _scorePlayer.CurrentTime = TimeSpan.Zero;
             SetControlsEnabled(ViewerState.Loaded);
             lock (_liveMusicSyncObject) {
                 _codeValueChange = true;
@@ -383,32 +412,32 @@ namespace DereTore.Applications.ScoreEditor.Forms {
         }
 
         private void BtnPause_Click(object sender, EventArgs e) {
-            _musicPlayer.Pause();
+            _scorePlayer.Pause();
             SetControlsEnabled(ViewerState.LoadedAndPaused);
             editor.MouseEventsEnabled = true;
         }
 
         private void BtnPlay_Click(object sender, EventArgs e) {
-            if (_musicPlayer == null) {
+            if (_scorePlayer == null) {
                 return;
             }
-            if (_musicPlayer.IsPaused) {
+            if (_scorePlayer.IsPaused) {
                 SetControlsEnabled(ViewerState.LoadedAndPlaying);
             } else {
                 SetControlsEnabled(ViewerState.LoadedAndPlaying);
             }
             editor.MouseEventsEnabled = false;
-            _musicPlayer.Play();
-            lblTime.Text = $"{_musicPlayer.CurrentTime}/{_musicPlayer.TotalLength}";
+            _scorePlayer.Play();
+            lblTime.Text = $"{_scorePlayer.CurrentTime}/{_musicWaveStream.TotalTime}";
         }
 
         private void Timer_Tick(object sender, EventArgs e) {
-            var player = _musicPlayer;
+            var player = _scorePlayer;
             if (player == null) {
                 return;
             }
             var elapsed = player.CurrentTime;
-            var total = player.TotalLength;
+            var total = _musicWaveStream.TotalTime;
             if (elapsed >= total) {
                 BtnStop_Click(this, EventArgs.Empty);
                 return;
@@ -420,10 +449,11 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                 trkProgress.Value = val;
                 _codeValueChange = false;
             }
-            lblTime.Text = $"{elapsed}/{player.TotalLength}";
+            lblTime.Text = $"{elapsed}/{total}";
             editor.SetTime(elapsed);
             editor.Invalidate();
             editor.JudgeNotesEnteringOrExiting(elapsed);
+            UpdateSfx(elapsed);
         }
 
     }

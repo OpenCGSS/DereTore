@@ -1,50 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using DereTore.Applications.ScoreEditor.Controls;
 using NAudio.Wave;
-using AudioOut = NAudio.Wave.DirectSoundOut;
+using Timer = System.Timers.Timer;
 
 namespace DereTore.Applications.ScoreEditor {
     public sealed class SfxManager : DisposableBase {
 
-        static SfxManager() {
-            SyncObject = new object();
-        }
-
-        public static SfxManager Instance {
-            get {
-                lock (SyncObject) {
-                    if (_instance == null) {
-                        _instance = new SfxManager();
-                    }
-                }
-                return _instance;
-            }
-        }
-
-        public AudioOut PreloadWave(string fileName) {
+        public WaveOffsetStream PreloadWave(string fileName) {
             return PreloadWave(null, fileName);
         }
 
-        public AudioOut PreloadWave(Stream dataStream, string fileName) {
+        public WaveOffsetStream PreloadWave(Stream dataStream, string fileName) {
             int index;
-            var @out = GetFreeOutput(fileName, out index) ?? (dataStream != null ? CreateOutput(dataStream, fileName, out index) : CreateOutput(fileName, out index));
+            var @out = GetFreeStream(fileName, TimeSpan.Zero, out index)
+                ?? (dataStream != null ? CreateStream(dataStream, fileName, TimeSpan.Zero, out index) : CreateStream(fileName, TimeSpan.Zero, out index));
             return @out;
         }
 
-        public void PlayWave(string fileName) {
-            PlayWave(null, fileName);
+        public void PlayWave(string fileName, TimeSpan startTime, float volume = 1f) {
+            PlayWave(null, fileName, startTime, volume);
         }
 
-        public void PlayWave(Stream dataStream, string fileName) {
-            if (IsUserSeeking) {
-                return;
-            }
+        public void PlayWave(Stream dataStream, string fileName, TimeSpan startTime, float volume) {
             int index;
-            var @out = GetFreeOutput(fileName, out index) ?? (dataStream != null ? CreateOutput(dataStream, fileName, out index) : CreateOutputForceUsingCache(fileName, out index));
-            _waveStreams[index].Seek(0, SeekOrigin.Begin);
+            TimeSpan correctedStartTime = startTime + PlayerSettings.SfxOffset;
+            var @out = GetFreeStream(fileName, correctedStartTime, out index)
+                ?? (dataStream != null ? CreateStream(dataStream, fileName, correctedStartTime, out index) : CreateStreamForceUsingCache(fileName, correctedStartTime, out index));
+            @out.Seek(0, SeekOrigin.Begin);
             _playingList[index] = true;
-            @out.Play();
+            _mixerInputWaveStreams[index] = _scorePlayer?.AddInputStream(@out, volume);
+        }
+
+        public void StopAll() {
+            for (int i = 0; i < _waveOffsetStreams.Count; ++i) {
+                if (_playingList[i]) {
+                    _scorePlayer.RemoveInputStream(_mixerInputWaveStreams[i]);
+                    _mixerInputWaveStreams[i] = null;
+                    _playingList[i] = false;
+                }
+            }
         }
 
         public void ClearCache() {
@@ -52,20 +48,29 @@ namespace DereTore.Applications.ScoreEditor {
             _soundStreams.Clear();
             _waveStreams.Clear();
             _fileNames.Clear();
-            _audioOuts.Clear();
+            _waveOffsetStreams.Clear();
+            _mixerInputWaveStreams.Clear();
             _playingList.Clear();
         }
 
-        public bool IsUserSeeking { get; set; }
+        public TimeSpan BufferSize { get; set; } = new TimeSpan(0, 0, 0, 0, 80);
+        
+
+        public TimeSpan BufferOffset => BufferSize - PlayerSettings.SfxOffset;
 
         protected override void Dispose(bool disposing) {
-            DisposeInternal();
+            if (disposing) {
+                _timer.Elapsed -= Timer_Tick;
+                _timer.Stop();
+                _timer.Dispose();
+                DisposeInternal();
+            }
         }
 
         private void DisposeInternal() {
-            foreach (var audioOut in _audioOuts) {
-                audioOut.Stop();
-                audioOut.Dispose();
+            StopAll();
+            foreach (var stream in _waveOffsetStreams) {
+                stream.Dispose();
             }
             foreach (var hcaWaveProvider in _waveStreams) {
                 hcaWaveProvider.Dispose();
@@ -75,22 +80,25 @@ namespace DereTore.Applications.ScoreEditor {
             }
         }
 
-        private AudioOut GetFreeOutput(string fileName, out int index) {
+        private WaveOffsetStream GetFreeStream(string fileName, TimeSpan startTime, out int index) {
             if (!_fileNames.Contains(fileName)) {
                 index = -1;
                 return null;
             }
-            for (var i = 0; i < _audioOuts.Count; ++i) {
+            for (var i = 0; i < _waveOffsetStreams.Count; ++i) {
                 if (_fileNames[i] == fileName && !_playingList[i]) {
                     index = i;
-                    return _audioOuts[i];
+                    var waveOffsetStream = _waveOffsetStreams[i];
+                    waveOffsetStream.StartTime = startTime;
+                    waveOffsetStream.CurrentTime = startTime;
+                    return waveOffsetStream;
                 }
             }
             index = -1;
             return null;
         }
 
-        private AudioOut CreateOutput(Stream dataStream, string fileName, out int index) {
+        private WaveOffsetStream CreateStream(Stream dataStream, string fileName, TimeSpan startTime, out int index) {
             var fileNames = _fileNames;
             var soundStreams = _soundStreams;
             MemoryStream templateMemory = null;
@@ -123,42 +131,60 @@ namespace DereTore.Applications.ScoreEditor {
             var waveProvider = new RawSourceWaveStream(memory, DefaultWaveFormat);
             _waveStreams.Add(waveProvider);
             _playingList.Add(false);
-            var @out = new AudioOut();
-            _audioOuts.Add(@out);
-            index = _audioOuts.Count - 1;
-            var index2 = index;
-            @out.PlaybackStopped += (s, e) => _playingList[index2] = false;
-            @out.Init(waveProvider);
-            return @out;
+            var waveOffsetStream = new WaveOffsetStream(waveProvider, startTime, TimeSpan.Zero, waveProvider.TotalTime);
+            _waveOffsetStreams.Add(waveOffsetStream);
+            _mixerInputWaveStreams.Add(null);
+            index = _waveOffsetStreams.Count - 1;
+            return waveOffsetStream;
         }
 
-        private AudioOut CreateOutput(string fileName, out int index) {
+        private WaveOffsetStream CreateStream(string fileName, TimeSpan startTime, out int index) {
             using (var fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
-                return CreateOutput(fs, fileName, out index);
+                return CreateStream(fs, fileName, startTime, out index);
             }
         }
 
-        private AudioOut CreateOutputForceUsingCache(string fileName, out int index) {
-            return CreateOutput(null, fileName, out index);
+        private WaveOffsetStream CreateStreamForceUsingCache(string fileName, TimeSpan startTime, out int index) {
+            return CreateStream(null, fileName, startTime, out index);
         }
 
-        private SfxManager() {
+        private void Timer_Tick(object sender, EventArgs e) {
+            lock(SyncObject) {
+                for (int i = 0; i < _waveOffsetStreams.Count; i++) {
+                    if (_playingList[i] && _waveOffsetStreams[i].Position >= _waveOffsetStreams[i].Length) {
+                        _scorePlayer.RemoveInputStream(_mixerInputWaveStreams[i]);
+                        _mixerInputWaveStreams[i] = null;
+                        _playingList[i] = false;
+                    }
+                }
+            }
+        }
+
+        public SfxManager(ScorePlayer scorePlayer) {
+            SyncObject = new object();
             _soundStreams = new List<MemoryStream>();
             _fileNames = new List<string>();
             _waveStreams = new List<WaveStream>();
-            _audioOuts = new List<AudioOut>();
+            _waveOffsetStreams = new List<WaveOffsetStream>();
+            _mixerInputWaveStreams = new List<WaveStream>();
             _playingList = new List<bool>();
+            _timer = new Timer(15);
+            _scorePlayer = scorePlayer;
+            _timer.Elapsed += Timer_Tick;
+            _timer.Start();
         }
 
+        private readonly ScorePlayer _scorePlayer;
         private readonly List<MemoryStream> _soundStreams;
         private readonly List<WaveStream> _waveStreams;
         private readonly List<string> _fileNames;
-        private readonly List<AudioOut> _audioOuts;
+        private readonly List<WaveOffsetStream> _waveOffsetStreams;
+        private readonly List<WaveStream> _mixerInputWaveStreams;
         private readonly List<bool> _playingList;
-
-        private static SfxManager _instance;
-        private static readonly object SyncObject;
+        
+        private readonly object SyncObject;
         private static readonly WaveFormat DefaultWaveFormat = new WaveFormat();
+        private readonly Timer _timer;
 
     }
 }
