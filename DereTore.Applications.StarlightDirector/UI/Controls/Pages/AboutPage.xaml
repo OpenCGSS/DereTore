@@ -34,7 +34,7 @@
                 <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink>
                 <LineBreak/><LineBreak/>
                 <TextBlock FontSize="12">
-                    <Bold>Special thanks to:</Bold><LineBreak/>
+                    <Bold>Special thanks to</Bold> (in character ordinal order):<LineBreak/>
                     <TextBlock Name="ContributorsBlock" TextWrapping="Wrap"/>
                     <LineBreak/>
                     several others, and you.
