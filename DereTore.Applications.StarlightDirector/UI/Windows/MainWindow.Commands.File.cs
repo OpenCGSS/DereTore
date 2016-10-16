@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Entities;
@@ -38,6 +39,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             var project = new Project();
             Project.Current = project;
             Project = project;
+            _autoSaveTimer.Stop();
+            _autoSaveTimer.Start();
+            ClearBackup();
         }
 
         private void CmdFileOpenProject_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -67,28 +71,33 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             openDialog.ValidateNames = true;
             openDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.ProjectFileFilter);
             var dialogResult = openDialog.ShowDialog();
-            if (dialogResult ?? false) {
-                var fileName = openDialog.FileName;
-                var projectVersion = ProjectIO.CheckProjectFileVersion(fileName);
-                string prompt;
-                var projectChanged = false;
-                switch (projectVersion) {
-                    case ProjectVersion.Unknown:
-                        prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ProjectVersionInvalidPromptTemplate), fileName);
-                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    case ProjectVersion.V0_1:
-                    case ProjectVersion.V0_2:
-                        prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ProjectUpgradeNeededPromptTemplate), fileName);
-                        MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
-                        projectChanged = true;
-                        break;
-                }
-                var project = ProjectIO.Load(fileName, projectVersion);
-                Project = Editor.Project = Project.Current = project;
-                project.IsChanged = projectChanged;
-                Editor.Score = project.GetScore(project.Difficulty);
+            if (!(dialogResult ?? false)) {
+                return;
             }
+            var fileName = openDialog.FileName;
+            var projectVersion = ProjectIO.CheckProjectFileVersion(fileName);
+            string prompt;
+            var projectChanged = false;
+            switch (projectVersion) {
+                case ProjectVersion.Unknown:
+                    prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ProjectVersionInvalidPromptTemplate), fileName);
+                    MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                case ProjectVersion.V0_1:
+                case ProjectVersion.V0_2:
+                    prompt = string.Format(Application.Current.FindResource<string>(App.ResourceKeys.ProjectUpgradeNeededPromptTemplate), fileName);
+                    MessageBox.Show(prompt, Title, MessageBoxButton.OK, MessageBoxImage.Information);
+                    projectChanged = true;
+                    break;
+            }
+            var project = ProjectIO.Load(fileName, projectVersion);
+            Project = Editor.Project = Project.Current = project;
+            project.IsChanged = projectChanged;
+            Editor.Score = project.GetScore(project.Difficulty);
+            _autoSaveTimer.Stop();
+            _autoSaveTimer.Start();
+            ClearBackup();
+            SaveBackup();
         }
 
         private void CmdFileSaveProject_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -106,6 +115,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             } else {
                 ProjectIO.Save(project);
                 CmdFileSaveProject.RaiseCanExecuteChanged();
+                _autoSaveTimer.Stop();
+                _autoSaveTimer.Start();
+                ClearBackup();
+                SaveBackup();
             }
         }
 
@@ -119,10 +132,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             saveDialog.ValidateNames = true;
             saveDialog.Filter = Application.Current.FindResource<string>(App.ResourceKeys.ProjectFileFilter);
             var result = saveDialog.ShowDialog();
-            if (result ?? false) {
-                ProjectIO.Save(Project, saveDialog.FileName);
-                CmdFileSaveProjectAs.RaiseCanExecuteChanged();
+            if (!(result ?? false)) {
+                return;
             }
+            ProjectIO.Save(Project, saveDialog.FileName);
+            CmdFileSaveProjectAs.RaiseCanExecuteChanged();
+            _autoSaveTimer.Stop();
+            _autoSaveTimer.Start();
+            ClearBackup();
+            SaveBackup();
         }
 
         private void CmdFilePreferences_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -130,6 +148,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdFilePreferences_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Debug.Print("Not implemented: Preferences");
         }
 
         private void CmdFileExit_CanExecute(object sender, CanExecuteRoutedEventArgs e) {

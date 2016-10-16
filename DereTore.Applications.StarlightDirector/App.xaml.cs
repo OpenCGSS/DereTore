@@ -13,6 +13,26 @@ namespace DereTore.Applications.StarlightDirector {
 
         public static string Title => "Starlight Director";
 
+        public static string LocalDataDirectory {
+            get {
+                if (_localDataDirectory != null) {
+                    return _localDataDirectory;
+                }
+                var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), LocalDataDirectoryName);
+                _localDataDirectory = path;
+                return _localDataDirectory;
+            }
+        }
+
+        public static string GetDirectoryPath(DirectorPath path) {
+            switch (path) {
+                case DirectorPath.AutoBackup:
+                    return Path.Combine(LocalDataDirectory, "AutoBackup");
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(path), path, null);
+            }
+        }
+
         private void App_OnStartup(object sender, StartupEventArgs e) {
             bool createdNewMutex;
             var mutex = new Mutex(true, DirectorMutexName, out createdNewMutex);
@@ -40,6 +60,10 @@ namespace DereTore.Applications.StarlightDirector {
         private Mutex _singleInstanceMutex;
 
         private static readonly string DirectorMutexName = "StarlightDirector";
+
+        private static readonly string LocalDataDirectoryName = "StarlightDirector";
+
+        private static string _localDataDirectory;
 
     }
 }

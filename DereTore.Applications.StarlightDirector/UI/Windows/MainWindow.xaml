@@ -4,10 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Windows"
-        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:controls="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
         xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities;assembly=DereTore.Applications.StarlightDirector.Entities"
         xmlns:ui="clr-namespace:DereTore.Applications.StarlightDirector.UI"
+        xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
         xmlns:pages="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
         xmlns:fluent="urn:fluent-ribbon"
         mc:Ignorable="d" Name="Me" WindowStartupLocation="CenterScreen"
@@ -170,14 +170,17 @@
         </Grid>
         <Grid Grid.Row="3" Margin="0 2 0 0">
             <StatusBar>
-                <StatusBarItem Padding="0">
+                <StatusBarItem>
                     <TextBlock Margin="4" VerticalAlignment="Center">
-                        <Run Text="{Binding ElementName=Me, Path=Project.SaveFileName, Mode=OneWay, FallbackValue={StaticResource Unsaved}}"/>
-                        [
-                        <Bold>
-                            <Run Text="{Binding ElementName=Editor, Path=Score.Difficulty, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type entities:Difficulty}, Mode=OneWay}"/>
-                        </Bold>
-                        ]
+                        <TextBlock Visibility="{Binding ElementName=Me, Path=IsTemporaryMessageVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={x:Static converters:NullableBooleanToVisibilityConverter.Negate}}">
+                            <Run Text="{Binding ElementName=Me, Path=Project.SaveFileName, Mode=OneWay, FallbackValue={StaticResource Unsaved}}"/>
+                            [
+                            <Bold>
+                                <Run Text="{Binding ElementName=Editor, Path=Score.Difficulty, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type entities:Difficulty}, Mode=OneWay}"/>
+                            </Bold>
+                            ]
+                        </TextBlock>
+                        <TextBlock Text="{Binding ElementName=Me, Path=TemporaryMessage, Mode=OneWay}" Visibility="{Binding ElementName=Me, Path=IsTemporaryMessageVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}}"/>
                     </TextBlock>
                 </StatusBarItem>
             </StatusBar>

@@ -63,6 +63,10 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string ApplicationIsAlreadyRunningPrompt;
         public readonly string BdbBuildingCompletePromptTemplate1;
         public readonly string BdbBuildingCompletePromptTemplate2;
+        public readonly string ProjectAutoSavedToPromptTemplate;
+        public readonly string LoadedProjectFromAutoSavPromptTemplate;
+        public readonly string AutoSaveFileFoundPromptTemplate;
+
         public readonly string AcbEnvironmentFilesMissing;
         public readonly string AcbEnvironmentLogErrorTemplate;
         public readonly string AcbEnvironmentRechecking;

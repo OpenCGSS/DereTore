@@ -187,6 +187,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="App.DirectorPath.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -265,6 +266,7 @@
     <Compile Include="UI\NoteRelationCollection.cs" />
     <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />
+    <Compile Include="UI\Windows\MainWindow.AutoSave.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Background.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Misc.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.Bar.cs" />

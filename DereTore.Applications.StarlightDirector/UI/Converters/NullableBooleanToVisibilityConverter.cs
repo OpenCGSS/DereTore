@@ -7,17 +7,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Converters {
     public sealed class NullableBooleanToVisibilityConverter : IValueConverter {
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            bool negate;
-            if (parameter == null) {
-                negate = default(bool);
-            } else {
-                negate = (bool)parameter;
+            var negate = (bool?)parameter;
+            if (negate == null) {
+                negate = false;
             }
             var b = (bool?)value;
             if (b.HasValue) {
-                return (negate ? !b.Value : b.Value) ? Visibility.Visible : Visibility.Collapsed;
+                return (negate.Value ? !b.Value : b.Value) ? Visibility.Visible : Visibility.Collapsed;
             } else {
-                return negate ? Visibility.Visible : Visibility.Collapsed;
+                return negate.Value ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 

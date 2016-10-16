@@ -15,17 +15,34 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             Save(project, project.SaveFileName);
         }
 
-        public static void Save(Project project, bool createNewDatabase) {
-            Save(project, project.SaveFileName, createNewDatabase);
-        }
-
         public static void Save(Project project, string fileName) {
             var fileInfo = new FileInfo(fileName);
             var newDatabase = !fileInfo.Exists;
-            Save(project, fileName, newDatabase);
+            Save(project, fileName, newDatabase, false);
         }
 
-        public static void Save(Project project, string fileName, bool createNewDatabase) {
+        public static void SaveAsBackup(Project project, string fileName) {
+            Save(project, fileName, true, true);
+        }
+
+        public static Project Load(string fileName) {
+            var version = CheckProjectFileVersion(fileName);
+            return Load(fileName, version);
+        }
+
+        internal static Project Load(string fileName, ProjectVersion versionOverride) {
+            switch (versionOverride) {
+                case ProjectVersion.Unknown:
+                    throw new ArgumentOutOfRangeException(nameof(versionOverride));
+                case ProjectVersion.V0_1:
+                    return LoadFromV01(fileName);
+                case ProjectVersion.V0_2:
+                    return LoadFromV02(fileName);
+            }
+            return LoadCurrentVersion(fileName);
+        }
+
+        private static void Save(Project project, string fileName, bool createNewDatabase, bool isBackup) {
             var fileInfo = new FileInfo(fileName);
             fileName = fileInfo.FullName;
             if (createNewDatabase) {
@@ -83,26 +100,10 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 createTable?.Dispose();
                 connection.Close();
             }
-            project.SaveFileName = fileName;
-            project.IsChanged = false;
-        }
-
-        public static Project Load(string fileName) {
-            var version = CheckProjectFileVersion(fileName);
-            return Load(fileName, version);
-        }
-
-
-        internal static Project Load(string fileName, ProjectVersion versionOverride) {
-            switch (versionOverride) {
-                case ProjectVersion.Unknown:
-                    throw new ArgumentOutOfRangeException(nameof(versionOverride));
-                case ProjectVersion.V0_1:
-                    return LoadFromV01(fileName);
-                case ProjectVersion.V0_2:
-                    return LoadFromV02(fileName);
+            if (!isBackup) {
+                project.SaveFileName = fileName;
+                project.IsChanged = false;
             }
-            return LoadCurrentVersion(fileName);
         }
 
         private static Project LoadCurrentVersion(string fileName) {

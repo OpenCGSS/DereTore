@@ -16,11 +16,27 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             private set { SetValue(AccentColorBrushProperty, value); }
         }
 
+        public bool IsTemporaryMessageVisible {
+            get { return (bool)GetValue(IsTemporaryMessageVisibleProperty); }
+            private set { SetValue(IsTemporaryMessageVisibleProperty, value); }
+        }
+
+        public string TemporaryMessage {
+            get { return (string)GetValue(TemporaryMessageProperty); }
+            private set { SetValue(TemporaryMessageProperty, value); }
+        }
+
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(nameof(Project), typeof(Project), typeof(MainWindow),
             new PropertyMetadata(null, OnProjectChanged));
 
         public static readonly DependencyProperty AccentColorBrushProperty = DependencyProperty.Register(nameof(AccentColorBrush), typeof(Brush), typeof(MainWindow),
             new PropertyMetadata(UIHelper.GetWindowColorizationBrush()));
+
+        public static readonly DependencyProperty IsTemporaryMessageVisibleProperty = DependencyProperty.Register(nameof(IsTemporaryMessageVisible), typeof(bool), typeof(MainWindow),
+        new PropertyMetadata(false));
+
+        public static readonly DependencyProperty TemporaryMessageProperty = DependencyProperty.Register(nameof(TemporaryMessage), typeof(string), typeof(MainWindow),
+        new PropertyMetadata(string.Empty));
 
         private static void OnProjectChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var window = obj as MainWindow;

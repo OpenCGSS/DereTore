@@ -29,7 +29,10 @@
     <system:String x:Key="ApplicationIsAlreadyRunningPrompt">Another Starlight Director instance is running. Please edit scores in that instance.</system:String>
     <system:String x:Key="BdbBuildingCompletePromptTemplate1">Project is built and written to BDB file '{0}'.</system:String>
     <system:String x:Key="BdbBuildingCompletePromptTemplate2">Project is built and written to BDB file '{0}'. Created a copy with hashed file name '{1}'.</system:String>
-    
+    <system:String x:Key="ProjectAutoSavedToPromptTemplate">The project is auto saved to '{0}'.</system:String>
+    <system:String x:Key="LoadedProjectFromAutoSavPromptTemplate">Loaded project from auto save file '{0}'.</system:String>
+    <system:String x:Key="AutoSaveFileFoundPromptTemplate">An auto save project was found at '{0}'. It usually means an error occurred during last edition. Do you want to load it?</system:String>
+
     <system:String x:Key="AcbEnvironmentFilesMissing">There are missing file(s):</system:String>
     <system:String x:Key="AcbEnvironmentLogErrorTemplate">ERROR: {0}</system:String>
     <system:String x:Key="AcbEnvironmentRechecking">Rechecking...</system:String>
@@ -40,6 +43,6 @@
     <system:String x:Key="SummaryTotalNotes">Total Notes in Current Score</system:String>
     <system:String x:Key="SummaryTotalBars">Total Measures in Current Score</system:String>
     <system:String x:Key="SummaryMusicFile">Music File</system:String>
-    
+
     <system:String x:Key="Unsaved">Unsaved</system:String>
 </ResourceDictionary>
