@@ -107,6 +107,9 @@ namespace DereTore.Applications.ScoreEditor {
         }
 
         protected override void Dispose(bool disposing) {
+            if (_disposed) {
+                return;
+            }
             if (disposing) {
                 _waveStream?.Dispose();
                 _hcaDataStream?.Dispose();
@@ -143,7 +146,7 @@ namespace DereTore.Applications.ScoreEditor {
             _syncObject = new object();
         }
 
-        private bool _disposed = false;
+        private bool _disposed;
 
         private readonly Stream _sourceStream;
         private AcbFile _acb;

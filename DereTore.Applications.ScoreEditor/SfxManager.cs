@@ -54,7 +54,7 @@ namespace DereTore.Applications.ScoreEditor {
         }
 
         public TimeSpan BufferSize { get; set; } = new TimeSpan(0, 0, 0, 0, 80);
-        
+
 
         public TimeSpan BufferOffset => BufferSize - PlayerSettings.SfxOffset;
 
@@ -149,8 +149,8 @@ namespace DereTore.Applications.ScoreEditor {
         }
 
         private void Timer_Tick(object sender, EventArgs e) {
-            lock(SyncObject) {
-                for (int i = 0; i < _waveOffsetStreams.Count; i++) {
+            lock (_syncObject) {
+                for (var i = 0; i < _waveOffsetStreams.Count; i++) {
                     if (_playingList[i] && _waveOffsetStreams[i].Position >= _waveOffsetStreams[i].Length) {
                         _scorePlayer.RemoveInputStream(_mixerInputWaveStreams[i]);
                         _mixerInputWaveStreams[i] = null;
@@ -161,7 +161,7 @@ namespace DereTore.Applications.ScoreEditor {
         }
 
         public SfxManager(ScorePlayer scorePlayer) {
-            SyncObject = new object();
+            _syncObject = new object();
             _soundStreams = new List<MemoryStream>();
             _fileNames = new List<string>();
             _waveStreams = new List<WaveStream>();
@@ -181,8 +181,8 @@ namespace DereTore.Applications.ScoreEditor {
         private readonly List<WaveOffsetStream> _waveOffsetStreams;
         private readonly List<WaveStream> _mixerInputWaveStreams;
         private readonly List<bool> _playingList;
-        
-        private readonly object SyncObject;
+
+        private readonly object _syncObject;
         private static readonly WaveFormat DefaultWaveFormat = new WaveFormat();
         private readonly Timer _timer;
 

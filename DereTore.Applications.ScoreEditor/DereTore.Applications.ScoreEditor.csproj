@@ -79,7 +79,7 @@
     <Compile Include="Controls\DoubleBufferedPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Controls\PlayerSettings.cs" />
+    <Compile Include="PlayerSettings.cs" />
     <Compile Include="Controls\RenderHelper.cs" />
     <Compile Include="Controls\RenderParams.cs" />
     <Compile Include="Controls\ScoreEditorControl.cs">

@@ -35,6 +35,8 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             tsbRetimingToNow.Click -= TsbRetimingToNow_Click;
             tsbMakeSync.Click -= TsbMakeSync_Click;
             trkFallingSpeed.ValueChanged -= TrkFallingSpeed_ValueChanged;
+            trkMusicVolume.ValueChanged -= TrkMusicVolume_ValueChanged;
+            trkSfxVolume.ValueChanged -= TrkSfxVolume_ValueChanged;
         }
 
         private void RegisterEventHandlers() {
@@ -64,6 +66,16 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             tsbRetimingToNow.Click += TsbRetimingToNow_Click;
             tsbMakeSync.Click += TsbMakeSync_Click;
             trkFallingSpeed.ValueChanged += TrkFallingSpeed_ValueChanged;
+            trkMusicVolume.ValueChanged += TrkMusicVolume_ValueChanged;
+            trkSfxVolume.ValueChanged += TrkSfxVolume_ValueChanged;
+        }
+
+        private void TrkSfxVolume_ValueChanged(object sender, EventArgs e) {
+            PlayerSettings.SfxVolume = (float)(trkSfxVolume.Value - trkSfxVolume.Minimum) / (trkSfxVolume.Maximum - trkSfxVolume.Minimum);
+        }
+
+        private void TrkMusicVolume_ValueChanged(object sender, EventArgs e) {
+            PlayerSettings.MusicVolume = (float)(trkMusicVolume.Value - trkMusicVolume.Minimum) / (trkMusicVolume.Maximum - trkMusicVolume.Minimum);
         }
 
         private void TrkFallingSpeed_ValueChanged(object sender, EventArgs e) {
@@ -274,8 +286,7 @@ namespace DereTore.Applications.ScoreEditor.Forms {
                         if (!(note.HitTiming < prev) && (note.HitTiming < now)) {
                             if (note.IsFlick) {
                                 _sfxManager.PlayWave(_currentFlickHcaFileName, TimeSpan.FromSeconds(note.HitTiming), PlayerSettings.SfxVolume);
-                            }
-                            else if (note.IsTap || note.IsHold) {
+                            } else if (note.IsTap || note.IsHold) {
                                 _sfxManager.PlayWave(_currentTapHcaFileName, TimeSpan.FromSeconds(note.HitTiming), PlayerSettings.SfxVolume);
                             }
                         }
@@ -298,6 +309,8 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             // Enable preview to see more realistic effects.
             editor.IsPreview = true;
             trkFallingSpeed.Value = trkFallingSpeed.Minimum + (int)((float)(trkFallingSpeed.Maximum - trkFallingSpeed.Minimum) / 2);
+            trkMusicVolume.Value = (int)(0.7f * (trkMusicVolume.Maximum - trkMusicVolume.Minimum)) + trkMusicVolume.Minimum;
+            trkSfxVolume.Value = (int)(0.5f * (trkSfxVolume.Maximum - trkSfxVolume.Minimum)) + trkSfxVolume.Minimum;
         }
 
         private void BtnSelectScore_Click(object sender, EventArgs e) {

@@ -19,6 +19,10 @@ namespace DereTore {
             return value < minimum ? minimum : (value > maximum ? maximum : value);
         }
 
+        public static float Clamp(float value, float minimum, float maximum) {
+            return value < minimum ? minimum : (value > maximum ? maximum : value);
+        }
+
         public static int NextRandomPositiveInt32() {
             return Random.Next(1, int.MaxValue);
         }
