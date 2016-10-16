@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -188,15 +189,19 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
 
                     EnsureBarIndex(score, bar);
                     var b = score.Bars[bar];
-                    var note = b.AddNote(id);
-                    note.IndexInGrid = grid;
-                    note.StartPosition = start;
-                    note.FinishPosition = finish;
-                    note.FlickType = flick;
-                    note.PrevFlickNoteID = prevFlick;
-                    note.NextFlickNoteID = nextFlick;
-                    note.SyncTargetID = sync;
-                    note.HoldTargetID = hold;
+                    var note = b.AddNoteWithoutUpdatingGlobalNotes(id);
+                    if (note != null) {
+                        note.IndexInGrid = grid;
+                        note.StartPosition = start;
+                        note.FinishPosition = finish;
+                        note.FlickType = flick;
+                        note.PrevFlickNoteID = prevFlick;
+                        note.NextFlickNoteID = nextFlick;
+                        note.SyncTargetID = sync;
+                        note.HoldTargetID = hold;
+                    } else {
+                        Debug.Print("Note with id {0} already exists.", id);
+                    }
                 }
             }
         }

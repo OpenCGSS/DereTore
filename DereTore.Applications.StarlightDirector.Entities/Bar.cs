@@ -41,9 +41,21 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         internal Note AddNote(int id) {
+            if (NoteIDs.ExistingIDs.Contains(id)) {
+                return null;
+            }
             var note = new Note(id, this);
             Notes.Add(note);
             Score.Notes.Add(note);
+            return note;
+        }
+
+        internal Note AddNoteWithoutUpdatingGlobalNotes(int id) {
+            if (NoteIDs.ExistingIDs.Contains(id)) {
+                return null;
+            }
+            var note = new Note(id, this);
+            Notes.Add(note);
             return note;
         }
 
