@@ -339,12 +339,9 @@
     <Resource Include="Resources\Icons\MusicSelectWaveFile.png" />
     <Resource Include="Resources\Icons\MusicStop.png" />
     <Resource Include="Resources\Icons\ScoreDifficulty.png" />
-    <Resource Include="Resources\Icons\Export.png" />
-    <Resource Include="Resources\Icons\Import.png" />
     <Resource Include="Resources\Icons\FilePreferences.png" />
     <Resource Include="Resources\Icons\BarAppendMany.png" />
     <Resource Include="Resources\Icons\EditSelectAll.png" />
-    <Resource Include="Resources\Icons\Utilities.png" />
     <Resource Include="Resources\Icons\ViewZoomIn.png" />
     <Resource Include="Resources\Icons\ViewZoomOut.png" />
     <Resource Include="Resources\Icons\EditModeClear.png" />
