@@ -32,12 +32,12 @@
   - [ ] Simple preview audio playback.
   - [x] Changeable sound effect in preview
 - [ ] Interop
-  - [ ] Support for building score database
-  - [ ] Support for building music archive
-  - [ ] Importing existing compiled score(s)
-  - [ ] Importing/exporting Deleste beatmaps
-  - [ ] Save format
-    - [ ] Auto validation (by primary key)
+  - [x] Support for building score database
+  - [x] Support for building music archive
+  - [ ] <del>Importing existing compiled score(s)</del> (compiled beatmaps cannot be re-imported, but viewing is possible via Deleste)
+  - [x] Importing/exporting Deleste beatmaps
+  - [x] Save format
+    - [x] Auto validation (by primary key)
     - [ ] Metadata (creator, BPM, etc.)
 - [ ] Helpers
   - [ ] Globalization
