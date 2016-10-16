@@ -58,37 +58,41 @@ CRI ACB/AWB package manipulation library. Only necessary parts are implemented. 
 
 ### Applications
 
-**DereTore.Applications.CipherConverter**
+**CipherConverter**
 
 The C# version of HCA cipher conversion utility. See **hcacc** in [hcatools](https://github.com/Hozuki/hcatools).
 
-**DereTore.Applications.Encoder**
+**Encoder**
 
 The C# version of HCA encoding utility. See **hcaenc** in [hcatools](https://github.com/Hozuki/hcatools).
 
-**DereTore.Applications.Hca2Wav**
+**Hca2Wav**
 
 A console appilcation that converts HCA audio to WAVE audio. It is similar to DereTore.HCA.Test,
 but it outputs to a stream, in fixed linear sequence. It can be used as a clearer demo to integrate
 DereTore.HCA.
 
-**DereTore.Applications.AcbMaker**
+**AcbMaker**
 
 A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.Applications.AcbMaker/README.md).
 
-**DereTore.Applications.MusicToolchain**
+**MusicToolchain**
 
 The utility that integrates **Encoder**, **CipherConverter** and **AcbMaker** into a streamline. Here
 is its [readme](DereTore.Applications.MusicToolchain/README.md).
 
-**DereTore.Applications.ScoreEditor**
+**ScoreEditor**
 
 Viewing and editing scores (collections of notes) of live music. Here is its [readme](DereTore.Applications.ScoreEditor/README.md).
 
-**DereTore.Applications.StarlightDirector**
+**StarlightDirector**
 
 The new score composer (still in alpha phase), the successor of ScoreEditor. Detailed readme and user manual will be written
 in the future. Let's celebrate its alpha release!
+
+**AcbUnzip**
+
+An application that unpacks ACB archives.
 
 ### Other
 
