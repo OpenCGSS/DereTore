@@ -79,6 +79,7 @@
     <Compile Include="Controls\DoubleBufferedPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\PlayerSettings.cs" />
     <Compile Include="Controls\RenderHelper.cs" />
     <Compile Include="Controls\RenderParams.cs" />
     <Compile Include="Controls\ScoreEditorControl.cs">
@@ -122,10 +123,11 @@
     <Compile Include="Model\ScoreCsvMap.cs" />
     <Compile Include="Model\NoteType.cs" />
     <Compile Include="Controls\NoteEnteringOrExitingStageEventArgs.cs" />
-    <Compile Include="LiveMusicPlayer.cs" />
+    <Compile Include="LiveMusicWaveStream.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\Renderer.cs" />
+    <Compile Include="ScorePlayer.cs" />
     <Compile Include="SfxManager.cs" />
     <Compile Include="ThreadingTimer.cs" />
     <EmbeddedResource Include="Forms\FEditNote.resx">
