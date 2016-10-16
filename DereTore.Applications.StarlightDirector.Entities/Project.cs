@@ -54,7 +54,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         [JsonProperty]
-        public string Version { get; internal set; }
+        public string Version {
+            get { return (string)GetValue(VersionProperty); }
+            internal set { SetValue(VersionProperty, value); }
+        }
 
         public Score GetScore(Difficulty difficulty) {
             if (!Scores.ContainsKey(difficulty)) {
@@ -109,6 +112,9 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static readonly DependencyProperty IsSavedProperty = DependencyProperty.Register(nameof(IsSaved), typeof(bool), typeof(Project),
            new PropertyMetadata(false));
+
+        public static readonly DependencyProperty VersionProperty = DependencyProperty.Register(nameof(Version), typeof(string), typeof(Project),
+            new PropertyMetadata(CurrentVersion));
 
         public static string CurrentVersion => "0.3";
 

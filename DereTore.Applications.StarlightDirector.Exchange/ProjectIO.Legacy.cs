@@ -147,7 +147,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 // Main
                 var mainValues = SQLiteHelper.GetValues(connection, Names.Table_Main, ref getValues);
                 project.MusicFileName = mainValues[Names.Field_MusicFileName];
-                project.Version = mainValues[Names.Field_Version];
+                //project.Version = mainValues[Names.Field_Version];
 
                 // Scores
                 var scoreValues = SQLiteHelper.GetValues(connection, Names.Table_Scores, ref getValues);
