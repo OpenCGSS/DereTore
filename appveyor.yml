@@ -28,6 +28,8 @@ after_build:
   - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.exe
   - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - 7z a deretore-toolkit-%PLATFORM%.zip %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/StarlightDirector.exe.config
   - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.mdb
   - 7z a deretore-toolkit-%PLATFORM%.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.ScoreEditor/bin/%PLATFORM%/%CONFIGURATION%/*.wav

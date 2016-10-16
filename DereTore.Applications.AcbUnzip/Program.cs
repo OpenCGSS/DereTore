@@ -1,19 +1,19 @@
 ﻿using System;
 using System.IO;
+using DereTore.ACB;
 
-namespace DereTore.ACB.Test {
+namespace DereTore.Applications.AcbUnzip {
     internal static class Program {
-        public static void Main(string[] args) {
+
+        private static void Main(string[] args) {
             if (args.Length < 1) {
-                Console.WriteLine("Usage: <EXE> <Input ACB File>");
+                Console.WriteLine("Usage: AcbUnzip <Input ACB File>");
                 return;
             }
             var fileName = args[0];
             var fileInfo = new FileInfo(fileName);
 
             var fullDirPath = Path.Combine(fileInfo.DirectoryName ?? string.Empty, string.Format(DirTemplate, fileInfo.Name));
-            fullDirPath = Path.Combine(fullDirPath, "acb");
-            fullDirPath = Path.Combine(fullDirPath, "awb");
             if (!Directory.Exists(fullDirPath)) {
                 Directory.CreateDirectory(fullDirPath);
             }
@@ -43,7 +43,7 @@ namespace DereTore.ACB.Test {
             } while (read == buffer.Length);
         }
 
-        private static readonly string DirTemplate = "_deretore_acb_extract_{0}";
+        private static readonly string DirTemplate = "_acb_{0}";
 
     }
 }

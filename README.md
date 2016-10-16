@@ -37,7 +37,7 @@ There is a simple [user guide](DereTore.Applications.StarlightDirector/docs/user
 
 ## Projects
 
-### Common Libraries
+### Core Libraries
 
 **DereTore.Common**
 
@@ -47,32 +47,14 @@ Common code.
 
 See it for yourself.
 
-### Main Libraries and Tests
-
 **DereTore.HCA**
 
 The pure C# implementation of CRI HCA v2.0 decoder, based on [kawashima](https://github.com/Hozuki/kawashima).
 Here is its [readme](DereTore.HCA/README.md).
 
-**DereTore.HCA.Native**
-
-The C# wrapper of [kawashima](https://github.com/Hozuki/kawashima). Here is its [readme](DereTore.HCA.Native/README.md).
-
-**DereTore.HCA.Test**
-
-The console test application for DereTore.HCA. It starts an audio preview for HCA files.
-
-**DereTore.HCA.Native.Test**
-
-The console test application for DereTore.HCA.Native.
-
 **DereTore.ACB**
 
 CRI ACB/AWB package manipulation library. Only necessary parts are implemented. Here is its [readme](DereTore.ACB/README.md).
-
-**DereTore.ACB.Test**
-
-The console test application for DereTore.ACB.
 
 ### Applications
 
