@@ -127,15 +127,15 @@ namespace DereTore.Applications.ScoreEditor {
             var names = _acb.GetFileNames();
             _internalName = names[0];
             _hcaDataStream = _acb.OpenDataStream(_internalName);
-            var hcaWaveProvider = new HcaWaveProvider(_hcaDataStream, decodeParams);
-            _waveStream = new RawSourceWaveStream(hcaWaveProvider, hcaWaveProvider.WaveFormat);
+            var hcaWaveStream = new HcaAudioStream(_hcaDataStream, decodeParams);
+            _waveStream = new WaveFileReader(hcaWaveStream);
             _sourceStream = acbStream;
             _syncObject = new object();
         }
 
         private LiveMusicWaveStream(Stream hcaStream, DecodeParams decodeParams) {
-            var hcaWaveProvider = new HcaWaveProvider(hcaStream, decodeParams);
-            _waveStream = new RawSourceWaveStream(hcaWaveProvider, hcaWaveProvider.WaveFormat);
+            var hcaWaveStream = new HcaAudioStream(hcaStream, decodeParams);
+            _waveStream = new WaveFileReader(hcaWaveStream);
             _sourceStream = hcaStream;
             _syncObject = new object();
         }
