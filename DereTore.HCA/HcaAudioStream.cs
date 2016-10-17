@@ -253,6 +253,7 @@ namespace DereTore.HCA {
             } else {
                 _headerSize = 0;
             }
+            memoryCache.Position = 0;
         }
 
         private bool HasMoreData() {
