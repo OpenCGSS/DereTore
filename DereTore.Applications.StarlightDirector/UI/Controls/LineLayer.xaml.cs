@@ -19,9 +19,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void DrawLines(DrawingContext context) {
-            var syncPen = new Pen(SyncRelationBrush, NoteLineThickness);
-            var flickPen = new Pen(FlickRelationBrush, NoteLineThickness);
-            var holdPen = new Pen(HoldRelationBrush, NoteLineThickness);
+            var syncPen = new Pen(RelationBrush, SyncNoteLineThickness);
+            var flickPen = new Pen(RelationBrush, ConnectedNoteLineThickness);
+            var holdPen = new Pen(RelationBrush, ConnectedNoteLineThickness);
             foreach (var relation in NoteRelations) {
                 var note1 = relation.ScoreNote1;
                 var note2 = relation.ScoreNote2;

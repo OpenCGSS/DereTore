@@ -110,14 +110,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             if (scoreNote.IsSelected && EditMode != EditMode.Select && EditMode != EditMode.Clear) {
                 switch (EditMode) {
-                    case EditMode.Sync:
-                        EditingLine.Stroke = LineLayer.SyncRelationBrush;
-                        break;
-                    case EditMode.Flick:
-                        EditingLine.Stroke = LineLayer.FlickRelationBrush;
-                        break;
-                    case EditMode.Hold:
-                        EditingLine.Stroke = LineLayer.HoldRelationBrush;
+                    case EditMode.Relations:
+                        EditingLine.Stroke = LineLayer.RelationBrush;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(EditMode));
@@ -163,51 +157,42 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                         MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.NoteRelationAlreadyExistsPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
                     }
-                    Note first;
-                    switch (mode) {
-                        case EditMode.Sync:
-                            if (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidSyncCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                return;
-                            }
-                            Note.ConnectSync(ns, ne);
-                            LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
-                            LineLayer.InvalidateVisual();
-                            break;
-                        case EditMode.Flick:
-                            if ((ns.Bar == ne.Bar && ns.IndexInGrid == ne.IndexInGrid) ||
-                                ns.FinishPosition == ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidFlickCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                return;
-                            }
-                            first = ns < ne ? ns : ne;
-                            var second = first.Equals(ns) ? ne : ns;
-                            if (first.HasNextFlick || second.HasPrevFlick) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationIsFullPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                return;
-                            }
-                            Note.ConnectFlick(first, second);
-                            LineLayer.NoteRelations.Add(start, end, NoteRelation.Flick);
-                            LineLayer.InvalidateVisual();
-                            break;
-                        case EditMode.Hold:
-                            first = ns < ne ? ns : ne;
-                            if (ns.FinishPosition != ne.FinishPosition || ns.IsHoldStart || ne.IsHoldStart || first.IsFlick) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                return;
-                            }
-                            var anyObstacles = Score.Notes.AnyNoteBetween(ns, ne);
-                            if (anyObstacles) {
-                                MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                                return;
-                            }
-                            Note.ConnectHold(ns, ne);
-                            LineLayer.NoteRelations.Add(start, end, NoteRelation.Hold);
-                            LineLayer.InvalidateVisual();
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(mode));
+                    if (mode != EditMode.Relations) {
+
+                        throw new ArgumentOutOfRangeException(nameof(mode));
                     }
+                    var first = ns < ne ? ns : ne;
+                    if (ns.Bar == ne.Bar && ns.IndexInGrid == ne.IndexInGrid) {
+                        // sync
+                        Note.ConnectSync(ns, ne);
+                        LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
+                        LineLayer.InvalidateVisual();
+                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart)) {
+                        // flick
+                        var second = first.Equals(ns) ? ne : ns;
+                        if (first.HasNextFlick || second.HasPrevFlick) {
+                            MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationIsFullPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            return;
+                        }
+                        Note.ConnectFlick(first, second);
+                        LineLayer.NoteRelations.Add(start, end, NoteRelation.Flick);
+                        LineLayer.InvalidateVisual();
+                    } else if (ns.FinishPosition == ne.FinishPosition && !ns.IsHold && !ne.IsHold && !first.IsFlick) {
+                        // hold
+                        var anyObstacles = Score.Notes.AnyNoteBetween(ns, ne);
+                        if (anyObstacles) {
+                            MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.InvalidHoldCreationPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                            return;
+                        }
+                        Note.ConnectHold(ns, ne);
+                        LineLayer.NoteRelations.Add(start, end, NoteRelation.Hold);
+                        LineLayer.InvalidateVisual();
+                    } else {
+                        DraggingStartNote = DraggingEndNote = null;
+                        e.Handled = true;
+                        return;
+                    }
+
                     Project.IsChanged = true;
                     end.IsSelected = true;
                 }

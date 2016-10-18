@@ -63,12 +63,8 @@
                     <fluent:DropDownButton Header="Mode" Size="Large" LargeIcon="{StaticResource RibbonIconEditMode}">
                         <fluent:MenuItem Header="_Select" Command="{x:Static local:MainWindow.CmdEditModeSelect}" Icon="{StaticResource RibbonIconEditModeSelect}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Select}}"/>
-                        <fluent:MenuItem Header="Create Sy_nc" Command="{x:Static local:MainWindow.CmdEditModeEditSync}" Icon="{StaticResource RibbonIconEditModeSync}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Sync}}"/>
-                        <fluent:MenuItem Header="Create _Flick" Command="{x:Static local:MainWindow.CmdEditModeEditFlick}" Icon="{StaticResource RibbonIconEditModeFlick}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Flick}}"/>
-                        <fluent:MenuItem Header="Create _Hold" Command="{x:Static local:MainWindow.CmdEditModeEditHold}" Icon="{StaticResource RibbonIconEditModeHold}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Hold}}"/>
+                        <fluent:MenuItem Header="Create _Relations" Command="{x:Static local:MainWindow.CmdEditModeEditRelations}"
+                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Relations}}"/>
                         <fluent:MenuItem Header="_Clear" Command="{x:Static local:MainWindow.CmdEditModeClear}" Icon="{StaticResource RibbonIconEditModeClear}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Clear}}"/>
                     </fluent:DropDownButton>

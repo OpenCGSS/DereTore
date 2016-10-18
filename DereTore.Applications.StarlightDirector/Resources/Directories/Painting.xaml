@@ -27,4 +27,5 @@
     <SolidColorBrush x:Key="FlickNoteBorderBrush" Color="#FFDA70D6"/>
     <!-- OrangeRed -->
     <SolidColorBrush x:Key="HoldNoteBorderBrush" Color="#FFFFD700"/>
+    <SolidColorBrush x:Key="RelationBorderBrush" Color="#DDFFFFFF"/>
 </ResourceDictionary>

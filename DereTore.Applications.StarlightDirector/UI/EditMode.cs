@@ -2,9 +2,7 @@
     public enum EditMode {
 
         Select,
-        Sync,
-        Flick,
-        Hold,
+        Relations,
         Clear
 
     }
