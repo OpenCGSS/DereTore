@@ -78,6 +78,7 @@
     <Compile Include="Extensions\BarExtensions.cs" />
     <Compile Include="Extensions\NoteExtensions.cs" />
     <Compile Include="FlickGroupModificationResult.cs" />
+    <Compile Include="Gaming\MusicAttribute.cs" />
     <Compile Include="Note.cs" />
     <Compile Include="NoteFlickType.cs" />
     <Compile Include="NoteIDs.cs" />

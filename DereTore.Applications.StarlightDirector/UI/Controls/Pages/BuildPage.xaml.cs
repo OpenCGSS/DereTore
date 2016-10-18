@@ -6,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using DereTore.Applications.StarlightDirector.Entities;
+using DereTore.Applications.StarlightDirector.Entities.Gaming;
 using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
@@ -48,11 +50,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                         using (var dataTable = new DataTable()) {
                             adapter.Fill(dataTable);
                             foreach (DataRow dataRow in dataTable.Rows) {
-                                var liveID = (long)dataRow["live_id"];
-                                if (liveID >= 500) {
-                                    // Event songs, or お願い！シンデレラ (solo ver.)
-                                    continue;
-                                }
                                 var record = new LiveMusicRecord() {
                                     LiveID = (int)(long)dataRow["live_id"],
                                     MusicID = (int)(long)dataRow["music_id"],
@@ -62,6 +59,18 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                                 for (var i = (int)Difficulty.Debut; i <= (int)Difficulty.MasterPlus; ++i) {
                                     var v = (int)(long)dataRow["d" + i];
                                     record.DifficultyExists[i - 1] = v > 0;
+                                }
+                                var color = (int)(long)dataRow["live_type"];
+                                if (color > 0) {
+                                    record.Attribute |= (MusicAttribute)(1 << (color - 1));
+                                }
+                                var isEvent = (long)dataRow["event_type"] > 0;
+                                if (isEvent) {
+                                    record.Attribute |= MusicAttribute.Event;
+                                }
+                                // お願い！シンデレラ (solo ver.)
+                                if (record.MusicID == 1901) {
+                                    record.Attribute |= MusicAttribute.Solo;
                                 }
                                 musicList.Add(record);
                             }
@@ -74,7 +83,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
             }
             foreach (var record in musicList) {
                 var item = new ComboBoxItem();
-                item.Content = record.MusicName;
+                var extraDescription = DescribedEnumReader.Read(record.Attribute, typeof(MusicAttribute));
+                var textBlock = new TextBlock(new Run(record.MusicName));
+                if (!string.IsNullOrEmpty(extraDescription)) {
+                    var inline = new Run(" - " + extraDescription);
+                    inline.Foreground = SystemColors.GrayTextBrush;
+                    textBlock.Inlines.Add(inline);
+                }
+                var cbItem = new ComboBoxItem {
+                    Content = textBlock
+                };
+                item.Content = cbItem;
                 item.Tag = record;
                 CboSongList.Items.Add(item);
             }
@@ -127,7 +146,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
 
         private static readonly string FormatFilter = @"
 SELECT live_data.id AS live_id, music_data.id AS music_id, music_data.name AS music_name,
-    difficulty_1 AS d1, difficulty_2 AS d2, difficulty_3 AS d3, difficulty_4 AS d4, difficulty_5 AS d5, live_data.sort AS sort
+    difficulty_1 AS d1, difficulty_2 AS d2, difficulty_3 AS d3, difficulty_4 AS d4, difficulty_5 AS d5,
+    live_data.sort AS sort, live_data.type as live_type, live_data.event_type as event_type
 FROM live_data, music_data
 WHERE live_data.music_data_id = music_data.id
 ORDER BY sort;";
