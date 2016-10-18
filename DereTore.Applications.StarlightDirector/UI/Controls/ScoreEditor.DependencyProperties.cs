@@ -79,10 +79,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             new PropertyMetadata(null, OnProjectChanged));
 
         public static readonly DependencyProperty SmallChangeProperty = DependencyProperty.Register(nameof(SmallChange), typeof(double), typeof(ScoreEditor),
-            new PropertyMetadata(10d));
+            new PropertyMetadata(50d));
 
         public static readonly DependencyProperty LargeChangeProperty = DependencyProperty.Register(nameof(LargeChange), typeof(double), typeof(ScoreEditor),
-            new PropertyMetadata(50d));
+            new PropertyMetadata(250d));
 
         private static void OnScrollOffsetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;
