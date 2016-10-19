@@ -7,7 +7,7 @@ namespace DereTore.Applications.ScoreEditor.Model {
 
         public ScoreCsvMap() {
             Map(m => m.Id).Name("id");
-            Map(m => m.HitTiming).Name("sec");
+            Map(m => m.HitTiming).Name("sec").TypeConverter<RestrictedDoubleToStringConverter>();
             Map(m => m.Type).Name("type").TypeConverter<StringToIntConverter>();
             // See song_3034 (m063), master level score. These fields are empty, so we need a custom type converter.
             Map(m => m.StartPosition).Name("startPos").TypeConverter<StringToIntConverter>();
@@ -29,6 +29,29 @@ namespace DereTore.Applications.ScoreEditor.Model {
                 }
                 var value = int.Parse(text);
                 return value != 0;
+            }
+
+            public bool CanConvertFrom(Type type) {
+                return true;
+            }
+
+            public bool CanConvertTo(Type type) {
+                return true;
+            }
+
+        }
+
+        private sealed class RestrictedDoubleToStringConverter : ITypeConverter {
+
+            public string ConvertToString(TypeConverterOptions options, object value) {
+                return ((double)value).ToString("0.######");
+            }
+
+            public object ConvertFromString(TypeConverterOptions options, string text) {
+                if (string.IsNullOrEmpty(text)) {
+                    return 0d;
+                }
+                return options.NumberStyle != null ? double.Parse(text, options.NumberStyle.Value) : double.Parse(text);
             }
 
             public bool CanConvertFrom(Type type) {
