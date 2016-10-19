@@ -25,8 +25,18 @@ namespace DereTore.Applications.ScoreEditor {
             }
         }
 
-        // Compensates for ~3ms silence at the beginning of SFX files
-        public static TimeSpan SfxOffset { get; set; } = new TimeSpan(0, 0, 0, 0, -3);
+        // Compensates for systematic offset of official scores, which turns out to be very close to zero
+        public static TimeSpan GlobalOffset { get; set; } = TimeSpan.Zero;
+
+        // Compensates for a future ~3ms (128 samples) HCA encoder delay on WAV music files
+        public static TimeSpan MusicFileOffset { get; set; } = TimeSpan.Zero;
+
+        // Total offset
+        public static TimeSpan SfxOffset {
+            get {
+                return GlobalOffset + MusicFileOffset;
+            }
+        }
 
         private static float _musicVolume = 0.7f;
         private static float _sfxVolume = 0.5f;
