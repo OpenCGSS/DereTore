@@ -22,8 +22,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
 
         private void OnLoaded() {
             var mainAssembly = Assembly.GetEntryAssembly();
-            var attributes = mainAssembly.GetCustomAttributes(false);
-            var fileVersionAttribute = attributes.FirstOrDefault(a => a is AssemblyFileVersionAttribute) as AssemblyFileVersionAttribute;
+            var attributes = mainAssembly.GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false);
+            var fileVersionAttribute = attributes.Length > 0 ? attributes[0] as AssemblyFileVersionAttribute : null;
             VersionText.Text = fileVersionAttribute?.Version;
             Contributors.Sort((kv1, kv2) => string.CompareOrdinal(kv1.Key, kv2.Key));
             foreach (var contributor in Contributors) {
