@@ -25,7 +25,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
 
             Func<string, string> res = key => Application.Current.FindResource<string>(key);
 
-            t[res(App.ResourceKeys.SummaryMusicFile)] = editor.Project.HasMusic ? editor.Project.MusicFileName : "(none)";
+            t[res(App.ResourceKeys.SummaryMusicFile)] = editor.Project?.HasMusic ?? false ? editor.Project.MusicFileName : "(none)";
             t[res(App.ResourceKeys.SummaryTotalNotes)] = editor.ScoreNotes.Count.ToString();
             t[res(App.ResourceKeys.SummaryTotalBars)] = editor.ScoreBars.Count.ToString();
         }
