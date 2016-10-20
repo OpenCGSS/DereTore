@@ -53,6 +53,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                         ScrollViewer.ScrollToEnd();
                         break;
                     case MessageBoxResult.No:
+                        Project = Project.Current;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(messageResult));
