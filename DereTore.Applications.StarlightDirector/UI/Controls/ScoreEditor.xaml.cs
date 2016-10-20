@@ -41,6 +41,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 if (hitTestInfo.IsValid) {
                     AddScoreNote(scoreBar, hitTestInfo, null);
                 } else {
+                    UnselectAllScoreNotes();
                     SelectScoreBar(scoreBar);
                 }
             } else {
@@ -89,6 +90,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ScoreNote_MouseUp(object sender, MouseButtonEventArgs e) {
             if (e.ChangedButton != MouseButton.Left) {
+                UnselectAllScoreNotes();
                 e.Handled = true;
                 return;
             }

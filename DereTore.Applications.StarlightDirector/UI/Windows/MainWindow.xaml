@@ -63,9 +63,9 @@
                     <fluent:DropDownButton Header="Mode" Size="Large" LargeIcon="{StaticResource RibbonIconEditMode}">
                         <fluent:MenuItem Header="_Select" Command="{x:Static local:MainWindow.CmdEditModeSelect}" Icon="{StaticResource RibbonIconEditModeSelect}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Select}}"/>
-                        <fluent:MenuItem Header="Create _Relations" Command="{x:Static local:MainWindow.CmdEditModeEditRelations}"
+                        <fluent:MenuItem Header="Create _relations" Command="{x:Static local:MainWindow.CmdEditModeEditRelations}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Relations}}"/>
-                        <fluent:MenuItem Header="_Clear" Command="{x:Static local:MainWindow.CmdEditModeClear}" Icon="{StaticResource RibbonIconEditModeClear}"
+                        <fluent:MenuItem Header="_Clear relations" Command="{x:Static local:MainWindow.CmdEditModeClear}" Icon="{StaticResource RibbonIconEditModeClear}"
                             IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Clear}}"/>
                     </fluent:DropDownButton>
                     <TextBlock Padding="4 2">
