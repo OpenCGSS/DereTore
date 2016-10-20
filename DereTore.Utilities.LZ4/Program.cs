@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Lz4Net;
+using LZ4;
 
 namespace DereTore.Utilities.LZ4 {
     internal static class Program {
@@ -18,20 +18,16 @@ namespace DereTore.Utilities.LZ4 {
                 var fileInfo = new FileInfo(inputFileName);
                 outputFileName = fileInfo.FullName + ".lz4";
             }
-            using (var input = File.Open(inputFileName, FileMode.Open, FileAccess.Read)) {
-                using (var output = File.Open(outputFileName, FileMode.Create, FileAccess.Write)) {
-                    using (var lz4Stream = new Lz4CompressionStream(output)) {
-                        var buffer = new byte[10240];
-                        var read = 1;
-                        while (read > 0) {
-                            read = input.Read(buffer, 0, buffer.Length);
-                            lz4Stream.Write(buffer, 0, read);
-                            if (read < buffer.Length) {
-                                break;
-                            }
-                        }
-                    }
-                }
+            var fileData = File.ReadAllBytes(inputFileName);
+            var compressedFileData = LZ4Codec.EncodeHC(fileData, 0, fileData.Length);
+            using (var compressedFileStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write)) {
+                // LZ4 header
+                compressedFileStream.WriteInt32LE(0x00000064);
+                compressedFileStream.WriteInt32LE(fileData.Length);
+                compressedFileStream.WriteInt32LE(compressedFileData.Length);
+                compressedFileStream.WriteInt32LE(0x00000001);
+                // File data
+                compressedFileStream.WriteBytes(compressedFileData);
             }
             return 0;
         }

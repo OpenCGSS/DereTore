@@ -13,6 +13,7 @@ using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 using DereTore.StarlightStage;
+using LZ4;
 using Microsoft.Win32;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
@@ -40,8 +41,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
             if (saveResult ?? false) {
                 var so = new StartOptions {
                     AcbFileName = saveDialog.FileName,
-                    CreatesHashedCopy = CreateNameHashedAcbFile,
-                    CreatesLz4Copy = CreateLz4CompressedAcbFile,
                     SongName = songName,
                     Key1 = CgssCipher.Key1.ToString("x8"),
                     Key2 = CgssCipher.Key2.ToString("x8"),
@@ -71,9 +70,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
         private void CmdBuildScoreDatabase_Executed(object sender, ExecutedRoutedEventArgs e) {
             var selectedRecord = (LiveMusicRecord)((ComboBoxItem)CboSongList.SelectedItem).Tag;
             var standardFileName = $"musicscores_m{selectedRecord.LiveID:000}.bdb";
-            string hashedFileName = null;
-            if (CreateNameHashedBdbFile) {
-                hashedFileName = StringHasher.GetHash(standardFileName, StringHasher.Sha1);
+            string lz4FileName = null;
+            if (CreateLz4CompressedBdbFile) {
+                lz4FileName = standardFileName + ".lz4";
             }
             var saveDialog = new SaveFileDialog {
                 OverwritePrompt = true,
@@ -85,8 +84,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
             if (!(saveResult ?? false)) {
                 return;
             }
-            if (hashedFileName != null) {
-                hashedFileName = Path.Combine((new FileInfo(saveDialog.FileName)).DirectoryName ?? string.Empty, hashedFileName);
+            if (lz4FileName != null) {
+                lz4FileName = Path.Combine((new FileInfo(saveDialog.FileName)).DirectoryName ?? string.Empty, lz4FileName);
             }
             try {
                 var difficultyMappings = new Dictionary<Difficulty, Difficulty> {
@@ -96,18 +95,31 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                     { Difficulty.Master, MappingMaster },
                     { Difficulty.MasterPlus, MappingMasterPlus }
                 };
-                BuildBdb(Project, saveDialog.FileName, hashedFileName, selectedRecord, difficultyMappings);
-                var format = string.IsNullOrEmpty(hashedFileName) ?
+                BuildBdb(Project, saveDialog.FileName, selectedRecord, difficultyMappings);
+                if (lz4FileName != null) {
+                    var fileData = File.ReadAllBytes(saveDialog.FileName);
+                    var compressedFileData = LZ4Codec.EncodeHC(fileData, 0, fileData.Length);
+                    using (var compressedFileStream = File.Open(lz4FileName, FileMode.Create, FileAccess.Write)) {
+                        // LZ4 header
+                        compressedFileStream.WriteInt32LE(0x00000064);
+                        compressedFileStream.WriteInt32LE(fileData.Length);
+                        compressedFileStream.WriteInt32LE(compressedFileData.Length);
+                        compressedFileStream.WriteInt32LE(0x00000001);
+                        // File data
+                        compressedFileStream.WriteBytes(compressedFileData);
+                    }
+                }
+                var format = lz4FileName == null ?
                     Application.Current.FindResource<string>(App.ResourceKeys.BdbBuildingCompletePromptTemplate1) :
                     Application.Current.FindResource<string>(App.ResourceKeys.BdbBuildingCompletePromptTemplate2);
-                var message = string.IsNullOrEmpty(hashedFileName) ? string.Format(format, saveDialog.FileName) : string.Format(format, saveDialog.FileName, hashedFileName);
+                var message = string.IsNullOrEmpty(lz4FileName) ? string.Format(format, saveDialog.FileName) : string.Format(format, saveDialog.FileName, lz4FileName);
                 MessageBox.Show(message, App.Title, MessageBoxButton.OK, MessageBoxImage.Information);
             } catch (Exception ex) {
                 MessageBox.Show(ex.Message, App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
         }
 
-        private static void BuildBdb(Project project, string bdbFileName, string hashedBdbFileName, LiveMusicRecord record, Dictionary<Difficulty, Difficulty> difficultyMappings) {
+        private static void BuildBdb(Project project, string bdbFileName, LiveMusicRecord record, Dictionary<Difficulty, Difficulty> difficultyMappings) {
             var connectionString = $"Data Source={bdbFileName}";
             if (File.Exists(bdbFileName)) {
                 File.Delete(bdbFileName);
@@ -151,9 +163,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                     transaction.Commit();
                 }
                 connection.Close();
-            }
-            if (!string.IsNullOrEmpty(hashedBdbFileName)) {
-                File.Copy(bdbFileName, hashedBdbFileName, true);
             }
         }
 
@@ -237,32 +246,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                 if (File.Exists(temp2)) {
                     File.Delete(temp2);
                 }
-
-                if (options.CreatesLz4Copy) {
-                    Log("Performing LZ4 compression...");
-                    startInfo.FileName = "LZ4.exe";
-                    var lz4CompressedFileName = options.AcbFileName + ".lz4";
-                    startInfo.Arguments = GetArgsString(SanitizeString(options.AcbFileName), SanitizeString(lz4CompressedFileName));
-                    using (var proc = Process.Start(startInfo)) {
-                        proc.WaitForExit();
-                        code = proc.ExitCode;
-                    }
-                    if (code != 0) {
-                        LogError($"LZ4 exited with code {code}.");
-                        EnableAcbBuildButton(true);
-                        return;
-                    }
-                    Log("LZ4 compression finished.");
-                }
-
-                if (options.CreatesHashedCopy) {
-                    Log("Creating a copy with hashed file name...");
-                    var fileInfo = new FileInfo(options.AcbFileName);
-                    var hashedFileName = StringHasher.GetHash(fileInfo.Name, StringHasher.Sha1);
-                    var hashedFullFileName = Path.Combine(fileInfo.DirectoryName ?? string.Empty, hashedFileName);
-                    File.Copy(options.AcbFileName, hashedFullFileName, true);
-                    Log("File name hashing finished.");
-                }
             } catch (Exception ex) when (!(ex is ThreadAbortException)) {
                 MessageBox.Show(ex.Message, App.Title, MessageBoxButton.OK, MessageBoxImage.Error);
             } finally {
@@ -314,8 +297,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
             public string Key2 { get; set; }
             public string AcbFileName { get; set; }
             public string SongName { get; set; }
-            public bool CreatesLz4Copy { get; set; }
-            public bool CreatesHashedCopy { get; set; }
 
         }
 

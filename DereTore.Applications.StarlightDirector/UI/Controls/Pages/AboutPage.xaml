@@ -26,13 +26,16 @@
                 Developed and maintained by <Hyperlink CommandParameter="https://github.com/hozuki">hozuki</Hyperlink>
                 at its <Hyperlink CommandParameter="https://github.com/hozuki/DereTore">GitHub repository</Hyperlink>
                 <LineBreak/><LineBreak/>
-                <Bold>Powered by the open source projects:</Bold><LineBreak/>
-                <Hyperlink CommandParameter="http://sqlite.org">SQLite</Hyperlink><LineBreak/>
-                <Hyperlink CommandParameter="https://github.com/naudio/NAudio">NAudio</Hyperlink><LineBreak/>
-                <Hyperlink CommandParameter="http://www.newtonsoft.com/json">Json.NET</Hyperlink><LineBreak/>
-                <Hyperlink CommandParameter="https://github.com/JoshClose/CsvHelper">CsvHelper</Hyperlink><LineBreak/>
-                <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink>
-                <LineBreak/><LineBreak/>
+                <TextBlock FontSize="12">
+                    <Bold>Powered by the open source projects:</Bold><LineBreak/>
+                    <Hyperlink CommandParameter="http://sqlite.org">SQLite</Hyperlink><LineBreak/>
+                    <Hyperlink CommandParameter="https://github.com/naudio/NAudio">NAudio</Hyperlink><LineBreak/>
+                    <Hyperlink CommandParameter="http://www.newtonsoft.com/json">Json.NET</Hyperlink><LineBreak/>
+                    <Hyperlink CommandParameter="https://github.com/JoshClose/CsvHelper">CsvHelper</Hyperlink><LineBreak/>
+                    <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink><LineBreak/>
+                    <Hyperlink CommandParameter="https://github.com/MiloszKrajewski/lz4net">lz4net</Hyperlink><LineBreak/>
+                </TextBlock>
+                <LineBreak/>
                 <TextBlock FontSize="12">
                     <Bold>Special thanks to</Bold> (in character ordinal order):<LineBreak/>
                     <TextBlock Name="ContributorsBlock" TextWrapping="Wrap"/>

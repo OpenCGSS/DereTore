@@ -98,15 +98,11 @@
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Keys:" Margin="0 0 5 0" VerticalAlignment="Center"/>
                                 <ComboBox Grid.Row="0" Grid.Column="1" IsReadOnly="True" SelectedIndex="0" Margin="0 3">
                                     <ComboBoxItem Content="Use CGSS Keys"/>
                                 </ComboBox>
-                                <CheckBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Content="With an LZ4-compressed copy" Margin="0 4" IsChecked="{Binding ElementName=Me, Path=CreateLz4CompressedAcbFile}"/>
-                                <CheckBox Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Content="With a copy renamed to CGSS style" Margin="0 4" IsChecked="{Binding ElementName=Me, Path=CreateNameHashedAcbFile}"/>
                             </Grid>
                             <Button Grid.Row="2" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Build..." Command="{x:Static local:BuildPage.CmdBuildMusicArchive}" IsEnabled="{Binding ElementName=Me, Path=IsAcbBuildingEnvironmentOK, Mode=OneWay}"/>
                             <Button Grid.Row="3" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Recheck" Command="{x:Static local:BuildPage.CmdRecheckAcbBuildEnvironment}"/>
@@ -191,7 +187,7 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <CheckBox Grid.Row="0" Grid.Column="1" Content="With a copy renamed to CGSS style" Margin="0 4" IsChecked="{Binding ElementName=Me, Path=CreateNameHashedBdbFile}"/>
+                                <CheckBox Grid.Row="0" Grid.Column="1" Content="With an LZ4-compressed copy" Margin="0 4" IsChecked="{Binding ElementName=Me, Path=CreateLz4CompressedBdbFile}"/>
                             </Grid>
                             <Button Grid.Row="2" Grid.Column="1" Margin="0 4" Padding="0 4" Content="Build..." Command="{x:Static local:BuildPage.CmdBuildScoreDatabase}"/>
                         </Grid>
