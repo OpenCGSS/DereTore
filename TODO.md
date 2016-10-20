@@ -25,8 +25,8 @@
   - [x] Zooming
     - [x] Auto re-aligning when zooming
     - [x] Quick zooming to the level of seeing 1/8, 1/16, 1/24 note, etc.
-  - [ ] More efficient rendering (`ScrollViewer`)
-  - [ ] Score Lens
+  - [x] More efficient rendering (`ScrollViewer`)
+    - [ ] Score Lens
 - [x] Preview
   - [ ] <del>Live preview</del> (see Deleste)
   - [ ] Inlined audio spectrum
