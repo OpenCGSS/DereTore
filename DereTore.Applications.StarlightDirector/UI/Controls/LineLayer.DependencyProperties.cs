@@ -20,21 +20,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(RelationBrushProperty, value); }
         }
 
-        public Brush SyncRelationBrush {
-            get { return (Brush)GetValue(SyncRelationBrushProperty); }
-            set { SetValue(SyncRelationBrushProperty, value); }
-        }
-
-        public Brush FlickRelationBrush {
-            get { return (Brush)GetValue(FlickRelationBrushProperty); }
-            set { SetValue(FlickRelationBrushProperty, value); }
-        }
-
-        public Brush HoldRelationBrush {
-            get { return (Brush)GetValue(HoldRelationBrushProperty); }
-            set { SetValue(HoldRelationBrushProperty, value); }
-        }
-
         public static readonly DependencyProperty ConnectedNoteLineThicknessProperty = DependencyProperty.Register(nameof(ConnectedNoteLineThickness), typeof(double), typeof(LineLayer),
             new PropertyMetadata(16d));
 
@@ -43,15 +28,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty RelationBrushProperty = DependencyProperty.Register(nameof(RelationBrush), typeof(Brush), typeof(LineLayer),
             new PropertyMetadata(Application.Current.FindResource<Brush>(App.ResourceKeys.RelationBorderBrush)));
-
-        public static readonly DependencyProperty SyncRelationBrushProperty = DependencyProperty.Register(nameof(SyncRelationBrush), typeof(Brush), typeof(LineLayer),
-            new PropertyMetadata(Application.Current.FindResource<Brush>(App.ResourceKeys.SyncNoteBorderBrush)));
-
-        public static readonly DependencyProperty FlickRelationBrushProperty = DependencyProperty.Register(nameof(FlickRelationBrush), typeof(Brush), typeof(LineLayer),
-            new PropertyMetadata(Application.Current.FindResource<Brush>(App.ResourceKeys.FlickNoteBorderBrush)));
-
-        public static readonly DependencyProperty HoldRelationBrushProperty = DependencyProperty.Register(nameof(HoldRelationBrush), typeof(Brush), typeof(LineLayer),
-            new PropertyMetadata(Application.Current.FindResource<Brush>(App.ResourceKeys.HoldNoteBorderBrush)));
 
     }
 }

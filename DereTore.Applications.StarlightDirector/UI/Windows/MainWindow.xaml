@@ -151,20 +151,41 @@
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
-        <controls:ScoreProgressBar Grid.Row="1"></controls:ScoreProgressBar>
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <controls:ScoreEditor Grid.Column="0" x:Name="Editor"/>
-            <ScrollBar Grid.Column="1" Value="{Binding ElementName=Editor, Path=ScrollOffset, Converter={StaticResource NegateConverter}}"
+        <Grid Grid.Row="2" Background="#203765">
+            <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="10" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel">
+                <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
+                                      ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}"/>
+                <!--<ScrollBar Grid.Column="1" Name="Scroll" Value="{Binding ElementName=Editor, Path=ScrollOffset, Converter={StaticResource NegateConverter}}"
                        Minimum="{Binding ElementName=Editor, Path=MinimumScrollOffset, Mode=OneWay}"
                        Maximum="{Binding ElementName=Editor, Path=MaximumScrollOffset, Mode=OneWay}"
                        SmallChange="{Binding ElementName=Editor, Path=SmallChange, Mode=OneWay}"
-                       LargeChange="{Binding ElementName=Editor, Path=LargeChange, Mode=OneWay}"/>
+                       LargeChange="{Binding ElementName=Editor, Path=LargeChange, Mode=OneWay}"/>-->
+            </ScrollViewer>
+            <!--<Grid Width="150" Height="250" RenderTransformOrigin="0 0" HorizontalAlignment="Left" VerticalAlignment="Stretch">
+                <Viewbox DataContext="{Binding ElementName=ScrollViewer}" Stretch="UniformToFill" HorizontalAlignment="Stretch">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Rectangle Grid.Column="0" Width="{Binding Content.ActualWidth}" Height="{Binding Content.ActualHeight}" MinWidth="150">
+                            <Rectangle.Fill>
+                                <VisualBrush Visual="{Binding Content}"/>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <Border Grid.Column="0" BorderThickness="1" BorderBrush="Black" Background="#22FFFFFF" Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}"
+                            HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
+                            <Border.RenderTransform>
+                                <TranslateTransform X="{Binding HorizontalOffset, Mode=OneWay}" Y="{Binding VerticalOffset, Mode=OneWay}"/>
+                            </Border.RenderTransform>
+                        </Border>
+                        <Grid.RenderTransform>
+                            <TranslateTransform X="{Binding HorizontalOffset, Mode=OneWay, Converter={StaticResource NegateConverter}}" Y="{Binding VerticalOffset, Mode=OneWay, Converter={StaticResource NegateConverter}}"/>
+                        </Grid.RenderTransform>
+                    </Grid>
+                </Viewbox>
+            </Grid>-->
         </Grid>
-        <Grid Grid.Row="3" Margin="0 2 0 0">
+        <Grid Grid.Row="3">
             <StatusBar>
                 <StatusBarItem>
                     <TextBlock Margin="4" VerticalAlignment="Center">

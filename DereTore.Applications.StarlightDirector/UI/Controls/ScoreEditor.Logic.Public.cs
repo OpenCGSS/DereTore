@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Entities.Extensions;
@@ -18,7 +16,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             ScoreBars = EditableScoreBars.AsReadOnly();
 
             InitializeComponent();
-            InitializeControls();
         }
 
         public ScoreBar AppendScoreBar() {
@@ -32,7 +29,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             UpdateBarTexts();
             RecalcEditorLayout();
-            UpdateMaximumScrollOffset();
             return added.ToArray();
         }
 
@@ -47,7 +43,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             UpdateBarTexts();
             RecalcEditorLayout();
-            UpdateMaximumScrollOffset();
             return added.ToArray();
         }
 
@@ -153,9 +148,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public void ScrollToScoreBar(ScoreBar scoreBar) {
-            var barHeight = ScoreBars[0].Height;
-            var y = Math.Abs(MinimumScrollOffset) + scoreBar.Bar.Index * barHeight;
-            ScrollOffset = y;
+            var point = scoreBar.TranslatePoint(new Point(scoreBar.Width / 2, scoreBar.Height / 2), ScrollViewer);
+            var newVertical = (ScoreBars.Count - scoreBar.Bar.Index - 1) * scoreBar.Height + scoreBar.Height * 0.5 - point.Y;
+            ScrollViewer.ScrollToVerticalOffset(newVertical);
         }
 
         public double GetBarsTotalHeight() {
@@ -195,54 +190,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
-        public void ScrollUpSmall() {
-            var targetOffset = ScrollOffset + SmallChange;
-            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
-            if (!targetOffset.Equals(ScrollOffset)) {
-                ScrollOffset = targetOffset;
-            }
-        }
-
-        public void ScrollUpLarge() {
-            var targetOffset = ScrollOffset + LargeChange;
-            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
-            if (!targetOffset.Equals(ScrollOffset)) {
-                ScrollOffset = targetOffset;
-            }
-        }
-
-        public void ScrollDownSmall() {
-            var targetOffset = ScrollOffset - SmallChange;
-            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
-            if (!targetOffset.Equals(ScrollOffset)) {
-                ScrollOffset = targetOffset;
-            }
-        }
-
-        public void ScrollDownLarge() {
-            var targetOffset = ScrollOffset - LargeChange;
-            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
-            if (!targetOffset.Equals(ScrollOffset)) {
-                ScrollOffset = targetOffset;
-            }
-        }
-
-        public void ScrollToStart() {
-            var targetOffset = -MinimumScrollOffset;
-            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
-            if (!targetOffset.Equals(ScrollOffset)) {
-                ScrollOffset = targetOffset;
-            }
-        }
-
-        public void ScrollToEnd() {
-            var targetOffset = -MaximumScrollOffset;
-            targetOffset = -MathHelper.Clamp(-targetOffset, MinimumScrollOffset, MaximumScrollOffset);
-            if (!targetOffset.Equals(ScrollOffset)) {
-                ScrollOffset = targetOffset;
-            }
-        }
-
         public void ZoomOutByCenter() {
             var pt = new Point(ActualWidth / 2, ActualHeight / 2);
             ZoomOut(pt);
@@ -265,22 +212,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var centerPoint = new Point(ActualWidth / 2, ActualHeight / 2);
             double heightPercentage, scoreBarHeight;
             var originalScoreBar = GetScoreBarGeomInfoForZooming(centerPoint, out heightPercentage, out scoreBarHeight);
-            double top = 0;
             const double conflictAvoidingLevel = 1.05;
-            if (originalScoreBar != null) {
-                top = Canvas.GetTop(originalScoreBar);
-            }
             foreach (var scoreBar in ScoreBars) {
                 var expectedHeight = scoreBar.NoteRadius * 2 * oneNthBeat / 4 * scoreBar.Bar.GetActualSignature();
                 expectedHeight *= conflictAvoidingLevel;
                 scoreBar.ZoomToHeight(expectedHeight);
             }
-            UpdateMaximumScrollOffset();
             RecalcEditorLayout();
-            if (originalScoreBar != null) {
-                var newTop = Canvas.GetTop(originalScoreBar);
-                var diff = newTop - top;
-                ScrollOffset = ScrollOffset - diff - (originalScoreBar.Height - scoreBarHeight) * heightPercentage;
+            if (originalScoreBar != null && ScrollViewer != null) {
+                var point = TranslatePoint(centerPoint, ScrollViewer);
+                var newVertical = (ScoreBars.Count - originalScoreBar.Bar.Index - 1) * originalScoreBar.Height + originalScoreBar.Height * (1 - heightPercentage) - point.Y;
+                ScrollViewer.ScrollToVerticalOffset(newVertical);
             }
         }
 

@@ -42,6 +42,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             _autoSaveTimer.Stop();
             _autoSaveTimer.Start();
             ClearBackup();
+            ScrollViewer.ScrollToEnd();
         }
 
         private void CmdFileOpenProject_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -98,6 +99,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             _autoSaveTimer.Start();
             ClearBackup();
             SaveBackup();
+            ScrollViewer.ScrollToEnd();
         }
 
         private void CmdFileSaveProject_CanExecute(object sender, CanExecuteRoutedEventArgs e) {

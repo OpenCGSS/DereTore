@@ -9,60 +9,25 @@
              Background="Transparent" Focusable="True" IsTabStop="True"
              FocusVisualStyle="{x:Null}" Name="Me"
              MouseDown="ScoreEditor_OnMouseDown" MouseUp="ScoreEditor_OnMouseUp"
-             PreviewMouseDown="ScoreEditor_OnPreviewMouseDown" PreviewMouseUp="ScoreEditor_OnPreviewMouseUp" PreviewMouseMove="ScoreEditor_OnPreviewMouseMove"
-             MouseWheel="ScoreEditor_OnMouseWheel">
-    <UserControl.Resources>
-        <LinearGradientBrush x:Key="FrameBrush" StartPoint="0 0" EndPoint="1 1">
-            <GradientStop Color="Pink" Offset="0"/>
-            <GradientStop Color="LightSkyBlue" Offset="1"/>
-        </LinearGradientBrush>
-        <SolidColorBrush x:Key="BackgroundBrush" Color="#203765" />
-    </UserControl.Resources>
-    <Border Background="{StaticResource BackgroundBrush}" BorderBrush="{StaticResource FrameBrush}" BorderThickness="3">
-        <Grid>
-            <Grid Name="BackgroundStage">
-                <Image />
-            </Grid>
-            <Canvas Name="FrameLayer" SizeChanged="FrameLayer_OnSizeChanged" Visibility="Hidden">
-                <Path Stroke="{StaticResource FrameBrush}" StrokeThickness="4">
-                    <Path.Data>
-                        <RectangleGeometry Rect="0 0 300 300" />
-                    </Path.Data>
-                </Path>
-            </Canvas>
-            <Canvas Name="AvatarLayer" Margin="6" SizeChanged="AvatarLayer_OnSizeChanged">
-                <Canvas.LayoutTransform>
-                    <TransformGroup>
-                        <ScaleTransform ScaleY="-1" />
-                    </TransformGroup>
-                </Canvas.LayoutTransform>
-                <Canvas.Effect>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="25" Color="{Binding ElementName=AvatarLine, Path=Stroke.Color}"/>
-                </Canvas.Effect>
-                <Line Name="AvatarLine" X1="60" Y1="50" X2="240" Y2="50" StrokeThickness="6" StrokeLineJoin="Round" Stroke="{DynamicResource NeutralStrokeBrush}" />
-            </Canvas>
-            <Grid Name="WorkingAreaClip" Margin="4" SizeChanged="WorkingAreaClip_OnSizeChanged">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="120"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <Grid.LayoutTransform>
-                    <ScaleTransform ScaleY="-1" ScaleX="1" />
-                </Grid.LayoutTransform>
-                <Grid Grid.Column="1" Name="WorkingAreaUpperHalf">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" />
-                        <RowDefinition Height="5*" />
-                    </Grid.RowDefinitions>
-                    <Canvas Grid.Row="1" Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
-                    <Canvas Grid.Row="1" Name="EditingLineLayer">
-                        <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=LineLayer, Path=SyncNoteLineThickness, Mode=OneWay}"/>
-                    </Canvas>
-                    <!-- This layout is weird but it is working! It's... magic! -->
-                    <local:LineLayer Grid.Row="1" x:Name="LineLayer"/>
-                    <Canvas Grid.Row="1" Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
-                </Grid>
+             PreviewMouseDown="ScoreEditor_OnPreviewMouseDown" PreviewMouseUp="ScoreEditor_OnPreviewMouseUp" PreviewMouseMove="ScoreEditor_OnPreviewMouseMove">
+    <Grid>
+        <Grid Name="WorkingAreaClip" SizeChanged="WorkingAreaClip_OnSizeChanged">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.LayoutTransform>
+                <ScaleTransform ScaleY="-1" ScaleX="1" />
+            </Grid.LayoutTransform>
+            <Grid Grid.Column="1">
+                <Canvas Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
+                <Canvas Name="EditingLineLayer">
+                    <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=LineLayer, Path=SyncNoteLineThickness, Mode=OneWay}"/>
+                </Canvas>
+                <!-- This layout is weird but it is working! It's... magic! -->
+                <local:LineLayer x:Name="LineLayer"/>
+                <Canvas Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
             </Grid>
         </Grid>
-    </Border>
+    </Grid>
 </UserControl>

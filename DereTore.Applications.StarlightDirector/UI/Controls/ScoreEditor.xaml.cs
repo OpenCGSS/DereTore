@@ -9,28 +9,11 @@ using DereTore.Applications.StarlightDirector.Entities.Extensions;
 using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
-    /// <summary>
-    /// ScoreEditor.xaml 的交互逻辑
-    /// </summary>
     public partial class ScoreEditor {
-
-        private void FrameLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
-            var path = FrameLayer.Children[0] as Path;
-            Debug.Assert(path != null, "path != null");
-            var rectGeom = path.Data as RectangleGeometry;
-            Debug.Assert(rectGeom != null, "rectGeom != null");
-            var rect = new Rect(new Point(), e.NewSize);
-            rectGeom.Rect = rect;
-        }
 
         private void BarLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
             ResizeBars();
             RepositionBars();
-        }
-
-        private void AvatarLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
-            RepositionAvatars();
-            RepositionAvatarLine();
         }
 
         private void NoteLayer_OnSizeChanged(object sender, SizeChangedEventArgs e) {
@@ -46,62 +29,36 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 WorkingAreaClip.Clip = clip;
             }
             var rect = new Rect();
-            rect.Y = e.NewSize.Height * BaseLineYPosition;
             rect.Height = e.NewSize.Height - rect.Y - rect.Y;
             rect.Width = e.NewSize.Width;
             clip.Rect = rect;
-            var definition = WorkingAreaUpperHalf.RowDefinitions[0];
-            Debug.Assert(definition != null, "definition != null");
-            definition.Height = new GridLength(rect.Y);
         }
 
-        private void ScoreEditor_OnMouseWheel(object sender, MouseWheelEventArgs e) {
-            // Zooming
-            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
-                if (e.Delta > 0) {
-                    ZoomIn();
-                } else {
-                    ZoomOut();
-                }
-                return;
-            }
-
-            // Normal scrolling
-            var large = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-            var up = e.Delta > 0;
-            if (large) {
-                if (up) {
-                    ScrollUpLarge();
-                } else {
-                    ScrollDownLarge();
-                }
-            } else {
-                if (up) {
-                    ScrollUpSmall();
-                } else {
-                    ScrollDownSmall();
-                }
-            }
-        }
-
-        private void ScoreBar_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+        private void ScoreBar_MouseUp(object sender, MouseButtonEventArgs e) {
             var scoreBar = (ScoreBar)sender;
             var hitTestInfo = scoreBar.HitTest(e.GetPosition(scoreBar));
-            AddScoreNote(scoreBar, hitTestInfo, null);
+            if (e.ChangedButton == MouseButton.Left) {
+                if (hitTestInfo.IsValid) {
+                    AddScoreNote(scoreBar, hitTestInfo, null);
+                } else {
+                    SelectScoreBar(scoreBar);
+                }
+            } else {
+                UnselectAllScoreNotes();
+                UnselectAllScoreBars();
+            }
             e.Handled = true;
         }
 
-        private void ScoreBar_ScoreBarHitTest(object sender, ScoreBarHitTestEventArgs e) {
-            Debug.Print($"row: {e.Info.Row}, col: {e.Info.Column}");
-        }
-
         private void ScoreBar_MouseDown(object sender, MouseButtonEventArgs e) {
-            SelectScoreBar(sender as ScoreBar);
-            UnselectAllScoreNotes();
             e.Handled = true;
         }
 
         private void ScoreNote_MouseDown(object sender, MouseButtonEventArgs e) {
+            if (e.ChangedButton != MouseButton.Left) {
+                e.Handled = true;
+                return;
+            }
             var scoreNote = (ScoreNote)sender;
             if (scoreNote.IsSelected) {
                 scoreNote.IsSelected = EditMode != EditMode.Select;
@@ -118,7 +75,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 }
                 EditingLine.X1 = EditingLine.X2 = scoreNote.X;
                 EditingLine.Y1 = EditingLine.Y2 = scoreNote.Y;
-                _editingLineAbsoluteStartPoint = new Point(scoreNote.X, scoreNote.Y - ScrollOffset);
                 EditingLine.Visibility = Visibility.Visible;
             }
             var note = scoreNote.Note;
@@ -132,6 +88,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void ScoreNote_MouseUp(object sender, MouseButtonEventArgs e) {
+            if (e.ChangedButton != MouseButton.Left) {
+                e.Handled = true;
+                return;
+            }
             DraggingEndNote = sender as ScoreNote;
             Debug.Assert(DraggingEndNote != null, "DraggingEndNote != null");
             if (DraggingStartNote != null && DraggingEndNote != null) {
@@ -158,11 +118,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                         return;
                     }
                     if (mode != EditMode.Relations) {
-
                         throw new ArgumentOutOfRangeException(nameof(mode));
                     }
                     var first = ns < ne ? ns : ne;
-                    if (ns.Bar == ne.Bar && ns.IndexInGrid == ne.IndexInGrid) {
+                    if (ns.Bar == ne.Bar && ns.IndexInGrid == ne.IndexInGrid && !ns.IsSync && !ne.IsSync) {
                         // sync
                         Note.ConnectSync(ns, ne);
                         LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
@@ -202,6 +161,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void ScoreNote_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+            if (e.ChangedButton != MouseButton.Left) {
+                e.Handled = true;
+                return;
+            }
             var scoreNote = (ScoreNote)sender;
             var note = scoreNote.Note;
             if (note.IsHoldEnd) {
@@ -245,7 +208,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ScoreEditor_OnPreviewMouseUp(object sender, MouseButtonEventArgs e) {
             EditingLine.Visibility = Visibility.Hidden;
-            _editingLineAbsoluteStartPoint = null;
         }
 
         private void ScoreEditor_OnPreviewMouseMove(object sender, MouseEventArgs e) {

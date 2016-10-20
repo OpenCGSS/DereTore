@@ -15,7 +15,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollUpSmall_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollUpSmall();
+            ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset - CustomScroll.GetScrollSpeed(ScrollViewer));
         }
 
         private void CmdBgScrollDownSmall_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -23,7 +23,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollDownSmall_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollDownSmall();
+            ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset + CustomScroll.GetScrollSpeed(ScrollViewer));
         }
 
         private void CmdBgScrollUpLarge_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -31,7 +31,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollUpLarge_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollUpLarge();
+            ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset - CustomScroll.GetScrollSpeed(ScrollViewer) * 10);
         }
 
         private void CmdBgScrollDownLarge_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -39,7 +39,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollDownLarge_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollDownLarge();
+            ScrollViewer.ScrollToVerticalOffset(ScrollViewer.VerticalOffset + CustomScroll.GetScrollSpeed(ScrollViewer) * 10);
         }
 
         private void CmdBgScrollToStart_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -47,7 +47,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollToStart_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollToStart();
+            ScrollViewer.ScrollToHome();
         }
 
         private void CmdBgScrollToEnd_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -55,7 +55,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdBgScrollToEnd_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.ScrollToEnd();
+            ScrollViewer.ScrollToEnd();
         }
 
     }

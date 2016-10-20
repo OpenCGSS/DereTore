@@ -19,7 +19,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             // Clearing these objects will not affect the underlying model.
             RemoveScoreBars(ScoreBars, false, true);
             LineLayer.NoteRelations.Clear();
-            UpdateMaximumScrollOffset();
             NoteIDs.ExistingIDs.Clear();
             if (toBeSet == null) {
                 return;
@@ -43,13 +42,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     ProcessNoteRelations(note, processedNotes, temporaryMap, LineLayer.NoteRelations);
                 }
             }
-            UpdateMaximumScrollOffset();
             UpdateBarTexts();
-            var originalOffset = ScrollOffset;
-            ScrollOffset = 0;
-            if (originalOffset.Equals(ScrollOffset)) {
-                RecalcEditorLayout();
-            }
+            RecalcEditorLayout();
             Debug.Print("Done: ScoreEditor.ReloadScore().");
         }
 
@@ -94,7 +88,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             RepositionBars();
             RepositionNotes();
             RepositionLineLayer();
-            RepositionEditingLine();
+            ResizeEditorHeight();
+        }
+
+        private void ResizeEditorHeight() {
+            var height = -MinimumScrollOffset;
+            if (ScoreBars.Count > 0) {
+                height += ScoreBars.Sum(scoreBar => scoreBar.Height);
+                height += ScoreBars[ScoreBars.Count - 1].GridStrokeThickness;
+            }
+            Height = height;
         }
 
         private void ResizeBars() {
@@ -109,7 +112,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (ScoreBars.Count == 0) {
                 return;
             }
-            var currentY = ScrollOffset;
+            var currentY = -MinimumScrollOffset;
             foreach (var scoreBar in ScoreBars) {
                 Canvas.SetLeft(scoreBar, barLayerWidth * TrackCenterXPositions[0] - scoreBar.TextColumnWidth - scoreBar.SpaceColumnWidth);
                 Canvas.SetTop(scoreBar, currentY);
@@ -121,7 +124,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (ScoreNotes.Count == 0) {
                 return;
             }
-            var scrollOffset = ScrollOffset;
+            var scrollOffset = -MinimumScrollOffset;
             var noteLayerWidth = NoteLayer.ActualWidth;
             var barHeight = ScoreBars[0].Height;
             foreach (var scoreNote in ScoreNotes) {
@@ -134,75 +137,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
-        private void RepositionAvatars() {
-            var avatars = Avatars;
-            if (avatars == null || avatars.Length == 0) {
-                return;
-            }
-            var width = NoteLayer.ActualWidth;
-            var height = AvatarLayer.ActualHeight;
-            var xOffset = AvatarLayer.TranslatePoint(new Point(), NoteLayer).X;
-            for (var i = 0; i < 5; ++i) {
-                var avatar = avatars[i];
-                var x = TrackCenterXPositions[i] * width - avatar.ActualWidth / 2 - xOffset;
-                var y = BaseLineYPosition * height - avatar.ActualHeight / 2;
-                Canvas.SetLeft(avatar, x);
-                Canvas.SetTop(avatar, y);
-            }
-        }
-
-        private void RepositionAvatarLine() {
-            var width = NoteLayer.ActualWidth;
-            var height = AvatarLayer.ActualHeight;
-            double x1, x2, y;
-            var xOffset = AvatarLayer.TranslatePoint(new Point(), NoteLayer).X;
-            y = height * BaseLineYPosition;
-            x1 = width * (TrackCenterXPositions[0] - 0.075) - xOffset;
-            x2 = width * (TrackCenterXPositions[4] + 0.075) - xOffset;
-            AvatarLine.X1 = x1;
-            AvatarLine.X2 = x2;
-            AvatarLine.Y1 = AvatarLine.Y2 = y;
-        }
-
         private void RepositionLineLayer() {
             LineLayer.Width = NoteLayer.ActualWidth;
             LineLayer.Height = NoteLayer.ActualHeight;
-            Canvas.SetTop(LineLayer, ScrollOffset);
             LineLayer.InvalidateVisual();
-        }
-
-        private void RepositionEditingLine() {
-            var originalPoint = _editingLineAbsoluteStartPoint;
-            if (!originalPoint.HasValue) {
-                return;
-            }
-            var relativePoint = new Point(originalPoint.Value.X, originalPoint.Value.Y + ScrollOffset);
-            EditingLine.X1 = relativePoint.X;
-            EditingLine.Y1 = relativePoint.Y;
-        }
-
-        private Rect GetWorkingAreaRect() {
-            var width = WorkingAreaClip.ActualWidth;
-            var height = WorkingAreaClip.ActualHeight;
-            return new Rect(WorkingAreaPadding, WorkingAreaPadding, width - WorkingAreaPadding * 2, height - WorkingAreaPadding * 2);
-        }
-
-        private void InitializeControls() {
-            var avatars = new ScoreNote[5];
-            var dummyNote = new Note(0, null) {
-                StartPosition = NotePosition.Nowhere,
-                FinishPosition = NotePosition.Nowhere
-            };
-            for (var i = 0; i < 5; ++i) {
-                var image = Application.Current.FindResource<ImageSource>($"CardAvatar{i + 1}");
-                var avatar = new ScoreNote();
-                // To hide the note indicators appearing on avatars.
-                avatar.Note = dummyNote;
-                avatar.Image = image;
-                avatars[i] = avatar;
-                AvatarLayer.Children.Add(avatar);
-            }
-            Avatars = avatars;
         }
 
         private void RemoveScoreNote(ScoreNote scoreNote, bool modifiesModel, bool repositionLines) {
@@ -266,7 +204,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 return scoreNote;
             }
             var barHeight = ScoreBars[0].Height;
-            var baseY = ScrollOffset + bar.Index * barHeight;
+            var baseY = -MinimumScrollOffset + bar.Index * barHeight;
             var extraY = barHeight * row / bar.GetTotalGridCount();
             scoreNote = new ScoreNote();
             Note note;
@@ -321,8 +259,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             } else {
                 scoreBar.Height = ScoreBars[0].Height;
             }
-            scoreBar.ScoreBarHitTest += ScoreBar_ScoreBarHitTest;
-            scoreBar.MouseDoubleClick += ScoreBar_MouseDoubleClick;
+            scoreBar.MouseUp += ScoreBar_MouseUp;
             scoreBar.MouseDown += ScoreBar_MouseDown;
             if (before == null) {
                 BarLayer.Children.Add(scoreBar);
@@ -334,7 +271,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (recalculateLayout) {
                 UpdateBarTexts();
                 RecalcEditorLayout();
-                UpdateMaximumScrollOffset();
             }
             if (dataTemplate == null) {
                 Project.IsChanged = true;
@@ -346,8 +282,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (!ScoreBars.Contains(scoreBar)) {
                 throw new ArgumentException("Invalid ScoreBar.", nameof(scoreBar));
             }
-            scoreBar.ScoreBarHitTest -= ScoreBar_ScoreBarHitTest;
-            scoreBar.MouseDoubleClick -= ScoreBar_MouseDoubleClick;
+            scoreBar.MouseUp -= ScoreBar_MouseUp;
             scoreBar.MouseDown -= ScoreBar_MouseDown;
             if (modifiesModel) {
                 Score.RemoveBarAt(scoreBar.Bar.Index);
@@ -358,7 +293,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (recalcLayout) {
                 UpdateBarTexts();
                 RecalcEditorLayout();
-                UpdateMaximumScrollOffset();
             }
             if (modifiesModel) {
                 Project.IsChanged = true;
@@ -373,7 +307,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (recalcLayout) {
                 UpdateBarTexts();
                 RecalcEditorLayout();
-                UpdateMaximumScrollOffset();
             }
             if (modifiesModel) {
                 Project.IsChanged = true;
@@ -398,34 +331,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
-        private void UpdateMaximumScrollOffset() {
-            var scoreBars = ScoreBars;
-            if (scoreBars.Count == 0) {
-                MaximumScrollOffset = 0;
-            } else {
-                MaximumScrollOffset = scoreBars[0].Height * ScoreBars.Count;
-            }
-        }
-
         private ScoreBar GetScoreBarGeomInfoForZooming(Point pointRelativeToThis, out double heightPercentage, out double height) {
             heightPercentage = 0;
             height = 0;
             var pt = pointRelativeToThis;
-            var hit = VisualTreeHelper.HitTest(this, pt);
+            var hit = VisualTreeHelper.HitTest(BarLayer, pt);
             var scoreBar = (hit?.VisualHit as FrameworkElement)?.FindVisualParent<ScoreBar>();
             if (scoreBar == null) {
                 return null;
             }
-            pt = TranslatePoint(pt, BarLayer);
-            var y = Canvas.GetTop(scoreBar);
-            var delta = pt.Y - y;
+            pt = TranslatePoint(pt, scoreBar);
             height = scoreBar.Height;
-            heightPercentage = delta / height;
+            heightPercentage = pt.Y / height;
             return scoreBar;
-        }
-
-        private ScoreBar GetScoreBarGeomInfoForZooming(out double heightPercentage, out double height) {
-            return GetScoreBarGeomInfoForZooming(Mouse.GetPosition(this), out heightPercentage, out height);
         }
 
         private void TrimScoreNotes(ScoreBar willBeDeleted, bool modifiesModel) {
@@ -440,49 +358,31 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ZoomOut(Point? specifiedPoint) {
             double heightPercentage, scoreBarHeight;
-            ScoreBar originalScoreBar;
-            if (specifiedPoint.HasValue) {
-                originalScoreBar = GetScoreBarGeomInfoForZooming(specifiedPoint.Value, out heightPercentage, out scoreBarHeight);
-            } else {
-                originalScoreBar = GetScoreBarGeomInfoForZooming(out heightPercentage, out scoreBarHeight);
-            }
-            double top = 0;
-            if (originalScoreBar != null) {
-                top = Canvas.GetTop(originalScoreBar);
-            }
+            var point = specifiedPoint ?? Mouse.GetPosition(this);
+            var originalScoreBar = GetScoreBarGeomInfoForZooming(point, out heightPercentage, out scoreBarHeight);
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.ZoomOut();
             }
-            UpdateMaximumScrollOffset();
             RecalcEditorLayout();
-            if (originalScoreBar != null) {
-                var newTop = Canvas.GetTop(originalScoreBar);
-                var diff = newTop - top;
-                ScrollOffset = ScrollOffset - diff - (originalScoreBar.Height - scoreBarHeight) * heightPercentage;
+            if (originalScoreBar != null && ScrollViewer != null) {
+                point = TranslatePoint(point, ScrollViewer);
+                var newVertical = (ScoreBars.Count - originalScoreBar.Bar.Index - 1) * originalScoreBar.Height + originalScoreBar.Height * (1 - heightPercentage) - point.Y;
+                ScrollViewer.ScrollToVerticalOffset(newVertical);
             }
         }
 
         private void ZoomIn(Point? specifiedPoint) {
             double heightPercentage, scoreBarHeight;
-            ScoreBar originalScoreBar;
-            if (specifiedPoint.HasValue) {
-                originalScoreBar = GetScoreBarGeomInfoForZooming(specifiedPoint.Value, out heightPercentage, out scoreBarHeight);
-            } else {
-                originalScoreBar = GetScoreBarGeomInfoForZooming(out heightPercentage, out scoreBarHeight);
-            }
-            double top = 0;
-            if (originalScoreBar != null) {
-                top = Canvas.GetTop(originalScoreBar);
-            }
+            var point = specifiedPoint ?? Mouse.GetPosition(this);
+            var originalScoreBar = GetScoreBarGeomInfoForZooming(point, out heightPercentage, out scoreBarHeight);
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.ZoomIn();
             }
-            UpdateMaximumScrollOffset();
             RecalcEditorLayout();
-            if (originalScoreBar != null) {
-                var newTop = Canvas.GetTop(originalScoreBar);
-                var diff = newTop - top;
-                ScrollOffset = ScrollOffset - diff - (originalScoreBar.Height - scoreBarHeight) * heightPercentage;
+            if (originalScoreBar != null && ScrollViewer != null) {
+                point = TranslatePoint(point, ScrollViewer);
+                var newVertical = (ScoreBars.Count - originalScoreBar.Bar.Index - 1) * originalScoreBar.Height + originalScoreBar.Height * (1 - heightPercentage) - point.Y;
+                ScrollViewer.ScrollToVerticalOffset(newVertical);
             }
         }
 
@@ -494,22 +394,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private List<ScoreNote> EditableScoreNotes { get; }
 
-        private ScoreNote[] Avatars { get; set; }
-
         private ScoreNote DraggingStartNote { get; set; }
 
         private ScoreNote DraggingEndNote { get; set; }
 
         private static readonly double[] TrackCenterXPositions = { 0.2, 0.35, 0.5, 0.65, 0.8 };
-        //private static readonly double BaseLineYPosition = 1d / 6;
-        private static readonly double BaseLineYPosition = 0.1;
-        private static readonly double WorkingAreaPadding = 2;
-        private static readonly double FutureTimeWindow = 1;
-        private static readonly double PastTimeWindow = 0.2;
-        // Then we know the bottom is <AvatarCenterY + (PastWindow / FutureWindow) * (AvatarCenterY - Ceiling))>.
-        private static readonly double FutureNoteCeiling = 5d / 6;
-
-        private Point? _editingLineAbsoluteStartPoint;
 
     }
 }

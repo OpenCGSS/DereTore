@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Timers;
 using System.Windows;
+using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 using DereTore.Applications.StarlightDirector.Interop;
@@ -49,6 +50,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 switch (messageResult) {
                     case MessageBoxResult.Yes:
                         LoadBackup();
+                        ScrollViewer.ScrollToEnd();
                         break;
                     case MessageBoxResult.No:
                         break;
@@ -101,6 +103,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
 
         private void MainWindow_OnSourceInitialized(object sender, EventArgs e) {
             this.RegisterWndProc(WndProc);
+        }
+
+        private void ScrollViewer_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
+                if (e.Delta > 0) {
+                    Editor.ZoomIn();
+                } else {
+                    Editor.ZoomOut();
+                }
+                e.Handled = true;
+            }
         }
 
         private void OnDwmColorizationColorChanged(object sender, EventArgs e) {

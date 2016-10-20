@@ -29,6 +29,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var row = (int)Math.Round(destPoint.Y / unitHeight);
             var zoomMod = GetBestFitZoomMod();
             row = (int)Math.Round((double)row / zoomMod) * zoomMod;
+            var gridCrossingPosition = new Point(column * unitWidth, row * unitHeight);
+            var distance = Point.Subtract(gridCrossingPosition, destPoint);
+            if (distance.Length > 2 * NoteRadius) {
+                return new ScoreBarHitTestInfo(this, Bar, new Point(), -1, -1, false, false);
+            }
             if (column < 0 || column > columnCount - 1) {
                 return new ScoreBarHitTestInfo(this, Bar, new Point(), -1, -1, false, false);
             }
