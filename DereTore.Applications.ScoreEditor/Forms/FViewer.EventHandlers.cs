@@ -363,12 +363,16 @@ namespace DereTore.Applications.ScoreEditor.Forms {
             if (audioFileExtension == ExtensionAcb) {
                 _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
                 _musicWaveStream = LiveMusicWaveStream.FromAcbStream(_audioFileStream, audioFileName, DefaultCgssDecodeParams);
+                PlayerSettings.MusicFileOffset = TimeSpan.Zero;
             } else if (audioFileExtension == ExtensionWav) {
                 _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
                 _musicWaveStream = LiveMusicWaveStream.FromWaveStream(_audioFileStream);
+                PlayerSettings.MusicFileOffset = TimeSpan.FromSeconds(
+                    (double)HCA.HcaEncoderInfo.EncoderDelayInSamples / _musicWaveStream.WaveFormat.SampleRate);
             } else if (audioFileExtension == ExtensionHca) {
                 _audioFileStream = File.Open(audioFileName, FileMode.Open, FileAccess.Read);
                 _musicWaveStream = LiveMusicWaveStream.FromHcaStream(_audioFileStream, DefaultCgssDecodeParams);
+                PlayerSettings.MusicFileOffset = TimeSpan.Zero;
             } else {
                 throw new ArgumentOutOfRangeException(nameof(audioFileExtension), $"Unsupported audio format: '{audioFileExtension}'.");
             }

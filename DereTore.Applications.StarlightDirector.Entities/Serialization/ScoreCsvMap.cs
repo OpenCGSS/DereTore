@@ -48,6 +48,9 @@ namespace DereTore.Applications.StarlightDirector.Entities.Serialization {
             }
 
             public object ConvertFromString(TypeConverterOptions options, string text) {
+                if (string.IsNullOrEmpty(text)) {
+                    return 0d;
+                }
                 return options.NumberStyle != null ? double.Parse(text, options.NumberStyle.Value) : double.Parse(text);
             }
 

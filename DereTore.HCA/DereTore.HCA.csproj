@@ -63,6 +63,7 @@
     <Compile Include="HcaAudioStream.cs" />
     <Compile Include="HcaAudioStreamDecodeState.cs" />
     <Compile Include="HcaDecoder.Internal.cs" />
+    <Compile Include="HcaEncoderInfo.cs" />
     <Compile Include="OneWayHcaDecoder.cs" />
     <Compile Include="Channel.cs" />
     <Compile Include="ChannelTables.cs" />
