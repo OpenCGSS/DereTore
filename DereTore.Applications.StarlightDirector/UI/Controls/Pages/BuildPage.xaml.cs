@@ -90,10 +90,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                     inline.Foreground = SystemColors.GrayTextBrush;
                     textBlock.Inlines.Add(inline);
                 }
-                var cbItem = new ComboBoxItem {
-                    Content = textBlock
-                };
-                item.Content = cbItem;
+                item.Content = textBlock;
                 item.Tag = record;
                 CboSongList.Items.Add(item);
             }
