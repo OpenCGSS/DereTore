@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Entities.Extensions;
+using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     public partial class ScoreBar {
@@ -128,11 +129,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
 
             var bar = Bar;
-            var stressStroke = (Brush)Application.Current.FindResource(App.ResourceKeys.BarStrokeStressBrush);
+            var stressStroke = Application.Current.FindResource<Brush>(App.ResourceKeys.BarStrokeStressBrush);
             var rowCount = TotalRowCount = bar.GetActualSignature() * bar.GetActualGridPerSignature();
             var signature = bar.GetActualSignature();
             var signatureInterval = SignatureBase / signature;
-            var barStartBrush = Brushes.Red;
+            var barStartBrush = Application.Current.FindResource<Brush>(App.ResourceKeys.BarStrokeFirstBrush);
             var barSignatureBrush = stressStroke;
             var barNormalBrush = stroke;
             var barStartPen = new Pen(barStartBrush, GridStrokeThickness);

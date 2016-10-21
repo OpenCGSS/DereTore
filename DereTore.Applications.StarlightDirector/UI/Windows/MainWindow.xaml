@@ -151,7 +151,7 @@
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
-        <Grid Grid.Row="2" Background="#203765">
+        <Grid Grid.Row="2" Background="#FF181818">
             <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="10" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel">
                 <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
                                       ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}"/>

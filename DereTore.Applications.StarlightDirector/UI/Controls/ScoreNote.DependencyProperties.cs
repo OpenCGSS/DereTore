@@ -7,24 +7,21 @@ using DereTore.Applications.StarlightDirector.Entities;
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreNote {
 
-        public Party Party {
-            get { return (Party)GetValue(PartyProperty); }
-            set { SetValue(PartyProperty, value); }
-        }
+        // Compiler restrictions: static member initialization order
+        private static readonly Brush DefaultStrokeBrush = new SolidColorBrush(Color.FromArgb(0xff, 0x22, 0x22, 0x22));
 
-        public Brush Fill {
-            get { return (Brush)GetValue(FillProperty); }
-            set { SetValue(FillProperty, value); }
-        }
+        private static readonly Brush DefaultTextStrokeBrush = new SolidColorBrush(Color.FromArgb(0xff, 0x7f, 0x7f, 0x7f));
+
+        private static readonly Brush SelectedStrokeBrush = Brushes.Yellow;
 
         public Brush Stroke {
             get { return (Brush)GetValue(StrokeProperty); }
-            set { SetValue(StrokeProperty, value); }
+            private set { SetValue(StrokeProperty, value); }
         }
 
-        public ImageSource Image {
-            get { return (ImageSource)GetValue(ImageProperty); }
-            set { SetValue(ImageProperty, value); }
+        public Brush TextStroke {
+            get { return (Brush)GetValue(TextStrokeProperty); }
+            private set { SetValue(TextStrokeProperty, value); }
         }
 
         public double Radius {
@@ -52,17 +49,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(YProperty, value); }
         }
 
-        public static readonly DependencyProperty FillProperty = DependencyProperty.Register(nameof(Fill), typeof(Brush), typeof(ScoreNote),
-            new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.NeutralFillBrush)));
-
         public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(nameof(Stroke), typeof(Brush), typeof(ScoreNote),
-            new PropertyMetadata(Application.Current.FindResource(App.ResourceKeys.NeutralStrokeBrush)));
+            new PropertyMetadata(DefaultStrokeBrush));
 
-        public static readonly DependencyProperty ImageProperty = DependencyProperty.Register(nameof(Image), typeof(ImageSource), typeof(ScoreNote),
-            new PropertyMetadata(null, OnImageChanged));
-
-        public static readonly DependencyProperty PartyProperty = DependencyProperty.Register(nameof(Party), typeof(Party), typeof(ScoreNote),
-            new PropertyMetadata(Party.Neutral, OnPartyChanged));
+        public static readonly DependencyProperty TextStrokeProperty = DependencyProperty.Register(nameof(TextStroke), typeof(Brush), typeof(ScoreNote),
+            new PropertyMetadata(DefaultTextStrokeBrush));
 
         public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register(nameof(Radius), typeof(double), typeof(ScoreNote),
             new PropertyMetadata(0d, OnRadiusChanged));
@@ -79,20 +70,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public static readonly DependencyProperty YProperty = DependencyProperty.Register(nameof(Y), typeof(double), typeof(ScoreNote),
           new PropertyMetadata(0d, OnYChanged));
 
-        private static void OnImageChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            var note = obj as ScoreNote;
-            Debug.Assert(note != null, "note != null");
-            note.ImageContent.Source = (ImageSource)e.NewValue;
-        }
-
-        private static void OnPartyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            var note = obj as ScoreNote;
-            Debug.Assert(note != null, "note != null");
-            var value = (Party)e.NewValue;
-            note.Fill = note.GetFillBrush(value);
-            note.Stroke = note.GetBorderBrush(value);
-        }
-
         private static void OnRadiusChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = obj as ScoreNote;
             Debug.Assert(note != null, "note != null");
@@ -102,8 +79,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private static void OnIsSelectedChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = obj as ScoreNote;
             Debug.Assert(note != null, "note != null");
-            note.DropShadow.Opacity = note.IsSelected ? 1 : 0;
-            note.Stroke = note.GetBorderBrush();
+            var newValue = (bool)e.NewValue;
+            note.Stroke = newValue ? SelectedStrokeBrush : DefaultStrokeBrush;
+            note.TextStroke = newValue ? SelectedStrokeBrush : DefaultTextStrokeBrush;
         }
 
         private static void OnXChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {

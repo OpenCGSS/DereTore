@@ -9,61 +9,92 @@
              Name="Me"
              SizeChanged="ScoreNote_OnSizeChanged">
     <Grid>
-        <Grid ZIndex="0">
-            <Grid Margin="-5 -3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="8"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="8"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="8"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="8"/>
-                </Grid.ColumnDefinitions>
-                <Ellipse Grid.Row="0" Grid.Column="2" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
-                <Ellipse Grid.Row="0" Grid.Column="0" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
-                <Ellipse Grid.Row="2" Grid.Column="0" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
-                <TextBlock Grid.Row="2" Grid.Column="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" RenderTransformOrigin="0.5 0.5"
+        <!-- Indicators -->
+        <Grid Margin="-5 -3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="8"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="8"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+            </Grid.ColumnDefinitions>
+            <Ellipse Grid.Row="0" Grid.Column="2" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            <Ellipse Grid.Row="0" Grid.Column="0" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            <Ellipse Grid.Row="2" Grid.Column="0" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            <TextBlock Grid.Row="2" Grid.Column="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=Me, Path=TextStroke, Mode=OneWay}" RenderTransformOrigin="0.5 0.5"
                            Text="{Binding ElementName=Me, Path=Note.StartPosition, Converter={StaticResource NotePositionToTextConverter}, Mode=OneWay}">
-                    <TextBlock.RenderTransform>
-                        <ScaleTransform ScaleX="1" ScaleY="-1"/>
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-            </Grid>
-            <Ellipse Name="Circle" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="3" Fill="{Binding ElementName=Me, Path=Fill, Mode=OneWay}">
-                <Ellipse.Effect>
-                    <DropShadowEffect x:Name="DropShadow" ShadowDepth="0" BlurRadius="15" Color="LawnGreen" Opacity="0"/>
-                </Ellipse.Effect>
-            </Ellipse>
-            <Grid Margin="6 10">
-                <Path Stretch="Fill" Fill="{Binding ElementName=Circle, Path=Stroke}" Data="F1 M 57,42L 57,34L 32.25,34L 42.25,24L 31.75,24L 17.75,38L 31.75,52L 42.25,52L 32.25,42L 57,42 Z "
-                  Visibility="{Binding ElementName=Me, Path=Note.FlickType, Converter={StaticResource NoteFlickTypeToVisibilityConverter}, ConverterParameter={x:Static entities:NoteFlickType.FlickLeft}, Mode=OneWay}"/>
-                <Path Stretch="Fill" Fill="{Binding ElementName=Circle, Path=Stroke}" Data="F1 M 19.0002,34L 19.0002,42L 43.7502,42L 33.7502,52L 44.2502,52L 58.2502,38L 44.2502,24L 33.7502,24L 43.7502,34L 19.0002,34 Z "
-                  Visibility="{Binding ElementName=Me, Path=Note.FlickType, Converter={StaticResource NoteFlickTypeToVisibilityConverter}, ConverterParameter={x:Static entities:NoteFlickType.FlickRight}, Mode=OneWay}"/>
-            </Grid>
+                <TextBlock.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="-1"/>
+                </TextBlock.RenderTransform>
+            </TextBlock>
         </Grid>
-        <Grid Name="ImageClipper" Margin="2" ZIndex="1">
-            <Grid.Clip>
-                <EllipseGeometry Center="23 23" RadiusX="23" RadiusY="23" />
-            </Grid.Clip>
-            <Image Name="ImageContent" Stretch="Uniform"  RenderTransformOrigin="0.5 0.5">
-                <Image.RenderTransform>
-                    <!-- Notes will be upside down in ScoreEditor, so we should flip the image again. -->
-                    <ScaleTransform ScaleY="-1" />
-                </Image.RenderTransform>
-            </Image>
-        </Grid>
-        <Grid ZIndex="2">
-            <Ellipse Name="CircleInnerGlow" Stroke="{Binding ElementName=Circle, Path=Stroke}" StrokeThickness="{Binding ElementName=Circle, Path=StrokeThickness}" Fill="Transparent">
-                <Ellipse.Effect>
-                    <DropShadowEffect ShadowDepth="0" BlurRadius="10" Direction="0" Color="{Binding ElementName=CircleInnerGlow, Path=Stroke.Color}"/>
-                </Ellipse.Effect>
-                <Ellipse.Clip>
-                    <EllipseGeometry Center="25 25" RadiusX="23" RadiusY="23"/>
-                </Ellipse.Clip>
+        <!-- Normal note -->
+        <Grid>
+            <Ellipse Fill="White" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5"/>
+            <Ellipse Margin="4" Stroke="#FFFF3366">
+                <Ellipse.Fill>
+                    <LinearGradientBrush StartPoint="0 1" EndPoint="0 0">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="#FFFF3366" Offset="0"/>
+                            <GradientStop Color="#FFFF99BB" Offset="1"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Ellipse.Fill>
             </Ellipse>
         </Grid>
+        <!-- Hold note -->
+        <Grid Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
+            <Ellipse Fill="White" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5"/>
+            <Ellipse Margin="4" Stroke="#FFFFBB22">
+                <Ellipse.Fill>
+                    <LinearGradientBrush StartPoint="0 1" EndPoint="0 0">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="#FFFFBB22" Offset="0"/>
+                            <GradientStop Color="#FFFFDD66" Offset="1"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse Margin="10" Fill="White"/>
+        </Grid>
+        <!-- Flick note (left) -->
+        <!-- TODO: Merge this with flick right -->
+        <Canvas Width="30" Height="30" RenderTransformOrigin="0.5 0.5"
+                Visibility="{Binding ElementName=Me, Path=Note.FlickType, Converter={StaticResource NoteFlickTypeToVisibilityConverter}, ConverterParameter={x:Static entities:NoteFlickType.FlickLeft}, Mode=OneWay}">
+            <Path Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5" Data="M 36,15 A 24,24 0 0 0 15,0 A 15,15 0 0 0 15,30 A 24,24 0 0 0 36,15 Z" Fill="White"/>
+            <Path Stroke="#FF2255BB" Width="26" Height="30" Canvas.Left="5" Data="M 36,15 A 24,24 0 0 0 15,0 A 15,15 0 0 0 15,30 A 24,24 0 0 0 36,15 Z" Stretch="Uniform">
+                <Path.Fill>
+                    <LinearGradientBrush StartPoint="0 1" EndPoint="0 0">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="#FF2255BB" Offset="0"/>
+                            <GradientStop Color="#FF88BBFF" Offset="1"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Path.Fill>
+            </Path>
+            <Path Fill="White" Width="12" Height="30" Canvas.Left="17" Data="M 36,15 C 24,-2 16,-2 15,15 C 16,32 24,32 36,15 Z" Stretch="Uniform"/>
+            <Canvas.RenderTransform>
+                <ScaleTransform ScaleX="-1" ScaleY="1"/>
+            </Canvas.RenderTransform>
+        </Canvas>
+        <!-- Flick note (right) -->
+        <Canvas Width="30" Height="30" Visibility="{Binding ElementName=Me, Path=Note.FlickType, Converter={StaticResource NoteFlickTypeToVisibilityConverter}, ConverterParameter={x:Static entities:NoteFlickType.FlickRight}, Mode=OneWay}">
+            <Path Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5" Data="M 36,15 A 24,24 0 0 0 15,0 A 15,15 0 0 0 15,30 A 24,24 0 0 0 36,15 Z" Fill="White"/>
+            <Path Stroke="#FF2255BB" Width="26" Height="30" Canvas.Left="5" Data="M 36,15 A 24,24 0 0 0 15,0 A 15,15 0 0 0 15,30 A 24,24 0 0 0 36,15 Z" Stretch="Uniform">
+                <Path.Fill>
+                    <LinearGradientBrush StartPoint="0 1" EndPoint="0 0">
+                        <LinearGradientBrush.GradientStops>
+                            <GradientStop Color="#FF2255BB" Offset="0"/>
+                            <GradientStop Color="#FF88BBFF" Offset="1"/>
+                        </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                </Path.Fill>
+            </Path>
+            <Path Fill="White" Width="12" Height="30" Canvas.Left="17" Data="M 36,15 C 24,-2 16,-2 15,15 C 16,32 24,32 36,15 Z" Stretch="Uniform"/>
+        </Canvas>
     </Grid>
 </UserControl>
 
