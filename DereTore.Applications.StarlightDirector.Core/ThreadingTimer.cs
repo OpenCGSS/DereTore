@@ -8,6 +8,7 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly uint MMTimerPeriod = 1;
 
         public ThreadingTimer(double interval) {
+            _lock = new object();
             NativeMethods.timeBeginPeriod(MMTimerPeriod);
             Interval = interval;
             _stopwatch = new Stopwatch();
@@ -16,22 +17,31 @@ namespace DereTore.Applications.StarlightDirector {
         public event EventHandler<EventArgs> Elapsed;
 
         public void Start() {
-            if (_stopwatch.IsRunning) {
-                return;
+            lock (_lock) {
+                if (_thread != null) {
+                    return;
+                }
+                _thread = new Thread(ThreadProc) {
+                    IsBackground = true
+                };
+                _continue = true;
+                _thread.Start();
+                Monitor.Wait(_lock);
             }
-            _thread = new Thread(ThreadProc) {
-                IsBackground = true
-            };
-            _continue = true;
-            _thread.Start();
         }
 
         public void Stop() {
-            if (!_stopwatch.IsRunning) {
-                return;
+            lock (_lock) {
+                if (_thread == null) {
+                    return;
+                }
+                try {
+                    _continue = false;
+                    _thread.Join();
+                } finally {
+                    _thread = null;
+                }
             }
-            _continue = false;
-            _thread.Join();
         }
 
         public double Interval { get; }
@@ -44,6 +54,9 @@ namespace DereTore.Applications.StarlightDirector {
         }
 
         private void ThreadProc() {
+            lock (_lock) {
+                Monitor.Pulse(_lock);
+            }
             var stopwatch = _stopwatch;
             stopwatch.Start();
             while (_continue) {
@@ -58,8 +71,9 @@ namespace DereTore.Applications.StarlightDirector {
             stopwatch.Reset();
         }
 
+        private readonly object _lock;
         private Thread _thread;
-        private bool _continue;
+        private volatile bool _continue;
         private readonly Stopwatch _stopwatch;
 
     }
