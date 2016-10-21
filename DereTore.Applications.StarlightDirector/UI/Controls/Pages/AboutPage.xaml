@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
+             xmlns:sd="clr-namespace:DereTore.Applications.StarlightDirector"
              mc:Ignorable="d" 
              d:DesignHeight="400" d:DesignWidth="600"
              Loaded="AboutPage_OnLoaded">
@@ -15,16 +16,36 @@
         </Style>
     </UserControl.Resources>
     <ScrollViewer Padding="40 40" VerticalScrollBarVisibility="Auto">
-        <StackPanel>
-            <TextBlock FontSize="15" TextWrapping="Wrap">
-                <Bold FontSize="30">Starlight Director</Bold> <Run>ver</Run> <Run Name="VersionText"/>
-                <Run Text="{x:Static local:AboutPage.VersionPrerelease}"/>
-                "<Run Text="{x:Static local:AboutPage.CodeName}"/>"
-                <LineBreak/>
-                Score and music creator for <Hyperlink CommandParameter="http://cinderella.idolmaster.jp/sl-stage/">Idolmaster Cinderella Girls: Starlight Stage</Hyperlink>
-                <LineBreak/>
-                Developed and maintained by <Hyperlink CommandParameter="https://github.com/hozuki">hozuki</Hyperlink>
-                at its <Hyperlink CommandParameter="https://github.com/hozuki/DereTore">GitHub repository</Hyperlink>
+        <ScrollViewer.Resources>
+            <Style TargetType="TextBlock">
+                <Style.Setters>
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                </Style.Setters>
+            </Style>
+            <LinearGradientBrush x:Key="SsrGradientBrush" StartPoint="0 0" EndPoint="1 1">
+                <GradientStop Color="Pink" Offset="0"/>
+                <GradientStop Color="LightSkyBlue" Offset="1"/>
+            </LinearGradientBrush>
+        </ScrollViewer.Resources>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MaxWidth="560"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" FontSize="15">
+                <TextBlock>
+                    <Bold FontSize="30"><Run Text="{x:Static sd:App.Title}"/></Bold><LineBreak/>
+                    <TextBlock FontSize="12">
+                        ver <Run Name="VersionText"/>
+                        <Run Text="{x:Static local:AboutPage.VersionPrerelease}"/>
+                        "<Run Text="{x:Static local:AboutPage.CodeName}"/>"
+                    </TextBlock>
+                    <LineBreak/>
+                    Score and music creator for <Hyperlink CommandParameter="http://cinderella.idolmaster.jp/sl-stage/">Idolmaster Cinderella Girls: Starlight Stage</Hyperlink>
+                    <LineBreak/>
+                    Developed and maintained by <Hyperlink CommandParameter="https://github.com/hozuki">hozuki</Hyperlink>
+                    at its <Hyperlink CommandParameter="https://github.com/hozuki/DereTore">GitHub repository</Hyperlink>
+                </TextBlock>
                 <LineBreak/><LineBreak/>
                 <TextBlock FontSize="12">
                     <Bold>Powered by the open source projects:</Bold><LineBreak/>
@@ -34,11 +55,11 @@
                     <Hyperlink CommandParameter="https://github.com/JoshClose/CsvHelper">CsvHelper</Hyperlink><LineBreak/>
                     <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink><LineBreak/>
                     <Hyperlink CommandParameter="https://github.com/MiloszKrajewski/lz4net">lz4net</Hyperlink><LineBreak/>
-                </TextBlock>
+                </TextBlock>    
                 <LineBreak/>
                 <TextBlock FontSize="12">
                     <Bold>Special thanks to</Bold> (in character ordinal order):<LineBreak/>
-                    <TextBlock Name="ContributorsBlock" TextWrapping="Wrap"/>
+                    <TextBlock Name="ContributorsBlock"/>
                     <LineBreak/>
                     several others, and you.
                 </TextBlock>
@@ -47,6 +68,13 @@
                 <LineBreak/>
                 <Run FontSize="10">Feedback and issue report:</Run> <Hyperlink FontSize="10" CommandParameter="https://github.com/hozuki/DereTore/issues">click here</Hyperlink>.
             </TextBlock>
-        </StackPanel>
+            <Border Margin="12 4 0 4" Grid.Column="1" Width="128" Height="128" VerticalAlignment="Top"
+                    BorderBrush="{StaticResource SsrGradientBrush}" BorderThickness="4" CornerRadius="4" Background="Transparent">
+                <Border.InputBindings>
+                    <MouseBinding MouseAction="LeftClick" Command="{x:Static local:AboutPage.CmdEasterEgg}"/>
+                </Border.InputBindings>
+                <Image Name="IconPlaceholder" Source="{StaticResource Mayu-01}" Stretch="Uniform"/>
+            </Border>
+        </Grid>
     </ScrollViewer>
 </UserControl>

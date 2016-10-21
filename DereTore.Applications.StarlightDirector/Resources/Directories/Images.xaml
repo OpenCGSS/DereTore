@@ -5,4 +5,11 @@
     <BitmapImage x:Key="CardAvatar3" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Cards/koshimizu_sachiko_75.jpg"/>
     <BitmapImage x:Key="CardAvatar4" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Cards/mimura_kanako_75.jpg"/>
     <BitmapImage x:Key="CardAvatar5" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Cards/sagisawa_fumika_75.jpg"/>
+
+    <BitmapImage x:Key="Mayu-01" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Mayu/mayu-01.png"/>
+    <BitmapImage x:Key="Mayu-02" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Mayu/mayu-02.png"/>
+    <BitmapImage x:Key="Mayu-03" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Mayu/mayu-03.png"/>
+    <BitmapImage x:Key="Mayu-04" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Mayu/mayu-04.png"/>
+    <BitmapImage x:Key="Mayu-05" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Mayu/mayu-05.png"/>
+    <BitmapImage x:Key="Mayu-06" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Mayu/mayu-06.png"/>
 </ResourceDictionary>

@@ -63,6 +63,9 @@
   <PropertyGroup>
     <StartupObject>DereTore.Applications.StarlightDirector.App</StartupObject>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>SD-Icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ControlzEx, Version=2.1.2.3, Culture=neutral, PublicKeyToken=f08b075e934b7045, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.2.1.2.3\lib\net40\ControlzEx.dll</HintPath>
@@ -340,6 +343,13 @@
     <Content Include="Resources\GameData\master.mdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="SD-Icon.ico" />
+    <Resource Include="Resources\Mayu\mayu-01.png" />
+    <Resource Include="Resources\Mayu\mayu-02.png" />
+    <Resource Include="Resources\Mayu\mayu-03.png" />
+    <Resource Include="Resources\Mayu\mayu-04.png" />
+    <Resource Include="Resources\Mayu\mayu-05.png" />
+    <Resource Include="Resources\Mayu\mayu-06.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
