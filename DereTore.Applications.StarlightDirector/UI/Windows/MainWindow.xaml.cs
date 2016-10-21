@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
-using DereTore.Applications.StarlightDirector.Interop;
+using DereTore.Applications.StarlightDirector.Core.Interop;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     public partial class MainWindow {

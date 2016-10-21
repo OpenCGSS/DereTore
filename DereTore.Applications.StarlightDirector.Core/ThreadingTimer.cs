@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using DereTore.Applications.StarlightDirector.Core.Interop;
 
 namespace DereTore.Applications.StarlightDirector {
     public sealed class ThreadingTimer : DisposableBase {
+        public readonly uint MMTimerPeriod = 1;
 
         public ThreadingTimer(double interval) {
+            NativeMethods.timeBeginPeriod(MMTimerPeriod);
             Interval = interval;
-            _waitHandle = new ManualResetEvent(false);
             _stopwatch = new Stopwatch();
         }
 
@@ -28,10 +30,8 @@ namespace DereTore.Applications.StarlightDirector {
             if (!_stopwatch.IsRunning) {
                 return;
             }
-            _waitHandle.Reset();
-            Thread.MemoryBarrier();
             _continue = false;
-            _waitHandle.WaitOne();
+            _thread.Join();
         }
 
         public double Interval { get; }
@@ -39,8 +39,8 @@ namespace DereTore.Applications.StarlightDirector {
         protected override void Dispose(bool explicitDisposing) {
             Stop();
             if (explicitDisposing) {
-                _waitHandle.Close();
             }
+            NativeMethods.timeEndPeriod(MMTimerPeriod);
         }
 
         private void ThreadProc() {
@@ -49,19 +49,18 @@ namespace DereTore.Applications.StarlightDirector {
             while (_continue) {
                 var timeDiff = stopwatch.ElapsedMilliseconds;
                 if (timeDiff >= Interval) {
+                    stopwatch.Restart();
                     Elapsed?.Invoke(this, EventArgs.Empty);
-                    stopwatch.Reset();
-                    stopwatch.Start();
+                } else {
+                    Thread.Sleep(1);
                 }
             }
             stopwatch.Reset();
-            _waitHandle.Set();
         }
 
         private Thread _thread;
         private bool _continue;
         private readonly Stopwatch _stopwatch;
-        private readonly ManualResetEvent _waitHandle;
 
     }
 }

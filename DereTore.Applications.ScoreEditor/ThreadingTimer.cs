@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using DereTore.Applications.ScoreEditor.Interop;
 
 namespace DereTore.Applications.ScoreEditor {
     public sealed class ThreadingTimer : DisposableBase {
+        public readonly uint MMTimerPeriod = 1;
 
         public ThreadingTimer(double interval) {
+            NativeMethods.timeBeginPeriod(MMTimerPeriod);
             Interval = interval;
-            _waitHandle = new ManualResetEvent(false);
             _stopwatch = new Stopwatch();
         }
 
@@ -17,8 +19,9 @@ namespace DereTore.Applications.ScoreEditor {
             if (_stopwatch.IsRunning) {
                 return;
             }
-            _thread = new Thread(ThreadProc);
-            _thread.IsBackground = true;
+            _thread = new Thread(ThreadProc) {
+                IsBackground = true
+            };
             _continue = true;
             _thread.Start();
         }
@@ -27,10 +30,8 @@ namespace DereTore.Applications.ScoreEditor {
             if (!_stopwatch.IsRunning) {
                 return;
             }
-            _waitHandle.Reset();
-            Thread.MemoryBarrier();
             _continue = false;
-            _waitHandle.WaitOne();
+            _thread.Join();
         }
 
         public double Interval { get; }
@@ -38,8 +39,8 @@ namespace DereTore.Applications.ScoreEditor {
         protected override void Dispose(bool explicitDisposing) {
             Stop();
             if (explicitDisposing) {
-                _waitHandle.Close();
             }
+            NativeMethods.timeEndPeriod(MMTimerPeriod);
         }
 
         private void ThreadProc() {
@@ -48,19 +49,18 @@ namespace DereTore.Applications.ScoreEditor {
             while (_continue) {
                 var timeDiff = stopwatch.ElapsedMilliseconds;
                 if (timeDiff >= Interval) {
+                    stopwatch.Restart();
                     Elapsed?.Invoke(this, EventArgs.Empty);
-                    stopwatch.Reset();
-                    stopwatch.Start();
+                } else {
+                    Thread.Sleep(1);
                 }
             }
             stopwatch.Reset();
-            _waitHandle.Set();
         }
 
         private Thread _thread;
         private bool _continue;
         private readonly Stopwatch _stopwatch;
-        private readonly ManualResetEvent _waitHandle;
 
     }
 }

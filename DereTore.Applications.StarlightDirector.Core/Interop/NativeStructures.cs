@@ -1,4 +1,4 @@
-﻿namespace DereTore.Applications.StarlightDirector.Interop {
+﻿namespace DereTore.Applications.StarlightDirector.Core.Interop {
     internal static class NativeStructures {
 
         public struct DWMCOLORIZATIONPARAMS {

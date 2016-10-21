@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
-using DereTore.Applications.StarlightDirector.Interop;
+using DereTore.Applications.StarlightDirector.Core.Interop;
 
 namespace DereTore.Applications.StarlightDirector {
     public static class UIHelper {

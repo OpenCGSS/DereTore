@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace DereTore.Applications.StarlightDirector.Interop {
+namespace DereTore.Applications.StarlightDirector.Core.Interop {
     internal static class NativeMethods {
 
         public const string DWMAPI_LIB = "dwmapi.dll";
@@ -24,6 +24,12 @@ namespace DereTore.Applications.StarlightDirector.Interop {
 
         [DllImport("kernel32.dll", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
         public static extern IntPtr GetProcAddress(IntPtr hModule, IntPtr lpProcOrdinal);
+
+        [DllImport("winmm.dll")]
+        public static extern uint timeBeginPeriod(uint uMilliseconds);
+
+        [DllImport("winmm.dll")]
+        public static extern uint timeEndPeriod(uint uMilliseconds);
 
     }
 }
