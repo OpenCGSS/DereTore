@@ -368,6 +368,10 @@
       <Project>{3ecdd0bb-215a-4437-b162-fc9d9285303d}</Project>
       <Name>DereTore.Applications.StarlightDirector.Exchange</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DereTore.Common.Interop\DereTore.Common.Interop.csproj">
+      <Project>{3a0d1281-a503-4e5d-9765-d7bf56f89266}</Project>
+      <Name>DereTore.Common.Interop</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DereTore.Common\DereTore.Common.csproj">
       <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
       <Name>DereTore.Common</Name>

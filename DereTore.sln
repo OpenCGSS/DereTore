@@ -44,6 +44,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Applications.Starl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Applications.StarlightDirector.Exchange", "DereTore.Applications.StarlightDirector.Exchange\DereTore.Applications.StarlightDirector.Exchange.csproj", "{3ECDD0BB-215A-4437-B162-FC9D9285303D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Common.Interop", "DereTore.Common.Interop\DereTore.Common.Interop.csproj", "{3A0D1281-A503-4E5D-9765-D7BF56F89266}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -188,6 +190,14 @@ Global
 		{3ECDD0BB-215A-4437-B162-FC9D9285303D}.Release|x64.Build.0 = Release|x64
 		{3ECDD0BB-215A-4437-B162-FC9D9285303D}.Release|x86.ActiveCfg = Release|x86
 		{3ECDD0BB-215A-4437-B162-FC9D9285303D}.Release|x86.Build.0 = Release|x86
+		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Debug|x64.ActiveCfg = Debug|x64
+		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Debug|x64.Build.0 = Debug|x64
+		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Debug|x86.ActiveCfg = Debug|x86
+		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Debug|x86.Build.0 = Debug|x86
+		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Release|x64.ActiveCfg = Release|x64
+		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Release|x64.Build.0 = Release|x64
+		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Release|x86.ActiveCfg = Release|x86
+		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

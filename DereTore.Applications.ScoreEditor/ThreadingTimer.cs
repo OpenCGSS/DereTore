@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
-using DereTore.Applications.ScoreEditor.Interop;
+using DereTore.Interop;
 
 namespace DereTore.Applications.ScoreEditor {
     public sealed class ThreadingTimer : DisposableBase {
-        public readonly uint MMTimerPeriod = 1;
 
         public ThreadingTimer(double interval) {
             _lock = new object();
-            NativeMethods.timeBeginPeriod(MMTimerPeriod);
+            NativeMethods.timeBeginPeriod(TimerPeriod);
             Interval = interval;
             _stopwatch = new Stopwatch();
         }
@@ -50,7 +49,7 @@ namespace DereTore.Applications.ScoreEditor {
             Stop();
             if (explicitDisposing) {
             }
-            NativeMethods.timeEndPeriod(MMTimerPeriod);
+            NativeMethods.timeEndPeriod(TimerPeriod);
         }
 
         private void ThreadProc() {
@@ -75,6 +74,8 @@ namespace DereTore.Applications.ScoreEditor {
         private Thread _thread;
         private volatile bool _continue;
         private readonly Stopwatch _stopwatch;
+
+        private static readonly uint TimerPeriod = 1;
 
     }
 }

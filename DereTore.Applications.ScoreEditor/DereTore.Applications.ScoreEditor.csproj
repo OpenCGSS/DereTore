@@ -79,7 +79,6 @@
     <Compile Include="Controls\DoubleBufferedPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Interop\NativeMethods.cs" />
     <Compile Include="PlayerSettings.cs" />
     <Compile Include="Controls\RenderHelper.cs" />
     <Compile Include="Controls\RenderParams.cs" />
@@ -196,6 +195,10 @@
     <ProjectReference Include="..\DereTore.ACB\DereTore.ACB.csproj">
       <Project>{eecf4baa-9c9e-4687-a616-0f5c65c5f14b}</Project>
       <Name>DereTore.ACB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Common.Interop\DereTore.Common.Interop.csproj">
+      <Project>{3a0d1281-a503-4e5d-9765-d7bf56f89266}</Project>
+      <Name>DereTore.Common.Interop</Name>
     </ProjectReference>
     <ProjectReference Include="..\DereTore.Common\DereTore.Common.csproj">
       <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>

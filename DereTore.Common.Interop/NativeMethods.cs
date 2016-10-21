@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace DereTore.Applications.StarlightDirector.Core.Interop {
-    internal static class NativeMethods {
+namespace DereTore.Interop {
+    public static class NativeMethods {
 
         public const string DWMAPI_LIB = "dwmapi.dll";
         public const string DwmGetColorizationParameters_FUNC = "#127";
