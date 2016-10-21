@@ -1,36 +1,47 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading;
+using DereTore.Applications.ScoreEditor.Interop;
 
 namespace DereTore.Applications.ScoreEditor {
     public sealed class ThreadingTimer : DisposableBase {
+        public readonly uint MMTimerPeriod = 1;
 
         public ThreadingTimer(double interval) {
+            _lock = new object();
+            NativeMethods.timeBeginPeriod(MMTimerPeriod);
             Interval = interval;
-            _waitHandle = new ManualResetEvent(false);
             _stopwatch = new Stopwatch();
         }
 
         public event EventHandler<EventArgs> Elapsed;
 
         public void Start() {
-            if (_stopwatch.IsRunning) {
-                return;
+            lock (_lock) {
+                if (_thread != null) {
+                    return;
+                }
+                _thread = new Thread(ThreadProc) {
+                    IsBackground = true
+                };
+                _continue = true;
+                _thread.Start();
+                Monitor.Wait(_lock);
             }
-            _thread = new Thread(ThreadProc);
-            _thread.IsBackground = true;
-            _continue = true;
-            _thread.Start();
         }
 
         public void Stop() {
-            if (!_stopwatch.IsRunning) {
-                return;
+            lock (_lock) {
+                if (_thread == null) {
+                    return;
+                }
+                try {
+                    _continue = false;
+                    _thread.Join();
+                } finally {
+                    _thread = null;
+                }
             }
-            _waitHandle.Reset();
-            Thread.MemoryBarrier();
-            _continue = false;
-            _waitHandle.WaitOne();
         }
 
         public double Interval { get; }
@@ -38,29 +49,32 @@ namespace DereTore.Applications.ScoreEditor {
         protected override void Dispose(bool explicitDisposing) {
             Stop();
             if (explicitDisposing) {
-                _waitHandle.Close();
             }
+            NativeMethods.timeEndPeriod(MMTimerPeriod);
         }
 
         private void ThreadProc() {
+            lock (_lock) {
+                Monitor.Pulse(_lock);
+            }
             var stopwatch = _stopwatch;
             stopwatch.Start();
             while (_continue) {
                 var timeDiff = stopwatch.ElapsedMilliseconds;
                 if (timeDiff >= Interval) {
+                    stopwatch.Restart();
                     Elapsed?.Invoke(this, EventArgs.Empty);
-                    stopwatch.Reset();
-                    stopwatch.Start();
+                } else {
+                    Thread.Sleep(1);
                 }
             }
             stopwatch.Reset();
-            _waitHandle.Set();
         }
 
+        private readonly object _lock;
         private Thread _thread;
-        private bool _continue;
+        private volatile bool _continue;
         private readonly Stopwatch _stopwatch;
-        private readonly ManualResetEvent _waitHandle;
 
     }
 }
