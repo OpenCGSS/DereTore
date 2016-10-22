@@ -6,6 +6,7 @@
              xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities;assembly=DereTore.Applications.StarlightDirector.Entities"
              xmlns:dereTore="clr-namespace:DereTore;assembly=DereTore.Common"
              xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
+             xmlns:controls="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
              mc:Ignorable="d"
              d:DesignHeight="30" d:DesignWidth="30"
              Name="Me"
@@ -23,13 +24,13 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="8"/>
             </Grid.ColumnDefinitions>
-            <Canvas Grid.Row="0" Grid.Column="2" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+            <Canvas Grid.Row="0" Grid.Column="2" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreEditor}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
                 <Ellipse Width="8" Height="8" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
             </Canvas>
-            <Canvas Grid.Row="0" Grid.Column="0" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+            <Canvas Grid.Row="0" Grid.Column="0" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreEditor}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
                 <Ellipse Width="8" Height="8" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
             </Canvas>
-            <Canvas Grid.Row="2" Grid.Column="0" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+            <Canvas Grid.Row="2" Grid.Column="0" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreEditor}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
                 <Ellipse Width="8" Height="8" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
             </Canvas>
             <TextBlock Grid.Row="2" Grid.Column="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=Me, Path=TextStroke, Mode=OneWay}" RenderTransformOrigin="0.5 0.5"

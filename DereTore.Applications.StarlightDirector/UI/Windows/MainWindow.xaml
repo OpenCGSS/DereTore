@@ -149,6 +149,10 @@
                         <fluent:MenuItem Header="1/32" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="32"/>
                     </fluent:DropDownButton>
                 </fluent:RibbonGroupBox>
+                <fluent:RibbonGroupBox Header="Miscellaneous">
+                    <fluent:ToggleButton Header="Note relation indicator" Command="{x:Static local:MainWindow.CmdViewMiscToggleRelationIndicatorsVisibility}" Icon="{StaticResource RibbonIconViewMiscRelationIndicatorVisibility}" Size="Middle"
+                                         IsChecked="{Binding ElementName=Editor, Path=AreRelationIndicatorsVisible, Mode=OneWay}"/>
+                </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
         <Grid Grid.Row="2" Background="#FF181818">

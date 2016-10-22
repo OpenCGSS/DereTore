@@ -53,6 +53,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(ScrollViewerProperty, value); }
         }
 
+        public bool AreRelationIndicatorsVisible {
+            get { return (bool)GetValue(AreRelationIndicatorsVisibleProperty); }
+            set { SetValue(AreRelationIndicatorsVisibleProperty, value); }
+        }
+
         public static readonly DependencyProperty MinimumScrollOffsetProperty = DependencyProperty.Register(nameof(MinimumScrollOffset), typeof(double), typeof(ScoreEditor),
             new PropertyMetadata(-45d));
 
@@ -73,6 +78,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty ScrollViewerProperty = DependencyProperty.Register(nameof(ScrollViewer), typeof(ScrollViewer), typeof(ScoreEditor),
             new PropertyMetadata(null));
+
+        public static readonly DependencyProperty AreRelationIndicatorsVisibleProperty = DependencyProperty.Register(nameof(AreRelationIndicatorsVisible), typeof(bool), typeof(ScoreEditor),
+          new PropertyMetadata(false));
 
         private static void OnScrollOffsetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;
