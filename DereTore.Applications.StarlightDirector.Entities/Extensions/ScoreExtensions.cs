@@ -70,6 +70,9 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
             // processed first, at least in the group which it is in.
             bar.Notes.Sort(Note.TimingComparison);
             foreach (var note in bar.Notes) {
+                if (note.IsSpecialNote) {
+                    continue;
+                }
                 var compiledNote = new CompiledNote();
                 compiledNotes.Add(compiledNote);
                 SetCommonNoteProperties(note, compiledNote);
@@ -92,6 +95,9 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
             var lastVBTiming = 0d;
 
             foreach (var note in bar.Notes) {
+                if (note.IsSpecialNote) {
+                    continue;
+                }
                 var deltaGridCount = note.IndexInGrid - lastVBIndex;
                 var timePerBeat = DirectorHelper.BpmToSeconds(lastBpm);
                 if (note.Type == NoteType.VariantBpm) {
