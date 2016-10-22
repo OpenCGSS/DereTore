@@ -24,6 +24,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Converters {
         }
 
         public static readonly bool Negate = true;
+        public static readonly bool True = true;
+        public static readonly bool False = false;
 
     }
 }

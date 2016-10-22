@@ -23,25 +23,19 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="8"/>
             </Grid.ColumnDefinitions>
-            <Grid Grid.Row="0" Grid.Column="2" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
-                <Ellipse Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
-            </Grid>
-            <Grid Grid.Row="0" Grid.Column="0" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
-                <Ellipse Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
-            </Grid>
-            <Grid Grid.Row="2" Grid.Column="0" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
-                <Ellipse Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
-            </Grid>
+            <Canvas Grid.Row="0" Grid.Column="2" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+                <Ellipse Width="8" Height="8" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            </Canvas>
+            <Canvas Grid.Row="0" Grid.Column="0" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+                <Ellipse Width="8" Height="8" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            </Canvas>
+            <Canvas Grid.Row="2" Grid.Column="0" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+                <Ellipse Width="8" Height="8" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            </Canvas>
             <TextBlock Grid.Row="2" Grid.Column="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=Me, Path=TextStroke, Mode=OneWay}" RenderTransformOrigin="0.5 0.5"
                            Text="{Binding ElementName=Me, Path=Note.StartPosition, Converter={StaticResource NotePositionToTextConverter}, Mode=OneWay}">
                 <TextBlock.Visibility>
-                    <MultiBinding>
-                        <MultiBinding.Converter>
-                            <converters:MultiValueConverterGroup>
-                                <converters:EquityConverter/>
-                                <converters:NullableBooleanToVisibilityConverter/>
-                            </converters:MultiValueConverterGroup>
-                        </MultiBinding.Converter>
+                    <MultiBinding Mode="OneWay" Converter="{StaticResource EquityToVisibilityConverter}">
                         <MultiBinding.ConverterParameter>
                             <converters:ConverterGroupParameters>
                                 <x:Null/>

@@ -12,4 +12,9 @@
     <converters:NullableBooleanToVisibilityConverter x:Key="NullableBooleanToVisibilityConverter"/>
     <converters:NotePositionToTextConverter x:Key="NotePositionToTextConverter"/>
     <converters:EquityConverter x:Key="EquityConverter"/>
+
+    <converters:MultiValueConverterGroup x:Key="EquityToVisibilityConverter">
+        <converters:EquityConverter/>
+        <converters:NullableBooleanToVisibilityConverter/>
+    </converters:MultiValueConverterGroup>
 </ResourceDictionary>

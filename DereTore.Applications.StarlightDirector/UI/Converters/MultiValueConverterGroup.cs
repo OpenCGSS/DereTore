@@ -7,8 +7,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Converters {
     public sealed class MultiValueConverterGroup : List<object>, IMultiValueConverter {
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture) {
-            var current = (object)values;
+            if (!(parameter is ConverterGroupParameters)) {
+                throw new ArgumentException("Converter parameter should be ConverterGroupParameter.", nameof(parameter));
+            }
             var param = (ConverterGroupParameters)parameter;
+            if (param.Count != Count) {
+                throw new ArgumentException($"The number of parameters ({param.Count}) does not equal to the number of converters ({Count}).");
+            }
+            var current = (object)values;
             var i = -1;
             foreach (var converter in this) {
                 ++i;
