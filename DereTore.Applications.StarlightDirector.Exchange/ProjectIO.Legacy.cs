@@ -40,13 +40,13 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     command.CommandText = $"SELECT value FROM {Names.Table_Main} WHERE key = @key;";
                     command.Parameters.Add("key", DbType.AnsiString).Value = Names.Field_Version;
                     var value = command.ExecuteScalar();
-                    if (value != null) {
+                    if (value != DBNull.Value) {
                         versionString = (string)value;
                     }
                     if (versionString == null) {
                         command.Parameters["key"].Value = Names.Field_Vesion;
                         value = command.ExecuteScalar();
-                        if (value != null) {
+                        if (value != DBNull.Value) {
                             versionString = (string)value;
                         }
                     }
