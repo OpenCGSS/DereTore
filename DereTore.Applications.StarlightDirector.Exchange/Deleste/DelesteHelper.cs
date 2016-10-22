@@ -368,7 +368,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
             // group_id,measure_index:deleste_note_type:start_position:finish_position
             // * measure_index can be floating point numbers: 000.000000
             foreach (var compiledNote in compiledScore.Notes) {
-                if (!(compiledNote.Type == NoteType.TapOrFlick || compiledNote.Type == NoteType.Hold)) {
+                if (!Note.IsTypeGaming(compiledNote.Type)) {
                     continue;
                 }
                 writer.WriteLine("#{0},{1:000.000000}:{2}:{3}:{4}", compiledNote.FlickGroupID, compiledNote.HitTiming, (int)TranslateNoteType(compiledNote), (int)compiledNote.StartPosition, (int)compiledNote.FinishPosition);
