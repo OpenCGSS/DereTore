@@ -18,7 +18,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = @tableName;";
                     command.Parameters.Add("tableName", DbType.AnsiString).Value = tableName;
                     var value = command.ExecuteScalar();
-                    return value != DBNull.Value;
+                    return value != null;
                 }
             }
 
@@ -31,7 +31,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = @tableName;";
                     command.Parameters.Add("tableName", DbType.AnsiString).Value = tableName;
                     var value = command.ExecuteScalar();
-                    if (value == DBNull.Value) {
+                    if (value == null) {
                         return false;
                     }
                     // TODO: Is it possible to use command parameters?
