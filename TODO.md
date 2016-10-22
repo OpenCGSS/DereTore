@@ -9,7 +9,7 @@
 
 - [x] Advanced composing
   - [x] More detailed division in beats (24/beat)
-  - [ ] Variant BPM
+  - [x] Variant BPM
   - [ ] Different signatures
   - [x] `StartPosition`
     - [x] Translucent indicator layer for Director. (implemented: at the corners)
