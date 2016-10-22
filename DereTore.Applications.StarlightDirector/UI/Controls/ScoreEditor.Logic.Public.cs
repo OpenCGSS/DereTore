@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -12,8 +13,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public ScoreEditor() {
             EditableScoreNotes = new List<ScoreNote>();
             EditableScoreBars = new List<ScoreBar>();
+            EditableSpecialScoreNotes = new List<SpecialNotePointer>();
             ScoreNotes = EditableScoreNotes.AsReadOnly();
             ScoreBars = EditableScoreBars.AsReadOnly();
+            SpecialScoreNotes = EditableSpecialScoreNotes.AsReadOnly();
 
             InitializeComponent();
         }
@@ -66,9 +69,40 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             RemoveScoreNotes(scoreNotes, true, true);
         }
 
+        public SpecialNotePointer AddSpecialNote(ScoreBar scoreBar, ScoreBarHitTestInfo info, NoteType type) {
+            if (!info.IsInNextBar) {
+                return AddSpecialNote(scoreBar, info.Row, type);
+            }
+            var nextBar = ScoreBars.FirstOrDefault(b => b.Bar.Index > scoreBar.Bar.Index);
+            if (nextBar == null) {
+                return null;
+            }
+            var point = scoreBar.TranslatePoint(info.HitPoint, nextBar);
+            return AddSpecialNote(nextBar, nextBar.HitTest(point), type);
+        }
+
+        public SpecialNotePointer AddSpecialNote(ScoreBar scoreBar, int row, NoteType type) {
+            return AddSpecialNote(scoreBar, row, type, null);
+        }
+
+        public bool RemoveSpecialNote(SpecialNotePointer specialNotePointer) {
+            var exists = SpecialScoreNotes.Contains(specialNotePointer);
+            if (!exists) {
+                return false;
+            }
+            var note = specialNotePointer.Note;
+            note.Bar.RemoveNote(note);
+            NoteIDs.ExistingIDs.Remove(note.ID);
+            SpecialNoteLayer.Children.Remove(specialNotePointer);
+            Project.IsChanged = true;
+            return EditableSpecialScoreNotes.Remove(specialNotePointer);
+        }
+
         public ReadOnlyCollection<ScoreNote> ScoreNotes { get; }
 
         public ReadOnlyCollection<ScoreBar> ScoreBars { get; }
+
+        public ReadOnlyCollection<SpecialNotePointer> SpecialScoreNotes { get; }
 
         public bool HasSelectedScoreNotes => ScoreNotes.Any(scoreNote => scoreNote.IsSelected);
 
@@ -184,12 +218,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             return hitScoreBar;
         }
 
-        public void SetGlobalBpm(double bpm) {
-            foreach (var scoreBar in ScoreBars) {
-                scoreBar.SetGlobalBpm(bpm);
-            }
-        }
-
         public void ZoomOutByCenter() {
             var pt = new Point(ActualWidth / 2, ActualHeight / 2);
             ZoomOut(pt);
@@ -225,6 +253,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 ScrollViewer.ScrollToVerticalOffset(newVertical);
             }
         }
+
+        public ScoreBarHitTestInfo LastHitTestInfo { get; private set; }
 
     }
 }

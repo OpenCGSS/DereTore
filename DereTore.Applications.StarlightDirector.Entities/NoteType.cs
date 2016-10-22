@@ -13,8 +13,10 @@
         MusicEnd = 92,
         NoteCount = 100,
 
-        // Starlight Director
-        Avatar = 99999
+        // Starlight Director: avatar note
+        Avatar = 10001,
+        // Starlight Director: avatar note
+        VariantBpm = 10002
 
     }
 }

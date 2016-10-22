@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -22,18 +23,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             RepositionLineLayer();
         }
 
-        private void WorkingAreaClip_OnSizeChanged(object sender, SizeChangedEventArgs e) {
-            var clip = WorkingAreaClip.Clip as RectangleGeometry;
-            if (clip == null) {
-                clip = new RectangleGeometry();
-                WorkingAreaClip.Clip = clip;
-            }
-            var rect = new Rect();
-            rect.Height = e.NewSize.Height - rect.Y - rect.Y;
-            rect.Width = e.NewSize.Width;
-            clip.Rect = rect;
-        }
-
         private void ScoreBar_MouseUp(object sender, MouseButtonEventArgs e) {
             var scoreBar = (ScoreBar)sender;
             var hitTestInfo = scoreBar.HitTest(e.GetPosition(scoreBar));
@@ -44,11 +33,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     UnselectAllScoreNotes();
                     SelectScoreBar(scoreBar);
                 }
+                e.Handled = true;
             } else {
-                UnselectAllScoreNotes();
-                UnselectAllScoreBars();
+                if (HasSelectedScoreNotes) {
+                    UnselectAllScoreNotes();
+                    e.Handled = true;
+                }
             }
-            e.Handled = true;
         }
 
         private void ScoreBar_MouseDown(object sender, MouseButtonEventArgs e) {
@@ -202,6 +193,30 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ScoreEditor_OnMouseUp(object sender, MouseButtonEventArgs e) {
             DraggingStartNote = DraggingEndNote = null;
+            if (e.ChangedButton == MouseButton.Right) {
+                var myPosition = e.GetPosition(this);
+                var result = VisualTreeHelper.HitTest(this, myPosition);
+                var element = result.VisualHit as FrameworkElement;
+                element = element?.FindVisualParent<ScoreBar>();
+                if (element != null) {
+                    var hitTestInfo = ((ScoreBar)element).HitTest(e.GetPosition(element));
+                    LastHitTestInfo = hitTestInfo;
+                } else {
+                    ScoreBar s = null;
+                    foreach (var scoreBar in ScoreBars) {
+                        var top = Canvas.GetTop(scoreBar);
+                        var bottom = top + scoreBar.ActualHeight;
+                        if (top <= myPosition.Y && myPosition.Y < bottom) {
+                            s = scoreBar;
+                            break;
+                        }
+                    }
+                    if (s != null) {
+                        var hitTestInfo = s.HitTest(e.GetPosition(s));
+                        LastHitTestInfo = hitTestInfo;
+                    }
+                }
+            }
         }
 
         private void ScoreEditor_OnPreviewMouseDown(object sender, MouseButtonEventArgs e) {

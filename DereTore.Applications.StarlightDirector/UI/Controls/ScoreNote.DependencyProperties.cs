@@ -56,7 +56,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             new PropertyMetadata(DefaultTextStrokeBrush));
 
         public static readonly DependencyProperty RadiusProperty = DependencyProperty.Register(nameof(Radius), typeof(double), typeof(ScoreNote),
-            new PropertyMetadata(0d, OnRadiusChanged));
+            new PropertyMetadata(double.NaN, OnRadiusChanged));
 
         public static readonly DependencyProperty NoteProperty = DependencyProperty.Register(nameof(Note), typeof(Note), typeof(ScoreNote),
             new PropertyMetadata(null));
@@ -65,10 +65,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             new PropertyMetadata(false, OnIsSelectedChanged));
 
         public static readonly DependencyProperty XProperty = DependencyProperty.Register(nameof(X), typeof(double), typeof(ScoreNote),
-          new PropertyMetadata(0d, OnXChanged));
+          new PropertyMetadata(double.NaN, OnXChanged));
 
         public static readonly DependencyProperty YProperty = DependencyProperty.Register(nameof(Y), typeof(double), typeof(ScoreNote),
-          new PropertyMetadata(0d, OnYChanged));
+          new PropertyMetadata(double.NaN, OnYChanged));
 
         private static void OnRadiusChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = obj as ScoreNote;

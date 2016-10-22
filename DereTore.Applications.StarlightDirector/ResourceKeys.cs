@@ -69,6 +69,7 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string ProjectAutoSavedToPromptTemplate;
         public readonly string LoadedProjectFromAutoSavPromptTemplate;
         public readonly string AutoSaveFileFoundPromptTemplate;
+        public readonly string AutoSaveRestorationFailedPromptTemplate;
 
         public readonly string AcbEnvironmentFilesMissing;
         public readonly string AcbEnvironmentLogErrorTemplate;

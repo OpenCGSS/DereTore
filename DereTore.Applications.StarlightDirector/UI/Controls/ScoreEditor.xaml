@@ -10,24 +10,22 @@
              FocusVisualStyle="{x:Null}" Name="Me"
              MouseDown="ScoreEditor_OnMouseDown" MouseUp="ScoreEditor_OnMouseUp"
              PreviewMouseDown="ScoreEditor_OnPreviewMouseDown" PreviewMouseUp="ScoreEditor_OnPreviewMouseUp" PreviewMouseMove="ScoreEditor_OnPreviewMouseMove">
-    <Grid>
-        <Grid Name="WorkingAreaClip" SizeChanged="WorkingAreaClip_OnSizeChanged">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.LayoutTransform>
-                <ScaleTransform ScaleY="-1" ScaleX="1" />
-            </Grid.LayoutTransform>
-            <Grid Grid.Column="1">
-                <Canvas Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
-                <Canvas Name="EditingLineLayer">
-                    <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=LineLayer, Path=SyncNoteLineThickness, Mode=OneWay}"/>
-                </Canvas>
-                <!-- This layout is weird but it is working! It's... magic! -->
-                <local:LineLayer x:Name="LineLayer"/>
-                <Canvas Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
-            </Grid>
-        </Grid>
+    <Grid HorizontalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180"/>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="105"/>
+        </Grid.ColumnDefinitions>
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleY="-1" ScaleX="1" />
+        </Grid.LayoutTransform>
+        <Canvas Grid.Column="1" Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
+        <Canvas Grid.Column="2" Name="SpecialNoteLayer"/>
+        <Canvas Grid.Column="1" Name="EditingLineLayer">
+            <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=LineLayer, Path=SyncNoteLineThickness, Mode=OneWay}"/>
+        </Canvas>
+        <!-- This layout is weird but it is working! It's... magic! -->
+        <local:LineLayer Grid.Column="1" x:Name="LineLayer"/>
+        <Canvas Grid.Column="1" Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
     </Grid>
 </UserControl>

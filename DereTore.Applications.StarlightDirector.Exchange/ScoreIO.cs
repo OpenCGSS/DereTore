@@ -36,7 +36,11 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                             entryCache.Add(entry);
                         }
                     } while (!streamReader.EndOfStream);
-                    DelesteHelper.AnalyzeBeatmap(score, entryCache, warningList);
+                    var delesteState = new DelesteState {
+                        BPM = temporaryProject.Settings.GlobalBpm,
+                        Signature = Constants.DefaultSignature
+                    };
+                    DelesteHelper.AnalyzeBeatmap(score, entryCache, delesteState, warningList);
                     if (warningList.Count > 0) {
                         warnings = warningList.ToArray();
                     }
@@ -47,9 +51,8 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
 
         public static void ExportToDelesteBeatmap(Score score, string fileName) {
             using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
-                // Is there any way to achieve UTF-8 w/o BOM?
                 using (var streamWriter = new StreamWriter(fileStream, Encoding.UTF8)) {
-                    streamWriter.NewLine = Deleste.Constants.NewLine;
+                    streamWriter.NewLine = Constants.NewLine;
                     DelesteHelper.WriteBeatmapHeader(score, streamWriter);
                     DelesteHelper.WriteEntries(score, streamWriter);
                 }

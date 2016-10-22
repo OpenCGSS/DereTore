@@ -4,9 +4,8 @@ using System.Data.SQLite;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Text;
+using System.Linq;
 using DereTore.Applications.StarlightDirector.Entities;
-using Newtonsoft.Json;
 
 namespace DereTore.Applications.StarlightDirector.Exchange {
     public static partial class ProjectIO {
@@ -52,14 +51,16 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             }
             using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
                 connection.Open();
-                SQLiteCommand createTable = null, setValue = null, insertNote = null, insertNoteID = null;
+                SQLiteCommand setValue = null, insertNote = null, insertNoteID = null, insertBarParams = null, insertSpecialNote = null;
 
                 using (var transaction = connection.BeginTransaction()) {
                     // Table structure
-                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_Main, ref createTable);
-                    SQLiteHelper.CreateScoresTables(transaction, ref createTable);
-                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_ScoreSettings, ref createTable);
-                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_Metadata, ref createTable);
+                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_Main);
+                    SQLiteHelper.CreateScoresTable(transaction);
+                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_ScoreSettings);
+                    SQLiteHelper.CreateKeyValueTable(transaction, Names.Table_Metadata);
+                    SQLiteHelper.CreateBarParamsTable(transaction);
+                    SQLiteHelper.CreateSpecialNotesTable(transaction);
 
                     // Main
                     SQLiteHelper.InsertValue(transaction, Names.Table_Main, Names.Field_MusicFileName, project.MusicFileName ?? string.Empty, ref setValue);
@@ -70,13 +71,17 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     foreach (var difficulty in Difficulties) {
                         var score = project.GetScore(difficulty);
                         foreach (var note in score.Notes) {
-                            SQLiteHelper.InsertNoteID(transaction, note.ID, ref insertNoteID);
+                            if (note.IsGamingNote) {
+                                SQLiteHelper.InsertNoteID(transaction, note.ID, ref insertNoteID);
+                            }
                         }
                     }
                     foreach (var difficulty in Difficulties) {
                         var score = project.GetScore(difficulty);
                         foreach (var note in score.Notes) {
-                            SQLiteHelper.InsertNote(transaction, note, ref insertNote);
+                            if (note.IsGamingNote) {
+                                SQLiteHelper.InsertNote(transaction, note, ref insertNote);
+                            }
                         }
                     }
 
@@ -86,6 +91,20 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     SQLiteHelper.InsertValue(transaction, Names.Table_ScoreSettings, Names.Field_StartTimeOffset, settings.StartTimeOffset.ToString(CultureInfo.InvariantCulture), ref setValue);
                     SQLiteHelper.InsertValue(transaction, Names.Table_ScoreSettings, Names.Field_GlobalGridPerSignature, settings.GlobalGridPerSignature.ToString(), ref setValue);
                     SQLiteHelper.InsertValue(transaction, Names.Table_ScoreSettings, Names.Field_GlobalSignature, settings.GlobalSignature.ToString(), ref setValue);
+
+                    // Bar params && Special notes
+                    foreach (var difficulty in Difficulties) {
+                        var score = project.GetScore(difficulty);
+                        foreach (var bar in score.Bars) {
+                            if (bar.Params != null) {
+                                SQLiteHelper.InsertBarParams(transaction, bar, ref insertBarParams);
+                            }
+                        }
+                        foreach (var note in score.Notes.Where(note => !note.IsGamingNote)) {
+                            SQLiteHelper.InsertNoteID(transaction, note.ID, ref insertNoteID);
+                            SQLiteHelper.InsertSpecialNote(transaction, note, ref insertSpecialNote);
+                        }
+                    }
 
                     // Metadata (none for now)
 
@@ -97,7 +116,6 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 insertNoteID?.Dispose();
                 insertNote?.Dispose();
                 setValue?.Dispose();
-                createTable?.Dispose();
                 connection.Close();
             }
             if (!isBackup) {
@@ -142,6 +160,22 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 settings.GlobalGridPerSignature = int.Parse(scoreSettingsValues[Names.Field_GlobalGridPerSignature]);
                 settings.GlobalSignature = int.Parse(scoreSettingsValues[Names.Field_GlobalSignature]);
 
+                // Bar params
+                if (SQLiteHelper.DoesTableExist(connection, Names.Table_BarParams)) {
+                    foreach (var difficulty in Difficulties) {
+                        var score = project.GetScore(difficulty);
+                        ReadBarParams(connection, score);
+                    }
+                }
+
+                // Special notes
+                if (SQLiteHelper.DoesTableExist(connection, Names.Table_SpecialNotes)) {
+                    foreach (var difficulty in Difficulties) {
+                        var score = project.GetScore(difficulty);
+                        ReadSpecialNotes(connection, score);
+                    }
+                }
+
                 // Metadata (none for now)
 
                 // Cleanup
@@ -175,10 +209,9 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
         private static void ReadScore(SQLiteConnection connection, Score score) {
             using (var table = new DataTable()) {
                 SQLiteHelper.ReadNotesTable(connection, score.Difficulty, table);
-
                 foreach (DataRow row in table.Rows) {
                     var id = (int)(long)row[Names.Column_ID];
-                    var bar = (int)(long)row[Names.Column_BarIndex];
+                    var barIndex = (int)(long)row[Names.Column_BarIndex];
                     var grid = (int)(long)row[Names.Column_IndexInGrid];
                     var start = (NotePosition)(long)row[Names.Column_StartPosition];
                     var finish = (NotePosition)(long)row[Names.Column_FinishPosition];
@@ -188,9 +221,9 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     var sync = (int)(long)row[Names.Column_SyncTargetID];
                     var hold = (int)(long)row[Names.Column_HoldTargetID];
 
-                    EnsureBarIndex(score, bar);
-                    var b = score.Bars[bar];
-                    var note = b.AddNoteWithoutUpdatingGlobalNotes(id);
+                    EnsureBarIndex(score, barIndex);
+                    var bar = score.Bars[barIndex];
+                    var note = bar.AddNoteWithoutUpdatingGlobalNotes(id);
                     if (note != null) {
                         note.IndexInGrid = grid;
                         note.StartPosition = start;
@@ -202,6 +235,49 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                         note.HoldTargetID = hold;
                     } else {
                         Debug.Print("Note with id {0} already exists.", id);
+                    }
+                }
+            }
+        }
+
+        private static void ReadBarParams(SQLiteConnection connection, Score score) {
+            using (var table = new DataTable()) {
+                SQLiteHelper.ReadBarParamsTable(connection, score.Difficulty, table);
+                foreach (DataRow row in table.Rows) {
+                    var index = (int)(long)row[Names.Column_BarIndex];
+                    var grid = (int?)(long?)row[Names.Column_GridPerSignature];
+                    var signature = (int?)(long?)row[Names.Column_Signature];
+                    if (index < score.Bars.Count) {
+                        score.Bars[index].Params = new BarParams {
+                            UserDefinedGridPerSignature = grid,
+                            UserDefinedSignature = signature
+                        };
+                    }
+                }
+            }
+        }
+
+        private static void ReadSpecialNotes(SQLiteConnection connection, Score score) {
+            using (var table = new DataTable()) {
+                SQLiteHelper.ReadSpecialNotesTable(connection, score.Difficulty, table);
+                foreach (DataRow row in table.Rows) {
+                    var id = (int)(long)row[Names.Column_ID];
+                    var barIndex = (int)(long)row[Names.Column_BarIndex];
+                    var grid = (int)(long)row[Names.Column_IndexInGrid];
+                    var type = (int)(long)row[Names.Column_NoteType];
+                    var paramsString = (string)row[Names.Column_ParamValues];
+                    if (barIndex < score.Bars.Count) {
+                        var bar = score.Bars[barIndex];
+                        // Special notes are not added during the ReadScores() process, so we call AddNote() rather than AddNoteWithoutUpdatingGlobalNotes().
+                        var note = bar.Notes.FirstOrDefault(n => n.Type == (NoteType)type && n.IndexInGrid == grid);
+                        if (note == null) {
+                            note = bar.AddNote(id);
+                            note.SetSpecialType((NoteType)type);
+                            note.IndexInGrid = grid;
+                            note.ExtraParams = NoteExtraParams.FromDataString(paramsString, note);
+                        } else {
+                            note.ExtraParams.UpdateByDataString(paramsString);
+                        }
                     }
                 }
             }

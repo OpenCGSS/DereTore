@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -60,7 +61,7 @@ namespace DereTore.Applications.StarlightDirector.UI {
                 }
                 e.Handled = true;
             } else {
-                throw new NotSupportedException("ScrollSpeed Attached Property is not attached to an element containing a ScrollViewer.");
+                Debug.Print("ScrollSpeed Attached Property is not attached to an element containing a ScrollViewer.");
             }
         }
 

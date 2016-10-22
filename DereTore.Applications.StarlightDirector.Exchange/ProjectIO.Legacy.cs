@@ -51,11 +51,8 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                         }
                     }
                     if (versionString == null) {
-                        command.Dispose();
-                        command = connection.CreateCommand();
-                        command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'scores';";
-                        value = command.ExecuteScalar();
-                        if (value != DBNull.Value) {
+                        var scoreTableExists = SQLiteHelper.DoesTableExist(connection, Names.Table_Scores);
+                        if (scoreTableExists) {
                             // This is a bug from v0.3.x (maybe also v0.4.x), which occasionally leaves out the version ('vesion') field in 'main' table.
                             versionString = "0.2";
                         }

@@ -96,7 +96,7 @@
                     <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditBarDelete}" Size="Middle" Icon="{StaticResource RibbonIconBarDelete}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Note">
-                    <fluent:Button Header="Add" Command="{x:Static local:MainWindow.CmdEditNoteAdd}" LargeIcon="{StaticResource RibbonIconNoteAdd}"/>
+                    <fluent:Button Header="Add" Command="{x:Static local:MainWindow.CmdEditNoteAdd}" LargeIcon="{StaticResource RibbonIconNoteAdd}" Visibility="Collapsed"/>
                     <fluent:DropDownButton Header="Start Position" Size="Middle" Icon="{StaticResource RibbonIconNoteEdit}">
                         <fluent:MenuItem Header="Left (1)" Command="{x:Static local:MainWindow.CmdEditNoteStartPosition1}"/>
                         <fluent:MenuItem Header="Center Left (2)" Command="{x:Static local:MainWindow.CmdEditNoteStartPosition2}"/>
@@ -152,9 +152,18 @@
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
         <Grid Grid.Row="2" Background="#FF181818">
-            <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="10" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel">
+            <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="10" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
+                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
-                                      ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}"/>
+                                      ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}">
+                    <controls:ScoreEditor.ContextMenu>
+                        <fluent:ContextMenu>
+                            <fluent:MenuItem Header="Add s_pecial note">
+                                <fluent:MenuItem Header="_Variant BPM" Command="{x:Static local:MainWindow.CmdContextAddSpecialNoteVariantBpm}"/>
+                            </fluent:MenuItem>
+                        </fluent:ContextMenu>
+                    </controls:ScoreEditor.ContextMenu>
+                </controls:ScoreEditor>
                 <!--<ScrollBar Grid.Column="1" Name="Scroll" Value="{Binding ElementName=Editor, Path=ScrollOffset, Converter={StaticResource NegateConverter}}"
                        Minimum="{Binding ElementName=Editor, Path=MinimumScrollOffset, Mode=OneWay}"
                        Maximum="{Binding ElementName=Editor, Path=MaximumScrollOffset, Mode=OneWay}"

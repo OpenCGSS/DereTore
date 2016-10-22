@@ -58,7 +58,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty ScoreProperty = DependencyProperty.Register(nameof(Score), typeof(Score), typeof(ScoreEditor),
             new PropertyMetadata(null, OnScoreChanged));
-        
+
         public static readonly DependencyProperty EditModeProperty = DependencyProperty.Register(nameof(EditMode), typeof(EditMode), typeof(ScoreEditor),
             new PropertyMetadata(EditMode.Select));
 
@@ -79,7 +79,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             Debug.Assert(editor != null, "editor != null");
             editor.RecalcEditorLayout();
         }
-        
+
         private static void OnScoreChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;
             Debug.Assert(editor != null, "editor != null");

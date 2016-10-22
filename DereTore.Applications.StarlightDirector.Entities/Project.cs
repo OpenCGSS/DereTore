@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using DereTore.Applications.StarlightDirector.Entities.Extensions;
 using Newtonsoft.Json;
 
 namespace DereTore.Applications.StarlightDirector.Entities {

@@ -8,7 +8,7 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
             var barStartTime = bar.GetStartTime();
             var signature = bar.GetActualSignature();
             var gridCountInBar = bar.GetActualGridPerSignature();
-            var barLength = bar.GetLength();
+            var barLength = bar.GetTimeLength();
             return barStartTime + barLength * (note.IndexInGrid / (double)(signature * gridCountInBar));
         }
 

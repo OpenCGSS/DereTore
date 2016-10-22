@@ -5,27 +5,58 @@ using System.Linq;
 using System.Text;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Entities.Extensions;
+using DereTore.Applications.StarlightDirector.Exchange.Deleste.CommandParameters;
 using DereTore.Applications.StarlightDirector.Exchange.Properties;
 
 namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
     internal static class DelesteHelper {
 
-        public static void AnalyzeBeatmap(Score score, List<DelesteBeatmapEntry> entries, List<string> warnings) {
+        public static void AnalyzeBeatmap(Score score, List<DelesteBeatmapEntry> entries, DelesteState initialState, List<string> warnings) {
             var currentHoldingNotes = new Note[5];
             // key: Deleste Group Number
             // value: (value)
             var lastFlickNotes = new Dictionary<int, Note>();
             var lastBasicFlickNotes = new Dictionary<int, DelesteBasicNote>();
 
+            // Prepare the entry params. This params will affect timing computing.
+            var state = initialState.Clone();
+            var changeBpmCommands = new List<ChangeBpmCommandParameters>();
             foreach (var entry in entries) {
+                if (entry.IsCommand) {
+                    switch (entry.CommandType) {
+                        case DelesteCommand.ChangeBpm:
+                            var parameters = (ChangeBpmCommandParameters)entry.CommandParameter;
+                            var item = changeBpmCommands.Find(p => p.StartMeasureIndex == parameters.StartMeasureIndex);
+                            if (item != null) {
+                                // Command parameter override
+                                item.NewBpm = parameters.NewBpm;
+                            } else {
+                                changeBpmCommands.Add(parameters.Clone());
+                            }
+                            state.BPM = parameters.NewBpm;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                } else {
+                    // Reset entry state.
+                    entry.BPM = state.BPM;
+                    entry.Signature = state.Signature;
+                }
+            }
+
+            // Here is where the main analysis happens.
+            foreach (var entry in entries) {
+                if (entry.IsCommand) {
+                    continue;
+                }
+
                 if (entry.MeasureIndex + 1 > score.Bars.Count) {
                     for (var i = score.Bars.Count; i < entry.MeasureIndex + 1; ++i) {
                         score.Bars.Add(new Bar(score, i));
                     }
                 }
                 var bar = score.Bars[entry.MeasureIndex];
-                var bpm = bar.GetActualBpm();
-                var timePerBeat = DirectorHelper.BpmToSeconds(bpm);
                 var totalBarGridCount = bar.GetTotalGridCount();
 
                 if (entry.FullLength > 0 && !totalBarGridCount.IsMultipleOf(entry.FullLength)) {
@@ -109,16 +140,8 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
                             lastBasicFlickNotes[entry.GroupID] = basicNote;
                             continue;
                         }
-                        // TODO: Here I use a simple way to calculate time difference. It only applies to constant BPM.
-                        double timeDiff;
-                        if (basicNote.Entry.MeasureIndex != lastBasicFlickNotes[entry.GroupID].Entry.MeasureIndex) {
-                            timeDiff = timePerBeat * Constants.DefaultSignature * (basicNote.Entry.MeasureIndex - lastBasicFlickNotes[entry.GroupID].Entry.MeasureIndex - 1);
-                            timeDiff += timePerBeat * Constants.DefaultSignature * ((float)basicNote.IndexInMeasure / entry.FullLength);
-                            timeDiff += timePerBeat * Constants.DefaultSignature * (1 - (float)lastBasicFlickNotes[entry.GroupID].IndexInMeasure / lastBasicFlickNotes[entry.GroupID].Entry.FullLength);
-                        } else {
-                            timeDiff = timePerBeat * Constants.DefaultSignature * ((float)basicNote.IndexInMeasure / entry.FullLength - (float)lastBasicFlickNotes[entry.GroupID].IndexInMeasure / lastBasicFlickNotes[entry.GroupID].Entry.FullLength);
-                        }
                         // > ※ただし、1000msを超えると接続されません
+                        var timeDiff = CalculateTimingPeriodBetweenNotes(entries, basicNote, lastBasicFlickNotes[entry.GroupID], entry.FullLength);
                         if (timeDiff > 1) {
                             lastFlickNotes[entry.GroupID] = note;
                             lastBasicFlickNotes[entry.GroupID] = basicNote;
@@ -129,6 +152,22 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
                         lastBasicFlickNotes[entry.GroupID] = basicNote;
                     }
                 }
+            }
+
+            // Add variant bpm notes to the bar.
+            changeBpmCommands.Sort((p1, p2) => p1.StartMeasureIndex.CompareTo(p2.StartMeasureIndex));
+            foreach (var p in changeBpmCommands) {
+                if (p.StartMeasureIndex >= score.Bars.Count) {
+                    break;
+                }
+                var bar = score.Bars[p.StartMeasureIndex];
+                var vbNote = bar.AddNote();
+                vbNote.IndexInGrid = 0;
+                vbNote.SetSpecialType(NoteType.VariantBpm);
+                vbNote.ExtraParams = new NoteExtraParams {
+                    Note = vbNote,
+                    NewBpm = p.NewBpm
+                };
             }
 
             // Fix sync notes.
@@ -168,19 +207,10 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
                 return null;
             }
 
-            if (line.StartsWith(Constants.BpmCommand)) {
-                var dataText = line.Substring(Constants.BpmCommand.Length + 1);
-                var bpm = double.Parse(dataText);
-                temporaryProject.Settings.GlobalBpm = bpm;
-                return null;
-            }
-            if (line.StartsWith(Constants.OffsetCommand)) {
-                var dataText = line.Substring(Constants.OffsetCommand.Length + 1);
-                var offset = double.Parse(dataText);
-                offset = Math.Abs(offset);
-                // msec -> sec
-                temporaryProject.Settings.StartTimeOffset = offset / 1000;
-                return null;
+            DelesteBeatmapEntry entry;
+            var isCommand = HandleCommands(line, temporaryProject, out entry);
+            if (isCommand) {
+                return entry;
             }
             if (line.Length < 2 || !char.IsNumber(line, 1)) {
                 // Not a beatmap entry. May be metadata.
@@ -227,7 +257,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
                 warnings.Add(warning);
                 return null;
             }
-            var entry = new DelesteBeatmapEntry();
+            entry = new DelesteBeatmapEntry();
             entry.GroupID = Convert.ToInt32(groupNumberString);
             entry.MeasureIndex = measureIndex;
             entry.FullLength = noteDistribution.Length;
@@ -251,9 +281,8 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
 
         public static Encoding TryDetectBeatmapEncoding(string fileName) {
             using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
-                // Fallback to default platform encoding.
-                using (var streamReader = new StreamReader(fileStream, Encoding.Default)) {
-                    string line = string.Empty;
+                using (var streamReader = new StreamReader(fileStream, Encoding.UTF8)) {
+                    var line = string.Empty;
                     if (!streamReader.EndOfStream) {
                         do {
                             line = streamReader.ReadLine();
@@ -365,6 +394,70 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private static bool HandleCommands(string line, Project temporaryProject, out DelesteBeatmapEntry entry) {
+            entry = null;
+            if (line.StartsWith(Constants.BpmCommand)) {
+                var dataText = line.Substring(Constants.BpmCommand.Length + 1);
+                var bpm = double.Parse(dataText);
+                temporaryProject.Settings.GlobalBpm = bpm;
+                return true;
+            }
+            if (line.StartsWith(Constants.OffsetCommand)) {
+                var dataText = line.Substring(Constants.OffsetCommand.Length + 1);
+                var offset = double.Parse(dataText);
+                offset = Math.Abs(offset);
+                // msec -> sec
+                temporaryProject.Settings.StartTimeOffset = offset / 1000;
+                return true;
+            }
+            if (line.StartsWith(Constants.ChangeBpmCommand)) {
+                var dataText = line.Substring(Constants.ChangeBpmCommand.Length + 1);
+                var commaSplittedValues = dataText.Split(',');
+                var measureIndex = double.Parse(commaSplittedValues[0]);
+                var newBpm = double.Parse(commaSplittedValues[1]);
+                entry = new DelesteBeatmapEntry {
+                    IsCommand = true,
+                    CommandType = DelesteCommand.ChangeBpm,
+                    CommandParameter = new ChangeBpmCommandParameters {
+                        StartMeasureIndex = (int)measureIndex,
+                        NewBpm = newBpm
+                    }
+                };
+                return true;
+            }
+            return false;
+        }
+
+        private static double CalculateTimingPeriodBetweenNotes(List<DelesteBeatmapEntry> entries, DelesteBasicNote currentBasicFlickNote, DelesteBasicNote lastBasicFlickNote, int fullLength) {
+            double timeDiff;
+            double timePerBeat;
+            DelesteBeatmapEntry entry;
+            if (currentBasicFlickNote.Entry.MeasureIndex != lastBasicFlickNote.Entry.MeasureIndex) {
+                var startIndex = entries.IndexOf(lastBasicFlickNote.Entry);
+                var endIndex = entries.IndexOf(currentBasicFlickNote.Entry, startIndex + 1);
+
+                entry = lastBasicFlickNote.Entry;
+                timePerBeat = DirectorHelper.BpmToSeconds(entry.BPM);
+                timeDiff = timePerBeat * entry.Signature * (1 - (float)lastBasicFlickNote.IndexInMeasure / lastBasicFlickNote.Entry.FullLength);
+                for (var i = startIndex + 1; i < endIndex; ++i) {
+                    entry = entries[i];
+                    if (entry.IsCommand) {
+                        continue;
+                    }
+                    timePerBeat = DirectorHelper.BpmToSeconds(entry.BPM);
+                    timeDiff += timePerBeat * entry.Signature;
+                }
+                entry = currentBasicFlickNote.Entry;
+                timePerBeat = DirectorHelper.BpmToSeconds(entry.BPM);
+                timeDiff += timePerBeat * entry.Signature * ((float)currentBasicFlickNote.IndexInMeasure / fullLength);
+            } else {
+                entry = currentBasicFlickNote.Entry;
+                timePerBeat = DirectorHelper.BpmToSeconds(entry.BPM);
+                timeDiff = timePerBeat * entry.Signature * ((float)currentBasicFlickNote.IndexInMeasure / fullLength - (float)lastBasicFlickNote.IndexInMeasure / lastBasicFlickNote.Entry.FullLength);
+            }
+            return timeDiff;
         }
 
     }

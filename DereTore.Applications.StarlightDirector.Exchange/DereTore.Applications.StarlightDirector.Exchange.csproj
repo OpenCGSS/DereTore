@@ -69,13 +69,16 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Deleste\CommandParameters\ChangeBpmCommandParameters.cs" />
     <Compile Include="Deleste\Constants.cs" />
     <Compile Include="Deleste\DelesteBasicNote.cs" />
     <Compile Include="Deleste\DelesteBeatmapEntry.cs" />
+    <Compile Include="Deleste\DelesteCommand.cs" />
     <Compile Include="Deleste\DelesteGroupID.cs" />
     <Compile Include="Deleste\DelesteHelper.cs" />
     <Compile Include="Deleste\DelesteHelperExtensions.cs" />
     <Compile Include="Deleste\DelesteNoteType.cs" />
+    <Compile Include="Deleste\DelesteState.cs" />
     <Compile Include="ProjectIO.cs" />
     <Compile Include="ProjectIO.Legacy.cs" />
     <Compile Include="ProjectIO.Names.cs" />
@@ -111,6 +114,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.103\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.103\build\net40\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

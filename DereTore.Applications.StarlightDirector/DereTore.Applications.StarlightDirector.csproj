@@ -170,6 +170,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Controls\SpecialNotePointer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -220,6 +224,11 @@
     <Compile Include="UI\Controls\ScoreBar.TextAndLocation.cs" />
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\SpecialNotePointer.Commands.cs" />
+    <Compile Include="UI\Controls\SpecialNotePointer.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\SpecialNotePointer.xaml.cs">
+      <DependentUpon>SpecialNotePointer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\NullableBooleanToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\NotePositionToTextConverter.cs" />
@@ -253,6 +262,7 @@
     <Compile Include="UI\ScoreBarHitTestInfo.cs" />
     <Compile Include="UI\Windows\MainWindow.AutoSave.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Background.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.ContextMenu.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Misc.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.Bar.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.cs" />

@@ -170,7 +170,14 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public bool IsTap => Type == NoteType.TapOrFlick && FlickType == NoteFlickType.Tap;
 
-        public bool IsGamingNote => Type == NoteType.TapOrFlick || Type == NoteType.Hold;
+        public bool IsGamingNote => IsTypeGaming(Type);
+
+        public bool IsSpecialNote => IsTypeSpecial(Type);
+
+        public NoteExtraParams ExtraParams {
+            get { return (NoteExtraParams)GetValue(ExtraParamsProperty); }
+            set { SetValue(ExtraParamsProperty, value); }
+        }
 
         public static readonly DependencyProperty TypeProperty = DependencyProperty.Register(nameof(Type), typeof(NoteType), typeof(Note),
             new PropertyMetadata(NoteType.Invalid, OnTypeChanged));
@@ -193,6 +200,9 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty FinishPositionProperty = DependencyProperty.Register(nameof(FinishPosition), typeof(NotePosition), typeof(Note),
             new PropertyMetadata(NotePosition.Nowhere));
 
+        public static readonly DependencyProperty ExtraParamsProperty = DependencyProperty.Register(nameof(ExtraParams), typeof(NoteExtraParams), typeof(Note),
+            new PropertyMetadata(null));
+
         public static readonly Comparison<Note> TimingComparison = (x, y) => {
             if (x == null) {
                 throw new ArgumentNullException(nameof(x));
@@ -203,10 +213,15 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             if (x.Equals(y)) {
                 return 0;
             }
-            if (x.Bar == y.Bar) {
-                return x.IndexInGrid.CompareTo(y.IndexInGrid);
-            } else {
+            if (x.Bar != y.Bar) {
                 return x.Bar.Index.CompareTo(y.Bar.Index);
+            }
+            var r = x.IndexInGrid.CompareTo(y.IndexInGrid);
+            if (r == 0 && x.Type != y.Type && (x.Type == NoteType.VariantBpm || y.Type == NoteType.VariantBpm)) {
+                // The Variant BPM note is always placed at the end on the same grid line.
+                return x.Type == NoteType.VariantBpm ? 1 : -1;
+            } else {
+                return r;
             }
         };
 
@@ -229,6 +244,14 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static bool operator <(Note left, Note right) {
             return TimingComparison(left, right) < 0;
+        }
+
+        public static bool IsTypeGaming(NoteType type) {
+            return type == NoteType.TapOrFlick || type == NoteType.Hold;
+        }
+
+        public static bool IsTypeSpecial(NoteType type) {
+            return type == NoteType.VariantBpm;
         }
 
         public static void ConnectSync(Note n1, Note n2) {
@@ -332,6 +355,16 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
             FlickType = NoteFlickType.Tap;
             HoldTarget = null;
+        }
+
+        internal void SetSpecialType(NoteType type) {
+            switch (type) {
+                case NoteType.VariantBpm:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type));
+            }
+            Type = type;
         }
 
         private static void OnTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {

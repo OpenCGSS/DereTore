@@ -31,7 +31,8 @@
     <system:String x:Key="BdbBuildingCompletePromptTemplate2">Project is built and written to BDB file '{0}'. Created an LZ4-compressed copy '{1}'.</system:String>
     <system:String x:Key="ProjectAutoSavedToPromptTemplate">The project is auto saved to '{0}'.</system:String>
     <system:String x:Key="LoadedProjectFromAutoSavPromptTemplate">Loaded project from auto save file '{0}'.</system:String>
-    <system:String x:Key="AutoSaveFileFoundPromptTemplate">An auto save project was found at '{0}'. It usually means an error occurred during last edition. Do you want to load it?</system:String>
+    <system:String x:Key="AutoSaveFileFoundPromptTemplate">An autosave project was found at '{0}'. It usually means an error occurred during last edition. Do you want to load it?</system:String>
+    <system:String x:Key="AutoSaveRestorationFailedPromptTemplate">An error occurred while trying to restore from an autosave file. This means that autosave file is corrupted. A new project will be loaded. Detailed information: {0}</system:String>
 
     <system:String x:Key="AcbEnvironmentFilesMissing">There are missing file(s):</system:String>
     <system:String x:Key="AcbEnvironmentLogErrorTemplate">ERROR: {0}</system:String>

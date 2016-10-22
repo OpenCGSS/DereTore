@@ -1,4 +1,5 @@
-﻿using System.Collections.Specialized;
+﻿using System;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.SQLite;
 using DereTore.Applications.StarlightDirector.Entities;
@@ -7,6 +8,49 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
     static partial class ProjectIO {
 
         private static class SQLiteHelper {
+
+            public static bool DoesTableExist(SQLiteTransaction transaction, string tableName) {
+                return DoesTableExist(transaction.Connection, tableName);
+            }
+
+            public static bool DoesTableExist(SQLiteConnection connection, string tableName) {
+                using (var command = connection.CreateCommand()) {
+                    command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = @tableName;";
+                    command.Parameters.Add("tableName", DbType.AnsiString).Value = tableName;
+                    var value = command.ExecuteScalar();
+                    return value != DBNull.Value;
+                }
+            }
+
+            public static bool DoesColumnExist(SQLiteTransaction transaction, string tableName, string columnName) {
+                return DoesColumnExist(transaction.Connection, tableName, columnName);
+            }
+
+            public static bool DoesColumnExist(SQLiteConnection connection, string tableName, string columnName) {
+                using (var command = connection.CreateCommand()) {
+                    command.CommandText = "SELECT name FROM sqlite_master WHERE type = 'table' AND name = @tableName;";
+                    command.Parameters.Add("tableName", DbType.AnsiString).Value = tableName;
+                    var value = command.ExecuteScalar();
+                    if (value == DBNull.Value) {
+                        return false;
+                    }
+                    // TODO: Is it possible to use command parameters?
+                    command.CommandText = $"PRAGMA table_info('{tableName}');";
+                    command.Parameters.RemoveAt("tableName");
+                    using (var reader = command.ExecuteReader()) {
+                        while (reader.NextResult()) {
+                            while (reader.Read()) {
+                                var ordinal = reader.GetOrdinal("name");
+                                value = reader.GetValue(ordinal);
+                                if ((string)value == columnName) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+                return false;
+            }
 
             public static void SetValue(SQLiteTransaction transaction, string tableName, string key, string value, bool creatingNewDatabase, ref SQLiteCommand command) {
                 SetValue(transaction.Connection, tableName, key, value, creatingNewDatabase, ref command);
@@ -92,51 +136,75 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 return result;
             }
 
-            public static void CreateKeyValueTable(SQLiteTransaction transaction, string tableName, ref SQLiteCommand command) {
-                CreateKeyValueTable(transaction.Connection, tableName, ref command);
+            public static void CreateKeyValueTable(SQLiteTransaction transaction, string tableName) {
+                CreateKeyValueTable(transaction.Connection, tableName);
             }
 
-            public static void CreateKeyValueTable(SQLiteConnection connection, string tableName, ref SQLiteCommand command) {
-                if (command == null) {
-                    command = connection.CreateCommand();
+            public static void CreateKeyValueTable(SQLiteConnection connection, string tableName) {
+                using (var command = connection.CreateCommand()) {
+                    // Have to use LONGTEXT (2^31-1) rather than TEXT (32768).
+                    command.CommandText = $"CREATE TABLE {tableName} (key LONGTEXT PRIMARY KEY NOT NULL, value LONGTEXT NOT NULL);";
+                    command.ExecuteNonQuery();
                 }
-                // Have to use LONGTEXT (2^31-1) rather than TEXT (32768).
-                command.CommandText = $"CREATE TABLE {tableName} (key LONGTEXT PRIMARY KEY NOT NULL, value LONGTEXT NOT NULL);";
-                command.ExecuteNonQuery();
             }
 
-            public static void CreateScoresTables(SQLiteTransaction transaction, ref SQLiteCommand command) {
-                CreateScoresTables(transaction.Connection, ref command);
+            public static void CreateBarParamsTable(SQLiteTransaction transaction) {
+                CreateBarParamsTable(transaction.Connection);
             }
 
-            public static void CreateScoresTables(SQLiteConnection connection, ref SQLiteCommand command) {
-                if (command == null) {
-                    command = connection.CreateCommand();
+            public static void CreateBarParamsTable(SQLiteConnection connection) {
+                using (var command = connection.CreateCommand()) {
+                    command.CommandText = $@"CREATE TABLE {Names.Table_BarParams} (
+{Names.Column_Difficulty} INTEGER NOT NULL, {Names.Column_BarIndex} INTEGER NOT NULL, {Names.Column_GridPerSignature} INTEGER, {Names.Column_Signature} INTEGER,
+PRIMARY KEY ({Names.Column_Difficulty}, {Names.Column_BarIndex}));";
+                    command.ExecuteNonQuery();
                 }
-                command.CommandText = $"CREATE TABLE {Names.Table_NoteIDs} ({Names.Column_ID} INTEGER NOT NULL PRIMARY KEY);";
-                command.ExecuteNonQuery();
-                command.CommandText = $@"CREATE TABLE {Names.Table_Notes} (
+            }
+
+            public static void CreateSpecialNotesTable(SQLiteTransaction transaction) {
+                CreateSpecialNotesTable(transaction.Connection);
+            }
+
+            public static void CreateSpecialNotesTable(SQLiteConnection connection) {
+                using (var command = connection.CreateCommand()) {
+                    command.CommandText = $@"CREATE TABLE {Names.Table_SpecialNotes} (
+{Names.Column_ID} INTEGER NOT NULL PRIMARY KEY, {Names.Column_Difficulty} INTEGER NOT NULL, {Names.Column_BarIndex} INTEGER NOT NULL, {Names.Column_IndexInGrid} INTEGER NOT NULL,
+{Names.Column_NoteType} INTEGER NOT NULL, {Names.Column_ParamValues} TEXT NOT NULL,
+FOREIGN KEY ({Names.Column_ID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}));";
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            public static void CreateScoresTable(SQLiteTransaction transaction) {
+                CreateScoresTable(transaction.Connection);
+            }
+
+            public static void CreateScoresTable(SQLiteConnection connection) {
+                using (var command = connection.CreateCommand()) {
+                    command.CommandText = $"CREATE TABLE {Names.Table_NoteIDs} ({Names.Column_ID} INTEGER NOT NULL PRIMARY KEY);";
+                    command.ExecuteNonQuery();
+                    command.CommandText = $@"CREATE TABLE {Names.Table_Notes} (
 {Names.Column_ID} INTEGER PRIMARY KEY NOT NULL, {Names.Column_Difficulty} INTEGER NOT NULL, {Names.Column_BarIndex} INTEGER NOT NULL, {Names.Column_IndexInGrid} INTEGER NOT NULL,
 {Names.Column_StartPosition} INTEGER NOT NULL, {Names.Column_FinishPosition} INTEGER NOT NULL, {Names.Column_FlickType} INTEGER NOT NULL,
 {Names.Column_PrevFlickNoteID} INTEGER NOT NULL, {Names.Column_NextFlickNoteID} NOT NULL, {Names.Column_SyncTargetID} INTEGER NOT NULL, {Names.Column_HoldTargetID} INTEGER NOT NULL,
 FOREIGN KEY ({Names.Column_ID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}), FOREIGN KEY ({Names.Column_PrevFlickNoteID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}),
 FOREIGN KEY ({Names.Column_NextFlickNoteID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}), FOREIGN KEY ({Names.Column_SyncTargetID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}),
 FOREIGN KEY ({Names.Column_HoldTargetID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}));";
-                command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
+                }
             }
 
-            public static void InsertNoteID(SQLiteTransaction transaction, int index, ref SQLiteCommand command) {
-                InsertNoteID(transaction.Connection, index, ref command);
+            public static void InsertNoteID(SQLiteTransaction transaction, int id, ref SQLiteCommand command) {
+                InsertNoteID(transaction.Connection, id, ref command);
             }
 
-            public static void InsertNoteID(SQLiteConnection connection, int index, ref SQLiteCommand command) {
+            public static void InsertNoteID(SQLiteConnection connection, int id, ref SQLiteCommand command) {
                 if (command == null) {
                     command = connection.CreateCommand();
                     command.CommandText = $"INSERT INTO {Names.Table_NoteIDs} ({Names.Column_ID}) VALUES (@id);";
                     command.Parameters.Add("id", DbType.Int32);
                 }
-                // Have to use LONGTEXT (2^31-1) rather than TEXT (32768).
-                command.Parameters["id"].Value = index;
+                command.Parameters["id"].Value = id;
                 command.ExecuteNonQuery();
             }
 
@@ -177,12 +245,79 @@ FOREIGN KEY ({Names.Column_HoldTargetID}) REFERENCES {Names.Table_NoteIDs}({Name
                 command.ExecuteNonQuery();
             }
 
+            public static void InsertBarParams(SQLiteTransaction transaction, Bar bar, ref SQLiteCommand command) {
+                InsertBarParams(transaction.Connection, bar, ref command);
+            }
+
+            public static void InsertBarParams(SQLiteConnection connection, Bar bar, ref SQLiteCommand command) {
+                if (bar.Params == null) {
+                    return;
+                }
+                if (command == null) {
+                    command = connection.CreateCommand();
+                    command.CommandText = $"INSERT INTO {Names.Table_BarParams} ({Names.Column_Difficulty}, {Names.Column_BarIndex}, {Names.Column_GridPerSignature}, {Names.Column_Signature}) VALUES (@difficulty, @index, @grid, @signature);";
+                    command.Parameters.Add("difficulty", DbType.Int32);
+                    command.Parameters.Add("index", DbType.Int32);
+                    command.Parameters.Add("grid", DbType.Int32);
+                    command.Parameters.Add("signature", DbType.Int32);
+                }
+                command.Parameters["difficulty"].Value = (int)bar.Score.Difficulty;
+                command.Parameters["index"].Value = bar.Index;
+                command.Parameters["grid"].Value = bar.Params.UserDefinedGridPerSignature;
+                command.Parameters["signature"].Value = bar.Params.UserDefinedSignature;
+                command.ExecuteNonQuery();
+            }
+
+            public static void InsertSpecialNote(SQLiteTransaction transaction, Note note, ref SQLiteCommand command) {
+                InsertSpecialNote(transaction.Connection, note, ref command);
+            }
+
+            public static void InsertSpecialNote(SQLiteConnection connection, Note note, ref SQLiteCommand command) {
+                if (command == null) {
+                    command = connection.CreateCommand();
+                    command.CommandText = $"INSERT INTO {Names.Table_SpecialNotes} ({Names.Column_ID}, {Names.Column_Difficulty}, {Names.Column_BarIndex}, {Names.Column_IndexInGrid}, {Names.Column_NoteType}, {Names.Column_ParamValues}) VALUES (@id, @diff, @bar, @grid, @type, @pv);";
+                    command.Parameters.Add("id", DbType.Int32);
+                    command.Parameters.Add("diff", DbType.Int32);
+                    command.Parameters.Add("bar", DbType.Int32);
+                    command.Parameters.Add("grid", DbType.Int32);
+                    command.Parameters.Add("type", DbType.Int32);
+                    command.Parameters.Add("pv", DbType.AnsiString);
+                }
+                command.Parameters["id"].Value = note.ID;
+                command.Parameters["diff"].Value = note.Bar.Score.Difficulty;
+                command.Parameters["bar"].Value = note.Bar.Index;
+                command.Parameters["grid"].Value = note.IndexInGrid;
+                command.Parameters["type"].Value = (int)note.Type;
+                command.Parameters["pv"].Value = note.ExtraParams.GetDataString();
+                command.ExecuteNonQuery();
+            }
+
             public static void ReadNotesTable(SQLiteConnection connection, Difficulty difficulty, DataTable table) {
                 using (var command = connection.CreateCommand()) {
                     command.CommandText = $"SELECT * FROM {Names.Table_Notes} WHERE {Names.Column_Difficulty} = @difficulty;";
                     command.Parameters.Add("difficulty", DbType.Int32).Value = (int)difficulty;
                     using (var adapter = new SQLiteDataAdapter(command)) {
                         adapter.Fill(table);
+                    }
+                }
+            }
+
+            public static void ReadBarParamsTable(SQLiteConnection connection, Difficulty difficulty, DataTable dataTable) {
+                using (var command = connection.CreateCommand()) {
+                    command.CommandText = $"SELECT * FROM {Names.Table_BarParams} WHERE {Names.Column_Difficulty} = @difficulty;";
+                    command.Parameters.Add("difficulty", DbType.Int32).Value = (int)difficulty;
+                    using (var adapter = new SQLiteDataAdapter(command)) {
+                        adapter.Fill(dataTable);
+                    }
+                }
+            }
+
+            public static void ReadSpecialNotesTable(SQLiteConnection connection, Difficulty difficulty, DataTable dataTable) {
+                using (var command = connection.CreateCommand()) {
+                    command.CommandText = $"SELECT * FROM {Names.Table_SpecialNotes} WHERE {Names.Column_Difficulty} = @difficulty;";
+                    command.Parameters.Add("difficulty", DbType.Int32).Value = (int)difficulty;
+                    using (var adapter = new SQLiteDataAdapter(command)) {
+                        adapter.Fill(dataTable);
                     }
                 }
             }

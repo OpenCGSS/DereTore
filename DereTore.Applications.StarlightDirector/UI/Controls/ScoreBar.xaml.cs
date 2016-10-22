@@ -33,31 +33,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var gridCrossingPosition = new Point(column * unitWidth, row * unitHeight);
             var distance = Point.Subtract(gridCrossingPosition, destPoint);
             if (distance.Length > 2 * NoteRadius) {
-                return new ScoreBarHitTestInfo(this, Bar, new Point(), -1, -1, false, false);
+                return new ScoreBarHitTestInfo(this, Bar, new Point(), column, row, false, false);
             }
             if (column < 0 || column > columnCount - 1) {
-                return new ScoreBarHitTestInfo(this, Bar, new Point(), -1, -1, false, false);
+                return new ScoreBarHitTestInfo(this, Bar, new Point(), column, row, false, false);
             }
             if (row < 0 || row >= Bar.GetTotalGridCount()) {
-                return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, -1, -1, true, false);
+                return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, true, false);
             }
             return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, false, true);
-        }
-
-        public void SetGlobalBpm(double bpm) {
-            Bar.SquashParams();
-            if (Bar.Params == null) {
-                UpdateBpmText(bpm);
-            }
-        }
-
-        public void SetPrivateBpm(double bpm) {
-            var bar = Bar;
-            if (bar.Params == null) {
-                bar.Params = new BarParams();
-            }
-            bar.Params.UserDefinedBpm = bpm;
-            UpdateBpmText(bpm);
         }
 
         public void UpdateBarTimeText() {
@@ -77,15 +61,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public void UpdateBarIndexText(int newIndex) {
             // TODO: Use binding.
             MeasureLabel.Text = (newIndex + 1).ToString();
-        }
-
-        public void UpdateBpmText() {
-            UpdateBpmText(Bar.GetActualBpm());
-        }
-
-        public void UpdateBpmText(double newBpm) {
-            // TODO: Use binding.
-            BpmLabel.Text = newBpm.ToString("F3");
         }
 
         public void ZoomIn() {

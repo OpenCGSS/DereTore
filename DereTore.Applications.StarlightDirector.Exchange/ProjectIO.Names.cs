@@ -8,6 +8,8 @@
             public static readonly string Table_Metadata = "metadata";
             public static readonly string Table_NoteIDs = "note_ids";
             public static readonly string Table_Notes = "notes";
+            public static readonly string Table_BarParams = "bar_params";
+            public static readonly string Table_SpecialNotes = "special_notes";
 
             public static readonly string Field_MusicFileName = "music_file_name";
             public static readonly string Field_Version = "version";
@@ -28,6 +30,10 @@
             public static readonly string Column_NextFlickNoteID = "next_flick_note_id";
             public static readonly string Column_SyncTargetID = "sync_target_id";
             public static readonly string Column_HoldTargetID = "hold_target_id";
+            public static readonly string Column_GridPerSignature = "grid_per_signature";
+            public static readonly string Column_Signature = "signature";
+            public static readonly string Column_NoteType = "note_type";
+            public static readonly string Column_ParamValues = "param_values";
 
             // Legacy. Do not use.
             public static readonly string Table_Scores = "scores";

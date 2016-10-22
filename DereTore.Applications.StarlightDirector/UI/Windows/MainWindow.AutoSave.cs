@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using DereTore.Applications.StarlightDirector.Entities;
@@ -39,7 +40,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             var files = directory.GetFiles();
             foreach (var fileInfo in files) {
                 if (fileInfo.Exists) {
-                    fileInfo.Delete();
+                    try {
+                        // It happens sometimes. E.g., when Starlight Director is writing the autosave file at the same time.
+                        fileInfo.Delete();
+                    } catch (IOException ex) {
+                        MessageBox.Show(ex.Message, App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    }
                 }
             }
         }
@@ -54,13 +60,24 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             if (fileInfo == null) {
                 return;
             }
-            var project = ProjectIO.Load(fileInfo.FullName);
+            Project project;
+            string format, message;
+            try {
+                project = ProjectIO.Load(fileInfo.FullName);
+            } catch (Exception ex) {
+                // In case the autosave also failed.
+                var detailedMessage = ex.Message + Environment.NewLine + ex.StackTrace;
+                format = Application.Current.FindResource<string>(App.ResourceKeys.AutoSaveRestorationFailedPromptTemplate);
+                message = string.Format(format, detailedMessage);
+                MessageBox.Show(message, App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                project = new Project();
+            }
             Project = Editor.Project = Project.Current = project;
             project.IsChanged = true;
             project.SaveFileName = null;
             Editor.Score = project.GetScore(project.Difficulty);
-            var format = Application.Current.FindResource<string>(App.ResourceKeys.LoadedProjectFromAutoSavPromptTemplate);
-            var message = string.Format(format, fileInfo.FullName);
+            format = Application.Current.FindResource<string>(App.ResourceKeys.LoadedProjectFromAutoSavPromptTemplate);
+            message = string.Format(format, fileInfo.FullName);
             ShowTemporaryMessage(message);
         }
 

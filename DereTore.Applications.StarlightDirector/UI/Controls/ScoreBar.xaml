@@ -32,8 +32,6 @@
                 <TextBlock Style="{StaticResource TextBlockMargin}" Foreground="White">
                 <Bold><Run>Measure:</Run></Bold><LineBreak/>
                 <Run Name="MeasureLabel">233</Run><LineBreak/>
-                <Bold><Run>BPM:</Run></Bold><LineBreak/>
-                <Run Name="BpmLabel">233</Run><LineBreak/>
                 <Bold><Run>Time:</Run></Bold><LineBreak/>
                 <Run Name="BarTimeLabel">00:00.000</Run>
                 </TextBlock>
