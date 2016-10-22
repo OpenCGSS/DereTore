@@ -28,9 +28,9 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
                 var anyVariantBpm = bar.Notes.Any(note => note.Type == NoteType.VariantBpm);
                 double barTimeLength;
                 if (anyVariantBpm) {
-                    barTimeLength = CompileBarConstantBpm(bar, barTimeStart, compiledNotes);
-                } else {
                     barTimeLength = CompileBarVariantBpm(bar, barTimeStart, compiledNotes);
+                } else {
+                    barTimeLength = CompileBarConstantBpm(bar, barTimeStart, compiledNotes);
                 }
                 barTimeStart += barTimeLength;
             }
