@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:entities="clr-namespace:DereTore.Applications.StarlightDirector.Entities;assembly=DereTore.Applications.StarlightDirector.Entities"
+             xmlns:dereTore="clr-namespace:DereTore;assembly=DereTore.Common"
+             xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
              mc:Ignorable="d"
              d:DesignHeight="30" d:DesignWidth="30"
              Name="Me"
@@ -21,11 +23,35 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="8"/>
             </Grid.ColumnDefinitions>
-            <Ellipse Grid.Row="0" Grid.Column="2" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
-            <Ellipse Grid.Row="0" Grid.Column="0" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
-            <Ellipse Grid.Row="2" Grid.Column="0" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            <Grid Grid.Row="0" Grid.Column="2" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+                <Ellipse Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="0" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+                <Ellipse Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="0" Visibility="{Binding Source={x:Static dereTore:DereToreHelper.IsDebug}, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
+                <Ellipse Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+            </Grid>
             <TextBlock Grid.Row="2" Grid.Column="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=Me, Path=TextStroke, Mode=OneWay}" RenderTransformOrigin="0.5 0.5"
                            Text="{Binding ElementName=Me, Path=Note.StartPosition, Converter={StaticResource NotePositionToTextConverter}, Mode=OneWay}">
+                <TextBlock.Visibility>
+                    <MultiBinding>
+                        <MultiBinding.Converter>
+                            <converters:MultiValueConverterGroup>
+                                <converters:EquityConverter/>
+                                <converters:NullableBooleanToVisibilityConverter/>
+                            </converters:MultiValueConverterGroup>
+                        </MultiBinding.Converter>
+                        <MultiBinding.ConverterParameter>
+                            <converters:ConverterGroupParameters>
+                                <x:Null/>
+                                <x:Static Member="converters:NullableBooleanToVisibilityConverter.Negate"/>
+                            </converters:ConverterGroupParameters>
+                        </MultiBinding.ConverterParameter>
+                        <Binding ElementName="Me" Path="Note.StartPosition"/>
+                        <Binding ElementName="Me" Path="Note.FinishPosition"/>
+                    </MultiBinding>
+                </TextBlock.Visibility>
                 <TextBlock.RenderTransform>
                     <ScaleTransform ScaleX="1" ScaleY="-1"/>
                 </TextBlock.RenderTransform>

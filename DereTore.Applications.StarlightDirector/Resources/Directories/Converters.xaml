@@ -11,4 +11,5 @@
     <converters:NoteFlickTypeToVisibilityConverter x:Key="NoteFlickTypeToVisibilityConverter"/>
     <converters:NullableBooleanToVisibilityConverter x:Key="NullableBooleanToVisibilityConverter"/>
     <converters:NotePositionToTextConverter x:Key="NotePositionToTextConverter"/>
+    <converters:EquityConverter x:Key="EquityConverter"/>
 </ResourceDictionary>

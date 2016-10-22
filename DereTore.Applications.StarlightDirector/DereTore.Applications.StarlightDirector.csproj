@@ -229,9 +229,13 @@
     <Compile Include="UI\Controls\SpecialNotePointer.xaml.cs">
       <DependentUpon>SpecialNotePointer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\Converters\ConverterGroupParameters.cs" />
+    <Compile Include="UI\Converters\EquityConverter.cs" />
+    <Compile Include="UI\Converters\MultiValueConverterGroup.cs" />
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\NullableBooleanToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\NotePositionToTextConverter.cs" />
+    <Compile Include="UI\Converters\ValueConverterGroup.cs" />
     <Compile Include="UI\CustomScroll.cs" />
     <Compile Include="UI\EditMode.cs" />
     <Compile Include="UI\Controls\ScoreBar.xaml.cs">
