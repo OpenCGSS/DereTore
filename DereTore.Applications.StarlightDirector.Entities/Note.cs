@@ -7,6 +7,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
     [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy), MemberSerialization = MemberSerialization.OptIn)]
     public sealed class Note : DependencyObject, IComparable<Note> {
 
+        public event EventHandler<EventArgs> ExtraParamsChanged;
+
         [JsonProperty]
         public int ID { get; private set; }
 
@@ -201,7 +203,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             new PropertyMetadata(NotePosition.Nowhere));
 
         public static readonly DependencyProperty ExtraParamsProperty = DependencyProperty.Register(nameof(ExtraParams), typeof(NoteExtraParams), typeof(Note),
-            new PropertyMetadata(null));
+            new PropertyMetadata(null, OnExtraParamsChanged));
 
         public static readonly Comparison<Note> TimingComparison = (x, y) => {
             if (x == null) {
@@ -377,8 +379,24 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             note.IsFlick = note.IsFlickInternal();
         }
 
+        private static void OnExtraParamsChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var note = (Note)obj;
+            var oldParams = (NoteExtraParams)e.OldValue;
+            var newParams = (NoteExtraParams)e.NewValue;
+            if (oldParams != null) {
+                oldParams.ParamsChanged -= note.ExtraParams_ParamsChanged;
+            }
+            if (newParams != null) {
+                newParams.ParamsChanged += note.ExtraParams_ParamsChanged;
+            }
+        }
+
         private bool IsFlickInternal() {
             return Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
+        }
+
+        private void ExtraParams_ParamsChanged(object sender, EventArgs e) {
+            ExtraParamsChanged.Raise(sender, e);
         }
 
         private Note _prevFlickNote;

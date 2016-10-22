@@ -22,7 +22,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public static readonly DependencyProperty NoteProperty = DependencyProperty.Register(nameof(Note), typeof(Note), typeof(SpecialNotePointer),
-            new PropertyMetadata(null));
+            new PropertyMetadata(null, OnNoteChanged));
 
         public static readonly DependencyProperty XProperty = DependencyProperty.Register(nameof(X), typeof(double), typeof(SpecialNotePointer),
           new PropertyMetadata(0d, OnXChanged));
@@ -30,9 +30,20 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public static readonly DependencyProperty YProperty = DependencyProperty.Register(nameof(Y), typeof(double), typeof(SpecialNotePointer),
           new PropertyMetadata(0d, OnYChanged));
 
+        private static void OnNoteChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var specialNotePointer = (SpecialNotePointer)obj;
+            var oldNote = (Note)e.OldValue;
+            var newNote = (Note)e.NewValue;
+            if (oldNote != null) {
+                oldNote.ExtraParamsChanged -= specialNotePointer.Note_ExtraParamsChanged;
+            }
+            if (newNote != null) {
+                newNote.ExtraParamsChanged += specialNotePointer.Note_ExtraParamsChanged;
+            }
+        }
+
         private static void OnXChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            var specialNotePointer = obj as SpecialNotePointer;
-            Debug.Assert(specialNotePointer != null, "specialNotePointer != null");
+            var specialNotePointer = (SpecialNotePointer)obj;
             if (specialNotePointer.VisualParent is Canvas) {
                 var value = (double)e.NewValue;
                 Canvas.SetLeft(specialNotePointer, value);
@@ -42,8 +53,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private static void OnYChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            var specialNotePointer = obj as SpecialNotePointer;
-            Debug.Assert(specialNotePointer != null, "specialNotePointer != null");
+            var specialNotePointer = (SpecialNotePointer)obj;
             if (specialNotePointer.VisualParent is Canvas) {
                 var value = (double)e.NewValue;
                 Canvas.SetTop(specialNotePointer, value);

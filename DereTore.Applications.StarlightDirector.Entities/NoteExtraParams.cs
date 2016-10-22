@@ -5,13 +5,15 @@ using System.Windows;
 namespace DereTore.Applications.StarlightDirector.Entities {
     public sealed class NoteExtraParams : DependencyObject {
 
+        public event EventHandler<EventArgs> ParamsChanged;
+
         public double NewBpm {
             get { return (double)GetValue(NewBpmProperty); }
             set { SetValue(NewBpmProperty, value); }
         }
 
         public static readonly DependencyProperty NewBpmProperty = DependencyProperty.Register(nameof(NewBpm), typeof(double), typeof(NoteExtraParams),
-            new PropertyMetadata(0d, OnNewBpmChanged));
+            new PropertyMetadata(120d, OnNewBpmChanged));
 
         public string GetDataString() {
             switch (Note.Type) {
@@ -59,6 +61,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         private static void OnNewBpmChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var p = (NoteExtraParams)obj;
             p.Note.Bar.Score.Project.IsChanged = true;
+            p.ParamsChanged.Raise(p, EventArgs.Empty);
         }
 
     }

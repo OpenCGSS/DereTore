@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Input;
+using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     public partial class SpecialNotePointer {
@@ -13,6 +15,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             BpmDisplay.Visibility = editing ? Visibility.Collapsed : Visibility.Visible;
             BpmEditor.Visibility = editing ? Visibility.Visible : Visibility.Collapsed;
             _isEditing = editing;
+        }
+
+        private void Note_ExtraParamsChanged(object sender, EventArgs e) {
+            var editor = this.FindVisualParent<ScoreEditor>();
+            editor?.UpdateBarTexts();
         }
 
         private bool _isEditing = false;

@@ -13,6 +13,13 @@ using DereTore.Applications.StarlightDirector.Extensions;
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
 
+        internal void UpdateBarTexts() {
+            foreach (var scoreBar in ScoreBars) {
+                scoreBar.UpdateBarIndexText();
+                scoreBar.UpdateBarTimeText();
+            }
+        }
+
         private void ReloadScore(Score toBeSet) {
             // First, clean up the room before inviting guests. XD (You know where this sentense comes from.)
             // These are presentation layer of the program, just clear them, and let the GC do the rest of the work.
@@ -21,7 +28,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             LineLayer.NoteRelations.Clear();
             NoteIDs.ExistingIDs.Clear();
             while (SpecialScoreNotes.Count > 0) {
-                RemoveSpecialNote(SpecialScoreNotes[0]);
+                RemoveSpecialNote(SpecialScoreNotes[0], false);
             }
             if (toBeSet == null) {
                 return;
@@ -51,7 +58,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
             // Variant BPM indicators
             foreach (var note in toBeSet.Notes.Where(n => n.Type == NoteType.VariantBpm)) {
-                var specialNote = AddSpecialNote(ScoreBars[note.Bar.Index], note.IndexInGrid, note.Type, note);
+                var specialNote = AddSpecialNote(ScoreBars[note.Bar.Index], note.IndexInGrid, note.Type, note, false);
                 specialNote.Note = note;
             }
 
@@ -341,7 +348,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
-        private SpecialNotePointer AddSpecialNote(ScoreBar scoreBar, int row, NoteType type, Note dataTemplate) {
+        private SpecialNotePointer AddSpecialNote(ScoreBar scoreBar, int row, NoteType type, Note dataTemplate, bool updateBarText) {
             if (!Note.IsTypeSpecial(type)) {
                 throw new ArgumentOutOfRangeException(nameof(type));
             }
@@ -374,24 +381,35 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var extraY = barHeight * row / bar.GetTotalGridCount();
             specialNotePointer.Y = baseY + extraY;
             Project.IsChanged = true;
+            if (updateBarText) {
+                UpdateBarTexts();
+            }
             return specialNotePointer;
         }
 
-        private ScoreNote AnyNoteExistOnPosition(int barIndex, int column, int row) {
-            foreach (var scoreNote in ScoreNotes) {
-                var note = scoreNote.Note;
-                if (note.Bar.Index == barIndex && (int)note.FinishPosition == column + 1 && note.IndexInGrid == row) {
-                    return scoreNote;
-                }
+        private bool RemoveSpecialNote(SpecialNotePointer specialNotePointer, bool updateBarText) {
+            var exists = SpecialScoreNotes.Contains(specialNotePointer);
+            if (!exists) {
+                return false;
             }
-            return null;
+            var note = specialNotePointer.Note;
+            note.Bar.RemoveNote(note);
+            NoteIDs.ExistingIDs.Remove(note.ID);
+            SpecialNoteLayer.Children.Remove(specialNotePointer);
+            Project.IsChanged = true;
+            var b = EditableSpecialScoreNotes.Remove(specialNotePointer);
+            if (updateBarText) {
+                UpdateBarTexts();
+            }
+            return b;
         }
 
-        private void UpdateBarTexts() {
-            foreach (var scoreBar in ScoreBars) {
-                scoreBar.UpdateBarIndexText();
-                scoreBar.UpdateBarTimeText();
-            }
+        private ScoreNote AnyNoteExistOnPosition(int barIndex, int column, int row) {
+            return (from scoreNote in ScoreNotes
+                    let note = scoreNote.Note
+                    where note.Bar.Index == barIndex && (int)note.FinishPosition == column + 1 && note.IndexInGrid == row
+                    select scoreNote
+                    ).FirstOrDefault();
         }
 
         private ScoreBar GetScoreBarGeomInfoForZooming(Point pointRelativeToThis, out double heightPercentage, out double height) {

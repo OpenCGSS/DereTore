@@ -82,20 +82,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public SpecialNotePointer AddSpecialNote(ScoreBar scoreBar, int row, NoteType type) {
-            return AddSpecialNote(scoreBar, row, type, null);
+            return AddSpecialNote(scoreBar, row, type, null, true);
         }
 
         public bool RemoveSpecialNote(SpecialNotePointer specialNotePointer) {
-            var exists = SpecialScoreNotes.Contains(specialNotePointer);
-            if (!exists) {
-                return false;
-            }
-            var note = specialNotePointer.Note;
-            note.Bar.RemoveNote(note);
-            NoteIDs.ExistingIDs.Remove(note.ID);
-            SpecialNoteLayer.Children.Remove(specialNotePointer);
-            Project.IsChanged = true;
-            return EditableSpecialScoreNotes.Remove(specialNotePointer);
+            return RemoveSpecialNote(specialNotePointer, true);
         }
 
         public ReadOnlyCollection<ScoreNote> ScoreNotes { get; }
