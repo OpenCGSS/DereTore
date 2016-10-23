@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using DereTore.Applications.StarlightDirector.Entities.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -87,8 +85,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public bool HasAnyNote => Notes.Count > 0;
 
         public InternalList<Note> Notes { get; }
-
-        public HashSet<int> ExistingIDs { get; } = new HashSet<int>();
 
         public bool Validate(out string[] problems) {
             // Rules:
