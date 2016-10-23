@@ -143,7 +143,9 @@
                     <fluent:Button Header="Zoom Out" Size="Middle" Command="{x:Static local:MainWindow.CmdViewZoomOut}" Icon="{StaticResource RibbonIconViewZoomOut}"/>
                     <fluent:DropDownButton Header="Zoom To Beat" Size="Middle" Icon="{StaticResource RibbonIconViewZoomToBeat}">
                         <fluent:MenuItem Header="1/4" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="4"/>
+                        <fluent:MenuItem Header="1/6" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="6"/>
                         <fluent:MenuItem Header="1/8" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="8"/>
+                        <fluent:MenuItem Header="1/12" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="12"/>
                         <fluent:MenuItem Header="1/16" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="16"/>
                         <fluent:MenuItem Header="1/24" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="24"/>
                         <fluent:MenuItem Header="1/32" Command="{x:Static local:MainWindow.CmdViewZoomToBeat}" CommandParameter="32"/>
