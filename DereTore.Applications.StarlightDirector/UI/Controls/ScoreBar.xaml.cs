@@ -132,7 +132,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly double DefaultHeight = 550d;
 
-        public static readonly int[] ZoomLevels = { 384, 128, 96, 48, 32, 24, 16, 12, 8, 6, 4, 3, 2, 1 };
+        public static readonly int[] ZoomLevels = { 96, 48, 32, 24, 16, 12, 8, 6, 4, 3, 2, 1 };
         public static readonly int SignatureBase = ScoreSettings.DefaultGlobalGridPerSignature * ScoreSettings.DefaultGlobalSignature;
         public static readonly double ZoomFactor = 1.2;
 

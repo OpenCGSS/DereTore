@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.Diagnostics;
@@ -192,16 +193,44 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             // Signature fix-up
             var newGrids = ScoreSettings.DefaultGlobalGridPerSignature * ScoreSettings.DefaultGlobalSignature;
             var oldGrids = project.Settings.GlobalGridPerSignature * project.Settings.GlobalSignature;
-            if (newGrids != oldGrids && newGrids % oldGrids == 0) {
-                project.Settings.GlobalGridPerSignature = ScoreSettings.DefaultGlobalGridPerSignature;
-                project.Settings.GlobalSignature = ScoreSettings.DefaultGlobalSignature;
+            if (newGrids == oldGrids) {
+                return;
+            }
+            project.Settings.GlobalGridPerSignature = ScoreSettings.DefaultGlobalGridPerSignature;
+            project.Settings.GlobalSignature = ScoreSettings.DefaultGlobalSignature;
+            if (newGrids % oldGrids == 0) {
+                // Expanding (e.g. 48 -> 96)
                 var k = newGrids / oldGrids;
                 foreach (var difficulty in Difficulties) {
-                    if (project.Scores.ContainsKey(difficulty)) {
-                        var score = project.GetScore(difficulty);
-                        foreach (var note in score.Notes) {
-                            note.IndexInGrid *= k;
+                    if (!project.Scores.ContainsKey(difficulty)) {
+                        continue;
+                    }
+                    var score = project.GetScore(difficulty);
+                    foreach (var note in score.Notes) {
+                        note.IndexInGrid *= k;
+                    }
+                }
+            } else if (oldGrids % newGrids == 0) {
+                // Shrinking (e.g. 384 -> 96)
+                var k = oldGrids / newGrids;
+                var incompatibleNotes = new List<Note>();
+                foreach (var difficulty in Difficulties) {
+                    if (!project.Scores.ContainsKey(difficulty)) {
+                        continue;
+                    }
+                    var score = project.GetScore(difficulty);
+                    foreach (var note in score.Notes) {
+                        if (note.IndexInGrid % k != 0) {
+                            incompatibleNotes.Add(note);
+                        } else {
+                            note.IndexInGrid /= k;
                         }
+                    }
+                }
+                if (incompatibleNotes.Count > 0) {
+                    Debug.Print("Notes on incompatible grid lines are found. Removing.");
+                    foreach (var note in incompatibleNotes) {
+                        note.Bar.RemoveNote(note);
                     }
                 }
             }
