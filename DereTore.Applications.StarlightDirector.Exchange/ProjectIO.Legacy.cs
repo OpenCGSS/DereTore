@@ -118,6 +118,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             foreach (var difficulty in Difficulties) {
                 var score = project.GetScore(difficulty);
                 score.ResolveReferences(project);
+                score.FixSyncNotes();
                 score.Difficulty = difficulty;
             }
 
@@ -162,6 +163,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                         }
                     }
                     score.ResolveReferences(project);
+                    score.FixSyncNotes();
                     score.Difficulty = difficulty;
                     project.Scores.Add(difficulty, score);
                 }

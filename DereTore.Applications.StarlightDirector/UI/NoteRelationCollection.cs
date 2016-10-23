@@ -19,6 +19,13 @@ namespace DereTore.Applications.StarlightDirector.UI {
             InternalDictionary.Add(tuple, relation);
         }
 
+        public void Remove(ScoreNote scoreNote1, ScoreNote scoreNote2) {
+            var tuple = new TupleType(scoreNote1, scoreNote2);
+            var revTuple = new TupleType(scoreNote2, scoreNote1);
+            InternalDictionary.Remove(tuple);
+            InternalDictionary.Remove(revTuple);
+        }
+
         public int RemoveAll(ScoreNote oneOf) {
             var contained = InternalDictionary.Where(kv => kv.Key.Item1.Equals(oneOf) || kv.Key.Item2.Equals(oneOf)).ToArray();
             var n = 0;

@@ -124,9 +124,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 if (!note.IsGamingNote) {
                     continue;
                 }
-                if (note.SyncTargetID != EntityID.Invalid) {
-                    note.SyncTarget = FindNoteByID(note.SyncTargetID);
-                }
                 if (note.NextFlickNoteID != EntityID.Invalid) {
                     note.NextFlickNote = FindNoteByID(note.NextFlickNoteID);
                 }
@@ -135,6 +132,28 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 }
                 if (note.HoldTargetID != EntityID.Invalid) {
                     note.HoldTarget = FindNoteByID(note.HoldTargetID);
+                }
+            }
+        }
+
+        internal void FixSyncNotes() {
+            foreach (var bar in Bars) {
+                var gridIndexGroups =
+                    from n in bar.Notes
+                    where n.IsGamingNote
+                    group n by n.IndexInGrid into g
+                    select g;
+                foreach (var group in gridIndexGroups) {
+                    var sortedNotesInGroup =
+                        from n in @group
+                        orderby n.IndexInTrack
+                        select n;
+                    Note prev = null;
+                    foreach (var note in sortedNotesInGroup) {
+                        Note.ConnectSync(prev, note);
+                        prev = note;
+                    }
+                    Note.ConnectSync(prev, null);
                 }
             }
         }

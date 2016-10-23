@@ -28,7 +28,6 @@
             public static readonly string Column_FlickType = "flick_type";
             public static readonly string Column_PrevFlickNoteID = "prev_flick_note_id";
             public static readonly string Column_NextFlickNoteID = "next_flick_note_id";
-            public static readonly string Column_SyncTargetID = "sync_target_id";
             public static readonly string Column_HoldTargetID = "hold_target_id";
             public static readonly string Column_GridPerSignature = "grid_per_signature";
             public static readonly string Column_Signature = "signature";
@@ -39,6 +38,8 @@
             public static readonly string Table_Scores = "scores";
             // Legacy. I made a spelling mistake in all v0.2 save files. :-(
             public static readonly string Field_Vesion = "vesion";
+            // Lagacy. Saved for forward compatibility
+            public static readonly string Column_SyncTargetID = "sync_target_id";
 
         }
 
