@@ -83,7 +83,6 @@
     <Compile Include="Note.cs" />
     <Compile Include="NoteExtraParams.cs" />
     <Compile Include="NoteFlickType.cs" />
-    <Compile Include="NoteIDs.cs" />
     <Compile Include="NotePosition.cs" />
     <Compile Include="NoteRelation.cs" />
     <Compile Include="NoteType.cs" />

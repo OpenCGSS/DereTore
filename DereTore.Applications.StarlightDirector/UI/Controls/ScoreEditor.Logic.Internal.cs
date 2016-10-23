@@ -26,7 +26,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             // Clearing these objects will not affect the underlying model.
             RemoveScoreBars(ScoreBars, false, true);
             LineLayer.NoteRelations.Clear();
-            NoteIDs.ExistingIDs.Clear();
             while (SpecialScoreNotes.Count > 0) {
                 RemoveSpecialNote(SpecialScoreNotes[0], false);
             }
@@ -40,7 +39,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             foreach (var bar in toBeSet.Bars) {
                 var scoreBar = AddScoreBar(null, false, bar);
                 foreach (var note in bar.Notes) {
-                    NoteIDs.ExistingIDs.Add(note.ID);
                     if (!note.IsGamingNote) {
                         continue;
                     }
@@ -251,7 +249,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 if (Score.Bars.Contains(note.Bar)) {
                     // The Reset() call is necessary.
                     note.Reset();
-                    NoteIDs.ExistingIDs.Remove(note.ID);
                     note.Bar.RemoveNote(note);
                 }
             }
@@ -394,7 +391,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             var note = specialNotePointer.Note;
             note.Bar.RemoveNote(note);
-            NoteIDs.ExistingIDs.Remove(note.ID);
             SpecialNoteLayer.Children.Remove(specialNotePointer);
             Project.IsChanged = true;
             var b = EditableSpecialScoreNotes.Remove(specialNotePointer);
