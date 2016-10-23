@@ -40,6 +40,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var maxHeight = double.MinValue;
             var textLineHeight = double.NaN;
             var visibleGridCountPerSignature = gridPerSignature / zoomMod;
+            var hasPartialGrids = visibleGridCountPerSignature * zoomMod != gridPerSignature;
 
             for (var i = 0; i <= totalGridCount; ++i) {
                 if (i % zoomMod != 0 && i != totalGridCount) {
@@ -64,6 +65,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 context.DrawLine(pen, startPoint, endPoint);
                 if (i >= totalGridCount) {
                     // We are not drawing any text for the last grid line.
+                    continue;
+                }
+                if (hasPartialGrids && (i % gridPerSignature) != 0) {
                     continue;
                 }
                 var gridIndexInVisibleGrids = (i / zoomMod) % visibleGridCountPerSignature;
