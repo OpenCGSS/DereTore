@@ -28,7 +28,28 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var hitTestInfo = scoreBar.HitTest(e.GetPosition(scoreBar));
             if (e.ChangedButton == MouseButton.Left) {
                 if (hitTestInfo.IsValid) {
-                    AddScoreNote(scoreBar, hitTestInfo, null);
+                    var scoreNote = AddScoreNote(scoreBar, hitTestInfo, null);
+                    if (scoreNote != null) {
+                        var note = scoreNote.Note;
+                        if (note.IsSync) {
+                            ScoreNote prevScoreNote = null;
+                            ScoreNote nextScoreNote = null;
+                            if (note.HasPrevSync) {
+                                var prevNote = note.PrevSyncTarget;
+                                prevScoreNote = FindScoreNote(prevNote);
+                                LineLayer.NoteRelations.Add(scoreNote, prevScoreNote, NoteRelation.Sync);
+                            }
+                            if (note.HasNextSync) {
+                                var nextNote = note.NextSyncTarget;
+                                nextScoreNote = FindScoreNote(nextNote);
+                                LineLayer.NoteRelations.Add(scoreNote, nextScoreNote, NoteRelation.Sync);
+                            }
+                            if (note.HasPrevSync && note.HasNextSync) {
+                                LineLayer.NoteRelations.Remove(prevScoreNote, nextScoreNote);
+                            }
+                            LineLayer.InvalidateVisual();
+                        }
+                    }
                 } else {
                     UnselectAllScoreNotes();
                     SelectScoreBar(scoreBar);
@@ -98,10 +119,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var ne = end.Note;
                 if (mode == EditMode.Clear) {
                     ns.Reset();
-                    LineLayer.NoteRelations.RemoveAll(start);
+                    LineLayer.NoteRelations.RemoveAll(start, NoteRelation.Hold);
+                    LineLayer.NoteRelations.RemoveAll(start, NoteRelation.Flick);
                     if (!start.Equals(end)) {
                         ne.Reset();
-                        LineLayer.NoteRelations.RemoveAll(end);
+                        LineLayer.NoteRelations.RemoveAll(end, NoteRelation.Hold);
+                        LineLayer.NoteRelations.RemoveAll(end, NoteRelation.Flick);
                     }
                     LineLayer.InvalidateVisual();
                     Project.IsChanged = true;

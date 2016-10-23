@@ -7,7 +7,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public Note AddNote() {
             var id = MathHelper.NextRandomPositiveInt32();
-            while (NoteIDs.ExistingIDs.Contains(id)) {
+            while (Score.Project.ExistingIDs.Contains(id)) {
                 id = MathHelper.NextRandomPositiveInt32();
             }
             return AddNote(id);
@@ -19,6 +19,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
             Notes.Remove(note);
             Score.Notes.Remove(note);
+            Score.Project.ExistingIDs.Remove(note.ID);
             return true;
         }
 
@@ -41,21 +42,23 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         internal Note AddNote(int id) {
-            if (NoteIDs.ExistingIDs.Contains(id)) {
+            if (Score.Project.ExistingIDs.Contains(id)) {
                 return null;
             }
             var note = new Note(id, this);
             Notes.Add(note);
             Score.Notes.Add(note);
+            Score.Project.ExistingIDs.Add(id);
             return note;
         }
 
         internal Note AddNoteWithoutUpdatingGlobalNotes(int id) {
-            if (NoteIDs.ExistingIDs.Contains(id)) {
+            if (Score.Project.ExistingIDs.Contains(id)) {
                 return null;
             }
             var note = new Note(id, this);
             Notes.Add(note);
+            Score.Project.ExistingIDs.Add(id);
             return note;
         }
 

@@ -148,6 +148,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     var score = new Score(project, difficulty);
                     ReadScore(connection, score);
                     score.ResolveReferences(project);
+                    score.FixSyncNotes();
                     score.Difficulty = difficulty;
                     project.Scores.Add(difficulty, score);
                 }
@@ -218,7 +219,6 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     var flick = (NoteFlickType)(long)row[Names.Column_FlickType];
                     var prevFlick = (int)(long)row[Names.Column_PrevFlickNoteID];
                     var nextFlick = (int)(long)row[Names.Column_NextFlickNoteID];
-                    var sync = (int)(long)row[Names.Column_SyncTargetID];
                     var hold = (int)(long)row[Names.Column_HoldTargetID];
 
                     EnsureBarIndex(score, barIndex);
@@ -231,7 +231,6 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                         note.FlickType = flick;
                         note.PrevFlickNoteID = prevFlick;
                         note.NextFlickNoteID = nextFlick;
-                        note.SyncTargetID = sync;
                         note.HoldTargetID = hold;
                     } else {
                         Debug.Print("Note with id {0} already exists.", id);
