@@ -171,21 +171,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
             }
 
             // Fix sync notes.
-            foreach (var bar in score.Bars) {
-                var notes = bar.Notes;
-                var distinctGridLineIndices = notes.Select(note => note.IndexInGrid).Distinct().ToArray();
-                if (distinctGridLineIndices.Length == notes.Count) {
-                    continue;
-                }
-                // There are sync notes in this bar.
-                notes.Sort(Note.TimingComparison);
-                for (var i = 0; i < bar.Notes.Count - 1; ++i) {
-                    if (notes[i].IndexInGrid == notes[i + 1].IndexInGrid) {
-                        Note.ConnectSync(notes[i], notes[i + 1]);
-                        ++i;
-                    }
-                }
-            }
+            score.FixSyncNotes();
 
             // Fix hold notes: if any line crosses other note(s). (Is it necessary? Deleste files seem to be organized well.)
             foreach (var note in score.Notes) {

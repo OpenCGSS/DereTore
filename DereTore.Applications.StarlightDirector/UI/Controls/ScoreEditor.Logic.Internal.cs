@@ -76,10 +76,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     continue;
                 }
                 processedNotes.Add(note);
-                if (note.IsSync) {
-                    if (!relations.ContainsPair(map[note], map[note.SyncTarget])) {
-                        relations.Add(map[note], map[note.SyncTarget], NoteRelation.Sync);
-                        waitingList.Enqueue(note.SyncTarget);
+                if (note.HasPrevSync) {
+                    if (!relations.ContainsPair(map[note], map[note.PrevSyncTarget])) {
+                        relations.Add(map[note], map[note.PrevSyncTarget], NoteRelation.Sync);
+                        waitingList.Enqueue(note.PrevSyncTarget);
+                    }
+                }
+                if (note.HasNextSync) {
+                    if (!relations.ContainsPair(map[note], map[note.NextSyncTarget])) {
+                        relations.Add(map[note], map[note.NextSyncTarget], NoteRelation.Sync);
+                        waitingList.Enqueue(note.NextSyncTarget);
                     }
                 }
                 if (note.HasNextFlick) {
@@ -193,7 +199,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var bar = scoreBar.Bar;
             var scoreNote = AnyNoteExistOnPosition(bar.Index, column, row);
             if (scoreNote != null) {
-                return scoreNote;
+                return null;
             }
             var barHeight = ScoreBars[0].Height;
             var baseY = -MinimumScrollOffset + bar.Index * barHeight;
@@ -206,6 +212,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 note = bar.AddNote();
                 note.StartPosition = note.FinishPosition = (NotePosition)(column + 1);
                 note.IndexInGrid = row;
+                note.FixSync();
             }
             scoreNote.Note = note;
             EditableScoreNotes.Add(scoreNote);
@@ -249,6 +256,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (modifiesModel) {
                 var note = scoreNote.Note;
                 if (Score.Bars.Contains(note.Bar)) {
+                    // Remove note from sync group
+                    // See Note.RemoveSync()
+                    if (note.HasPrevSync && note.HasNextSync) {
+                        var prevNote = note.PrevSyncTarget;
+                        var nextNote = note.NextSyncTarget;
+                        var prevScoreNote = FindScoreNote(prevNote);
+                        var nextScoreNote = FindScoreNote(nextNote);
+                        LineLayer.NoteRelations.Add(prevScoreNote, nextScoreNote, NoteRelation.Sync);
+                    }
+                    note.RemoveSync();
                     // The Reset() call is necessary.
                     note.Reset();
                     NoteIDs.ExistingIDs.Remove(note.ID);
@@ -402,6 +419,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 UpdateBarTexts();
             }
             return b;
+        }
+
+        private ScoreNote FindScoreNote(Note note) {
+            return (from sn in ScoreNotes
+                    where sn.Note == note
+                    select sn).FirstOrDefault();
         }
 
         private ScoreNote AnyNoteExistOnPosition(int barIndex, int column, int row) {

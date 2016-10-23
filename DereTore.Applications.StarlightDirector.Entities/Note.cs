@@ -123,23 +123,37 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public bool HasNextFlick => Type == NoteType.TapOrFlick && NextFlickNote != null;
 
+        [Obsolete("This property is not used since project version v0.4. Use PrevSyncTargetID and NextSyncTargetID instead.")]
         [JsonProperty]
         public int SyncTargetID { get; internal set; }
 
-        public Note SyncTarget {
+        //[JsonProperty]
+        public int PrevSyncTargetID { get; internal set; }
+
+        //[JsonProperty]
+        public int NextSyncTargetID { get; internal set; }
+
+        public Note PrevSyncTarget {
             get {
-                return _syncTarget;
+                return _prevSyncTarget;
             }
-            set {
-                var origSyncTarget = _syncTarget;
-                _syncTarget = value;
-                if (origSyncTarget?.SyncTarget != null && origSyncTarget.SyncTarget.Equals(this)) {
-                    origSyncTarget.SyncTarget = null;
-                }
-                IsSync = value != null;
-                SyncTargetID = value?.ID ?? EntityID.Invalid;
+            internal set {
+                SetPrevSyncTargetInternal(value);
             }
         }
+
+        public Note NextSyncTarget {
+            get {
+                return _nextSyncTarget;
+            }
+            internal set {
+                SetNextSyncTargetInternal(value);
+            }
+        }
+
+        public bool HasPrevSync => PrevSyncTarget != null;
+
+        public bool HasNextSync => NextSyncTarget != null;
 
         public bool IsHold {
             get { return (bool)GetValue(IsHoldProperty); }
@@ -256,13 +270,71 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return type == NoteType.VariantBpm;
         }
 
-        public static void ConnectSync(Note n1, Note n2) {
-            if (n1 != null) {
-                n1.SyncTarget = n2;
+        public static void ConnectSync(Note first, Note second) {
+            /*
+             * Before:
+             *     ... <==>    first    <==> first_next   <==> ...
+             *     ... <==> second_prev <==>   second     <==> ...
+             *
+             * After:
+             *                               first_next   <==> ...
+             *     ... <==>    first    <==>   second     <==> ...
+             *     ... <==> second_prev
+             */
+            if (first == second) {
+               throw new ArgumentException("A note should not be connected to itself", nameof(second));
+            } else if (first?.NextSyncTarget == second && second?.PrevSyncTarget == first) {
+                return;
             }
-            if (n2 != null) {
-                n2.SyncTarget = n1;
+            first?.NextSyncTarget?.SetPrevSyncTargetInternal(null);
+            second?.PrevSyncTarget?.SetNextSyncTargetInternal(null);
+            first?.SetNextSyncTargetInternal(second);
+            second?.SetPrevSyncTargetInternal(first);
+        }
+
+        public void RemoveSync() {
+            /*
+             * Before:
+             *     ... <==> prev <==> this <==> next <==> ...
+             *
+             * After:
+             *     ... <==> prev <============> next <==> ...
+             *                        this
+             */
+            PrevSyncTarget?.SetNextSyncTargetInternal(NextSyncTarget);
+            NextSyncTarget?.SetPrevSyncTargetInternal(PrevSyncTarget);
+            SetPrevSyncTargetInternal(null);
+            SetNextSyncTargetInternal(null);
+        }
+
+        public void FixSync() {
+            if (!IsGamingNote) {
+                return;
             }
+            RemoveSync();
+            Note prev = null;
+            Note next = null;
+            foreach (var note in Bar.Notes) {
+                if (note == this) {
+                    continue;
+                }
+                if (!note.IsGamingNote) {
+                    continue;
+                }
+                if (note.IndexInGrid == IndexInGrid) {
+                    if (note.IndexInTrack < IndexInTrack) {
+                        if (prev == null || prev.IndexInTrack < note.IndexInTrack) {
+                            prev = note;
+                        }
+                    } else {
+                        if (next == null || note.IndexInTrack < next.IndexInTrack) {
+                            next = note;
+                        }
+                    }
+                }
+            }
+            ConnectSync(prev, this);
+            ConnectSync(this, next);
         }
 
         public static void ConnectFlick(Note first, Note second) {
@@ -335,10 +407,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         internal void Reset() {
-            if (SyncTarget != null) {
-                SyncTarget.SyncTarget = null;
-            }
-            SyncTarget = null;
             if (NextFlickNote != null) {
                 NextFlickNote.PrevFlickNote = null;
             }
@@ -399,9 +467,22 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             ExtraParamsChanged.Raise(sender, e);
         }
 
+        private void SetPrevSyncTargetInternal(Note prev) {
+            _prevSyncTarget = prev;
+            IsSync = _prevSyncTarget != null || _nextSyncTarget != null;
+            PrevSyncTargetID = prev?.ID ?? EntityID.Invalid;
+        }
+
+        private void SetNextSyncTargetInternal(Note next) {
+            _nextSyncTarget = next;
+            IsSync = _prevSyncTarget != null || _nextSyncTarget != null;
+            NextSyncTargetID = next?.ID ?? EntityID.Invalid;
+        }
+
         private Note _prevFlickNote;
         private Note _nextFlickNote;
-        private Note _syncTarget;
+        private Note _prevSyncTarget;
+        private Note _nextSyncTarget;
         private Note _holdTarget;
 
     }
