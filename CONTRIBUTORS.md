@@ -5,17 +5,17 @@
 - [chieri](https://github.com/laurencedu)
 - [hyspace](https://github.com/hyspace)
 - [statementreply](https://github.com/statementreply)
-- [@¤Î¤ó¤Î¤ó](https://twitter.com/blueapple25130)
+- [@ã®ã‚“ã®ã‚“](https://twitter.com/blueapple25130)
 
 ## Testers
 
 - 2GM2A
 - [CaiMiao](https://github.com/CaiMiao)
 - Ki2317
-- M.cy¡ï»Ã¹â"
+- M.cyâ˜…å¹»å…‰"
 - MinamiKaze
 - [@Osiris](https://twitter.com/axiaosiris)
 - dante
-- [@¤À¤¤¤ºP](https://twitter.com/DICE__game)
-- [@É½É¼](https://twitter.com/ymsgu)
-- [@ÓğÌï°wÔÂ](https://twitter.com/iinosuke01)
+- [@ã ã„ãšP](https://twitter.com/DICE__game)
+- [@å±±æ‰](https://twitter.com/ymsgu)
+- [@ç¾½ç”°çšæœˆ](https://twitter.com/iinosuke01)

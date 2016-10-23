@@ -1,4 +1,4 @@
-﻿# TODO List
+# TODO List
 
 ## Score Editor
 

@@ -2,8 +2,8 @@
 
 ## The Name
 
-The name DereTore (¥Ç¥ì¥È¥ì) is the short form of "Cinderella Trainer" (¥·¥ó**¥Ç¥ì**¥é **¥È¥ì**¥¤¥Ê©`), in response to the
-official abbreviation of CGSS, DereSute (¥Ç¥ì¥¹¥Æ), which is the short form of the game title (¥¢¥¤¥É¥ë¥Þ¥¹¥¿©` ¥·¥ó**¥Ç¥ì**¥é ¥¬©`¥ë¥º ¥¹¥¿©`¥é¥¤¥È **¥¹¥Æ**©`¥¸).
+The name DereTore (ãƒ‡ãƒ¬ãƒˆãƒ¬) is the short form of "Cinderella Trainer" (ã‚·ãƒ³**ãƒ‡ãƒ¬**ãƒ© **ãƒˆãƒ¬**ã‚¤ãƒŠãƒ¼), in response to the
+official abbreviation of CGSS, DereSute (ãƒ‡ãƒ¬ã‚¹ãƒ†), which is the short form of the game title (ã‚¢ã‚¤ãƒ‰ãƒ«ãƒžã‚¹ã‚¿ãƒ¼ ã‚·ãƒ³**ãƒ‡ãƒ¬**ãƒ© ã‚¬ãƒ¼ãƒ«ã‚º ã‚¹ã‚¿ãƒ¼ãƒ©ã‚¤ãƒˆ **ã‚¹ãƒ†**ãƒ¼ã‚¸).
 
 ## Repo History
 
