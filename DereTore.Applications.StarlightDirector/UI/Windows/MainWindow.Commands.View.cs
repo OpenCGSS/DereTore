@@ -6,7 +6,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdViewZoomIn = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdViewZoomOut = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdViewZoomToBeat = CommandHelper.RegisterCommand();
-        public static readonly ICommand CmdViewMiscToggleRelationIndicatorsVisibility = CommandHelper.RegisterCommand();
+        public static readonly ICommand CmdViewMiscSetRelationIndicatorsVisibility = CommandHelper.RegisterCommand();
+        public static readonly ICommand CmdViewMiscInvertScrollDirection = CommandHelper.RegisterCommand();
 
         private void CmdViewZoomIn_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.Score != null;
@@ -34,12 +35,20 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             Editor.ZoomTo(oneNthBeat);
         }
 
-        private void CmdViewMiscToggleRelationIndicatorsVisibility_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+        private void CmdViewMiscSetRelationIndicatorsVisibility_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = true;
         }
 
-        private void CmdViewMiscToggleRelationIndicatorsVisibility_Executed(object sender, ExecutedRoutedEventArgs e) {
-            Editor.AreRelationIndicatorsVisible = !Editor.AreRelationIndicatorsVisible;
+        private void CmdViewMiscSetRelationIndicatorsVisibility_Executed(object sender, ExecutedRoutedEventArgs e) {
+            Editor.AreRelationIndicatorsVisible = (bool)e.Parameter;
+        }
+
+        private void CmdViewMiscInvertScrollDirection_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            e.CanExecute = true;
+        }
+
+        private void CmdViewMiscInvertScrollDirection_Executed(object sender, ExecutedRoutedEventArgs e) {
+            CustomScroll.SetIsScrollDirectionInverted(ScrollViewer, (bool)e.Parameter);
         }
 
     }

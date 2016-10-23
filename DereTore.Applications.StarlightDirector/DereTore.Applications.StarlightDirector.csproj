@@ -363,6 +363,7 @@
     <Resource Include="Resources\Mayu\mayu-05.png" />
     <Resource Include="Resources\Mayu\mayu-06.png" />
     <Resource Include="Resources\Icons\ViewMiscRelationIndicatorVisibility.png" />
+    <Resource Include="Resources\Icons\ViewMiscInvertScrollDirection.png" />
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

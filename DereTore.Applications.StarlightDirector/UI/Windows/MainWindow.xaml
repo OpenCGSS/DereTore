@@ -152,8 +152,10 @@
                     </fluent:DropDownButton>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Miscellaneous">
-                    <fluent:ToggleButton Header="Note relation indicator" Command="{x:Static local:MainWindow.CmdViewMiscToggleRelationIndicatorsVisibility}" Icon="{StaticResource RibbonIconViewMiscRelationIndicatorVisibility}" Size="Middle"
-                                         IsChecked="{Binding ElementName=Editor, Path=AreRelationIndicatorsVisible, Mode=OneWay}"/>
+                    <fluent:ToggleButton Header="Note relation indicator" Command="{x:Static local:MainWindow.CmdViewMiscSetRelationIndicatorsVisibility}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked, Mode=OneWay}"
+                                         Icon="{StaticResource RibbonIconViewMiscRelationIndicatorVisibility}" Size="Middle"/>
+                    <fluent:ToggleButton Header="Inverted scrolling" Command="{x:Static local:MainWindow.CmdViewMiscInvertScrollDirection}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked, Mode=OneWay}"
+                                         Icon="{StaticResource RibbonIconViewMiscInvertScrollDirection}" Size="Middle"/>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>

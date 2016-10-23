@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,8 +16,19 @@ namespace DereTore.Applications.StarlightDirector.UI {
             obj.SetValue(ScrollSpeedProperty, value);
         }
 
+        public static bool GetIsScrollDirectionInverted(DependencyObject obj) {
+            return (bool)obj.GetValue(IsScrollDirectionInvertedProperty);
+        }
+
+        public static void SetIsScrollDirectionInverted(DependencyObject obj, bool value) {
+            obj.SetValue(IsScrollDirectionInvertedProperty, value);
+        }
+
         public static readonly DependencyProperty ScrollSpeedProperty = DependencyProperty.RegisterAttached("ScrollSpeed", typeof(double), typeof(CustomScroll),
             new FrameworkPropertyMetadata(1d, FrameworkPropertyMetadataOptions.Inherits | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnScrollSpeedChanged));
+
+        public static readonly DependencyProperty IsScrollDirectionInvertedProperty = DependencyProperty.RegisterAttached("IsScrollDirectionInverted", typeof(bool), typeof(CustomScroll),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Inherits));
 
         private static DependencyObject GetScrollViewer(DependencyObject obj) {
             // Return the DependencyObject if it is a ScrollViewer
@@ -49,20 +59,24 @@ namespace DereTore.Applications.StarlightDirector.UI {
                 return;
             }
             var scrollViewer = GetScrollViewer(scrollHost) as ScrollViewer;
-            if (scrollViewer != null) {
-                var scrollSpeed = (double)scrollViewer.GetValue(ScrollSpeedProperty);
-                var offset = scrollViewer.VerticalOffset - (e.Delta * scrollSpeed / 6);
-                if (offset < 0) {
-                    scrollViewer.ScrollToVerticalOffset(0);
-                } else if (offset > scrollViewer.ExtentHeight) {
-                    scrollViewer.ScrollToVerticalOffset(scrollViewer.ExtentHeight);
-                } else {
-                    scrollViewer.ScrollToVerticalOffset(offset);
-                }
-                e.Handled = true;
-            } else {
-                Debug.Print("ScrollSpeed Attached Property is not attached to an element containing a ScrollViewer.");
+            if (scrollViewer == null) {
+                Debug.Print("ScrollSpeed attached property is not attached to an element containing a ScrollViewer.");
+                return;
             }
+            var scrollSpeed = (double)scrollViewer.GetValue(ScrollSpeedProperty);
+            var invertDirection = (bool)scrollViewer.GetValue(IsScrollDirectionInvertedProperty);
+            if (invertDirection) {
+                scrollSpeed = -scrollSpeed;
+            }
+            var offset = scrollViewer.VerticalOffset - (e.Delta * scrollSpeed / 6);
+            if (offset < 0) {
+                scrollViewer.ScrollToVerticalOffset(0);
+            } else if (offset > scrollViewer.ExtentHeight) {
+                scrollViewer.ScrollToVerticalOffset(scrollViewer.ExtentHeight);
+            } else {
+                scrollViewer.ScrollToVerticalOffset(offset);
+            }
+            e.Handled = true;
         }
 
     }

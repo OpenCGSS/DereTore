@@ -31,4 +31,5 @@
     <BitmapImage x:Key="RibbonIconViewZoomOut" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewZoomOut.png"/>
     <BitmapImage x:Key="RibbonIconViewZoomToBeat" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewZoomToBeat.png"/>
     <BitmapImage x:Key="RibbonIconViewMiscRelationIndicatorVisibility" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewMiscRelationIndicatorVisibility.png"/>
+    <BitmapImage x:Key="RibbonIconViewMiscInvertScrollDirection" UriSource="pack://application:,,,/StarlightDirector;component/Resources/Icons/ViewMiscInvertScrollDirection.png"/>
 </ResourceDictionary>
