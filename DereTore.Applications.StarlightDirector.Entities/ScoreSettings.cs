@@ -41,7 +41,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return new ScoreSettings {
                 GlobalBpm = DefaultGlobalBpm,
                 StartTimeOffset = DefaultStartTimeOffset,
-                GlobalGridPerSignature = DefaultGlobalGridPerSignature, // 最高分辨率为九十六分音符
+                GlobalGridPerSignature = DefaultGlobalGridPerSignature, // 最高分辨率为三百八十四分音符
                 GlobalSignature = DefaultGlobalSignature // 4/4拍
             };
         }

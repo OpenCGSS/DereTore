@@ -16,12 +16,6 @@
     <SolidColorBrush x:Key="CuteFillBrush" Color="{StaticResource CuteFillColor}"/>
     <SolidColorBrush x:Key="CoolFillBrush" Color="{StaticResource CoolFillColor}"/>
     <SolidColorBrush x:Key="PassionFillBrush" Color="{StaticResource PassionFillColor}"/>
-    <Color x:Key="BarStrokeColor" A="#FF" R="#56" G="#56" B="#56"/>
-    <Color x:Key="BarStrokeStressColor" A="#FF" R="#D5" G="#D5" B="#D5"/>
-    <Color x:Key="BarStrokeFirstColor" A="#FF" R="#CC" G="#CC" B="#10"/>
-    <SolidColorBrush x:Key="BarStrokeBrush" Color="{StaticResource BarStrokeColor}"/>
-    <SolidColorBrush x:Key="BarStrokeStressBrush" Color="{StaticResource BarStrokeStressColor}"/>
-    <SolidColorBrush x:Key="BarStrokeFirstBrush" Color="{StaticResource BarStrokeFirstColor}"/>
 
     <SolidColorBrush x:Key="SyncNoteBorderBrush" Color="DodgerBlue"/>
     <SolidColorBrush x:Key="FlickNoteBorderBrush" Color="Green"/>

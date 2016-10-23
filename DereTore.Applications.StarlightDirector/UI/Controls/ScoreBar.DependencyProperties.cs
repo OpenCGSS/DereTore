@@ -5,12 +5,7 @@ using DereTore.Applications.StarlightDirector.Entities;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreBar {
-
-        public Brush Stroke {
-            get { return (Brush)GetValue(StrokeProperty); }
-            set { SetValue(StrokeProperty, value); }
-        }
-
+        
         public double TextColumnWidth {
             get { return (double)GetValue(TextColumnWidthProperty); }
             set { SetValue(TextColumnWidthProperty, value); }
@@ -24,6 +19,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public double SpaceColumnWidth {
             get { return (double)GetValue(SpaceColumnWidthProperty); }
             set { SetValue(SpaceColumnWidthProperty, value); }
+        }
+
+        public double InfoStrokeThickness {
+            get { return (double)GetValue(InfoStrokeThicknessProperty); }
+            set { SetValue(InfoStrokeThicknessProperty, value); }
         }
 
         public Bar Bar {
@@ -51,16 +51,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(InfoBrushProperty, value); }
         }
 
-        public double GridStrokeThickness {
-            get { return (double)GetValue(GridStrokeThicknessProperty); }
-            set { SetValue(GridStrokeThicknessProperty, value); }
-        }
-
-        public double InfoStrokeThickness {
-            get { return (double)GetValue(InfoStrokeThicknessProperty); }
-            set { SetValue(InfoStrokeThicknessProperty, value); }
-        }
-
         public double MinimumZoomHeight {
             get { return (double)GetValue(MinimumZoomHeightProperty); }
             set { SetValue(MinimumZoomHeightProperty, value); }
@@ -71,9 +61,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(NoteRadiusProperty, value); }
         }
 
-        public static readonly DependencyProperty StrokeProperty = DependencyProperty.Register(nameof(Stroke), typeof(Brush), typeof(ScoreBar),
-            new FrameworkPropertyMetadata(Application.Current.FindResource(App.ResourceKeys.BarStrokeBrush), FrameworkPropertyMetadataOptions.AffectsRender));
-
         public static readonly DependencyProperty TextColumnWidthProperty = DependencyProperty.Register(nameof(TextColumnWidth), typeof(double), typeof(ScoreBar),
             new FrameworkPropertyMetadata(75d, FrameworkPropertyMetadataOptions.AffectsArrange, OnTextColumnWidthChanged));
 
@@ -82,6 +69,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty SpaceColumnWidthProperty = DependencyProperty.Register(nameof(SpaceColumnWidth), typeof(double), typeof(ScoreBar),
             new FrameworkPropertyMetadata(75d, FrameworkPropertyMetadataOptions.AffectsArrange, OnSpaceColumnWidthChanged));
+
+        public static readonly DependencyProperty InfoStrokeThicknessProperty = DependencyProperty.Register(nameof(InfoStrokeThickness), typeof(double), typeof(ScoreBar),
+            new FrameworkPropertyMetadata(3d));
 
         public static readonly DependencyProperty BarProperty = DependencyProperty.Register(nameof(Bar), typeof(Bar), typeof(ScoreBar),
             new FrameworkPropertyMetadata(null, OnBarChanged));
@@ -97,12 +87,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty InfoBrushProperty = DependencyProperty.Register(nameof(InfoBrush), typeof(Brush), typeof(ScoreBar),
             new FrameworkPropertyMetadata(Brushes.White, FrameworkPropertyMetadataOptions.AffectsRender, OnInfoBrushChanged));
-
-        public static readonly DependencyProperty GridStrokeThicknessProperty = DependencyProperty.Register(nameof(GridStrokeThickness), typeof(double), typeof(ScoreBar),
-            new FrameworkPropertyMetadata(1d, FrameworkPropertyMetadataOptions.AffectsMeasure));
-
-        public static readonly DependencyProperty InfoStrokeThicknessProperty = DependencyProperty.Register(nameof(InfoStrokeThickness), typeof(double), typeof(ScoreBar),
-            new FrameworkPropertyMetadata(3d, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         public static readonly DependencyProperty MinimumZoomHeightProperty = DependencyProperty.Register(nameof(MinimumZoomHeight), typeof(double), typeof(ScoreBar),
             new FrameworkPropertyMetadata(30d, FrameworkPropertyMetadataOptions.AffectsMeasure, OnMinimumZoomHeightChanged));

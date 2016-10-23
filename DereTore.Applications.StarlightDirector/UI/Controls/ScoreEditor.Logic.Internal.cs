@@ -120,7 +120,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var height = -MinimumScrollOffset;
             if (ScoreBars.Count > 0) {
                 height += ScoreBars.Sum(scoreBar => scoreBar.Height);
-                height += ScoreBars[ScoreBars.Count - 1].GridStrokeThickness;
+                height += ScoreBar.GridStrokeThickness;
             }
             Height = height;
         }

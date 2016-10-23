@@ -221,6 +221,7 @@
     </Compile>
     <Compile Include="UI\Controls\ScoreBar.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreBar.Placeholder.cs" />
+    <Compile Include="UI\Controls\ScoreBar.Rendering.cs" />
     <Compile Include="UI\Controls\ScoreBar.TextAndLocation.cs" />
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
