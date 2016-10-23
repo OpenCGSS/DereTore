@@ -1,9 +1,9 @@
 # DereTore
 
-[![AppVeyor](https://img.shields.io/appveyor/ci/hozuki/DereTore.svg)](https://github.com/hozuki/DereTore)
-[![GitHub contributors](https://img.shields.io/github/contributors/hozuki/DereTore.svg)](https://github.com/hozuki/DereTore)
+[![AppVeyor](https://img.shields.io/appveyor/ci/hozuki/DereTore.svg)](https://ci.appveyor.com/project/hozuki/deretore)
+[![GitHub contributors](https://img.shields.io/github/contributors/hozuki/DereTore.svg)](https://github.com/hozuki/DereTore/graphs/contributors)
 [![Libraries.io for GitHub](https://img.shields.io/librariesio/github/hozuki/DereTore.svg)](https://github.com/houzki/DereTore)
-[![Github All Releases](https://img.shields.io/github/downloads/hozuki/DereTore/total.svg)](https://github.com/hozuki/DereTore)
+[![Github All Releases](https://img.shields.io/github/downloads/hozuki/DereTore/total.svg)](https://github.com/hozuki/DereTore/releases)
 
 The goal of DereTore is to improve gaming experience in [Idolmaster Cinderella Girls: Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
 (CGSS/DereSute), or even to customize it a little bit.
