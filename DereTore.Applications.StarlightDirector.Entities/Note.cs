@@ -123,15 +123,32 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public bool HasNextFlick => Type == NoteType.TapOrFlick && NextFlickNote != null;
 
-        [Obsolete("This property is not used since project version v0.4. Use PrevSyncTargetID and NextSyncTargetID instead.")]
+        [Obsolete("This property is provided for forward compatibility only.")]
         [JsonProperty]
-        public int SyncTargetID { get; internal set; }
-
-        //[JsonProperty]
-        public int PrevSyncTargetID { get; internal set; }
-
-        //[JsonProperty]
-        public int NextSyncTargetID { get; internal set; }
+        public int SyncTargetID {
+            get {
+                // For legacy versions that generate sync connection from this field
+                // Connect the first note and the last note of sync groups
+                if (HasPrevSync) {
+                    if (HasNextSync) {
+                        return EntityID.Invalid;
+                    }
+                    var final = PrevSyncTarget;
+                    for (; final.HasPrevSync; final = final.PrevSyncTarget)
+                        ;
+                    return final.ID;
+                } else {
+                    if (!HasNextSync) {
+                        return EntityID.Invalid;
+                    }
+                    var final = NextSyncTarget;
+                    for (; final.HasNextSync; final = final.NextSyncTarget)
+                        ;
+                    return final.ID;
+                }
+            }
+            internal set { }
+        }
 
         public Note PrevSyncTarget {
             get {
@@ -470,13 +487,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         private void SetPrevSyncTargetInternal(Note prev) {
             _prevSyncTarget = prev;
             IsSync = _prevSyncTarget != null || _nextSyncTarget != null;
-            PrevSyncTargetID = prev?.ID ?? EntityID.Invalid;
         }
 
         private void SetNextSyncTargetInternal(Note next) {
             _nextSyncTarget = next;
             IsSync = _prevSyncTarget != null || _nextSyncTarget != null;
-            NextSyncTargetID = next?.ID ?? EntityID.Invalid;
         }
 
         private Note _prevFlickNote;

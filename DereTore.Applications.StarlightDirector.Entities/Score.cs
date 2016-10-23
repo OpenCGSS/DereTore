@@ -125,12 +125,6 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 if (!note.IsGamingNote) {
                     continue;
                 }
-                if (note.PrevSyncTargetID != EntityID.Invalid) {
-                    note.PrevSyncTarget = FindNoteByID(note.PrevSyncTargetID);
-                }
-                if (note.NextSyncTargetID != EntityID.Invalid) {
-                    note.NextSyncTarget = FindNoteByID(note.NextSyncTargetID);
-                }
                 if (note.NextFlickNoteID != EntityID.Invalid) {
                     note.NextFlickNote = FindNoteByID(note.NextFlickNoteID);
                 }
