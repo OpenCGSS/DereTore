@@ -1,21 +1,24 @@
 # DereTore
 
-[![Build status](https://ci.appveyor.com/api/projects/status/08drntgkuv3vxtom?svg=true)](https://ci.appveyor.com/project/hozuki/deretore)
+[![AppVeyor](https://img.shields.io/appveyor/ci/hozuki/DereTore.svg)](https://github.com/hozuki/DereTore)
+[![GitHub contributors](https://img.shields.io/github/contributors/hozuki/DereTore.svg)](https://github.com/hozuki/DereTore)
+[![Libraries.io for GitHub](https://img.shields.io/librariesio/github/hozuki/DereTore.svg)](https://github.com/houzki/DereTore)
+[![Github All Releases](https://img.shields.io/github/downloads/hozuki/DereTore/total.svg)](https://github.com/hozuki/DereTore)
 
-The goal of DereTore is to improve gaming experience in [The Idolmaster Cinderella Girls Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
-(CGSS), or even to customize it a little bit.
+The goal of DereTore is to improve gaming experience in [Idolmaster Cinderella Girls: Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
+(CGSS/DereSute), or even to customize it a little bit.
 
-Downloads:
+**Downloads:**
 
 - [Nightly build](https://ci.appveyor.com/api/projects/hozuki/DereTore/artifacts/deretore-toolkit-x86.zip?job=Platform%3A+x86) (Windows, x86)
 - [Releases](https://github.com/hozuki/DereTore/releases)
 
-Wonder [how this name comes from](#the-name)?
+Wonder [how this name comes from](Notes.md#the-name)?
 
 ## Building
 
 1. Clone from [GitHub](https://github.com/hozuki/DereTore.git): `git clone https://github.com/hozuki/DereTore.git`;
-2. Install missing NuGet packages: `nuget restore DereTore.sln`;
+2. Install missing NuGet packages: `nuget restore DereTore.sln` (or use NuGet Package Manager in Visual Studio);
 3. Open `DereTore.sln` in Visual Studio (VS2010 SP1 or later is required);
 4. Build the solution.
 
@@ -96,7 +99,7 @@ An application that unpacks ACB archives.
 
 ### Other
 
-**DereTore.Utilities.LZ4**
+**LZ4**
 
 An LZ4 compression utility for compressing game data. It is designed for IdolProxy.
 
@@ -106,31 +109,4 @@ This solution uses **_modified_** [MIT License](http://mit-license.org/). See it
 
 ## Notes
 
-### The Name
-
-The name DereTore (デレトレ) is the short form of "Cinderella Trainer" (シン**デレ**ラ **トレ**イナー), in response to the
-official abbreviation of CGSS, DereSute (デレステ), which is the short form of the game title (アイドルマスター シン**デレ**ラ ガールズ スターライト **ステ**ージ).
-
-### The History
-
-DereTore was at first targetted to Unity3D, creating a mini game that can play live music as in CGSS. That's why the language levels
-in `DereTore.HCA` and `DereTore.ACB` were C# 4.0, the last C# version supported by Unity3D. Other projects serve as utilities
-or tests, therefore restrictions on those projects are fewer. Now that the solution targets Windows PC, all the projects use the
-latest C# version.
-
-Its new goal is to improve the gaming experience, adding features to the original game. Now, the projects are more like a CGSS toolkit
-written in C#.
-
-Early versions of DereTore apply [WTFPL](http://www.wtfpl.net/) for most of the components. However, newer versions embrace MIT License.
-
-### About the Word "score"
-
-CGSS is a music game, and its basic interacting element is **note**. The word **score** is used to reference the full collection of
-notes in a single gameplay, a single song. So it is more likely to be a term, rather than scores for composers or matches. See the
-[music video game](https://en.wikipedia.org/wiki/Music_video_game) entry on Wikipedia. Still, I don't know why the developers from
-Cygames use "atapon", which is the abbreviation of [a song](http://www.project-imas.com/wiki/Atashi_Ponkotsu_Android), all over the code.
-
-### Customizing CGSS
-
-Please keep in mind that cheating is notorious, and tearing the game apart is illegal. So please, DO NOT transmit evil data, and DO
-keep the game in its original state.
+See [here](Notes.md).
