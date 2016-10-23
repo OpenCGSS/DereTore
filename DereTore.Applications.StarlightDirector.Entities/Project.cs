@@ -31,6 +31,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public ScoreSettings Settings { get; }
 
+        public HashSet<int> ExistingIDs { get; } = new HashSet<int>();
+
         [JsonProperty]
         public string MusicFileName {
             get { return (string)GetValue(MusicFileNameProperty); }
