@@ -209,9 +209,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private void ScoreEditor_OnMouseDown(object sender, MouseButtonEventArgs e) {
             UnselectAllScoreNotes();
             UnselectAllScoreBars();
-            if (EditMode != EditMode.Select) {
-                EditMode = EditMode.Select;
-            }
         }
 
         private void ScoreEditor_OnMouseUp(object sender, MouseButtonEventArgs e) {
