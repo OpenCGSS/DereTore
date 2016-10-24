@@ -26,7 +26,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                 return;
             }
             FillDifficultyMappingComboBoxes();
-            FillMusicComboBoxes();
+            if (!this.GetIsInDesingMode()) {
+                FillMusicComboBoxes();
+            }
             CheckAcbBuildingEnvironment();
             AcbBuildLogScroller.ScrollToEnd();
             _musicListInitialized = true;

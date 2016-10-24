@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
+using System.Windows;
 
 namespace DereTore.Applications.StarlightDirector {
     public static class DirectorHelper {
@@ -30,6 +32,11 @@ namespace DereTore.Applications.StarlightDirector {
                 relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             }
             return relativePath;
+        }
+
+        // http://stackoverflow.com/questions/834283/is-there-a-way-to-check-if-wpf-is-currently-executing-in-design-mode-or-not
+        public static bool GetIsInDesingMode(this DependencyObject dependencyObject) {
+            return DesignerProperties.GetIsInDesignMode(dependencyObject);
         }
 
     }
