@@ -1,10 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Timers;
-using System.Windows;
-using System.Windows.Input;
-using DereTore.Applications.StarlightDirector.Entities;
-using DereTore.Applications.StarlightDirector.Extensions;
 using DereTore.Interop;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
@@ -41,96 +36,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             }
         }
 
-        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e) {
-            var backupFileName = GetBackupFileNameIfExists();
-            if (backupFileName != null) {
-                var format = Application.Current.FindResource<string>(App.ResourceKeys.AutoSaveFileFoundPromptTemplate);
-                var message = string.Format(format, backupFileName);
-                var messageResult = MessageBox.Show(message, App.Title, MessageBoxButton.YesNo, MessageBoxImage.Question);
-                switch (messageResult) {
-                    case MessageBoxResult.Yes:
-                        LoadBackup();
-                        ScrollViewer.ScrollToEnd();
-                        break;
-                    case MessageBoxResult.No:
-                        Project = Project.Current;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(messageResult));
-                }
-            } else {
-                Project = Project.Current;
-            }
-            _autoSaveTimer.Start();
-        }
-
-        private void Project_DifficultyChanged(object sender, EventArgs e) {
-            var project = Project;
-            Editor.Score = project?.GetScore(project.Difficulty);
-        }
-
-        private void MainWindow_OnClosing(object sender, CancelEventArgs e) {
-            if (ShouldPromptSaving) {
-                var result = MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.ProjectChangedPrompt), App.Title, MessageBoxButton.YesNoCancel, MessageBoxImage.Exclamation);
-                switch (result) {
-                    case MessageBoxResult.Yes:
-                        if (CmdFileSaveProject.CanExecute(null)) {
-                            CmdFileSaveProject.Execute(null);
-                        }
-                        if (!Project.IsSaved) {
-                            e.Cancel = true;
-                            return;
-                        }
-                        break;
-                    case MessageBoxResult.No:
-                        break;
-                    case MessageBoxResult.Cancel:
-                        e.Cancel = true;
-                        return;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(result), result, null);
-                }
-            }
-            _autoSaveTimer.Stop();
-            ClearBackup();
-
-            _temporaryMessageTimer.Elapsed -= TemporaryMessageTimer_OnElapsed;
-            _temporaryMessageTimer?.Dispose();
-            _temporaryMessageTimer = null;
-            _autoSaveTimer.Elapsed -= AutoSaveTimer_OnElapsed;
-            _autoSaveTimer?.Dispose();
-            _autoSaveTimer = null;
-        }
-
-        private void MainWindow_OnSourceInitialized(object sender, EventArgs e) {
-            this.RegisterWndProc(WndProc);
-        }
-
-        private void ScrollViewer_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e) {
-            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) {
-                if (e.Delta > 0) {
-                    Editor.ZoomIn();
-                } else {
-                    Editor.ZoomOut();
-                }
-                e.Handled = true;
-            }
-        }
-
         private void OnDwmColorizationColorChanged(object sender, EventArgs e) {
             AccentColorBrush = UIHelper.GetWindowColorizationBrush();
-        }
-
-        private void TemporaryMessageTimer_OnElapsed(object sender, ElapsedEventArgs e) {
-            Dispatcher.Invoke(new Action(() => {
-                _temporaryMessageTimer.Stop();
-                IsTemporaryMessageVisible = false;
-                TemporaryMessage = string.Empty;
-            }));
-        }
-
-        private void AutoSaveTimer_OnElapsed(object sender, ElapsedEventArgs e) {
-            Dispatcher.Invoke(new Action(SaveBackup));
         }
 
         private IntPtr WndProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam, ref bool handled) {

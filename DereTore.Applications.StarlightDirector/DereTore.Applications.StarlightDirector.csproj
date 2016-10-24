@@ -277,6 +277,7 @@
     <Compile Include="UI\Windows\MainWindow.Commands.Music.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.View.cs" />
     <Compile Include="UI\Windows\MainWindow.DependencyProperties.cs" />
+    <Compile Include="UI\Windows\MainWindow.EventHandlers.cs" />
     <Compile Include="UI\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

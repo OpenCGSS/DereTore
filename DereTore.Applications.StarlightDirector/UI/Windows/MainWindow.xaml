@@ -152,15 +152,28 @@
                     </fluent:DropDownButton>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Miscellaneous">
-                    <fluent:ToggleButton Header="Note relation indicator" Command="{x:Static local:MainWindow.CmdViewMiscSetRelationIndicatorsVisibility}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked, Mode=OneWay}"
+                    <fluent:ComboBox Header="Scroll Speed" IsEditable="False" HorizontalAlignment="Left" InputWidth="80" SelectedIndex="4">
+                        <ComboBoxItem Content="1" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="2" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="3" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="4" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="5" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="6" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="7" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="8" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="9" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                        <ComboBoxItem Content="10" Selected="ScrollSpeedComboBoxItem_OnSelected"/>
+                    </fluent:ComboBox>
+                    <fluent:ToggleButton Header="Note Relation Indicator" Command="{x:Static local:MainWindow.CmdViewMiscSetRelationIndicatorsVisibility}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked, Mode=OneWay}"
                                          Icon="{StaticResource RibbonIconViewMiscRelationIndicatorVisibility}" Size="Middle"/>
-                    <fluent:ToggleButton Header="Inverted scrolling" Command="{x:Static local:MainWindow.CmdViewMiscInvertScrollDirection}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked, Mode=OneWay}"
+                    <fluent:ToggleButton Header="Inverted Scrolling" Command="{x:Static local:MainWindow.CmdViewMiscInvertScrollDirection}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked, Mode=OneWay}"
                                          Icon="{StaticResource RibbonIconViewMiscInvertScrollDirection}" Size="Middle"/>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
         <Grid Grid.Row="2" Background="#FF181818">
-            <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="10" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
+            <!-- CustomScroll.ScrollSpeed is still needed because when the ComboBox item is selected, the ScrollViewer has not been set yet. -->
+            <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="5" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
                                       ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}">
