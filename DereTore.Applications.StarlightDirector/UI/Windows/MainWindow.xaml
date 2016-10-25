@@ -185,25 +185,17 @@
                         </fluent:ContextMenu>
                     </controls:ScoreEditor.ContextMenu>
                 </controls:ScoreEditor>
-                <!--<ScrollBar Grid.Column="1" Name="Scroll" Value="{Binding ElementName=Editor, Path=ScrollOffset, Converter={StaticResource NegateConverter}}"
-                       Minimum="{Binding ElementName=Editor, Path=MinimumScrollOffset, Mode=OneWay}"
-                       Maximum="{Binding ElementName=Editor, Path=MaximumScrollOffset, Mode=OneWay}"
-                       SmallChange="{Binding ElementName=Editor, Path=SmallChange, Mode=OneWay}"
-                       LargeChange="{Binding ElementName=Editor, Path=LargeChange, Mode=OneWay}"/>-->
             </ScrollViewer>
-            <!--<Grid Width="150" Height="250" RenderTransformOrigin="0 0" HorizontalAlignment="Left" VerticalAlignment="Stretch">
+            <!--<Grid Width="150" Height="250" RenderTransformOrigin="0 0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=Background, Mode=OneTime}">
                 <Viewbox DataContext="{Binding ElementName=ScrollViewer}" Stretch="UniformToFill" HorizontalAlignment="Stretch">
                     <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Rectangle Grid.Column="0" Width="{Binding Content.ActualWidth}" Height="{Binding Content.ActualHeight}" MinWidth="150">
+                        <Rectangle Width="{Binding Content.ActualWidth}" Height="{Binding Content.ActualHeight}" HorizontalAlignment="Left">
                             <Rectangle.Fill>
                                 <VisualBrush Visual="{Binding Content}"/>
                             </Rectangle.Fill>
                         </Rectangle>
-                        <Border Grid.Column="0" BorderThickness="1" BorderBrush="Black" Background="#22FFFFFF" Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}"
-                            HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="150">
+                        <Border BorderThickness="1" BorderBrush="LightGray" Background="#22FFFFFF" Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}"
+                                HorizontalAlignment="Left" VerticalAlignment="Top">
                             <Border.RenderTransform>
                                 <TranslateTransform X="{Binding HorizontalOffset, Mode=OneWay}" Y="{Binding VerticalOffset, Mode=OneWay}"/>
                             </Border.RenderTransform>
