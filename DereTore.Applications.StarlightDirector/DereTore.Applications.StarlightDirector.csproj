@@ -225,6 +225,7 @@
     <Compile Include="UI\Controls\ScoreBar.TextAndLocation.cs" />
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScoreViewerBase.cs" />
     <Compile Include="UI\Controls\SpecialNotePointer.Commands.cs" />
     <Compile Include="UI\Controls\SpecialNotePointer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\SpecialNotePointer.xaml.cs">
@@ -232,6 +233,7 @@
     </Compile>
     <Compile Include="UI\Converters\ConverterGroupParameters.cs" />
     <Compile Include="UI\Converters\EquityConverter.cs" />
+    <Compile Include="UI\Converters\NoteFlickTypeToHorizontalMirrorConverter.cs" />
     <Compile Include="UI\Converters\MultiValueConverterGroup.cs" />
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
     <Compile Include="UI\Converters\NullableBooleanToVisibilityConverter.cs" />

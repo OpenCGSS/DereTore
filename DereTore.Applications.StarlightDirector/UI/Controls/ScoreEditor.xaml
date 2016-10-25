@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="DereTore.Applications.StarlightDirector.UI.Controls.ScoreEditor"
+﻿<local:ScoreViewerBase x:Class="DereTore.Applications.StarlightDirector.UI.Controls.ScoreEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="284.667" d:DesignWidth="460.667"
              Background="Transparent" Focusable="True" IsTabStop="True"
-             FocusVisualStyle="{x:Null}" Name="Me"
+             FocusVisualStyle="{x:Null}" x:Name="Me"
              MouseDown="ScoreEditor_OnMouseDown" MouseUp="ScoreEditor_OnMouseUp"
              PreviewMouseDown="ScoreEditor_OnPreviewMouseDown" PreviewMouseUp="ScoreEditor_OnPreviewMouseUp" PreviewMouseMove="ScoreEditor_OnPreviewMouseMove">
     <Grid HorizontalAlignment="Center">
@@ -28,4 +28,4 @@
         <local:LineLayer Grid.Column="1" x:Name="LineLayer"/>
         <Canvas Grid.Column="1" Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
     </Grid>
-</UserControl>
+</local:ScoreViewerBase>

@@ -3,20 +3,10 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities;
-using DereTore.Applications.StarlightDirector.Extensions;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
-
-        //public double ScrollOffset {
-        //    get { return (double)GetValue(ScrollOffsetProperty); }
-        //    set {
-        //        value = -MathHelper.Clamp(-value, MinimumScrollOffset, MaximumScrollOffset);
-        //        SetValue(ScrollOffsetProperty, value);
-        //    }
-        //}
 
         public double MinimumScrollOffset {
             get { return (double)GetValue(MinimumScrollOffsetProperty); }
@@ -53,13 +43,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             set { SetValue(ScrollViewerProperty, value); }
         }
 
-        public bool AreRelationIndicatorsVisible {
-            get { return (bool)GetValue(AreRelationIndicatorsVisibleProperty); }
-            set { SetValue(AreRelationIndicatorsVisibleProperty, value); }
-        }
-
         public static readonly DependencyProperty MinimumScrollOffsetProperty = DependencyProperty.Register(nameof(MinimumScrollOffset), typeof(double), typeof(ScoreEditor),
-            new PropertyMetadata(-45d));
+             new PropertyMetadata(-45d));
 
         public static readonly DependencyProperty ScoreProperty = DependencyProperty.Register(nameof(Score), typeof(Score), typeof(ScoreEditor),
             new PropertyMetadata(null, OnScoreChanged));
@@ -78,15 +63,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public static readonly DependencyProperty ScrollViewerProperty = DependencyProperty.Register(nameof(ScrollViewer), typeof(ScrollViewer), typeof(ScoreEditor),
             new PropertyMetadata(null));
-
-        public static readonly DependencyProperty AreRelationIndicatorsVisibleProperty = DependencyProperty.Register(nameof(AreRelationIndicatorsVisible), typeof(bool), typeof(ScoreEditor),
-          new PropertyMetadata(false));
-
-        private static void OnScrollOffsetChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
-            var editor = obj as ScoreEditor;
-            Debug.Assert(editor != null, "editor != null");
-            editor.RecalcEditorLayout();
-        }
 
         private static void OnScoreChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = obj as ScoreEditor;
