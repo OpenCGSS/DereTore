@@ -42,6 +42,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var visibleGridCountPerSignature = gridPerSignature / zoomMod;
             var hasPartialGrids = visibleGridCountPerSignature * zoomMod != gridPerSignature;
 
+            if (visibleGridCountPerSignature <= 0) {
+                return;
+            }
+
             for (var i = 0; i <= totalGridCount; ++i) {
                 if (i % zoomMod != 0 && i != totalGridCount) {
                     // Only draws key beats.
