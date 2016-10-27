@@ -2,7 +2,7 @@
 
 ## Score Editor
 
-- [ ] <del>Note hit volume adjustment</del> (not possible)
+- [x] Note hit volume adjustment
 - [x] Note falling speed adjustment
 
 ## Starlight Director
@@ -19,14 +19,14 @@
   - [ ] Undo and redo
   - [ ] Drag note
   - [ ] Edge scrolling (for inter-measure hold notes)
-  - [ ] Auto handling sync notes
+  - [x] Auto handling sync notes
   - [ ] Convenient start time offset calibration (e.g. moving the time forward by 1 measure)
   - [x] Binding frequently used keys (PgUp, PgDn, Home, End, etc.)
   - [x] Zooming
     - [x] Auto re-aligning when zooming
     - [x] Quick zooming to the level of seeing 1/8, 1/16, 1/24 note, etc.
   - [x] More efficient rendering (`ScrollViewer`)
-    - [ ] Score Lens
+    - [x] Score Lens
 - [x] Preview
   - [ ] <del>Live preview</del> (see Deleste)
   - [ ] Inlined audio spectrum
