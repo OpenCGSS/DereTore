@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="DereTore.Applications.StarlightDirector.UI.Controls.ScrollViewerThumbnail"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
+             xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
+             xmlns:mathOp="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters.MathOp"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             Name="Me" ClipToBounds="True">
+    <Canvas Width="{Binding ElementName=Me, Path=ActualWidth, Mode=OneWay}" Height="{Binding ElementName=Me, Path=ActualHeight, Mode=OneWay}">
+        <Rectangle Name="ContentRect" DataContext="{Binding ElementName=Me, Path=ScrollViewer, Mode=OneWay}"
+                   Width="{Binding Content.ActualWidth}" Height="{Binding Content.ActualHeight}">
+            <Rectangle.Fill>
+                <VisualBrush Visual="{Binding Content}" />
+            </Rectangle.Fill>
+            <Rectangle.RenderTransform>
+                <ScaleTransform/>
+            </Rectangle.RenderTransform>
+            <!--<Rectangle.RenderTransform>
+                <TranslateTransform X="{Binding HorizontalOffset, Converter={StaticResource NegateConverter}, Mode=OneWay}">
+                    <TranslateTransform.Y>
+                        <MultiBinding Mode="OneWay">
+                            <MultiBinding.Converter>
+                                <mathOp:MathExpressionConverter>
+                                    <mathOp:MathDivideConverter/>
+                                    <mathOp:MathSubtractConverter/>
+                                    <mathOp:RightParenConverter/>
+                                    <mathOp:MathDivideConverter/>
+                                    <mathOp:MathMultiplyConverter/>
+                                </mathOp:MathExpressionConverter>
+                            </MultiBinding.Converter>
+                            <Binding Path="Content.ActualHeight" Mode="OneWay"/>
+                            <Binding Converter="{StaticResource MathConstantConverter}" ConverterParameter="2" Mode="OneTime"/>
+                            <Binding Path="VerticalOffset" Mode="OneWay"/>
+                            <Binding Path="Content.ActualWidth" Mode="OneWay"/>
+                            <Binding ElementName="Me" Path="ActualWidth" Mode="OneWay"/>
+                        </MultiBinding>
+                    </TranslateTransform.Y>
+                </TranslateTransform>
+            </Rectangle.RenderTransform>-->
+        </Rectangle>
+    </Canvas>
+</UserControl>

@@ -11,7 +11,7 @@
         xmlns:pages="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
         xmlns:fluent="urn:fluent-ribbon"
         mc:Ignorable="d" Name="Me" WindowStartupLocation="CenterScreen"
-        Title="Starlight Director" Width="920" Height="620" MinWidth="750" MinHeight="400"
+        Title="Starlight Director" Width="920" Height="620" MinWidth="920" MinHeight="400"
         Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" SourceInitialized="MainWindow_OnSourceInitialized">
     <Grid>
         <Grid.RowDefinitions>
@@ -176,6 +176,7 @@
             <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="5" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
+                                      Width="720" HorizontalAlignment="Center"
                                       ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}">
                     <controls:ScoreEditor.ContextMenu>
                         <fluent:ContextMenu>
@@ -186,26 +187,7 @@
                     </controls:ScoreEditor.ContextMenu>
                 </controls:ScoreEditor>
             </ScrollViewer>
-            <!--<Grid Width="150" Height="250" RenderTransformOrigin="0 0" HorizontalAlignment="Left" VerticalAlignment="Stretch" Background="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=Grid}, Path=Background, Mode=OneTime}">
-                <Viewbox DataContext="{Binding ElementName=ScrollViewer}" Stretch="UniformToFill" HorizontalAlignment="Stretch">
-                    <Grid>
-                        <Rectangle Width="{Binding Content.ActualWidth}" Height="{Binding Content.ActualHeight}" HorizontalAlignment="Left">
-                            <Rectangle.Fill>
-                                <VisualBrush Visual="{Binding Content}"/>
-                            </Rectangle.Fill>
-                        </Rectangle>
-                        <Border BorderThickness="1" BorderBrush="LightGray" Background="#22FFFFFF" Width="{Binding ViewportWidth}" Height="{Binding ViewportHeight}"
-                                HorizontalAlignment="Left" VerticalAlignment="Top">
-                            <Border.RenderTransform>
-                                <TranslateTransform X="{Binding HorizontalOffset, Mode=OneWay}" Y="{Binding VerticalOffset, Mode=OneWay}"/>
-                            </Border.RenderTransform>
-                        </Border>
-                        <Grid.RenderTransform>
-                            <TranslateTransform X="{Binding HorizontalOffset, Mode=OneWay, Converter={StaticResource NegateConverter}}" Y="{Binding VerticalOffset, Mode=OneWay, Converter={StaticResource NegateConverter}}"/>
-                        </Grid.RenderTransform>
-                    </Grid>
-                </Viewbox>
-            </Grid>-->
+            <controls:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
         </Grid>
         <Grid Grid.Row="3">
             <StatusBar>

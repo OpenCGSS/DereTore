@@ -20,12 +20,20 @@ namespace DereTore.Applications.StarlightDirector.UI.Converters {
                 ++i;
                 var multiValueConverter = converter as IMultiValueConverter;
                 if (multiValueConverter != null) {
-                    current = multiValueConverter.Convert((object[])current, targetType, param[i], culture);
+                    if (current is object[]) {
+                        current = multiValueConverter.Convert((object[])current, targetType, param[i], culture);
+                    } else {
+                        current = multiValueConverter.Convert(new[] { current }, targetType, param[i], culture);
+                    }
                     continue;
                 }
                 var valueConverter = converter as IValueConverter;
                 if (valueConverter != null) {
-                    current = valueConverter.Convert(current, targetType, param[i], culture);
+                    if (current is object[]) {
+                        current = valueConverter.Convert(((object[])current)[0], targetType, param[i], culture);
+                    } else {
+                        current = valueConverter.Convert(current, targetType, param[i], culture);
+                    }
                     continue;
                 }
                 throw new ArgumentException("One of the converters is not IValueConverter or IMultiValueConverter.");

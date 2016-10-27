@@ -170,6 +170,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Controls\ScrollViewerThumbnail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\SpecialNotePointer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -226,6 +230,10 @@
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreViewerBase.cs" />
+    <Compile Include="UI\Controls\ScrollViewerThumbnail.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScrollViewerThumbnail.xaml.cs">
+      <DependentUpon>ScrollViewerThumbnail.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\SpecialNotePointer.Commands.cs" />
     <Compile Include="UI\Controls\SpecialNotePointer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\SpecialNotePointer.xaml.cs">
@@ -233,6 +241,18 @@
     </Compile>
     <Compile Include="UI\Converters\ConverterGroupParameters.cs" />
     <Compile Include="UI\Converters\EquityConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\BinaryOpConverterBase.cs" />
+    <Compile Include="UI\Converters\MathOp\LeftParenConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathConstantConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathConverterBase.cs" />
+    <Compile Include="UI\Converters\MathOp\MathExpressionConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathMultiplyConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathDivideConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathSubtractConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathAddConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\OpSymbolConverterBase.cs" />
+    <Compile Include="UI\Converters\MathOp\RightParenConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\UnaryOpConverterBase.cs" />
     <Compile Include="UI\Converters\NoteFlickTypeToHorizontalMirrorConverter.cs" />
     <Compile Include="UI\Converters\MultiValueConverterGroup.cs" />
     <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
@@ -258,7 +278,7 @@
     <Compile Include="UI\Converters\DifficultyToIndexConverter.cs" />
     <Compile Include="UI\Converters\DifficultyToIsCheckedConverter.cs" />
     <Compile Include="UI\Converters\EditModeToIsCheckedConverter.cs" />
-    <Compile Include="UI\Converters\NegateConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\NegateConverter.cs" />
     <Compile Include="UI\Converters\DoubleToStringConverter.cs" />
     <Compile Include="UI\Converters\PositiveDoubleToStringConverter.cs" />
     <Compile Include="UI\Converters\PositiveInt32ToStringConverter.cs" />
