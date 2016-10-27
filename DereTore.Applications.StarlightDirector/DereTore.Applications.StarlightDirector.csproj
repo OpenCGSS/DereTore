@@ -228,6 +228,12 @@
     <Compile Include="UI\Controls\ScoreBar.Rendering.cs" />
     <Compile Include="UI\Controls\ScoreBar.TextAndLocation.cs" />
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Editing.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.EventHandlers.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Helpers.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Layout.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Properties.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Viewing.cs" />
     <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreViewerBase.cs" />
     <Compile Include="UI\Controls\ScrollViewerThumbnail.DependencyProperties.cs" />
@@ -264,7 +270,7 @@
     <Compile Include="UI\Controls\ScoreBar.xaml.cs">
       <DependentUpon>ScoreBar.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\ScoreEditor.Logic.Internal.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Logic.Misc.cs" />
     <Compile Include="UI\Controls\ScoreEditor.xaml.cs">
       <DependentUpon>ScoreEditor.xaml</DependentUpon>
     </Compile>
@@ -332,7 +338,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <Compile Include="UI\Controls\ScoreEditor.Logic.Public.cs" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Icons\BarDelete.png" />
