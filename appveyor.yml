@@ -1,6 +1,6 @@
 # https://www.appveyor.com/docs/appveyor-yml/
 
-version: 0.5.3.{build}
+version: 0.6.0.{build}
 branches:
   only:
     - master
