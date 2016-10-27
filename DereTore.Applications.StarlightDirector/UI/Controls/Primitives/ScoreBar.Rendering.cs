@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities.Extensions;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls {
+namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
     partial class ScoreBar {
 
         public static readonly double GridStrokeThickness = 1d;

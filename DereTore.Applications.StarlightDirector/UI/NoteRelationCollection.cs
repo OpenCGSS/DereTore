@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DereTore.Applications.StarlightDirector.Entities;
-using DereTore.Applications.StarlightDirector.UI.Controls;
-using TupleType = System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>;
-using InternalEntryType = System.Collections.Generic.KeyValuePair<System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.ScoreNote>, DereTore.Applications.StarlightDirector.Entities.NoteRelation>;
+using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
+using TupleType = System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.Primitives.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.Primitives.ScoreNote>;
+using InternalEntryType = System.Collections.Generic.KeyValuePair<System.Tuple<DereTore.Applications.StarlightDirector.UI.Controls.Primitives.ScoreNote, DereTore.Applications.StarlightDirector.UI.Controls.Primitives.ScoreNote>, DereTore.Applications.StarlightDirector.Entities.NoteRelation>;
 
 namespace DereTore.Applications.StarlightDirector.UI {
     public sealed class NoteRelationCollection : IEnumerable<NoteRelationCollection.Entry> {

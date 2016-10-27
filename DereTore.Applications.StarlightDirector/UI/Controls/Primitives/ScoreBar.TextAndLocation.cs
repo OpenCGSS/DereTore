@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls {
+namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
     partial class ScoreBar {
 
         private sealed class TextAndLocation {

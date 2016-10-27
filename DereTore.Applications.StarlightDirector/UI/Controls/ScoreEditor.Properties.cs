@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {

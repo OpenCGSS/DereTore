@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls {
+namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
     public partial class ScoreNote {
 
         public ScoreNote() {

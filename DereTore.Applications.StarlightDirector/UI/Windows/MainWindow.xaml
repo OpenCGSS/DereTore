@@ -10,6 +10,7 @@
         xmlns:converters="clr-namespace:DereTore.Applications.StarlightDirector.UI.Converters"
         xmlns:pages="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
         xmlns:fluent="urn:fluent-ribbon"
+        xmlns:primitives="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Primitives"
         mc:Ignorable="d" Name="Me" WindowStartupLocation="CenterScreen"
         Title="Starlight Director" Width="920" Height="620" MinWidth="920" MinHeight="400"
         Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" SourceInitialized="MainWindow_OnSourceInitialized">
@@ -176,8 +177,7 @@
             <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="5" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
-                                      Width="720" HorizontalAlignment="Center"
-                                      ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}">
+                                      Width="635" HorizontalAlignment="Center" ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}">
                     <controls:ScoreEditor.ContextMenu>
                         <fluent:ContextMenu>
                             <fluent:MenuItem Header="Add s_pecial note">
@@ -187,7 +187,7 @@
                     </controls:ScoreEditor.ContextMenu>
                 </controls:ScoreEditor>
             </ScrollViewer>
-            <controls:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
+            <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
         </Grid>
         <Grid Grid.Row="3">
             <StatusBar>

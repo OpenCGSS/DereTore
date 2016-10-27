@@ -52,7 +52,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                         using (var dataTable = new DataTable()) {
                             adapter.Fill(dataTable);
                             foreach (DataRow dataRow in dataTable.Rows) {
-                                var record = new LiveMusicRecord() {
+                                var record = new LiveMusicRecord {
                                     LiveID = (int)(long)dataRow["live_id"],
                                     MusicID = (int)(long)dataRow["music_id"],
                                     MusicName = ((string)dataRow["music_name"]).Replace(@" \n", " ").Replace(@"\n", " "),

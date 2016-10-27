@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls {
+namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
     // http://www.thejoyofcode.com/Controllerizing_the_ScrollViewer_Thumbnail.aspx
     partial class ScrollViewerThumbnail {
 

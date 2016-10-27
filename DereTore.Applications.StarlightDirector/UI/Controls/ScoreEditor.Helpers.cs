@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
+using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {

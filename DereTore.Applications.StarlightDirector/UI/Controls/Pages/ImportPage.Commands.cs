@@ -4,9 +4,9 @@ using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Exchange;
 using DereTore.Applications.StarlightDirector.Extensions;
-using Microsoft.Win32;
 using DereTore.Applications.StarlightDirector.UI.Windows;
 using Fluent;
+using Microsoft.Win32;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
     partial class ImportPage {

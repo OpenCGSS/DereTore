@@ -5,7 +5,7 @@ using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Entities.Extensions;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls {
+namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
     public partial class ScoreBar {
 
         public ScoreBar() {

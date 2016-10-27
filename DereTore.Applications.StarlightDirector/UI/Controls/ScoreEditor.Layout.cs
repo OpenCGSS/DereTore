@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows.Controls;
 using DereTore.Applications.StarlightDirector.Entities.Extensions;
+using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
@@ -47,14 +48,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 return;
             }
             var scrollOffset = -MinimumScrollOffset;
-            var noteLayerWidth = NoteLayer.ActualWidth;
             var barHeight = ScoreBars[0].Height;
             foreach (var scoreNote in ScoreNotes) {
                 var note = scoreNote.Note;
                 var bar = note.Bar;
                 var baseY = scrollOffset + bar.Index * barHeight;
                 var extraY = barHeight * note.IndexInGrid / bar.GetTotalGridCount();
-                scoreNote.X = noteLayerWidth * (TrackCenterXPositions[note.IndexInTrack] - TrackCenterXPositions[0]) / (TrackCenterXPositions[4] - TrackCenterXPositions[0]);
+                // ScoreNote.X property is not required to recalc since v0.6.0. From this version the width of ScoreEditor is fixed.
                 scoreNote.Y = baseY + extraY;
             }
         }

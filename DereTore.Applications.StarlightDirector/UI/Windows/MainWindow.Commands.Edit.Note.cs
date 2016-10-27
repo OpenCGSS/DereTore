@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Entities;
-using DereTore.Applications.StarlightDirector.UI.Controls;
+using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {

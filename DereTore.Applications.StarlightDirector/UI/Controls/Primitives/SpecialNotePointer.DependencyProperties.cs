@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using DereTore.Applications.StarlightDirector.Entities;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls {
+namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
     partial class SpecialNotePointer {
 
         public Note Note {

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using DereTore.Applications.StarlightDirector.Entities;
-using DereTore.Applications.StarlightDirector.UI.Controls;
+using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 
 namespace DereTore.Applications.StarlightDirector.UI {
     public sealed class ScoreBarHitTestInfo {

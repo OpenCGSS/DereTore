@@ -27,7 +27,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <TextBlock FontSize="16">
-                        <Run Text="{Binding Path=Key, Mode=OneWay}"/>: <Run Text="{Binding Path=Value, Mode=OneWay}"></Run>
+                        <Run Text="{Binding Path=Key, Mode=OneWay}"/>: <Run Text="{Binding Path=Value, Mode=OneWay}"/>
                     </TextBlock>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

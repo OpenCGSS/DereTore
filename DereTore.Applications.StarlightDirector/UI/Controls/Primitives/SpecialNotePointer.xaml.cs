@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Extensions;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls {
+namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
     public partial class SpecialNotePointer {
 
         public SpecialNotePointer() {
@@ -22,7 +21,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             editor?.UpdateBarTexts();
         }
 
-        private bool _isEditing = false;
+        private bool _isEditing;
 
     }
 }

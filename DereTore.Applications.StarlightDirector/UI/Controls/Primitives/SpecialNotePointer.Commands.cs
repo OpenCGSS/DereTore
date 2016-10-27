@@ -3,7 +3,7 @@ using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Extensions;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls {
+namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
     partial class SpecialNotePointer {
 
         public static readonly ICommand CmdDeleteThis = CommandHelper.RegisterCommand();

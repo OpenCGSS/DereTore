@@ -126,7 +126,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\LineLayer.xaml">
+    <Page Include="UI\Controls\Primitives\LineLayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -154,7 +154,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\ScoreBar.xaml">
+    <Page Include="UI\Controls\Primitives\ScoreBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -162,19 +162,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\ScoreNote.xaml">
+    <Page Include="UI\Controls\Primitives\ScoreNote.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\ScoreProgressBar.xaml">
+    <Page Include="UI\Controls\Primitives\ScrollViewerThumbnail.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\ScrollViewerThumbnail.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\SpecialNotePointer.xaml">
+    <Page Include="UI\Controls\Primitives\SpecialNotePointer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -195,8 +191,8 @@
     <Compile Include="UIHelper.cs" />
     <Compile Include="CommandHelper.cs" />
     <Compile Include="ResourceKeys.cs" />
-    <Compile Include="UI\Controls\LineLayer.DependencyProperties.cs" />
-    <Compile Include="UI\Controls\LineLayer.xaml.cs">
+    <Compile Include="UI\Controls\Primitives\LineLayer.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\LineLayer.xaml.cs">
       <DependentUpon>LineLayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\Pages\AboutPage.Commands.cs" />
@@ -223,10 +219,10 @@
     <Compile Include="UI\Controls\Pages\SummaryPage.xaml.cs">
       <DependentUpon>SummaryPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\ScoreBar.DependencyProperties.cs" />
-    <Compile Include="UI\Controls\ScoreBar.Placeholder.cs" />
-    <Compile Include="UI\Controls\ScoreBar.Rendering.cs" />
-    <Compile Include="UI\Controls\ScoreBar.TextAndLocation.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreBar.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreBar.Placeholder.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreBar.Rendering.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreBar.TextAndLocation.cs" />
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreEditor.Editing.cs" />
     <Compile Include="UI\Controls\ScoreEditor.EventHandlers.cs" />
@@ -234,15 +230,15 @@
     <Compile Include="UI\Controls\ScoreEditor.Layout.cs" />
     <Compile Include="UI\Controls\ScoreEditor.Properties.cs" />
     <Compile Include="UI\Controls\ScoreEditor.Viewing.cs" />
-    <Compile Include="UI\Controls\ScoreNote.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreNote.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreViewerBase.cs" />
-    <Compile Include="UI\Controls\ScrollViewerThumbnail.DependencyProperties.cs" />
-    <Compile Include="UI\Controls\ScrollViewerThumbnail.xaml.cs">
+    <Compile Include="UI\Controls\Primitives\ScrollViewerThumbnail.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\ScrollViewerThumbnail.xaml.cs">
       <DependentUpon>ScrollViewerThumbnail.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\SpecialNotePointer.Commands.cs" />
-    <Compile Include="UI\Controls\SpecialNotePointer.DependencyProperties.cs" />
-    <Compile Include="UI\Controls\SpecialNotePointer.xaml.cs">
+    <Compile Include="UI\Controls\Primitives\SpecialNotePointer.Commands.cs" />
+    <Compile Include="UI\Controls\Primitives\SpecialNotePointer.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\SpecialNotePointer.xaml.cs">
       <DependentUpon>SpecialNotePointer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Converters\ConverterGroupParameters.cs" />
@@ -267,18 +263,15 @@
     <Compile Include="UI\Converters\ValueConverterGroup.cs" />
     <Compile Include="UI\CustomScroll.cs" />
     <Compile Include="UI\EditMode.cs" />
-    <Compile Include="UI\Controls\ScoreBar.xaml.cs">
+    <Compile Include="UI\Controls\Primitives\ScoreBar.xaml.cs">
       <DependentUpon>ScoreBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\ScoreEditor.Logic.Misc.cs" />
     <Compile Include="UI\Controls\ScoreEditor.xaml.cs">
       <DependentUpon>ScoreEditor.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\ScoreNote.xaml.cs">
+    <Compile Include="UI\Controls\Primitives\ScoreNote.xaml.cs">
       <DependentUpon>ScoreNote.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\ScoreProgressBar.xaml.cs">
-      <DependentUpon>ScoreProgressBar.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Converters\DescribedEnumToStringConverter.cs" />
     <Compile Include="UI\Converters\DifficultyToIndexConverter.cs" />

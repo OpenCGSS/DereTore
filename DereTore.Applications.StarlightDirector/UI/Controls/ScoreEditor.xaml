@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls"
+             xmlns:primitives="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Primitives"
              mc:Ignorable="d" 
              d:DesignHeight="284.667" d:DesignWidth="460.667"
              Background="Transparent" Focusable="True" IsTabStop="True"
@@ -25,7 +26,7 @@
             <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=LineLayer, Path=SyncNoteLineThickness, Mode=OneWay}"/>
         </Canvas>
         <!-- This layout is weird but it is working! It's... magic! -->
-        <local:LineLayer Grid.Column="1" x:Name="LineLayer"/>
+        <primitives:LineLayer Grid.Column="1" x:Name="LineLayer"/>
         <Canvas Grid.Column="1" Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
     </Grid>
 </local:ScoreViewerBase>

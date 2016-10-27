@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Documents;
@@ -58,7 +57,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
             new KeyValuePair<string, string>("だいずP", "https://twitter.com/DICE__game"),
             new KeyValuePair<string, string>("のんのん", "https://twitter.com/blueapple25130"),
             new KeyValuePair<string, string>("山杉", "https://twitter.com/ymsgu"),
-            new KeyValuePair<string, string>("羽田皐月", "https://twitter.com/iinosuke01"),
+            new KeyValuePair<string, string>("羽田皐月", "https://twitter.com/iinosuke01")
         };
 
         private bool _pageLoaded;

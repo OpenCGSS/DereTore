@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="DereTore.Applications.StarlightDirector.UI.Controls.ScoreBar"
+﻿<UserControl x:Class="DereTore.Applications.StarlightDirector.UI.Controls.Primitives.ScoreBar"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

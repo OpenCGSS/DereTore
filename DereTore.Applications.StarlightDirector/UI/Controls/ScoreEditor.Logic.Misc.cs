@@ -3,14 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using DereTore.Applications.StarlightDirector.Entities;
+using DereTore.Applications.StarlightDirector.Entities.Extensions;
+using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
 
         internal void UpdateBarTexts() {
+            var startTime = 0d;
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.UpdateBarIndexText();
-                scoreBar.UpdateBarTimeText();
+                scoreBar.UpdateBarTimeText(TimeSpan.FromSeconds(startTime));
+                startTime += scoreBar.Bar.GetTimeLength();
             }
         }
 

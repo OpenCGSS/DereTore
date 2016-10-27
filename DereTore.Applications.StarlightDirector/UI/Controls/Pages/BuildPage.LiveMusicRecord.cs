@@ -1,5 +1,4 @@
-﻿using System.Windows.Controls;
-using DereTore.Applications.StarlightDirector.Entities.Gaming;
+﻿using DereTore.Applications.StarlightDirector.Entities.Gaming;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
     partial class BuildPage {
