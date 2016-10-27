@@ -335,16 +335,6 @@
     <Compile Include="UI\Controls\ScoreEditor.Logic.Public.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Cards\sagisawa_fumika_75.jpg" />
-    <None Include="Resources\Cards\sagisawa_fumika.jpg" />
-    <Resource Include="Resources\Cards\mimura_kanako_75.jpg" />
-    <None Include="Resources\Cards\mimura_kanako.jpg" />
-    <Resource Include="Resources\Cards\koshimizu_sachiko_75.jpg" />
-    <None Include="Resources\Cards\koshimizu_sachiko.jpg" />
-    <Resource Include="Resources\Cards\kanzaki_ranko_75.jpg" />
-    <None Include="Resources\Cards\kanzaki_ranko.jpg" />
-    <Resource Include="Resources\Cards\jougasaki_rika_75.jpg" />
-    <None Include="Resources\Cards\jougasaki_rika.jpg" />
     <Resource Include="Resources\Icons\BarDelete.png" />
     <Resource Include="Resources\Icons\BarEdit.png" />
     <Resource Include="Resources\Icons\BarInsert.png" />

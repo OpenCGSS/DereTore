@@ -25,12 +25,6 @@ namespace DereTore.Applications.StarlightDirector {
         public readonly string HoldNoteBorderBrush;
         public readonly string RelationBorderBrush;
 
-        public readonly string CardAvatar1;
-        public readonly string CardAvatar2;
-        public readonly string CardAvatar3;
-        public readonly string CardAvatar4;
-        public readonly string CardAvatar5;
-
         public readonly string ProjectFileFilter;
         public readonly string ProjectFileV01Filter;
         public readonly string CsvFileFilter;
