@@ -5,8 +5,6 @@ using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     partial class ScoreEditor {
 
-        public ReadOnlyCollection<ScoreNote> ScoreNotes { get; }
-
         public ReadOnlyCollection<ScoreBar> ScoreBars { get; }
 
         public ReadOnlyCollection<SpecialNotePointer> SpecialScoreNotes { get; }
@@ -14,8 +12,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public ScoreBarHitTestInfo LastHitTestInfo { get; private set; }
 
         private List<ScoreBar> EditableScoreBars { get; }
-
-        private List<ScoreNote> EditableScoreNotes { get; }
 
         private List<SpecialNotePointer> EditableSpecialScoreNotes { get; }
 

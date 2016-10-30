@@ -176,16 +176,19 @@
             <!-- CustomScroll.ScrollSpeed is still needed because when the ComboBox item is selected, the ScrollViewer has not been set yet. -->
             <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="5" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
-                                      Width="635" HorizontalAlignment="Center" ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}">
-                    <controls:ScoreEditor.ContextMenu>
-                        <fluent:ContextMenu>
-                            <fluent:MenuItem Header="Add s_pecial note">
-                                <fluent:MenuItem Header="_Variant BPM" Command="{x:Static local:MainWindow.CmdContextAddSpecialNoteVariantBpm}"/>
-                            </fluent:MenuItem>
-                        </fluent:ContextMenu>
-                    </controls:ScoreEditor.ContextMenu>
-                </controls:ScoreEditor>
+                <Grid>
+                    <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
+                                      HorizontalAlignment="Center" ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}">
+                        <controls:ScoreEditor.ContextMenu>
+                            <fluent:ContextMenu>
+                                <fluent:MenuItem Header="Add s_pecial note">
+                                    <fluent:MenuItem Header="_Variant BPM" Command="{x:Static local:MainWindow.CmdContextAddSpecialNoteVariantBpm}"/>
+                                </fluent:MenuItem>
+                            </fluent:ContextMenu>
+                        </controls:ScoreEditor.ContextMenu>
+                    </controls:ScoreEditor>
+                    <controls:ScoreViewer x:Name="Viewer"/>
+                </Grid>
             </ScrollViewer>
             <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
         </Grid>

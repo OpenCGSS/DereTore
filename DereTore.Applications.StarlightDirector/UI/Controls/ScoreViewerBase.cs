@@ -1,16 +1,18 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
+using DereTore.Applications.StarlightDirector.Entities;
+using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
-    public class ScoreViewerBase : UserControl {
+    public partial class ScoreViewerBase : UserControl {
 
-        public bool AreRelationIndicatorsVisible {
-            get { return (bool)GetValue(AreRelationIndicatorsVisibleProperty); }
-            set { SetValue(AreRelationIndicatorsVisibleProperty, value); }
+        public ScoreViewerBase() {
+            EditableScoreNotes = new List<ScoreNote>();
+            ScoreNotes = EditableScoreNotes.AsReadOnly();
         }
 
-        public static readonly DependencyProperty AreRelationIndicatorsVisibleProperty = DependencyProperty.Register(nameof(AreRelationIndicatorsVisible), typeof(bool), typeof(ScoreEditor),
-         new PropertyMetadata(false));
+        protected virtual void ReloadScore(Score toBeSet) {
+        }
 
     }
 }

@@ -18,7 +18,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
         }
 
-        private void ReloadScore(Score toBeSet) {
+        protected override void ReloadScore(Score toBeSet) {
             // First, clean up the room before inviting guests. XD (You know where this sentense comes from.)
             // These are presentation layer of the program, just clear them, and let the GC do the rest of the work.
             // Clearing these objects will not affect the underlying model.
