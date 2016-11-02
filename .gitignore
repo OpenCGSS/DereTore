@@ -11,3 +11,5 @@
 *.user
 
 /packages/
+
+/DereTore.VC.*

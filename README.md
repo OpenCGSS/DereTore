@@ -103,6 +103,10 @@ An application that unpacks ACB archives.
 
 An LZ4 compression utility for compressing game data. It is designed for IdolProxy.
 
+**PVRTexLib**
+
+An interop library of [PVRTexLib](https://community.imgtec.com/developers/powervr/graphics-sdk/), for generating .pvr textures.
+
 ## License
 
 This solution uses **_modified_** [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).

@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="mpvr_header.h" />
+    <ClInclude Include="external\PVRTexTool\Include\PVRTArray.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTDecompress.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTError.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTexture.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTextureDefines.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTextureFormat.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTextureHeader.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTextureUtilities.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTextureVersion.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTGlobal.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTMap.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTString.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="external\PVRTexTool\Include\PVRTTexture.h">
+      <Filter>external</Filter>
+    </ClInclude>
+    <ClInclude Include="PVRTexLib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AssemblyInfo.cpp" />
+    <ClCompile Include="PVRTexLib.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="external">
+      <UniqueIdentifier>{31fb5367-a130-4331-a116-f03bba528851}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PVRTexLib.def" />
+  </ItemGroup>
+</Project>

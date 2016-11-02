@@ -1,0 +1,6 @@
+LIBRARY DereTore.Interop.PVRTexLib
+
+EXPORTS
+
+MpvrCompressTextureFrom32bppArgb
+MpvrCompressTextureEx

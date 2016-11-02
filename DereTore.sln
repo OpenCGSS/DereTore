@@ -50,6 +50,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Applications.Starl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Common.Interop", "DereTore.Common.Interop\DereTore.Common.Interop.csproj", "{3A0D1281-A503-4E5D-9765-D7BF56F89266}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DereTore.Exchange.PVRTexLib", "DereTore.Interop.PVRTexLib\DereTore.Interop.PVRTexLib.vcxproj", "{4F31A3B6-D304-4D38-9D2B-3794281CB787}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -202,6 +204,14 @@ Global
 		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Release|x64.Build.0 = Release|x64
 		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Release|x86.ActiveCfg = Release|x86
 		{3A0D1281-A503-4E5D-9765-D7BF56F89266}.Release|x86.Build.0 = Release|x86
+		{4F31A3B6-D304-4D38-9D2B-3794281CB787}.Debug|x64.ActiveCfg = Debug|x64
+		{4F31A3B6-D304-4D38-9D2B-3794281CB787}.Debug|x64.Build.0 = Debug|x64
+		{4F31A3B6-D304-4D38-9D2B-3794281CB787}.Debug|x86.ActiveCfg = Debug|Win32
+		{4F31A3B6-D304-4D38-9D2B-3794281CB787}.Debug|x86.Build.0 = Debug|Win32
+		{4F31A3B6-D304-4D38-9D2B-3794281CB787}.Release|x64.ActiveCfg = Release|x64
+		{4F31A3B6-D304-4D38-9D2B-3794281CB787}.Release|x64.Build.0 = Release|x64
+		{4F31A3B6-D304-4D38-9D2B-3794281CB787}.Release|x86.ActiveCfg = Release|Win32
+		{4F31A3B6-D304-4D38-9D2B-3794281CB787}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
