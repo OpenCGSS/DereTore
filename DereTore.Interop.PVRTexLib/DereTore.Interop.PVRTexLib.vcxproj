@@ -105,6 +105,7 @@
       <AdditionalDependencies>PVRTexLib.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>external/PVRTexTool/Windows_x86_32</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>PVRTexLib.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -119,6 +120,7 @@
       <AdditionalDependencies>PVRTexLib.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>external/PVRTexTool/Windows_x86_64</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>PVRTexLib.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -132,6 +134,7 @@
       <AdditionalDependencies>PVRTexLib.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>external/PVRTexTool/Windows_x86_32</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>PVRTexLib.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,6 +148,7 @@
       <AdditionalDependencies>PVRTexLib.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>external/PVRTexTool/Windows_x86_64</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>PVRTexLib.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
