@@ -1,11 +1,9 @@
 #define _WINDLL_IMPORT // for CPVRTString
 #include "PVRTexture.h"
 #include "PVRTextureUtilities.h"
-#include "PVRTexLib.h"
+#include "pvr_utils.h"
 
-using namespace System;
 using namespace System::Diagnostics;
-using namespace System::Drawing;
 using namespace System::Drawing::Imaging;
 using namespace System::Runtime::InteropServices;
 using namespace DereTore::Interop::PVRTexLib;
@@ -16,7 +14,7 @@ MpvrEncodePreset PvrEncPreset{ PixelType(ePVRTPF_ETC2_RGB), ECompressorQuality::
 
 #define PIXEL_FORMAT_GDIPLUS_LIB_USED (PVRTGENPIXELID4('b', 'g', 'r', 'a', 8, 8, 8, 8))
 
-VOID STDCALL MpvrCompressPvrTextureFrom32bppArgb(PVOID pBitmapData, DWORD dwWidth, DWORD dwHeight, DWORD dwStride, DWORD dwMipLevels, OUT PVOID *pCompressedTexture, OUT PDWORD pdwTextureDataSize) {
+VOID STDCALL MpvrCompressPvrTextureFrom32bppArgb(PVOID pBitmapData, DWORD dwWidth, DWORD dwHeight, DWORD dwStride, DWORD dwMipLevels, OUT PBYTE *pCompressedTexture, OUT PDWORD pdwTextureDataSize) {
 	PDWORD textureSizes;
 	auto pixelFormat = PIXEL_FORMAT_GDIPLUS_LIB_USED;
 	auto textureData = MpvrCompressPvrTexture(pBitmapData, dwWidth, dwHeight, dwStride, dwMipLevels, pixelFormat, FALSE, OUT &textureSizes);
@@ -92,9 +90,7 @@ BOOL MpvrCompressTextureToFile(PVOID pData, UINT32 dwWidth, UINT32 dwHeight, DWO
 	return succeeded;
 }
 
-DECL_NS_BEGIN_MPVR()
-
-array<BYTE> ^PvrUtilities::GetTextureFrom32bppArgb(IntPtr bitmapData, UINT32 width, UINT32 height, DWORD stride, MpvrEncodePreset &preset) {
+array<BYTE> ^PvrUtilities::GetTextureWithHeaderFrom32bppArgb(IntPtr bitmapData, UINT32 width, UINT32 height, DWORD stride, MpvrEncodePreset &preset) {
 	array<BYTE> ^textureFileData = nullptr;
 	CHAR tempPath[MAX_PATH] = { 0 }, tempFileName[MAX_PATH] = { 0 };
 	GetTempPath(MAX_PATH, tempPath);
@@ -130,22 +126,46 @@ array<BYTE> ^PvrUtilities::GetTextureFrom32bppArgb(IntPtr bitmapData, UINT32 wid
 	return textureFileData;
 }
 
-array<BYTE> ^PvrUtilities::GetTextureFromImage(Bitmap ^bitmap, MpvrEncodePreset &preset) {
+array<BYTE> ^PvrUtilities::GetTextureWithHeaderFromImage(Bitmap ^bitmap, MpvrEncodePreset &preset) {
 	auto actualBitmap = dynamic_cast<Bitmap ^>(bitmap->Clone());
 	// Don't have any idea. Unity just does it this way.
 	actualBitmap->RotateFlip(RotateFlipType::RotateNoneFlipY);
 	auto bitmapData = actualBitmap->LockBits(System::Drawing::Rectangle(0, 0, actualBitmap->Width, actualBitmap->Height), ImageLockMode::ReadOnly, PixelFormat::Format32bppArgb);
-	auto textureData = GetTextureFrom32bppArgb(bitmapData->Scan0, bitmapData->Width, bitmapData->Height, bitmapData->Stride, preset);
+	auto textureData = GetTextureWithHeaderFrom32bppArgb(bitmapData->Scan0, bitmapData->Width, bitmapData->Height, bitmapData->Stride, preset);
 	actualBitmap->UnlockBits(bitmapData);
 	delete actualBitmap;
 	return textureData;
 }
 
-array<BYTE> ^PvrUtilities::GetPvrTextureFromImage(Bitmap ^bitmap) {
-	return GetTextureFromImage(bitmap, PvrEncPreset);
+array<BYTE> ^PvrUtilities::GetPvrTextureWithHeaderFromImage(Bitmap ^bitmap) {
+	return GetTextureWithHeaderFromImage(bitmap, PvrEncPreset);
 }
-array<BYTE> ^PvrUtilities::GetDdsTextureFromImage(Bitmap ^bitmap) {
-	return GetTextureFromImage(bitmap, DdsEncPreset);
+array<BYTE> ^PvrUtilities::GetDdsTextureWithHeaderFromImage(Bitmap ^bitmap) {
+	return GetTextureWithHeaderFromImage(bitmap, DdsEncPreset);
 }
 
-DECL_NS_END_MPVR()
+array<BYTE> ^PvrUtilities::GetPvrTextureFromImage(Bitmap ^bitmap, bool withHeader) {
+	if (withHeader) {
+		return GetPvrTextureWithHeaderFromImage(bitmap);
+	}
+
+	auto actualBitmap = dynamic_cast<Bitmap ^>(bitmap->Clone());
+	actualBitmap->RotateFlip(RotateFlipType::RotateNoneFlipY);
+	auto bitmapData = actualBitmap->LockBits(System::Drawing::Rectangle(0, 0, actualBitmap->Width, actualBitmap->Height), ImageLockMode::ReadOnly, PixelFormat::Format32bppArgb);
+
+	PBYTE textureData;
+	DWORD textureDataSize;
+	MpvrCompressPvrTextureFrom32bppArgb(static_cast<PVOID>(bitmapData->Scan0), bitmapData->Width, bitmapData->Height, bitmapData->Stride, PvrEncPreset.mipLevels, &textureData, &textureDataSize);
+	actualBitmap->UnlockBits(bitmapData);
+
+	auto managedTextureData = gcnew array<BYTE>(textureDataSize);
+	Marshal::Copy(IntPtr(textureData), managedTextureData, 0, textureDataSize);
+	delete[] textureData;
+
+	delete actualBitmap;
+	return managedTextureData;
+}
+
+array<BYTE> ^PvrUtilities::GetPvrTextureFromImage(Bitmap ^bitmap) {
+	return GetPvrTextureFromImage(bitmap, false);
+}

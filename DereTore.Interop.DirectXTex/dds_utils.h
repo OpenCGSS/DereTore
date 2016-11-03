@@ -18,11 +18,12 @@ public ref class DdsUtilities abstract sealed {
 
 public:
 	static array<BYTE> ^GetDdsTextureFromImage(Bitmap ^bitmap);
+	static array<BYTE> ^GetDdsTextureFromImage(Bitmap ^bitmap, bool withHeader);
 
 	static initonly UINT32 DefaultDdsMipLevels = 8;
 
 private:
-	static array<BYTE> ^GetDdsTextureFromPtr(IntPtr data, DWORD width, DWORD height, DWORD stride);
+	static array<BYTE> ^GetDdsTextureFromPtr(IntPtr data, DWORD width, DWORD height, DWORD stride, bool withHeader);
 
 };
 

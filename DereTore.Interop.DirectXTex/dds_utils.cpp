@@ -1,14 +1,19 @@
-﻿#include "DdsUtilities.h"
+﻿#include "dds_utils.h"
 
 using namespace System::Diagnostics;
+using namespace System::Runtime::InteropServices;
 
-DECL_NS_BEGIN_DDSU()
+using namespace DereTore::Interop::DirectXTex;
 
 array<BYTE> ^DdsUtilities::GetDdsTextureFromImage(Bitmap ^bitmap) {
+	return GetDdsTextureFromImage(bitmap, false);
+}
+
+array<BYTE> ^DdsUtilities::GetDdsTextureFromImage(Bitmap ^bitmap, bool withHeader) {
 	auto actualBitmap = dynamic_cast<Bitmap ^>(bitmap->Clone());
 	actualBitmap->RotateFlip(RotateFlipType::RotateNoneFlipY);
 	auto bitmapData = actualBitmap->LockBits(System::Drawing::Rectangle(0, 0, bitmap->Width, bitmap->Height), ImageLockMode::ReadOnly, PixelFormat::Format32bppArgb);
-	auto data = GetDdsTextureFromPtr(bitmapData->Scan0, bitmapData->Width, bitmapData->Height, bitmapData->Stride);
+	auto data = GetDdsTextureFromPtr(bitmapData->Scan0, bitmapData->Width, bitmapData->Height, bitmapData->Stride, withHeader);
 	actualBitmap->UnlockBits(bitmapData);
 	delete actualBitmap;
 	return data;
@@ -33,7 +38,7 @@ struct ARGB8888 {
 #define ARGB888_BLUE_MASK     0x000000ff
 
 // Source format: ARGB8888
-array<BYTE> ^DdsUtilities::GetDdsTextureFromPtr(IntPtr data, DWORD width, DWORD height, DWORD stride) {
+array<BYTE> ^DdsUtilities::GetDdsTextureFromPtr(IntPtr data, DWORD width, DWORD height, DWORD stride, bool withHeader) {
 	auto newStride = width * sizeof(RGB565);
 	if (newStride % 4 != 0) {
 		newStride += 4 - (newStride % 4);
@@ -73,30 +78,36 @@ array<BYTE> ^DdsUtilities::GetDdsTextureFromPtr(IntPtr data, DWORD width, DWORD 
 	ScratchImage scratchImage;
 	HRESULT hr = GenerateMipMaps(image, TEX_FILTER_FLAGS::TEX_FILTER_DEFAULT, 0, scratchImage);
 
-	WCHAR tempPath[MAX_PATH] = { 0 }, tempFileName[MAX_PATH] = { 0 };
-	GetTempPath(MAX_PATH, tempPath);
-	GetTempFileName(tempPath, L"dds", 0, tempFileName);
-	wcscat_s(tempFileName, L".dds");
+	if (withHeader) {
+		WCHAR tempPath[MAX_PATH] = { 0 }, tempFileName[MAX_PATH] = { 0 };
+		GetTempPath(MAX_PATH, tempPath);
+		GetTempFileName(tempPath, L"dds", 0, tempFileName);
+		wcscat_s(tempFileName, L".dds");
 
-	auto images = scratchImage.GetImages();
-	auto imageCount = scratchImage.GetImageCount();
-	hr = SaveToDDSFile(images, imageCount, metadata, DDS_FLAGS::DDS_FLAGS_NONE, tempFileName);
-	delete[] pRgb565;
-	if (FAILED(hr)) {
-		Debug::Print(L"An error occurred: HResult=" + (static_cast<Int32>(hr)).ToString(L"x8"));
-		return nullptr;
-	}
+		auto images = scratchImage.GetImages();
+		auto imageCount = scratchImage.GetImageCount();
+		hr = SaveToDDSFile(images, imageCount, metadata, DDS_FLAGS::DDS_FLAGS_NONE, tempFileName);
+		delete[] pRgb565;
+		if (FAILED(hr)) {
+			Debug::Print(L"An error occurred: HResult=" + (static_cast<Int32>(hr)).ToString(L"x8"));
+			return nullptr;
+		}
 
-	auto tempFileNameM = gcnew String(tempFileName);
-	array<BYTE> ^fileData = nullptr;
-	if (SUCCEEDED(hr)) {
-		fileData = File::ReadAllBytes(tempFileNameM);
-		Debug::Print(L"Opening file " + tempFileNameM);
+		auto tempFileNameM = gcnew String(tempFileName);
+		array<BYTE> ^fileData = nullptr;
+		if (SUCCEEDED(hr)) {
+			fileData = File::ReadAllBytes(tempFileNameM);
+			Debug::Print(L"Opening file " + tempFileNameM);
+		} else {
+			Debug::Print(L"An error occurred: HResult=" + (static_cast<Int32>(hr)).ToString(L"x8"));
+		}
+		File::Delete(tempFileNameM);
+		return fileData;
 	} else {
-		Debug::Print(L"An error occurred: HResult=" + (static_cast<Int32>(hr)).ToString(L"x8"));
+		auto pixels = scratchImage.GetPixels();
+		auto size = scratchImage.GetPixelsSize();
+		auto managedData = gcnew array<BYTE>(size);
+		Marshal::Copy(IntPtr(pixels), managedData, 0, size);
+		return managedData;
 	}
-	File::Delete(tempFileNameM);
-	return fileData;
 }
-
-DECL_NS_END_DDSU()

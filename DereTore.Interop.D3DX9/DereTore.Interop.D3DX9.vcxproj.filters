@@ -2,11 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="resource.h" />
-    <ClInclude Include="d3dx9_utils.h" />
+    <ClInclude Include="dds_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="d3dx9_utils.cpp" />
+    <ClCompile Include="dds_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="app.ico" />

@@ -1,4 +1,4 @@
-#include "d3dx9_utils.h"
+#include "dds_utils.h"
 
 using namespace DereTore::Interop::D3DX9;
 using namespace System::Drawing::Imaging;
@@ -71,19 +71,23 @@ PBYTE Argb8888ToRgb565(PVOID data, UINT32 width, UINT32 height, UINT32 stride, O
 	return pRgb565;
 }
 
-array<BYTE> ^D3dx9Utilities::GetDdsTextureFromImage(Bitmap ^bitmap) {
+array<BYTE> ^DdsUtilities::GetDdsTextureFromImage(Bitmap ^bitmap) {
+	return GetDdsTextureFromImage(bitmap, false);
+}
+
+array<BYTE> ^DdsUtilities::GetDdsTextureFromImage(Bitmap ^bitmap, bool withHeader) {
 	auto actualBitmap = dynamic_cast<Bitmap ^>(bitmap->Clone());
 	actualBitmap->RotateFlip(RotateFlipType::RotateNoneFlipY);
 	auto bitmapData = actualBitmap->LockBits(System::Drawing::Rectangle(0, 0, bitmap->Width, bitmap->Height), ImageLockMode::ReadOnly, PixelFormat::Format32bppArgb);
 	array<BYTE> ^data;
-	auto hr = GetDdsTextureFromPtr(bitmapData->Scan0, bitmapData->Width, bitmapData->Height, bitmapData->Stride, data);
+	auto hr = GetDdsTextureFromPtr(bitmapData->Scan0, bitmapData->Width, bitmapData->Height, bitmapData->Stride, withHeader, data);
 	actualBitmap->UnlockBits(bitmapData);
 	delete actualBitmap;
 	return data;
 }
 
-HRESULT D3dx9Utilities::GetDdsTextureFromPtr(IntPtr data, UINT32 width, UINT32 height, UINT32 stride, array<BYTE> ^%ddsFileData) {
-	return GetDdsTextureFromPtr(static_cast<PVOID>(data), width, height, stride, ddsFileData);
+HRESULT DdsUtilities::GetDdsTextureFromPtr(IntPtr data, UINT32 width, UINT32 height, UINT32 stride, bool withHeader, array<BYTE> ^%ddsFileData) {
+	return GetDdsTextureFromPtr(static_cast<PVOID>(data), width, height, stride, withHeader, ddsFileData);
 }
 
 #define QUICK_FAIL() 	if (FAILED(hr)) { \
@@ -92,7 +96,7 @@ HRESULT D3dx9Utilities::GetDdsTextureFromPtr(IntPtr data, UINT32 width, UINT32 h
 							return hr; \
 						}
 
-HRESULT D3dx9Utilities::GetDdsTextureFromPtr(PVOID data, UINT32 width, UINT32 height, UINT32 stride, array<BYTE> ^%ddsFileData) {
+HRESULT DdsUtilities::GetDdsTextureFromPtr(PVOID data, UINT32 width, UINT32 height, UINT32 stride, bool withHeader, array<BYTE> ^%ddsFileData) {
 	D3D_STAT stat = { 0 };
 
 	stat.pDirect3D = Direct3DCreate9(D3D_SDK_VERSION);
@@ -134,10 +138,15 @@ HRESULT D3dx9Utilities::GetDdsTextureFromPtr(PVOID data, UINT32 width, UINT32 he
 	hr = D3DXSaveTextureToFileInMemory(&stat.pBuffer, D3DXIMAGE_FILEFORMAT::D3DXIFF_DDS, stat.pTexture, nullptr);
 	QUICK_FAIL();
 
-	auto pData = stat.pBuffer->GetBufferPointer();
+	auto pData = static_cast<PBYTE>(stat.pBuffer->GetBufferPointer());
 	auto dataSize = stat.pBuffer->GetBufferSize();
-	ddsFileData = gcnew array<BYTE>(dataSize);
-	Marshal::Copy(IntPtr(pData), ddsFileData, 0, dataSize);
+	auto skippedSize = 0;
+	if (!withHeader) {
+		// DDS header size
+		skippedSize = 0x80;
+	}
+	ddsFileData = gcnew array<BYTE>(dataSize - skippedSize);
+	Marshal::Copy(IntPtr(pData + skippedSize), ddsFileData, 0, ddsFileData->Length);
 
 	stat.Cleanup();
 

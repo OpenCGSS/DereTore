@@ -42,11 +42,11 @@
     <ClInclude Include="external\PVRTexTool\Include\PVRTTexture.h">
       <Filter>external</Filter>
     </ClInclude>
-    <ClInclude Include="PVRTexLib.h" />
+    <ClInclude Include="pvr_utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="PVRTexLib.cpp" />
+    <ClCompile Include="pvr_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="app.ico" />

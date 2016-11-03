@@ -170,12 +170,12 @@
     <ClInclude Include="external\PVRTexTool\Include\PVRTString.h" />
     <ClInclude Include="external\PVRTexTool\Include\PVRTTexture.h" />
     <ClInclude Include="mpvr_header.h" />
-    <ClInclude Include="PVRTexLib.h" />
+    <ClInclude Include="pvr_utils.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="PVRTexLib.cpp" />
+    <ClCompile Include="pvr_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />

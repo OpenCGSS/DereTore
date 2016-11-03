@@ -11,15 +11,17 @@ using namespace System::Runtime::InteropServices;
 
 DECL_NS_BEGIN_D3DX9()
 
-public ref class D3dx9Utilities abstract sealed {
+public ref class DdsUtilities abstract sealed {
 
 public:
 	static array<BYTE> ^GetDdsTextureFromImage(Bitmap ^bitmap);
+	static array<BYTE> ^GetDdsTextureFromImage(Bitmap ^bitmap, bool withHeader);
+
 	static initonly DWORD DefaultDdsMipLevels = 8;
 
 private:
-	static HRESULT GetDdsTextureFromPtr(IntPtr data, UINT32 width, UINT32 height, UINT32 stride, [Out] array<BYTE> ^%ddsFileData);
-	static HRESULT GetDdsTextureFromPtr(PVOID data, UINT32 width, UINT32 height, UINT32 stride, [Out] array<BYTE> ^%ddsFileData);
+	static HRESULT GetDdsTextureFromPtr(IntPtr data, UINT32 width, UINT32 height, UINT32 stride, bool withHeader, [Out] array<BYTE> ^%ddsFileData);
+	static HRESULT GetDdsTextureFromPtr(PVOID data, UINT32 width, UINT32 height, UINT32 stride, bool withHeader, [Out] array<BYTE> ^%ddsFileData);
 
 };
 

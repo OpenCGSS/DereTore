@@ -151,12 +151,12 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="d3dx9_utils.h" />
+    <ClInclude Include="dds_utils.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
-    <ClCompile Include="d3dx9_utils.cpp" />
+    <ClCompile Include="dds_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />
