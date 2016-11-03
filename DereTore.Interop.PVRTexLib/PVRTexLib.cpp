@@ -44,7 +44,7 @@ void MpvrCompressTextureInternal(PVOID pData, UINT32 dwWidth, UINT32 dwHeight, D
 	pvrHeader.u32Depth = 1;
 	pvrHeader.u32NumSurfaces = 1;
 	pvrHeader.u32NumFaces = 1;
-	pvrHeader.u32MIPMapCount = dwOutputMipLevels + 1;
+	pvrHeader.u32MIPMapCount = dwOutputMipLevels;
 	pvrHeader.u32MetaDataSize = 0;
 
 	PBYTE p = nullptr;
@@ -56,8 +56,8 @@ void MpvrCompressTextureInternal(PVOID pData, UINT32 dwWidth, UINT32 dwHeight, D
 	if (p != pData) {
 		delete[] p;
 	}
-	if (dwOutputMipLevels > 0) {
-		GenerateMIPMaps(ppTexture, EResizeMode::eResizeLinear, dwOutputMipLevels + 1);
+	if (dwOutputMipLevels > 1) {
+		GenerateMIPMaps(ppTexture, EResizeMode::eResizeLinear, dwOutputMipLevels);
 	}
 
 	Transcode(ppTexture, eOutputPixelType, EPVRTVariableType::ePVRTVarTypeUnsignedByteNorm, EPVRTColourSpace::ePVRTCSpacelRGB, eQuality);
@@ -72,8 +72,8 @@ PBYTE STDCALL MpvrCompressPvrTexture(PVOID pData, UINT32 dwWidth, UINT32 dwHeigh
 	CPVRTexture texture;
 	MpvrCompressTextureInternal(pData, dwWidth, dwHeight, dwStride, eInputPixelType, bIsPremultiplied, dwMipLevels, PvrEncPreset.pixelType, PvrEncPreset.quality, OUT texture);
 
-	*ppdwDataSizes = new DWORD[dwMipLevels + 1];
-	for (auto x = 0; x <= dwMipLevels; x++) {
+	*ppdwDataSizes = new DWORD[dwMipLevels];
+	for (auto x = 0; x < dwMipLevels; x++) {
 		(*ppdwDataSizes)[x] = texture.getDataSize(x);
 	}
 

@@ -19,8 +19,8 @@ public:
 	static array<BYTE> ^GetPvrTextureFromImage(System::Drawing::Bitmap ^bitmap);
 	static array<BYTE> ^GetDdsTextureFromImage(System::Drawing::Bitmap ^bitmap);
 
-	static initonly DWORD DefaultPvrMipLevels = 6;
-	static initonly DWORD DefaultDdsMipLevels = 7;
+	static initonly DWORD DefaultPvrMipLevels = 7;
+	static initonly DWORD DefaultDdsMipLevels = 8;
 
 private:
 	static array<BYTE> ^GetTextureFrom32bppArgb(System::IntPtr bitmapData, UINT32 width, UINT32 height, DWORD stride, MpvrEncodePreset &preset);
