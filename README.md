@@ -105,7 +105,7 @@ An LZ4 compression utility for compressing game data. It is designed for IdolPro
 
 ## License
 
-This solution uses **_modified_** [MIT License](http://mit-license.org/). See its [license file](LICENSE.md).
+This solution uses MIT License. See [LICENSE.md](LICENSE.md).
 
 ## Notes
 
