@@ -83,6 +83,12 @@ namespace DereTore {
             return BitConverter.ToSingle(bytes, 0);
         }
 
+        public static double SwapEndian(double v) {
+            var bytes = BitConverter.GetBytes(v);
+            Array.Reverse(bytes);
+            return BitConverter.ToDouble(bytes, 0);
+        }
+
         public static void Swap<T>(ref T t1, ref T t2) {
             var t = t1;
             t1 = t2;

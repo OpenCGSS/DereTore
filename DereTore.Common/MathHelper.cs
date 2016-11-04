@@ -3,10 +3,6 @@
 namespace DereTore {
     public static class MathHelper {
 
-        static MathHelper() {
-            Random = new Random();
-        }
-
         public static double ClampUpper(double value, double minimum) {
             return value < minimum ? minimum : value;
         }
@@ -37,6 +33,12 @@ namespace DereTore {
 
         public static int NextRandomInt32(int minValue, int maxValue) {
             return Random.Next(minValue, maxValue);
+        }
+
+        public static long NextRandomInt64() {
+            var v1 = (long)NextRandomInt32();
+            var v2 = NextRandomInt32();
+            return (v1 << 32) + v2;
         }
 
         public static float NextRandomSingle() {
@@ -91,7 +93,21 @@ namespace DereTore {
             return a / b * b == a;
         }
 
-        private static readonly Random Random;
+        public static int RoundUpTo(int value, int align) {
+            if (value % align == 0) {
+                return value;
+            }
+            return value + (align - (value % align));
+        }
+
+        public static int RoundUpToNext(int value, int align) {
+            if (value % align == 0) {
+                return value + align;
+            }
+            return value + (align - (value % align));
+        }
+
+        public static readonly Random Random = new Random();
 
     }
 }
