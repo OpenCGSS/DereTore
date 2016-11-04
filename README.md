@@ -27,7 +27,11 @@ Wonder [how this name comes from](Notes.md#the-name)?
 Requirements:
 
 - Windows 7 or later (though some tools should be able to run on Mono)
-- .NET Framework 4.0
+- [.NET Framework 4.0](https://www.microsoft.com/en-us/download/details.aspx?id=17718)
+- [Visual C++ Redistributable Packages for Visual Studio 2013](https://www.microsoft.com/en-us/download/details.aspx?id=40784) <sup>(*)</sup>
+- [DirectX 9.0c](https://www.microsoft.com/en-us/download/details.aspx?id=8109) <sup>(*)</sup>
+
+_<sup>*</sup> Only needed when you want to build custom CD jackets._
 
 **For licensing reasons, newer releases do not include a necessary library `hcaenc_lite.dll`.** Please download ADX2LE from its [download page](http://www.adx2le.com/download/index.html), and put
 `tools\hcaenc_lite.dll` to DereTore's application directory. If you encounter regional problems, you know there is a way to solve it.
@@ -99,13 +103,25 @@ An application that unpacks ACB archives.
 
 ### Other
 
-**LZ4**
+**Utilities.LZ4**
 
 An LZ4 compression utility for compressing game data. It is designed for IdolProxy.
 
-**PVRTexLib**
+**Interop.PVRTexLib**
 
-An interop library of [PVRTexLib](https://community.imgtec.com/developers/powervr/graphics-sdk/), for generating .pvr textures.
+An interop library of [PVRTexLib](https://community.imgtec.com/developers/powervr/graphics-sdk/), for generating PVR textures.
+
+**Interop.D3DX9**
+
+An interop library using D3DX9 to generate DDS textures.
+
+**Interop.DirectXTex**
+
+An interop library using [DirectXTex](https://github.com/Microsoft/DirectXTex) to generate DDS textures.
+
+**Interop.UnityEngine**
+
+An library which provides functions to generate CGSS-compatible (for specific Unity version) asset bundles.
 
 ## License
 
