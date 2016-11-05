@@ -101,6 +101,10 @@ in the future. Let's celebrate its alpha release!
 
 An application that unpacks ACB archives.
 
+**JacketCreator**
+
+A utility for creating CD jackets.
+
 ### Other
 
 **Utilities.LZ4**
