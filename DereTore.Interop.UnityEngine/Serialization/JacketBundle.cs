@@ -6,31 +6,7 @@ using System.Text;
 namespace DereTore.Interop.UnityEngine.Serialization {
     public static class JacketBundle {
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="pvrImage"></param>
-        /// <param name="pvrWidth">Required: 128</param>
-        /// <param name="pvrHeight">Required: 128</param>
-        /// <param name="ddsImage"></param>
-        /// <param name="ddsWidth">Required: 264</param>
-        /// <param name="ddsHeight">Required: 264</param>
-        /// <param name="songID"></param>
-        /// <param name="platform"></param>
-        /// <param name="stream"></param>
-        /// <example>
-        /// using (var bmp1 = (Bitmap)Image.FromFile("image1.jpg")) {
-        ///     using (var bmp2 = (Bitmap)Image.FromFile("image2.jpg")) {
-        ///         var pvr = PvrUtilities.GetPvrTextureFromImage(bmp1);
-        ///         var dds = DdsUtilities.GetDdsTextureFromImage(bmp2);
-        ///         using (var fs = File.Open("test.unity3d", FileMode.Create, FileAccess.Write)) {
-        ///             JacketBundle.Serialize(pvr, 128, 128, dds, 264, 264, 1001, UnityPlatformID.Android, fs);
-        ///         }
-        ///     }
-        /// }
-        /// </example>
-        public static void Serialize(byte[] pvrImage, int pvrWidth, int pvrHeight, byte[] ddsImage, int ddsWidth, int ddsHeight, int songID, int platform, Stream stream) {
-            songID = Math.Abs(songID % 100000);
+        public static void Serialize(BundleOptions options, Stream stream) {
             using (var writer = new EndianBinaryWriter(stream, EndianHelper.UnityDefaultEndian)) {
                 // bundle signature
                 writer.WriteAsciiStringAndNull(BundleFileSignature.Raw);
@@ -39,10 +15,10 @@ namespace DereTore.Interop.UnityEngine.Serialization {
                 writer.WriteAsciiStringAndNull(PlayerVersion);
                 writer.WriteAsciiStringAndNull(EngineVersion);
 
-                var bundleHeaderSize = 0x70;
-                var assetHeaderSize = 0x10;
+                const int bundleHeaderSize = 0x70;
+                const int assetHeaderSize = 0x10;
                 int assetDataOffset;
-                var singleAssetFile = GetAssetFileIndependentData(pvrWidth, pvrHeight, ddsWidth, ddsHeight, pvrImage, ddsImage, songID, platform, out assetDataOffset);
+                var singleAssetFile = GetAssetFileIndependentData(options, out assetDataOffset);
                 assetDataOffset += bundleHeaderSize + assetHeaderSize;
 
                 var totalBundleSize = bundleHeaderSize + assetHeaderSize + singleAssetFile.Length;
@@ -92,7 +68,7 @@ namespace DereTore.Interop.UnityEngine.Serialization {
             }
         }
 
-        private static byte[] GetAssetFileIndependentData(int pvrWidth, int pvrHeight, int ddsWidth, int ddsHeight, byte[] pvrImage, byte[] ddsImage, int songID, int platform, out int dataStart) {
+        private static byte[] GetAssetFileIndependentData(BundleOptions options, out int dataStart) {
             using (var memoryStream = new MemoryStream()) {
                 using (var writer = new EndianBinaryWriter(memoryStream, Endian.BigEndian)) {
                     // Still need:
@@ -110,7 +86,7 @@ namespace DereTore.Interop.UnityEngine.Serialization {
                     // Switch to Little Endian from now on.
                     writer.Endian = Endian.LittleEndian;
                     // the 'platform' field indicates the endianess.
-                    writer.Write(platform);
+                    writer.Write(options.Platform);
                     // base definitions
                     writer.Write(true);
 
@@ -125,11 +101,11 @@ namespace DereTore.Interop.UnityEngine.Serialization {
                     writer.Write(Texture2DClassStructure);
                     writer.Write(AssetBundleClassStructure);
 
-                    var pvrFileName = $"jacket_{songID:0000}_s";
-                    var ddsFileName = $"jacket_{songID:0000}_m";
-                    var pvrData = WrapTexture2D(pvrImage, pvrWidth, pvrHeight, pvrFileName, TextureFormat.ETC_RGB4, writer.Endian);
-                    var ddsData = WrapTexture2D(ddsImage, ddsWidth, ddsHeight, ddsFileName, TextureFormat.RGB565, writer.Endian);
-                    dataStart = WritePreloadData(writer, pvrData, ddsData, songID);
+                    var pvrFileName = $"jacket_{options.SongID:0000}_s";
+                    var ddsFileName = $"jacket_{options.SongID:0000}_m";
+                    var pvrData = WrapTexture2D(options.PvrImage, options.PvrWidth, options.PvrHeight, pvrFileName, TextureFormat.ETC_RGB4, writer.Endian);
+                    var ddsData = WrapTexture2D(options.DdsImage, options.DdsWidth, options.DdsHeight, ddsFileName, TextureFormat.RGB565, writer.Endian);
+                    dataStart = WritePreloadData(writer, pvrData, ddsData, options.SongID, options.DdsPathID, options.PvrPathID);
 
                     memoryStream.Capacity = (int)memoryStream.Length;
                     return memoryStream.ToArray();
@@ -138,11 +114,12 @@ namespace DereTore.Interop.UnityEngine.Serialization {
         }
 
         /// <returns>Data start (from Preload Data Header + 0x10)</returns>
-        private static int WritePreloadData(EndianBinaryWriter writer, byte[] pvrData, byte[] ddsData, int songID) {
+        private static int WritePreloadData(EndianBinaryWriter writer, byte[] pvrData, byte[] ddsData, int songID, long ddsID, long pvrID) {
             const int assetCount = 3;
             writer.Write(assetCount);
 
-            long pvrID = MathHelper.NextRandomInt64(), ddsID = MathHelper.NextRandomInt64();
+            //long pvrID = MathHelper.NextRandomInt64(), ddsID = MathHelper.NextRandomInt64();
+            //long pvrID = unchecked((long)0xed362ad73c325b56), ddsID = 0x547e3042158b3095; // jacket_1001
 
             var assetData = new byte[assetCount][];
             assetData[0] = pvrData;
@@ -186,9 +163,9 @@ namespace DereTore.Interop.UnityEngine.Serialization {
                 writer.Write((byte)0);
                 writer.AlignStream(4);
             }
-            writer.AlignStream(64);
+            writer.AlignStream(16);
             // Ensure no fix-ups are needed and the Shared Assets Table is empty.
-            writer.Write(new byte[0x80]);
+            writer.Write(new byte[0x730]);
 
             var dataStart = (int)writer.Position;
             for (var i = 0; i < assetCount; ++i) {

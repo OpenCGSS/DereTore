@@ -63,6 +63,7 @@
     <Compile Include="FilterMode.cs" />
     <Compile Include="PreloadDataType.cs" />
     <Compile Include="PrimitiveType.cs" />
+    <Compile Include="Serialization\BundleOptions.cs" />
     <Compile Include="UnityClasses\Texture2D.ImageDataReader.cs" />
     <Compile Include="TextureFormat.cs" />
     <Compile Include="WrapMode.cs" />

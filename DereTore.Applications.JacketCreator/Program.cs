@@ -59,13 +59,20 @@ namespace DereTore.Applications.JacketCreator {
             }
             bitmap.Dispose();
 
+            var bundleOptions = new BundleOptions();
+            bundleOptions.PvrImage = pvr;
+            bundleOptions.DdsImage = dds;
+            bundleOptions.PvrPathID = options.PvrPathID;
+            bundleOptions.DdsPathID = options.DdsPathID;
             var fileName = fullDirectoryName + $"jacket_{options.SongID}_android.unity3d";
             using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
-                JacketBundle.Serialize(pvr, smallImageWidth, smallImageHeight, dds, mediumImageWidth, mediumImageHeight, options.SongID, UnityPlatformID.Android, fileStream);
+                bundleOptions.Platform = UnityPlatformID.Android;
+                JacketBundle.Serialize(bundleOptions, fileStream);
             }
             fileName = fullDirectoryName + $"jacket_{options.SongID}_ios.unity3d";
             using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
-                JacketBundle.Serialize(pvr, smallImageWidth, smallImageHeight, dds, mediumImageWidth, mediumImageHeight, options.SongID, UnityPlatformID.iOS, fileStream);
+                bundleOptions.Platform = UnityPlatformID.iOS;
+                JacketBundle.Serialize(bundleOptions, fileStream);
             }
             Console.WriteLine($"Building complete. Files are written to '{fullDirectoryName}', song ID = {options.SongID}.");
         }
