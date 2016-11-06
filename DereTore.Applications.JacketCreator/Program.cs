@@ -12,8 +12,6 @@ namespace DereTore.Applications.JacketCreator {
     internal static class Program {
 
         private static void Main(string[] args) {
-
-
             var options = new Options();
             var isOptionsValid = Parser.Default.ParseArguments(args, options);
             if (!isOptionsValid) {
@@ -46,15 +44,12 @@ namespace DereTore.Applications.JacketCreator {
                 return;
             }
 
-            const int smallImageWidth = 128;
-            const int smallImageHeight = 128;
-            const int mediumImageWidth = 264;
-            const int mediumImageHeight = 264;
+            // Magic begins!
             byte[] pvr, dds;
-            using (var smallImage = new Bitmap(bitmap, smallImageWidth, smallImageHeight)) {
+            using (var smallImage = new Bitmap(bitmap, BundleOptions.SmallImageSize, BundleOptions.SmallImageSize)) {
                 pvr = PvrUtilities.GetPvrTextureFromImage(smallImage);
             }
-            using (var mediumImage = new Bitmap(bitmap, mediumImageWidth, mediumImageHeight)) {
+            using (var mediumImage = new Bitmap(bitmap, BundleOptions.MediumImageSize, BundleOptions.MediumImageSize)) {
                 dds = DdsUtilities.GetDdsTextureFromImage(mediumImage);
             }
             bitmap.Dispose();
@@ -64,6 +59,7 @@ namespace DereTore.Applications.JacketCreator {
             bundleOptions.DdsImage = dds;
             bundleOptions.PvrPathID = options.PvrPathID;
             bundleOptions.DdsPathID = options.DdsPathID;
+
             var fileName = fullDirectoryName + $"jacket_{options.SongID}_android.unity3d";
             using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
                 bundleOptions.Platform = UnityPlatformID.Android;
