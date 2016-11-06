@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DereTore {
+    // TODO: Merge StreamExtensions to EndianBinary[Reader/Writer].
     public static class StreamExtensions {
 
         public static void CopyTo(this Stream source, Stream destination) {

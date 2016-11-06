@@ -49,10 +49,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
-      <HintPath>..\packages\lz4net.1.0.10.93\lib\net4-client\LZ4.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -61,9 +57,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <ProjectReference Include="..\DereTore.Common.Compression.LZ4\DereTore.Common.Compression.LZ4.csproj">
+      <Project>{bea07a30-c611-4d1c-9632-6cc103722baa}</Project>
+      <Name>DereTore.Common.Compression.LZ4</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DereTore.Common\DereTore.Common.csproj">
       <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
       <Name>DereTore.Common</Name>
