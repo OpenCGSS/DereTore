@@ -11,3 +11,6 @@
 *.user
 
 /packages/
+
+/DereTore.VC.*
+/ipch/

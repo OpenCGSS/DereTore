@@ -57,12 +57,16 @@
     <Compile Include="ArrayExtensions.cs" />
     <Compile Include="DereToreHelper.cs" />
     <Compile Include="DisposableBase.cs" />
+    <Compile Include="Endian.cs" />
+    <Compile Include="EndianBinaryReader.cs" />
+    <Compile Include="EndianBinaryWriter.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="EventExtensions.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SingletonManager.cs" />
     <Compile Include="StreamExtensions.cs" />
+    <Compile Include="SystemEndian.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
