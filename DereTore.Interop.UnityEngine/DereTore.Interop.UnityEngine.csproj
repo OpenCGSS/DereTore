@@ -53,11 +53,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EndianHelper.cs" />
+    <Compile Include="UnityEndianHelper.cs" />
     <Compile Include="BundleFile.cs" />
     <Compile Include="BundleFile.Initialization.cs" />
     <Compile Include="BundleFileSignature.cs" />
-    <Compile Include="EndianBinaryWriter.cs" />
+    <Compile Include="Extensions\EndianBinaryReaderExtensions.cs" />
+    <Compile Include="Extensions\EndianBinaryWriterExtensions.cs" />
     <Compile Include="Extensions\PPtrExtensions.cs" />
     <Compile Include="MemoryFileStream.cs" />
     <Compile Include="FilterMode.cs" />
@@ -78,8 +79,6 @@
     <Compile Include="BaseIDReference.cs" />
     <Compile Include="ClassDescriptor.cs" />
     <Compile Include="ClassIDReference.cs" />
-    <Compile Include="Endian.cs" />
-    <Compile Include="EndianBinaryReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TextureType.cs" />
     <Compile Include="UnitySerializedFieldAttribute.cs" />

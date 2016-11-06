@@ -1,4 +1,5 @@
 ﻿using System;
+using DereTore.Interop.UnityEngine.Extensions;
 
 namespace DereTore.Interop.UnityEngine {
     partial class BundleFile {

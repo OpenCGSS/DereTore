@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using DereTore.Interop.UnityEngine.Extensions;
 
 namespace DereTore.Interop.UnityEngine.Serialization {
     public static class JacketBundle {
 
         public static void Serialize(BundleOptions options, Stream stream) {
-            using (var writer = new EndianBinaryWriter(stream, EndianHelper.UnityDefaultEndian)) {
+            using (var writer = new EndianBinaryWriter(stream, UnityEndianHelper.UnityDefaultEndian)) {
                 // bundle signature
                 writer.WriteAsciiStringAndNull(BundleFileSignature.Raw);
                 // bundle format
@@ -233,12 +234,12 @@ namespace DereTore.Interop.UnityEngine.Serialization {
             injectionIndices = new[] { 12, 196 };
             // Endian is not important either. But we must keep all the endians the same, in Preload Data and Bundle Index.
             // The easiest way is just calling BitConverter.GetBytes(), without any endian adjustments.
-            bytes = EndianHelper.GetBytes(pvrID, writerEndian);
+            bytes = UnityEndianHelper.GetBytes(pvrID, writerEndian);
             foreach (var n in injectionIndices) {
                 Array.Copy(bytes, 0, bundleIndexData, n, bytes.Length);
             }
             injectionIndices = new[] { 24, 112 };
-            bytes = EndianHelper.GetBytes(ddsID, writerEndian);
+            bytes = UnityEndianHelper.GetBytes(ddsID, writerEndian);
             foreach (var n in injectionIndices) {
                 Array.Copy(bytes, 0, bundleIndexData, n, bytes.Length);
             }

@@ -75,10 +75,6 @@
       <HintPath>..\packages\Fluent.Ribbon.4.0.3.394\lib\net40\Fluent.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
-      <HintPath>..\packages\lz4net.1.0.10.93\lib\net4-client\LZ4.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="NAudio, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.7.3\lib\net35\NAudio.dll</HintPath>
       <Private>True</Private>
@@ -404,6 +400,10 @@
     <ProjectReference Include="..\DereTore.Applications.StarlightDirector.Exchange\DereTore.Applications.StarlightDirector.Exchange.csproj">
       <Project>{3ecdd0bb-215a-4437-b162-fc9d9285303d}</Project>
       <Name>DereTore.Applications.StarlightDirector.Exchange</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Common.Compression.LZ4\DereTore.Common.Compression.LZ4.csproj">
+      <Project>{bea07a30-c611-4d1c-9632-6cc103722baa}</Project>
+      <Name>DereTore.Common.Compression.LZ4</Name>
     </ProjectReference>
     <ProjectReference Include="..\DereTore.Common.Interop\DereTore.Common.Interop.csproj">
       <Project>{3a0d1281-a503-4e5d-9765-d7bf56f89266}</Project>

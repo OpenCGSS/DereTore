@@ -1,4 +1,6 @@
-﻿namespace DereTore.Interop.UnityEngine.UnityClasses {
+﻿using DereTore.Interop.UnityEngine.Extensions;
+
+namespace DereTore.Interop.UnityEngine.UnityClasses {
     public sealed class BuildSettings {
 
         public BuildSettings(AssetPreloadData preloadData) {

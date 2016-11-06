@@ -13,8 +13,8 @@ using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.Entities.Extensions;
 using DereTore.Applications.StarlightDirector.Extensions;
+using DereTore.Common.Compression.LZ4;
 using DereTore.StarlightStage;
-using LZ4;
 using Microsoft.Win32;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
@@ -99,14 +99,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
                 BuildBdb(Project, saveDialog.FileName, selectedRecord, difficultyMappings);
                 if (lz4FileName != null) {
                     var fileData = File.ReadAllBytes(saveDialog.FileName);
-                    var compressedFileData = LZ4Codec.EncodeHC(fileData, 0, fileData.Length);
+                    var compressedFileData = CgssLz4.Compress(fileData);
                     using (var compressedFileStream = File.Open(lz4FileName, FileMode.Create, FileAccess.Write)) {
-                        // LZ4 header
-                        compressedFileStream.WriteInt32LE(0x00000064);
-                        compressedFileStream.WriteInt32LE(fileData.Length);
-                        compressedFileStream.WriteInt32LE(compressedFileData.Length);
-                        compressedFileStream.WriteInt32LE(0x00000001);
-                        // File data
                         compressedFileStream.WriteBytes(compressedFileData);
                     }
                 }

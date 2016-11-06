@@ -1,4 +1,4 @@
-﻿namespace DereTore.Interop.UnityEngine {
+﻿namespace DereTore {
     public enum Endian {
 
         BigEndian,

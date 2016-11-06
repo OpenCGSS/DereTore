@@ -1,10 +1,10 @@
 ﻿using System;
 
 namespace DereTore.Interop.UnityEngine {
-    public static class EndianHelper {
+    public static class UnityEndianHelper {
 
         public static long ToInt64(byte[] bytes, int startIndex, Endian sourceEndian) {
-            if (SystemEndian == sourceEndian) {
+            if (SystemEndian.Type == sourceEndian) {
                 return BitConverter.ToInt64(bytes, startIndex);
             } else {
                 var b2 = (byte[])bytes.Clone();
@@ -15,13 +15,12 @@ namespace DereTore.Interop.UnityEngine {
 
         public static byte[] GetBytes(long value, Endian endian) {
             var r = BitConverter.GetBytes(value);
-            if (SystemEndian != endian) {
+            if (SystemEndian.Type != endian) {
                 Array.Reverse(r);
             }
             return r;
         }
 
-        public static readonly Endian SystemEndian = BitConverter.IsLittleEndian ? Endian.LittleEndian : Endian.BigEndian;
         public static readonly Endian UnityDefaultEndian = Endian.BigEndian;
 
     }
