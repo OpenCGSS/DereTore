@@ -119,10 +119,6 @@ An interop library of [PVRTexLib](https://community.imgtec.com/developers/powerv
 
 An interop library using D3DX9 to generate DDS textures.
 
-**Interop.DirectXTex**
-
-An interop library using [DirectXTex](https://github.com/Microsoft/DirectXTex) to generate DDS textures.
-
 **Interop.UnityEngine**
 
 An library which provides functions to generate CGSS-compatible (for specific Unity version) asset bundles.
