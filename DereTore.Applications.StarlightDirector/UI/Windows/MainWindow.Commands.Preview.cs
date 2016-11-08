@@ -14,6 +14,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows
         private void CmdPreviewToggle_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             IsPreviewing = !IsPreviewing;
+            if (IsPreviewing)
+            {
+                // TODO: play music
+                ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty]);
+            }
+            else
+            {
+                ScorePreviewer.EndPreview();
+            }
         }
 
         private void CmdPreviewToggle_CanExecute(object sender, CanExecuteRoutedEventArgs e)
