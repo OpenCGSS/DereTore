@@ -102,6 +102,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Resources\Directories\Booleans.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Directories\Converters.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -246,6 +250,7 @@
       <DependentUpon>SpecialNotePointer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\ScoreViewerBase.Properties.cs" />
+    <Compile Include="UI\Converters\BooleanToValuesConverter.cs" />
     <Compile Include="UI\Converters\ConverterGroupParameters.cs" />
     <Compile Include="UI\Converters\EquityConverter.cs" />
     <Compile Include="UI\Converters\MathOp\BinaryOpConverterBase.cs" />
@@ -301,6 +306,7 @@
     <Compile Include="UI\Windows\MainWindow.Commands.File.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.Note.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Music.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Preview.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.View.cs" />
     <Compile Include="UI\Windows\MainWindow.DependencyProperties.cs" />
     <Compile Include="UI\Windows\MainWindow.EventHandlers.cs" />

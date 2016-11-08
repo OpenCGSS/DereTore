@@ -15,10 +15,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdMusicPlay = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdMusicStop = CommandHelper.RegisterCommand();
 
-        private void CmdPreviewStart_Executed(object sender, ExecutedRoutedEventArgs e) {
-            MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.PreviewNotImplementedPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-        }
-
         private void CmdMusicSelectWaveFile_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.Project != null;
         }

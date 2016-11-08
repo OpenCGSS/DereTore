@@ -26,6 +26,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             private set { SetValue(TemporaryMessageProperty, value); }
         }
 
+        public bool IsPreviewing
+        {
+            get { return (bool)GetValue(IsPreviewingProperty); }
+            set { SetValue(IsPreviewingProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for IsPreviewing.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsPreviewingProperty =
+            DependencyProperty.Register("IsPreviewing", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(nameof(Project), typeof(Project), typeof(MainWindow),
             new PropertyMetadata(null, OnProjectChanged));
 
