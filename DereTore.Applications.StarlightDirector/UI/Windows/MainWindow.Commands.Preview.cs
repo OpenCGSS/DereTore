@@ -23,7 +23,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows
                 var delayThread = new Thread(() =>
                 {
                     Thread.Sleep(1000);
-                    // TODO: play music
                     Dispatcher.Invoke(new Action(() => ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty])));
                 });
                 delayThread.Start();
