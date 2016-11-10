@@ -85,7 +85,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             if (row < 0 || column < 0 || column >= 5) {
                 return null;
             }
-            var gridCount = scoreBar.Bar.GetTotalGridCount();
+            var gridCount = scoreBar.Bar.TotalGridCount;
             if (row >= gridCount) {
                 return null;
             }
@@ -96,7 +96,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
             var barHeight = ScoreBars[0].Height;
             var baseY = -MinimumScrollOffset + bar.Index * barHeight;
-            var extraY = barHeight * row / bar.GetTotalGridCount();
+            var extraY = barHeight * row / bar.TotalGridCount;
             scoreNote = new ScoreNote();
             Note note;
             if (dataTemplate != null) {
@@ -287,7 +287,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             specialNotePointer.Note = note;
             var barHeight = ScoreBars[0].Height;
             var baseY = -MinimumScrollOffset + bar.Index * barHeight;
-            var extraY = barHeight * row / bar.GetTotalGridCount();
+            var extraY = barHeight * row / bar.TotalGridCount;
             specialNotePointer.Y = baseY + extraY;
             Project.IsChanged = true;
             if (updateBarText) {

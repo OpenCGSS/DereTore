@@ -28,8 +28,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
             var width = Canvas.ActualWidth;
             var height = Canvas.ActualHeight;
             const int columnCount = 5;
-            var totalGridCount = Bar.GetTotalGridCount();
-            double unitWidth = width / (columnCount - 1), unitHeight = height / totalGridCount;
+            double unitWidth = width / (columnCount - 1), unitHeight = height / Bar.TotalGridCount;
             var column = (int)Math.Round(destPoint.X / unitWidth);
             var row = (int)Math.Round(destPoint.Y / unitHeight);
             var zoomMod = GetBestFitZoomMod();
@@ -42,15 +41,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
             if (column < 0 || column > columnCount - 1) {
                 return new ScoreBarHitTestInfo(this, Bar, new Point(), column, row, false, false);
             }
-            if (row < 0 || row >= Bar.GetTotalGridCount()) {
+            if (row < 0 || row >= Bar.TotalGridCount) {
                 return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, true, false);
             }
             return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, false, true);
         }
 
         public void UpdateBarTimeText() {
-            // TODO: Bar.GetStartTime() is EXTREMELY time expensive (O(n), so it's easy to be O(n^2) when calling it in a loop). Avoid using it.
-            UpdateBarTimeText(TimeSpan.FromSeconds(Bar.GetStartTime()));
+            UpdateBarTimeText(TimeSpan.FromSeconds(Bar.StartTime));
         }
 
         public void UpdateBarTimeText(TimeSpan timeSpan) {

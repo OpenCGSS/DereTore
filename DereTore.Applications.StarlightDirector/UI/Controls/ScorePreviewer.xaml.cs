@@ -23,7 +23,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
     /// <summary>
     /// Interaction logic for ScorePreviewer.xaml
     /// </summary>
-    public partial class ScorePreviewer : UserControl
+    public partial class ScorePreviewer
     {
         private Score _score;
         private volatile bool _isPreviewing;
@@ -47,11 +47,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             {
                 _noteDone[note.ID] = false;
                 _scoreNotes[note.ID] = null;
-                note.HitTime = (int)(note.GetHitTiming() * 1000);
-                _timings[note.ID] = note.HitTime;
+                _timings[note.ID] = (int)(note.HitTiming * 1000);
                 _notes.Add(note);
             }
-            _notes.Sort((a, b) => a.HitTime - b.HitTime);
+            _notes.Sort((a, b) => _timings[a.ID] - _timings[b.ID]);
 
             _task = new Task(DrawPreviewFrame);
             _task.Start();

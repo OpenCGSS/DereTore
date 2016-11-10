@@ -266,6 +266,11 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     }
                 }
             }
+
+            foreach (var bar in score.Bars)
+            {
+                bar.UpdateTimings();
+            }
         }
 
         private static void ReadBarParams(SQLiteConnection connection, Score score) {
