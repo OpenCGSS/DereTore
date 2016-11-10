@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Input;
 
@@ -14,10 +15,18 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows
         private void CmdPreviewToggle_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             IsPreviewing = !IsPreviewing;
+
             if (IsPreviewing)
             {
-                // TODO: play music
-                ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty]);
+                // delay a second before preview
+                // so that the view is switched and the previewer can correctly get dimensions
+                var delayThread = new Thread(() =>
+                {
+                    Thread.Sleep(1000);
+                    // TODO: play music
+                    Dispatcher.Invoke(new Action(() => ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty])));
+                });
+                delayThread.Start();
             }
             else
             {

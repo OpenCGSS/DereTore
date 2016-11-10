@@ -196,7 +196,7 @@
             </ScrollViewer>
             <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
         </Grid>
-        <Grid Grid.Row="2" Visibility="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}}" x:Name="PreviewGrid">
+        <Grid Grid.Row="2" Background="#FF181818" Visibility="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}}" x:Name="PreviewGrid">
             <controls:ScorePreviewer x:Name="ScorePreviewer"></controls:ScorePreviewer>
         </Grid>
         <Grid Grid.Row="3">

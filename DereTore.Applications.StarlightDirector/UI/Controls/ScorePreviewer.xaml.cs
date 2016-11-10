@@ -31,7 +31,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private Dictionary<int, bool> _noteDone = new Dictionary<int, bool>();
         private Dictionary<int, int> _timings = new Dictionary<int, int>();
         private Dictionary<int, SimpleScoreNote> _scoreNotes = new Dictionary<int, SimpleScoreNote>();
+        private Dictionary<int, int> _notePositions = new Dictionary<int, int>();
         private List<Note> _notes = new List<Note>();
+
+        private const double NoteMarginTop = 20;
+        private const double NoteMarginBottom = 60;
+        private const double NoteXBetween = 80;
+        private const double NoteSize = 30;
+
+        private double _noteStartY;
+        private double _noteEndY;
+        private List<double> _noteX;
 
         public ScorePreviewer()
         {
@@ -45,12 +55,31 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
             foreach (var note in _score.Notes)
             {
+                // can I draw it?
+                if (note.Type != NoteType.TapOrFlick && note.Type != NoteType.Hold)
+                {
+                    continue;
+                }
+                var pos = (int)note.FinishPosition;
+                if (pos == 0)
+                    pos = (int)note.StartPosition;
+
+                if (pos == 0)
+                    continue;
+
+                _notePositions[note.ID] = pos - 1;
                 _noteDone[note.ID] = false;
                 _scoreNotes[note.ID] = null;
                 _timings[note.ID] = (int)(note.HitTiming * 1000);
+
                 _notes.Add(note);
             }
             _notes.Sort((a, b) => _timings[a.ID] - _timings[b.ID]);
+
+            _noteX = new List<double>();
+            for (int i = 0; i < 5; ++i)
+                _noteX.Add(0);
+            ComputePositions();
 
             _task = new Task(DrawPreviewFrame);
             _task.Start();
@@ -61,33 +90,58 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             _isPreviewing = false;
         }
 
-        private bool IsValidNote(Note note)
+        private void ComputePositions()
         {
-            return (bool)Dispatcher.Invoke(new Func<bool>(() => note.Type == NoteType.TapOrFlick || note.Type == NoteType.Hold));
+            _noteStartY = NoteMarginTop;
+            _noteEndY = PreviewCanvas.ActualHeight - NoteMarginBottom;
+            _noteX[0] = (PreviewCanvas.ActualWidth - 4*NoteXBetween - 5*NoteSize)/2;
+            for (int i = 1; i < 5; ++i)
+            {
+                _noteX[i] = _noteX[i - 1] + NoteXBetween + NoteSize;
+            }
         }
+
+        #region Multithreading Invoke
+
+        private readonly Func<Canvas, Note, SimpleScoreNote> _createScoreNoteFunc = (canvas, note) =>
+        {
+            var scoreNote = new SimpleScoreNote { Note = note };
+            canvas.Children.Add(scoreNote);
+            return scoreNote;
+        };
+
+        private readonly Action<Canvas, UIElement> _removeFromCanvasAction =
+            (canvas, elem) => canvas.Children.Remove(elem);
+
+        private readonly Action<UIElement, double, double> _setPositionInCanvasAction =
+            (elem, x, y) =>
+            {
+                Canvas.SetLeft(elem, x);
+                Canvas.SetTop(elem, y);
+            };
 
         private SimpleScoreNote CreateScoreNote(Note note)
         {
-            return Dispatcher.Invoke(new Func<SimpleScoreNote>(() =>
-            {
-                var scoreNote = new SimpleScoreNote { Note = note};
-                PreviewCanvas.Children.Add(scoreNote);
-                //scoreNote.X = (note.ID%100)*10;
-                //scoreNote.Y = (note.ID%100)*10;
-                return scoreNote;
-            })) as SimpleScoreNote;
+            return Dispatcher.Invoke(_createScoreNoteFunc, PreviewCanvas, note) as SimpleScoreNote;
+        }
+
+        private void SetPositionInCanvas(UIElement elem, double x, double y)
+        {
+            Dispatcher.Invoke(_setPositionInCanvasAction, elem, x, y);
         }
 
         private void RemoveFromCanvas(UIElement elem)
         {
-            Dispatcher.Invoke(new Action(() => PreviewCanvas.Children.Remove(elem)));
+            Dispatcher.Invoke(_removeFromCanvasAction, PreviewCanvas, elem);
         }
+
+        #endregion
 
         private void DrawPreviewFrame()
         {
             // computation parameters
             var targetFrameTime = 1000 / 30.0; // TODO: to constant or configurable
-            var approachTime = 700; // TODO: use speed
+            var approachTime = 700.0; // TODO: use speed
 
             // drawing and timing
             var startTime = DateTime.UtcNow; // TODO: remove this, use music time
@@ -115,8 +169,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 for (int i = notesHead; i < _notes.Count; ++i)
                 {
                     var note = _notes[i];
-                    if (!IsValidNote(note))
-                        continue;
 
                     /*
                      * diff <  0 --- not shown
@@ -133,16 +185,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     var scoreNote = _scoreNotes[note.ID];
                     if (scoreNote == null)
                     {
-                        //Debug.WriteLine($"[{songTime}] Creating note {note.ID}, diff = {diff}");
                         scoreNote = _scoreNotes[note.ID] = CreateScoreNote(note);
                     }
-                    
-                    // TODO: set position of note
-                    // TODO: draw other things
+
+                    var t = diff/approachTime;
+
+                    SetPositionInCanvas(scoreNote, _noteX[_notePositions[note.ID]],
+                        _noteStartY + t*(_noteEndY - _noteStartY));
+
+                    // TODO: draw sync lines, hold note lines, group lines
 
                     if (diff > approachTime)
                     {
-                        //Debug.WriteLine($"[{songTime}] Removing note {note.ID}, noteHead becomes {i}");
+
                         RemoveFromCanvas(scoreNote);
                         _scoreNotes[note.ID] = null;
                         _noteDone[note.ID] = true;
@@ -150,7 +205,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     }
                 }
 
-                Dispatcher.Invoke(new Action(() => Debug.WriteLine(PreviewCanvas.Children.Count)));
                 var frameEllapsedTime = (DateTime.UtcNow - frameStartTime).TotalMilliseconds;
                 if (frameEllapsedTime < targetFrameTime)
                 {
