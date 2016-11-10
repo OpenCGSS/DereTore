@@ -12,10 +12,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         [JsonProperty]
         public int ID { get; private set; }
 
-        // TODO: really set this
-        // WARNING: this is currently used as a temporary data by the previewer
         [JsonIgnore]
-        public int HitTime { get; set; }
+        public double HitTiming => Bar.StartTime + Bar.TimeLength*(IndexInGrid/(double) Bar.TotalGridCount);
 
         // "PositionInGrid" was the first name of this property used in serialization.
         [JsonProperty("positionInGrid")]

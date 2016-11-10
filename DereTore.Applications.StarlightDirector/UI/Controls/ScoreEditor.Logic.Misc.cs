@@ -14,7 +14,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.UpdateBarIndexText();
                 scoreBar.UpdateBarTimeText(TimeSpan.FromSeconds(startTime));
-                startTime += scoreBar.Bar.GetTimeLength();
+                startTime += scoreBar.Bar.TimeLength;
             }
         }
 

@@ -29,7 +29,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             var originalScoreBar = GetScoreBarGeomInfoForZooming(centerPoint, out heightPercentage, out scoreBarHeight);
             const double conflictAvoidingLevel = 1.05;
             foreach (var scoreBar in ScoreBars) {
-                var expectedHeight = scoreBar.NoteRadius * 2 * oneNthBeat / 4 * scoreBar.Bar.GetActualSignature();
+                var expectedHeight = scoreBar.NoteRadius * 2 * oneNthBeat / 4 * scoreBar.Bar.Signature;
                 expectedHeight *= conflictAvoidingLevel;
                 scoreBar.ZoomToHeight(expectedHeight);
             }

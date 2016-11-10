@@ -53,7 +53,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var note = scoreNote.Note;
                 var bar = note.Bar;
                 var baseY = scrollOffset + bar.Index * barHeight;
-                var extraY = barHeight * note.IndexInGrid / bar.GetTotalGridCount();
+                var extraY = barHeight * note.IndexInGrid / bar.TotalGridCount;
                 // ScoreNote.X property is not required to recalc since v0.6.0. From this version the width of ScoreEditor is fixed.
                 scoreNote.Y = baseY + extraY;
             }
@@ -69,7 +69,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 var note = specialNotePointer.Note;
                 var bar = note.Bar;
                 var baseY = scrollOffset + bar.Index * barHeight;
-                var extraY = barHeight * note.IndexInGrid / bar.GetTotalGridCount();
+                var extraY = barHeight * note.IndexInGrid / bar.TotalGridCount;
                 specialNotePointer.Y = baseY + extraY;
             }
         }
