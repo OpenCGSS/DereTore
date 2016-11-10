@@ -148,8 +148,8 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Score.Notes.Add(note);
             Score.Project.ExistingIDs.Add(id);
 
-            Notes.Sort(Note.TimingComparison);
-            Score.Notes.Sort(Note.TimingComparison);
+            Notes.Sort(Note.TimingThenPositionComparison);
+            Score.Notes.Sort(Note.TimingThenPositionComparison);
             return note;
         }
 
@@ -161,7 +161,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Notes.Add(note);
             Score.Project.ExistingIDs.Add(id);
 
-            Notes.Sort(Note.TimingComparison);
+            Notes.Sort(Note.TimingThenPositionComparison);
             return note;
         }
 

@@ -54,10 +54,10 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 foreach (var bar in score.Bars)
                 {
                     bar.UpdateTimings();
-                    bar.Notes.Sort(Note.TimingComparison);
+                    bar.Notes.Sort(Note.TimingThenPositionComparison);
                 }
 
-                score.Notes.Sort(Note.TimingComparison);
+                score.Notes.Sort(Note.TimingThenPositionComparison);
             }
 
             return project;

@@ -239,6 +239,12 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty ExtraParamsProperty = DependencyProperty.Register(nameof(ExtraParams), typeof(NoteExtraParams), typeof(Note),
             new PropertyMetadata(null, OnExtraParamsChanged));
 
+        public static readonly Comparison<Note> TimingThenPositionComparison = (x, y) =>
+        {
+            var r = TimingComparison(x, y);
+            return r == 0 ? TrackPositionComparison(x, y) : r;
+        };
+
         public static readonly Comparison<Note> TimingComparison = (x, y) => {
             if (x == null) {
                 throw new ArgumentNullException(nameof(x));
