@@ -10,11 +10,9 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
         }
 
         public static void CompileTo(this Score score, CompiledScore compiledScore) {
-            var settings = score.Project.Settings;
             FlickGroupIDGenerator.Reset();
             var compiledNotes = compiledScore.Notes;
             compiledNotes.Clear();
-            var barTimeStart = settings.StartTimeOffset;
 
             // Clear the GroupID caches.
             foreach (var bar in score.Bars) {
@@ -50,10 +48,12 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
             };
             compiledNotes.Insert(0, scoreInfoNote);
             compiledNotes.Insert(1, songStartNote);
+
+            var lastBar = score.Bars.Last();
             var songEndNote = new CompiledNote {
                 ID = noteId,
                 Type = NoteType.MusicEnd,
-                HitTiming = barTimeStart
+                HitTiming = lastBar.StartTime + lastBar.TimeLength
             };
             compiledNotes.Add(songEndNote);
         }
