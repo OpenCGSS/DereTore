@@ -15,7 +15,7 @@
         Title="Starlight Director" Width="920" Height="620" MinWidth="920" MinHeight="400"
         Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" SourceInitialized="MainWindow_OnSourceInitialized">
     <Window.Resources>
-        <converters:BooleanToValuesConverter TrueValue="Editing" FalseValue="Preview" x:Key="PreviewStatusToButtonTextConverter"></converters:BooleanToValuesConverter>
+        <converters:BooleanToValuesConverter TrueValue="Stop" FalseValue="Start" x:Key="PreviewStatusToButtonTextConverter"></converters:BooleanToValuesConverter>
         <converters:BooleanToValuesConverter TrueValue="{StaticResource RibbonIconEditMode}" FalseValue="{StaticResource RibbonIconPreviewStart}" x:Key="PreviewStatusToButtonIconConverter"></converters:BooleanToValuesConverter>
     </Window.Resources>
     <Grid>
@@ -111,9 +111,6 @@
                     </fluent:DropDownButton>
                     <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditNoteDelete}" Size="Middle" Icon="{StaticResource RibbonIconNoteDelete}"/>
                 </fluent:RibbonGroupBox>
-                <fluent:RibbonGroupBox Header="Mode">
-                    <fluent:Button Header="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonTextConverter}}" Command="{x:Static local:MainWindow.CmdPreviewToggle}" LargeIcon="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonIconConverter}}"/>
-                </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Music">
                     <fluent:Button Header="Select File" Command="{x:Static local:MainWindow.CmdMusicSelectWaveFile}" LargeIcon="{StaticResource RibbonIconMusicSelectWaveFile}"/>
                     <fluent:Button Header="Play" Command="{x:Static local:MainWindow.CmdMusicPlay}" Size="Middle" Icon="{StaticResource RibbonIconMusicPlay}"/>
@@ -173,6 +170,14 @@
                                          Icon="{StaticResource RibbonIconViewMiscRelationIndicatorVisibility}" Size="Middle"/>
                     <fluent:ToggleButton Header="Inverted Scrolling" Command="{x:Static local:MainWindow.CmdViewMiscInvertScrollDirection}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked, Mode=OneWay}"
                                          Icon="{StaticResource RibbonIconViewMiscInvertScrollDirection}" Size="Middle"/>
+                </fluent:RibbonGroupBox>
+            </fluent:RibbonTabItem>
+            <fluent:RibbonTabItem Header="Preview" KeyTip="P">
+                <fluent:RibbonGroupBox Header="Control">
+                    <fluent:Button Header="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonTextConverter}}" Command="{x:Static local:MainWindow.CmdPreviewToggle}" LargeIcon="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonIconConverter}}"/>
+                </fluent:RibbonGroupBox>
+                <fluent:RibbonGroupBox Header="Options">
+                    <fluent:CheckBox Header="Start at current"></fluent:CheckBox>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
