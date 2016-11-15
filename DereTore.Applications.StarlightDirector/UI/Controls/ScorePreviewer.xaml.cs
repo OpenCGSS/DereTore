@@ -373,9 +373,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             var targetFrameTime = 1000 / _targetFps;
             var approachTime = 700.0; // TODO: use speed
 
-            Debug.WriteLine(
-                $"Start DrawPreviewFrame(), targetFrameTime = {targetFrameTime:N2}, approachTime = {approachTime:N2}");
-
             // fix start time
             _startTime -= (int)approachTime;
             if (_startTime < 0)
