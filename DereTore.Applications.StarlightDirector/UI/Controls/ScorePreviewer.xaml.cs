@@ -21,6 +21,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
     /// </summary>
     public partial class ScorePreviewer
     {
+        /// <summary>
+        /// Internal representation of notes for drawing
+        /// </summary>
         private class SimpleNote
         {
             public Note Note { get; set; }
@@ -50,28 +53,31 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private const double SyncLineThickness = 8;
         private const double GridLineThickness = 1;
 
+        // used by frame update thread
         private Score _score;
         private volatile bool _isPreviewing;
         private Task _task;
-        private List<SimpleNote> _notes = new List<SimpleNote>();
+        private readonly List<SimpleNote> _notes = new List<SimpleNote>();
         private int _offset;
         private double _targetFps;
+        private int _startTime;
 
         // WPF new object performance is horrible, so we use pools to reuse them
-        private Queue<SimpleScoreNote> _scoreNotePool = new Queue<SimpleScoreNote>();
-        private Queue<Line> _linePool = new Queue<Line>();
+        private readonly Queue<SimpleScoreNote> _scoreNotePool = new Queue<SimpleScoreNote>();
+        private readonly Queue<Line> _linePool = new Queue<Line>();
 
+        // screen positions
         private double _noteStartY;
         private double _noteEndY;
         private List<double> _noteX;
         private double _lineOffset;
 
-        private Brush _relationBrush = Application.Current.FindResource<Brush>(App.ResourceKeys.RelationBorderBrush);
-        private Brush _gridBrush = Brushes.DarkGray;
+        private readonly Brush _relationBrush = Application.Current.FindResource<Brush>(App.ResourceKeys.RelationBorderBrush);
+        private readonly Brush _gridBrush = Brushes.DarkGray;
 
-        private MainWindow _window;
+        // window-related
+        private readonly MainWindow _window;
         private bool _shouldPlayMusic;
-        private int _startTime;
 
         public ScorePreviewer()
         {
@@ -81,6 +87,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         public void BeginPreview(Score score, double offset, double targetFps, int startTime)
         {
+            // setup parameters
             _score = score;
             _isPreviewing = true;
             _offset = (int)(offset * 1000);
@@ -169,6 +176,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             _isPreviewing = false;
         }
 
+        /// <summary>
+        /// Compute where the notes should be according to current window size
+        /// </summary>
         private void ComputePositions()
         {
             _noteStartY = NoteMarginTop;
@@ -207,6 +217,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             }
         }
 
+        // These methods invokes the main thread and perform the tasks
         #region Multithreading Invoke
 
         private bool ShouldPlayMusic()
@@ -277,10 +288,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             }));
         }
 
+        private void ClearCanvases()
+        {
+            Dispatcher.Invoke(new Action(() =>
+            {
+                PreviewCanvas.Children.Clear();
+                LineCanvas.Children.Clear();
+            }));
+        }
+
+        #endregion
+
         /// <summary>
-        /// Helper used by DrawLines. DO NOT CALL THIS METHOD
+        /// Helper used by DrawLines.
         /// </summary>
-        private Line CreateLineOnThread(double thickness)
+        private Line CreateLineOnCurrentThread(double thickness)
         {
             Line line;
             if (_linePool.Count == 0)
@@ -318,7 +340,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 {
                     if (note.HoldLine == null)
                     {
-                        note.HoldLine = CreateLineOnThread(HoldLineThickness);
+                        note.HoldLine = CreateLineOnCurrentThread(HoldLineThickness);
                     }
 
                     note.HoldLine.X1 = note.HoldLine.X2 = note.X + _lineOffset;
@@ -332,7 +354,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 {
                     if (note.SyncLine == null)
                     {
-                        note.SyncLine = CreateLineOnThread(SyncLineThickness);
+                        note.SyncLine = CreateLineOnCurrentThread(SyncLineThickness);
                     }
 
                     note.SyncLine.X1 = note.X + _lineOffset;
@@ -345,7 +367,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 {
                     if (note.GroupLine == null)
                     {
-                        note.GroupLine = CreateLineOnThread(SyncLineThickness);
+                        note.GroupLine = CreateLineOnCurrentThread(SyncLineThickness);
                     }
 
                     note.GroupLine.X1 = note.X + _lineOffset;
@@ -356,17 +378,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             }
         }
 
-        private void ClearCanvases()
-        {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                PreviewCanvas.Children.Clear();
-                LineCanvas.Children.Clear();
-            }));
-        }
-
-        #endregion
-
+        /// <summary>
+        /// Running in a background thread, refresh the locations of notes periodically. It tries to keep the target frame rate.
+        /// </summary>
         private void DrawPreviewFrame()
         {
             // computation parameters
@@ -439,9 +453,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                     note.LastT = t;
 
+                    // change this line if you want game-like approaching path
                     note.Y = _noteStartY + t*(_noteEndY - _noteStartY);
                     SetPositionInCanvas(note.ScoreNote, note.X, note.Y);
 
+                    // note arrive at bottom
                     if (diff > approachTime)
                     {
                         ReleaseLine(note.SyncLine);
@@ -449,6 +465,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                         note.SyncLine = null;
                         note.GroupLine = null;
 
+                        // Hit and flick notes end immediately
+                        // Hold note heads end after its duration
                         if (!note.IsHoldStart || diff > approachTime + note.Duration)
                         {
                             ReleaseScoreNote(note.ScoreNote);
@@ -467,6 +485,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     }
                 }
 
+                // Draw sync, group, hold lines
                 Dispatcher.Invoke(new Action(DrawLines));
 
                 var frameEllapsedTime = (DateTime.UtcNow - frameStartTime).TotalMilliseconds;
