@@ -106,5 +106,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             Dispatcher.Invoke(new Action(SaveBackup));
         }
 
+        private void PreviewFpsComboBoxItem_Selected(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var item = e.OriginalSource as ComboBoxItem;
+            if (item == null)
+                return;
+            double fps;
+            if (Double.TryParse(item.Content.ToString(), out fps))
+            {
+                PreviewFps = fps;
+            }        
+        }
     }
 }

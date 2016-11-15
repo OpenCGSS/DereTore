@@ -32,6 +32,26 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             set { SetValue(IsPreviewingProperty, value); }
         }
 
+        public double PreviewFps
+        {
+            get { return (double)GetValue(PreviewFpsProperty); }
+            set { SetValue(PreviewFpsProperty, value); }
+        }
+
+        public bool PreviewFromStart
+        {
+            get { return (bool)GetValue(PreviewFromStartProperty); }
+            set { SetValue(PreviewFromStartProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for PreviewFromStart.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PreviewFromStartProperty =
+            DependencyProperty.Register("PreviewFromStart", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
+
+        // Using a DependencyProperty as the backing store for PreviewFps.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PreviewFpsProperty =
+            DependencyProperty.Register("PreviewFps", typeof(double), typeof(MainWindow), new PropertyMetadata(60.0));
+
         // Using a DependencyProperty as the backing store for IsPreviewing.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsPreviewingProperty =
             DependencyProperty.Register("IsPreviewing", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));

@@ -11,6 +11,7 @@ using DereTore.Applications.StarlightDirector.Extensions;
 using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 using System.Linq;
+using DereTore.Applications.StarlightDirector.UI.Windows;
 using LineTuple = System.Tuple<double, double, double, double>;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls
@@ -53,6 +54,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private volatile bool _isPreviewing;
         private Task _task;
         private List<SimpleNote> _notes = new List<SimpleNote>();
+        private int _offset;
+        private double _targetFps;
 
         // WPF new object performance is horrible, so we use pools to reuse them
         private Queue<SimpleScoreNote> _scoreNotePool = new Queue<SimpleScoreNote>();
@@ -66,15 +69,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private Brush _relationBrush = Application.Current.FindResource<Brush>(App.ResourceKeys.RelationBorderBrush);
         private Brush _gridBrush = Brushes.DarkGray;
 
+        private MainWindow _window;
+        private bool _shouldPlayMusic;
+        private int _startTime;
+
         public ScorePreviewer()
         {
             InitializeComponent();
+            _window = Application.Current.MainWindow as MainWindow;
         }
 
-        public void BeginPreview(Score score)
+        public void BeginPreview(Score score, double offset, double targetFps, int startTime)
         {
             _score = score;
             _isPreviewing = true;
+            _offset = (int)(offset * 1000);
+            _targetFps = targetFps;
+            _startTime = startTime;
 
             _noteX = new List<double>();
             for (int i = 0; i < 5; ++i)
@@ -141,7 +152,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             // draw some grid lines
             DrawGrid();
 
-            // TODO: play music here
+            // music
+            _shouldPlayMusic = ShouldPlayMusic();
 
             _task = new Task(DrawPreviewFrame);
             _task.Start();
@@ -149,7 +161,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         public void EndPreview()
         {
-            // TODO: stop music here
+            if (_shouldPlayMusic)
+            {
+                StopMusic();
+            }
 
             _isPreviewing = false;
         }
@@ -193,6 +208,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         }
 
         #region Multithreading Invoke
+
+        private bool ShouldPlayMusic()
+        {
+            return (bool)Dispatcher.Invoke(new Func<bool>(() => _window != null && _window.MusicLoaded));
+        }
+
+        private void StartMusic(double milliseconds)
+        {
+            Dispatcher.Invoke(new Action(() => _window.PlayMusic(milliseconds)));
+        }
+
+        private void StopMusic()
+        {
+            Dispatcher.Invoke(new Action(() => _window.StopMusic()));
+        }
 
         private readonly Action<UIElement, double, double> _setPositionInCanvasAction =
             (elem, x, y) =>
@@ -340,12 +370,25 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private void DrawPreviewFrame()
         {
             // computation parameters
-            var targetFrameTime = 1000 / 30.0; // TODO: to constant or configurable
+            var targetFrameTime = 1000 / _targetFps;
             var approachTime = 700.0; // TODO: use speed
 
+            Debug.WriteLine(
+                $"Start DrawPreviewFrame(), targetFrameTime = {targetFrameTime:N2}, approachTime = {approachTime:N2}");
+
+            // fix start time
+            _startTime -= (int)approachTime;
+            if (_startTime < 0)
+                _startTime = 0;
+
             // drawing and timing
-            var startTime = DateTime.UtcNow; // TODO: remove this, use music time
+            var startTime = DateTime.UtcNow;
             var notesHead = 0;
+
+            if (_shouldPlayMusic)
+            {
+                StartMusic(_startTime);
+            }
 
             while (true)
             {
@@ -360,7 +403,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 }
 
                 var frameStartTime = DateTime.UtcNow;
-                var songTime = (int)(frameStartTime - startTime).TotalMilliseconds;
+
+                int songTime;
+                if (_shouldPlayMusic)
+                {
+                    songTime = (int)_window.MusicTime().TotalMilliseconds + _offset;
+                }
+                else
+                {
+                    songTime = (int)(frameStartTime - startTime).TotalMilliseconds + _startTime;
+                }
 
                 bool headUpdated = false;
                 for (int i = notesHead; i < _notes.Count; ++i)
