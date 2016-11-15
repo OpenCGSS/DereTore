@@ -42,7 +42,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows
 
                     if (note != null)
                     {
-                        startTime = (int)(1000 * note.Note.HitTiming);
+                        startTime = (int)(1000 * (note.Note.HitTiming - offset));
                     }
                 }
 
