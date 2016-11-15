@@ -418,7 +418,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 int songTime;
                 if (_shouldPlayMusic)
                 {
-                    songTime = (int)_window.MusicTime().TotalMilliseconds + _offset;
+                    songTime = (int)_window.MusicTime().TotalMilliseconds;
                 }
                 else
                 {
@@ -436,7 +436,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                      * diff == approachTime --- arrive at end
                      * diff >  approachTime --- ended
                      */
-                    var diff = songTime - note.Timing - approachTime;
+                    var diff = songTime - note.Timing + approachTime;
                     if (diff < 0)
                         break;
                     if (note.Done)
