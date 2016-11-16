@@ -182,6 +182,19 @@
                         <ComboBoxItem Content="30" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
                         <ComboBoxItem Content="60" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
                     </fluent:ComboBox>
+                    <fluent:ComboBox Header="Speed" IsEditable="False" SelectedIndex="8">
+                        <ComboBoxItem Content="0" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="1" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="2" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="3" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="4" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="5" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="6" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="7" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="8" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="9" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="10" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                    </fluent:ComboBox>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>

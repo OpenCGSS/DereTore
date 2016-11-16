@@ -58,9 +58,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private volatile bool _isPreviewing;
         private Task _task;
         private readonly List<SimpleNote> _notes = new List<SimpleNote>();
-        private int _offset;
         private double _targetFps;
         private int _startTime;
+        private double _approachTime;
 
         // WPF new object performance is horrible, so we use pools to reuse them
         private readonly Queue<SimpleScoreNote> _scoreNotePool = new Queue<SimpleScoreNote>();
@@ -85,14 +85,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             _window = Application.Current.MainWindow as MainWindow;
         }
 
-        public void BeginPreview(Score score, double offset, double targetFps, int startTime)
+        public void BeginPreview(Score score, double targetFps, int startTime, double approachTime)
         {
             // setup parameters
             _score = score;
             _isPreviewing = true;
-            _offset = (int)(offset * 1000);
             _targetFps = targetFps;
             _startTime = startTime;
+            _approachTime = approachTime;
 
             _noteX = new List<double>();
             for (int i = 0; i < 5; ++i)
@@ -385,10 +385,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         {
             // computation parameters
             var targetFrameTime = 1000 / _targetFps;
-            var approachTime = 700.0; // TODO: use speed
 
             // fix start time
-            _startTime -= (int)approachTime;
+            _startTime -= (int)_approachTime;
             if (_startTime < 0)
                 _startTime = 0;
 
@@ -436,7 +435,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                      * diff == approachTime --- arrive at end
                      * diff >  approachTime --- ended
                      */
-                    var diff = songTime - note.Timing + approachTime;
+                    var diff = songTime - note.Timing + _approachTime;
                     if (diff < 0)
                         break;
                     if (note.Done)
@@ -447,7 +446,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                         note.ScoreNote =  CreateScoreNote(note);
                     }
 
-                    var t = diff/approachTime;
+                    var t = diff/ _approachTime;
                     if (t > 1)
                         t = 1;
 
@@ -458,7 +457,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     SetPositionInCanvas(note.ScoreNote, note.X, note.Y);
 
                     // note arrive at bottom
-                    if (diff > approachTime)
+                    if (diff > _approachTime)
                     {
                         ReleaseLine(note.SyncLine);
                         ReleaseLine(note.GroupLine);
@@ -467,7 +466,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                         // Hit and flick notes end immediately
                         // Hold note heads end after its duration
-                        if (!note.IsHoldStart || diff > approachTime + note.Duration)
+                        if (!note.IsHoldStart || diff > _approachTime + note.Duration)
                         {
                             ReleaseScoreNote(note.ScoreNote);
                             ReleaseLine(note.HoldLine);

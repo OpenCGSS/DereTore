@@ -13,6 +13,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows
     {
         public static readonly ICommand CmdPreviewToggle = CommandHelper.RegisterCommand("F5");
 
+        // Speed (Approach Rate, in [0, 10]) -> Approach Time (ms)
+        // Adapted from osu!
+        private static readonly int[] ArTable = { 1800, 1680, 1560, 1440, 1320, 1200, 1050, 900, 750, 600, 450 };
+
         private void CmdPreviewToggle_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             IsPreviewing = !IsPreviewing;
@@ -46,12 +50,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows
                     }
                 }
 
+                double approachTime = ArTable[PreviewSpeed];
+
                 // delay a second before preview
                 // so that the view is switched and the previewer can correctly get dimensions
                 var delayThread = new Thread(() =>
                 {
                     Thread.Sleep(1000);
-                    Dispatcher.Invoke(new Action(() => ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty], offset, fps, startTime)));
+                    Dispatcher.Invoke(new Action(() => ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty], fps, startTime, approachTime)));
                 });
                 delayThread.Start();
             }

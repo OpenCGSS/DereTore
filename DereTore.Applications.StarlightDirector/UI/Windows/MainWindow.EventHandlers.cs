@@ -109,13 +109,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void PreviewFpsComboBoxItem_Selected(object sender, System.Windows.RoutedEventArgs e)
         {
             var item = e.OriginalSource as ComboBoxItem;
-            if (item == null)
-                return;
             double fps;
-            if (Double.TryParse(item.Content.ToString(), out fps))
+            if (Double.TryParse(item?.Content?.ToString(), out fps))
             {
                 PreviewFps = fps;
             }        
+        }
+
+        private void PreviewSpeedComboBoxItem_Selected(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var item = e.OriginalSource as ComboBoxItem;
+            int spd;
+            if (Int32.TryParse(item?.Content?.ToString(), out spd))
+            {
+                PreviewSpeed = spd;
+            }
         }
     }
 }
