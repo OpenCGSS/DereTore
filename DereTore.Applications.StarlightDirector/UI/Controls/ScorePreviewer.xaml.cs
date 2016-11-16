@@ -261,12 +261,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 {
                     var scoreNote = new SimpleScoreNote {Note = note.Note};
                     PreviewCanvas.Children.Add(scoreNote);
+                    Canvas.SetTop(scoreNote, 0);
+                    Canvas.SetLeft(scoreNote, 0);
                     return scoreNote;
                 }
                 else
                 {
                     var scoreNote = _scoreNotePool.Dequeue();
                     scoreNote.Note = note.Note;
+                    Canvas.SetTop(scoreNote, 0);
+                    Canvas.SetLeft(scoreNote, 0);
                     scoreNote.Visibility = Visibility.Visible;
                     return scoreNote;
                 }
