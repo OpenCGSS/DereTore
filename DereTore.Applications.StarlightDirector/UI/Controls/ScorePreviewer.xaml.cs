@@ -79,6 +79,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private readonly MainWindow _window;
         private bool _shouldPlayMusic;
 
+        // note hit effect!
+        private int _noteHitCounter;
+        private int _noteHitMax;
+        private Line _effectedLine;
+
         public ScorePreviewer()
         {
             InitializeComponent();
@@ -202,10 +207,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             }
             lines.Add(new LineTuple(_noteX[0], _noteStartY, _noteX[4], _noteStartY));
             lines.Add(new LineTuple(_noteX[0], _noteEndY, _noteX[4], _noteEndY));
+            lines.Add(new LineTuple(_noteX[0], _noteEndY, _noteX[4], _noteEndY));
 
             foreach (var line in lines)
             {
-                LineCanvas.Children.Add(new Line
+                // after the loop, _effectedLine will be the LAST line
+                _effectedLine = new Line
                 {
                     Stroke = _gridBrush,
                     StrokeThickness = GridLineThickness,
@@ -213,8 +220,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     Y1 = line.Item2 + _lineOffset,
                     X2 = line.Item3 + _lineOffset,
                     Y2 = line.Item4 + _lineOffset
-                });
+                };
+                LineCanvas.Children.Add(_effectedLine);
             }
+
+            _effectedLine.Stroke = Brushes.Gold;
+            _effectedLine.Opacity = 0;
         }
 
         // These methods invokes the main thread and perform the tasks
@@ -385,6 +396,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         {
             // computation parameters
             var targetFrameTime = 1000 / _targetFps;
+            _noteHitMax = (int) (_targetFps / 5); // effect lasts for 0.2 second
 
             // fix start time
             _startTime -= (int)_approachTime;
@@ -474,6 +486,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                             note.HoldLine = null;
 
                             note.Done = true;
+
+                            // note hit effect
+                            _noteHitCounter = _noteHitMax;
                         }
 
                         if (!headUpdated)
@@ -486,6 +501,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                 // Draw sync, group, hold lines
                 Dispatcher.Invoke(new Action(DrawLines));
+
+                // Do note hit effect
+                if (_noteHitCounter >= 0)
+                {
+                    Dispatcher.Invoke(new Action(() =>
+                    {
+                        double et = _noteHitCounter/(double) _noteHitMax; // from 1 to 0
+                        _effectedLine.Opacity = et;
+                    }));
+                    --_noteHitCounter;
+                }
 
                 var frameEllapsedTime = (DateTime.UtcNow - frameStartTime).TotalMilliseconds;
                 if (frameEllapsedTime < targetFrameTime)
