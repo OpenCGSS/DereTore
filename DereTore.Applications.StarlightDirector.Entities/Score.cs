@@ -146,5 +146,12 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return Bars.SelectMany(bar => bar.Notes).FirstOrDefault(note => note.ID == noteID);
         }
 
+        internal void UpdateBarTimings()
+        {
+            foreach (var bar in Bars)
+            {
+                bar.UpdateTimings();
+            }
+        }
     }
 }
