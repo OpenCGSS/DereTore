@@ -1,9 +1,9 @@
 # DereTore
 
-[![AppVeyor](https://img.shields.io/appveyor/ci/hozuki/DereTore.svg)](https://ci.appveyor.com/project/hozuki/deretore)
-[![GitHub contributors](https://img.shields.io/github/contributors/hozuki/DereTore.svg)](https://github.com/hozuki/DereTore/graphs/contributors)
-[![Libraries.io for GitHub](https://img.shields.io/librariesio/github/hozuki/DereTore.svg)](https://github.com/houzki/DereTore)
-[![Github All Releases](https://img.shields.io/github/downloads/hozuki/DereTore/total.svg)](https://github.com/hozuki/DereTore/releases)
+[![AppVeyor](https://img.shields.io/appveyor/ci/hozuki/deretore-avoh8.svg)](https://ci.appveyor.com/project/hozuki/deretore-avoh8)
+[![GitHub contributors](https://img.shields.io/github/contributors/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore/graphs/contributors)
+[![Libraries.io for GitHub](https://img.shields.io/librariesio/github/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore)
+[![Github All Releases](https://img.shields.io/github/downloads/OpenCGSS/DereTore/total.svg)](https://github.com/OpenCGSS/DereTore/releases)
 
 The goal of DereTore is to improve gaming experience in [Idolmaster Cinderella Girls: Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
 (CGSS/DereSute), or even to customize it a little bit.
@@ -11,13 +11,13 @@ The goal of DereTore is to improve gaming experience in [Idolmaster Cinderella G
 **Downloads:**
 
 - [Nightly build](https://ci.appveyor.com/api/projects/hozuki/DereTore/artifacts/deretore-toolkit-x86.zip?job=Platform%3A+x86) (Windows, x86)
-- [Releases](https://github.com/hozuki/DereTore/releases)
+- [Releases](https://github.com/OpenCGSS/DereTore/releases)
 
 Wonder [how this name comes from](Notes.md#the-name)?
 
 ## Building
 
-1. Clone from [GitHub](https://github.com/hozuki/DereTore.git): `git clone https://github.com/hozuki/DereTore.git`;
+1. Clone from [GitHub](https://github.com/OpenCGSS/DereTore.git): `git clone https://github.com/OpenCGSS/DereTore.git`;
 2. Install missing NuGet packages: `nuget restore DereTore.sln` (or use NuGet Package Manager in Visual Studio);
 3. Open `DereTore.sln` in Visual Studio (VS2010 SP1 or later is required);
 4. Build the solution.
