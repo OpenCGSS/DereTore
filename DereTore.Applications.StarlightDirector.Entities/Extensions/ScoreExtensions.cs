@@ -10,36 +10,29 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
         }
 
         public static void CompileTo(this Score score, CompiledScore compiledScore) {
-            var settings = score.Project.Settings;
             FlickGroupIDGenerator.Reset();
             var compiledNotes = compiledScore.Notes;
             compiledNotes.Clear();
-            var barTimeStart = settings.StartTimeOffset;
 
             // Clear the GroupID caches.
             foreach (var bar in score.Bars) {
                 foreach (var note in bar.Notes) {
                     note.GroupID = EntityID.Invalid;
+
+                    var compiledNote = new CompiledNote();
+                    SetCommonNoteProperties(note, compiledNote);
+                    CalculateGroupID(note, compiledNote);
+                    compiledNote.HitTiming = note.HitTiming;
+
+                    compiledNotes.Add(compiledNote);
                 }
             }
-
-            // We can also use Note.GetNoteHitTiming(), but that requires massive loops. Therefore we manually expand them here.
-            foreach (var bar in score.Bars) {
-                var anyVariantBpm = bar.Notes.Any(note => note.Type == NoteType.VariantBpm);
-                double barTimeLength;
-                if (anyVariantBpm) {
-                    barTimeLength = CompileBarVariantBpm(bar, barTimeStart, compiledNotes);
-                } else {
-                    barTimeLength = CompileBarConstantBpm(bar, barTimeStart, compiledNotes);
-                }
-                barTimeStart += barTimeLength;
-            }
-
+            
             // The normal gaming notes.
-            compiledNotes.Sort(CompiledNote.TimingComparison);
-            var i = 3;
-            foreach (var compiledNote in compiledNotes) {
-                compiledNote.ID = i++;
+            var noteId = 3;
+            foreach (var compiledNote in compiledNotes)
+            {
+                compiledNote.ID = noteId++;
             }
 
             // Special notes are added to their destined positions.
@@ -55,61 +48,14 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
             };
             compiledNotes.Insert(0, scoreInfoNote);
             compiledNotes.Insert(1, songStartNote);
+
+            var lastBar = score.Bars.Last();
             var songEndNote = new CompiledNote {
-                ID = i++,
+                ID = noteId,
                 Type = NoteType.MusicEnd,
-                HitTiming = barTimeStart
+                HitTiming = lastBar.StartTime + lastBar.TimeLength
             };
             compiledNotes.Add(songEndNote);
-        }
-
-        private static double CompileBarConstantBpm(Bar bar, double timeStart, InternalList<CompiledNote> compiledNotes) {
-            var barTimeLength = bar.GetTimeLength();
-            var totalGridCount = bar.GetTotalGridCount();
-            // Sorting is for flick group generation. We have to assure that the start of each group is
-            // processed first, at least in the group which it is in.
-            bar.Notes.Sort(Note.TimingComparison);
-            foreach (var note in bar.Notes) {
-                var compiledNote = new CompiledNote();
-                compiledNotes.Add(compiledNote);
-                SetCommonNoteProperties(note, compiledNote);
-                CalculateGroupID(note, compiledNote);
-                // Timing for constant BPM
-                compiledNote.HitTiming = timeStart + barTimeLength * note.IndexInGrid / totalGridCount;
-            }
-            return barTimeLength;
-        }
-
-        private static double CompileBarVariantBpm(Bar bar, double timeStart, InternalList<CompiledNote> compiledNotes) {
-            var startBpm = bar.GetStartBpm();
-            var signature = bar.GetActualSignature();
-            var totalGridCount = bar.GetTotalGridCount();
-            var barTimeLength = bar.GetTimeLength();
-            // This sorting is for flick group generation AND Variant BPM notes. See Note.TimingComparison for more details.
-            bar.Notes.Sort(Note.TimingComparison);
-            var lastBpm = startBpm;
-            var lastVBIndex = 0;
-            var lastVBTiming = 0d;
-
-            foreach (var note in bar.Notes) {
-                var deltaGridCount = note.IndexInGrid - lastVBIndex;
-                var timePerBeat = DirectorHelper.BpmToSeconds(lastBpm);
-                if (note.Type == NoteType.VariantBpm) {
-                    lastVBTiming = lastVBTiming + timePerBeat * signature * deltaGridCount / totalGridCount;
-                    lastBpm = note.ExtraParams.NewBpm;
-                    lastVBIndex = note.IndexInGrid;
-                    continue;
-                }
-                var compiledNote = new CompiledNote();
-                compiledNotes.Add(compiledNote);
-                SetCommonNoteProperties(note, compiledNote);
-                CalculateGroupID(note, compiledNote);
-
-                // Yeah for the maths.
-                var noteTimingInBar = lastVBTiming + timePerBeat * signature * deltaGridCount / totalGridCount;
-                compiledNote.HitTiming = timeStart + noteTimingInBar;
-            }
-            return barTimeLength;
         }
 
         private static void SetCommonNoteProperties(Note note, CompiledNote compiledNote) {
@@ -138,8 +84,6 @@ namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
                     case FlickGroupModificationResult.CreationPending:
                         groupID = FlickGroupIDGenerator.Next();
                         groupStart.GroupID = note.GroupID = compiledNote.FlickGroupID = groupID;
-                        break;
-                    default:
                         break;
                 }
             }

@@ -2,16 +2,7 @@
 
 namespace DereTore.Applications.StarlightDirector.Entities.Extensions {
     public static class NoteExtensions {
-
-        public static double GetHitTiming(this Note note) {
-            var bar = note.Bar;
-            var barStartTime = bar.GetStartTime();
-            var signature = bar.GetActualSignature();
-            var gridCountInBar = bar.GetActualGridPerSignature();
-            var barLength = bar.GetTimeLength();
-            return barStartTime + barLength * (note.IndexInGrid / (double)(signature * gridCountInBar));
-        }
-
+        
         public static Note GetFirstNoteBetween(this IEnumerable<Note> notes, Note n1, Note n2) {
             var first = n1 < n2 ? n1 : n2;
             var second = first.Equals(n1) ? n2 : n1;

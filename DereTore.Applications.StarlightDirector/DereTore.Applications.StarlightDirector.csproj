@@ -102,6 +102,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Resources\Directories\Booleans.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources\Directories\Converters.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -154,6 +158,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Controls\Primitives\SimpleScoreNote.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\ScoreEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -167,6 +175,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Controls\Primitives\SpecialNotePointer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\ScorePreviewer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -223,6 +235,9 @@
     <Compile Include="UI\Controls\Primitives\ScoreBar.Placeholder.cs" />
     <Compile Include="UI\Controls\Primitives\ScoreBar.Rendering.cs" />
     <Compile Include="UI\Controls\Primitives\ScoreBar.TextAndLocation.cs" />
+    <Compile Include="UI\Controls\Primitives\SimpleScoreNote.xaml.cs">
+      <DependentUpon>SimpleScoreNote.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreEditor.Editing.cs" />
     <Compile Include="UI\Controls\ScoreEditor.EventHandlers.cs" />
@@ -231,6 +246,9 @@
     <Compile Include="UI\Controls\ScoreEditor.Properties.cs" />
     <Compile Include="UI\Controls\ScoreEditor.Viewing.cs" />
     <Compile Include="UI\Controls\Primitives\ScoreNote.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScorePreviewer.xaml.cs">
+      <DependentUpon>ScorePreviewer.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\ScoreViewer.xaml.cs">
       <DependentUpon>ScoreViewer.xaml</DependentUpon>
     </Compile>
@@ -246,6 +264,7 @@
       <DependentUpon>SpecialNotePointer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\ScoreViewerBase.Properties.cs" />
+    <Compile Include="UI\Converters\BooleanToValuesConverter.cs" />
     <Compile Include="UI\Converters\ConverterGroupParameters.cs" />
     <Compile Include="UI\Converters\EquityConverter.cs" />
     <Compile Include="UI\Converters\MathOp\BinaryOpConverterBase.cs" />
@@ -301,6 +320,7 @@
     <Compile Include="UI\Windows\MainWindow.Commands.File.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Edit.Note.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.Music.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Preview.cs" />
     <Compile Include="UI\Windows\MainWindow.Commands.View.cs" />
     <Compile Include="UI\Windows\MainWindow.DependencyProperties.cs" />
     <Compile Include="UI\Windows\MainWindow.EventHandlers.cs" />

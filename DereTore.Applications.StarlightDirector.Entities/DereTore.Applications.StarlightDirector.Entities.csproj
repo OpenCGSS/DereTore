@@ -75,7 +75,6 @@
     <Compile Include="CompiledScore.cs" />
     <Compile Include="Difficulty.cs" />
     <Compile Include="EntityID.cs" />
-    <Compile Include="Extensions\BarExtensions.cs" />
     <Compile Include="Extensions\NoteExtensions.cs" />
     <Compile Include="Extensions\ScoreExtensions.cs" />
     <Compile Include="FlickGroupModificationResult.cs" />

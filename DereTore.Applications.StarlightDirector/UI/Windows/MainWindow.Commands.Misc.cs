@@ -3,15 +3,9 @@ using DereTore.Applications.StarlightDirector.Entities;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {
-
-        public static readonly ICommand CmdPreviewStart = CommandHelper.RegisterCommand("F5");
         
         public static readonly ICommand CmdScoreSwitchDifficulty = CommandHelper.RegisterCommand();
-        
-        private void CmdPreviewStart_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
-            e.CanExecute = Editor.Score != null;
-        }
-        
+               
         private void CmdScoreSwitchDifficulty_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             if (Project == null) {
                 e.CanExecute = false;

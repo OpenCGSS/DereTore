@@ -12,6 +12,9 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         [JsonProperty]
         public int ID { get; private set; }
 
+        [JsonIgnore]
+        public double HitTiming => Bar.StartTime + Bar.TimeLength*(IndexInGrid/(double) Bar.TotalGridCount);
+
         // "PositionInGrid" was the first name of this property used in serialization.
         [JsonProperty("positionInGrid")]
         public int IndexInGrid { get; set; }
@@ -235,6 +238,12 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         public static readonly DependencyProperty ExtraParamsProperty = DependencyProperty.Register(nameof(ExtraParams), typeof(NoteExtraParams), typeof(Note),
             new PropertyMetadata(null, OnExtraParamsChanged));
+
+        public static readonly Comparison<Note> TimingThenPositionComparison = (x, y) =>
+        {
+            var r = TimingComparison(x, y);
+            return r == 0 ? TrackPositionComparison(x, y) : r;
+        };
 
         public static readonly Comparison<Note> TimingComparison = (x, y) => {
             if (x == null) {

@@ -28,35 +28,18 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             };
             if (indexBefore == Bars.Count) {
                 Bars.Add(bar);
+                bar.UpdateTimings();
+
             } else {
-                foreach (var b in Bars.Skip(indexBefore)) {
-                    ++b.Index;
-                }
                 Bars.Insert(indexBefore, bar);
+                bar.UpdateTimings();
+
+                foreach (var b in Bars.Skip(indexBefore + 1)) {
+                    ++b.Index;
+                    b.UpdateTimings();
+                }
             }
             return bar;
-        }
-
-        public Bar[] AddBars(int startIndex, int count) {
-            return AddBars(startIndex, count, null);
-        }
-
-        public Bar[] AddBars(int startIndex, int count, BarParams barParams) {
-            var bars = new Bar[count];
-            for (var i = 0; i < count; ++i) {
-                bars[i] = new Bar(this, startIndex + i) {
-                    Params = barParams
-                };
-            }
-            if (startIndex == Bars.Count - 1) {
-                Bars.AddRange(bars);
-            } else {
-                foreach (var b in Bars.Skip(startIndex - 1)) {
-                    ++b.Index;
-                }
-                Bars.InsertRange(startIndex, bars);
-            }
-            return bars;
         }
 
         public bool RemoveBarAt(int index) {
@@ -78,6 +61,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             bars.Remove(bar);
             for (var i = index; i < bars.Count; ++i) {
                 --bars[i].Index;
+                bars[i].UpdateTimings();
             }
             return true;
         }
@@ -162,5 +146,12 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return Bars.SelectMany(bar => bar.Notes).FirstOrDefault(note => note.ID == noteID);
         }
 
+        internal void UpdateBarTimings()
+        {
+            foreach (var bar in Bars)
+            {
+                bar.UpdateTimings();
+            }
+        }
     }
 }

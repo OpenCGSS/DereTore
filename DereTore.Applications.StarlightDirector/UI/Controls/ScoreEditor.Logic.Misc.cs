@@ -14,7 +14,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.UpdateBarIndexText();
                 scoreBar.UpdateBarTimeText(TimeSpan.FromSeconds(startTime));
-                startTime += scoreBar.Bar.GetTimeLength();
+                startTime += scoreBar.Bar.TimeLength;
             }
         }
 
@@ -33,22 +33,29 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
             var temporaryMap = new Dictionary<Note, ScoreNote>();
             var allGamingNotes = new List<Note>();
+            var noteProcessed = new Dictionary<int, bool>();
             // OK the fun part is here.
-            foreach (var bar in toBeSet.Bars) {
+            foreach (var bar in toBeSet.Bars)
+            {
                 var scoreBar = AddScoreBar(null, false, bar);
-                foreach (var note in bar.Notes) {
-                    if (!note.IsGamingNote) {
+                foreach (var note in bar.Notes)
+                {
+                    if (!note.IsGamingNote)
+                    {
                         continue;
                     }
                     var scoreNote = AddScoreNote(scoreBar, note.IndexInGrid, note.FinishPosition, note);
                     temporaryMap.Add(note, scoreNote);
                     allGamingNotes.Add(note);
+                    noteProcessed[note.ID] = false;
                 }
             }
-            var processedNotes = new List<Note>();
-            foreach (var note in allGamingNotes) {
-                if (!processedNotes.Contains(note)) {
-                    ProcessNoteRelations(note, processedNotes, temporaryMap, LineLayer.NoteRelations);
+
+            foreach (var note in allGamingNotes)
+            {
+                if (!noteProcessed[note.ID])
+                {
+                    ProcessNoteRelations(note, noteProcessed, temporaryMap, LineLayer.NoteRelations);
                 }
             }
 
@@ -63,15 +70,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             Debug.Print("Done: ScoreEditor.ReloadScore().");
         }
 
-        private static void ProcessNoteRelations(Note root, ICollection<Note> processedNotes, IDictionary<Note, ScoreNote> map, NoteRelationCollection relations) {
+        private static void ProcessNoteRelations(Note root, IDictionary<int, bool> noteProcessed, IDictionary<Note, ScoreNote> map, NoteRelationCollection relations)
+        {
             var waitingList = new Queue<Note>();
             waitingList.Enqueue(root);
-            while (waitingList.Count > 0) {
+            while (waitingList.Count > 0)
+            {
                 var note = waitingList.Dequeue();
-                if (processedNotes.Contains(note)) {
+                if (noteProcessed[note.ID])
+                {
                     continue;
                 }
-                processedNotes.Add(note);
+                noteProcessed[note.ID] = true;
+
                 if (note.HasPrevSync) {
                     if (!relations.ContainsPair(map[note], map[note.PrevSyncTarget])) {
                         relations.Add(map[note], map[note.PrevSyncTarget], NoteRelation.Sync);

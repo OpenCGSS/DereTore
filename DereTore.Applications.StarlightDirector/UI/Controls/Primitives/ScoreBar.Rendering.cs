@@ -25,8 +25,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Primitives {
             }
 
             var bar = Bar;
-            var totalGridCount = bar.GetTotalGridCount();
-            var gridPerSignature = bar.GetActualGridPerSignature();
+            var totalGridCount = bar.TotalGridCount;
+            var gridPerSignature = bar.GridPerSignature;
             var zoomMod = GetBestFitZoomMod();
             var typeFace = _tickTypeface;
             var culture = CultureInfo.CurrentUICulture;

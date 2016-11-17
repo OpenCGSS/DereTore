@@ -15,10 +15,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         public static readonly ICommand CmdMusicPlay = CommandHelper.RegisterCommand();
         public static readonly ICommand CmdMusicStop = CommandHelper.RegisterCommand();
 
-        private void CmdPreviewStart_Executed(object sender, ExecutedRoutedEventArgs e) {
-            MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.PreviewNotImplementedPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-        }
-
         private void CmdMusicSelectWaveFile_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.Project != null;
         }
@@ -52,21 +48,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         private void CmdMusicPlay_Executed(object sender, ExecutedRoutedEventArgs e) {
-            var o = _selectedWaveOut;
-            if (o == null) {
-                o = new AudioOut(AudioClientShareMode.Shared, 0);
-                var fileStream = new FileStream(Project.MusicFileName, FileMode.Open, FileAccess.Read);
-                _waveReader = new WaveFileReader(fileStream);
-                o.PlaybackStopped += SelectedWaveOut_PlaybackStopped;
-                o.Init(_waveReader);
-                _selectedWaveOut = o;
-            }
-            if (o.PlaybackState == PlaybackState.Playing) {
-                _waveReader.Position = 0;
-            } else {
-                o.Play();
-            }
-            CmdMusicPlay.RaiseCanExecuteChanged();
+            PlayMusic(0);
         }
 
         private void CmdMusicStop_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
@@ -77,11 +59,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             e.CanExecute = r;
         }
 
-        private void CmdMusicStop_Executed(object sender, ExecutedRoutedEventArgs e) {
-            var o = _selectedWaveOut;
-            o?.Stop();
-            SelectedWaveOut_PlaybackStopped(o, EventArgs.Empty);
-            CmdMusicStop.RaiseCanExecuteChanged();
+        private void CmdMusicStop_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            StopMusic();
         }
 
         private void SelectedWaveOut_PlaybackStopped(object sender, EventArgs e) {
@@ -93,6 +73,44 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             }
             _waveReader?.Dispose();
             _waveReader = null;
+        }
+
+        internal bool MusicLoaded => Editor.Project?.HasMusic ?? false;
+
+        internal void PlayMusic(double milliseconds)
+        {
+            var o = _selectedWaveOut;
+            if (o == null)
+            {
+                o = new AudioOut(AudioClientShareMode.Shared, 0);
+                var fileStream = new FileStream(Project.MusicFileName, FileMode.Open, FileAccess.Read);
+                _waveReader = new WaveFileReader(fileStream);
+                o.PlaybackStopped += SelectedWaveOut_PlaybackStopped;
+                o.Init(_waveReader);
+                _selectedWaveOut = o;
+            }
+
+            if (o.PlaybackState == PlaybackState.Playing)
+            {
+                o.Stop();
+            }
+
+            _waveReader.CurrentTime = TimeSpan.FromMilliseconds(milliseconds);
+            o.Play();
+            CmdMusicPlay.RaiseCanExecuteChanged();
+        }
+
+        internal void StopMusic()
+        {
+            var o = _selectedWaveOut;
+            o?.Stop();
+            SelectedWaveOut_PlaybackStopped(o, EventArgs.Empty);
+            CmdMusicStop.RaiseCanExecuteChanged();
+        }
+
+        internal TimeSpan MusicTime()
+        {
+            return _waveReader.CurrentTime;
         }
 
         private AudioOut _selectedWaveOut;

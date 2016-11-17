@@ -14,6 +14,10 @@
         mc:Ignorable="d" Name="Me" WindowStartupLocation="CenterScreen"
         Title="Starlight Director" Width="920" Height="620" MinWidth="920" MinHeight="400"
         Loaded="MainWindow_OnLoaded" Closing="MainWindow_OnClosing" SourceInitialized="MainWindow_OnSourceInitialized">
+    <Window.Resources>
+        <converters:BooleanToValuesConverter TrueValue="Stop" FalseValue="Start" x:Key="PreviewStatusToButtonTextConverter"></converters:BooleanToValuesConverter>
+        <converters:BooleanToValuesConverter TrueValue="{StaticResource RibbonIconEditMode}" FalseValue="{StaticResource RibbonIconPreviewStart}" x:Key="PreviewStatusToButtonIconConverter"></converters:BooleanToValuesConverter>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -107,9 +111,6 @@
                     </fluent:DropDownButton>
                     <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditNoteDelete}" Size="Middle" Icon="{StaticResource RibbonIconNoteDelete}"/>
                 </fluent:RibbonGroupBox>
-                <fluent:RibbonGroupBox Header="Preview">
-                    <fluent:Button Header="Start" Command="{x:Static local:MainWindow.CmdPreviewStart}" LargeIcon="{StaticResource RibbonIconPreviewStart}"/>
-                </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Music">
                     <fluent:Button Header="Select File" Command="{x:Static local:MainWindow.CmdMusicSelectWaveFile}" LargeIcon="{StaticResource RibbonIconMusicSelectWaveFile}"/>
                     <fluent:Button Header="Play" Command="{x:Static local:MainWindow.CmdMusicPlay}" Size="Middle" Icon="{StaticResource RibbonIconMusicPlay}"/>
@@ -171,8 +172,33 @@
                                          Icon="{StaticResource RibbonIconViewMiscInvertScrollDirection}" Size="Middle"/>
                 </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
+            <fluent:RibbonTabItem Header="Preview" KeyTip="P">
+                <fluent:RibbonGroupBox Header="Control">
+                    <fluent:Button Header="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonTextConverter}}" Command="{x:Static local:MainWindow.CmdPreviewToggle}" LargeIcon="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonIconConverter}}"/>
+                </fluent:RibbonGroupBox>
+                <fluent:RibbonGroupBox Header="Options">
+                    <fluent:CheckBox Header="From beginning" IsChecked="{Binding ElementName=Me, Path=PreviewFromStart}"></fluent:CheckBox>
+                    <fluent:ComboBox Header="Fps" IsEditable="False" SelectedIndex="1">
+                        <ComboBoxItem Content="30" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="60" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
+                    </fluent:ComboBox>
+                    <fluent:ComboBox Header="Speed" IsEditable="False" SelectedIndex="8">
+                        <ComboBoxItem Content="0" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="1" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="2" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="3" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="4" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="5" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="6" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="7" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="8" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="9" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="10" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
+                    </fluent:ComboBox>
+                </fluent:RibbonGroupBox>
+            </fluent:RibbonTabItem>
         </fluent:Ribbon>
-        <Grid Grid.Row="2" Background="#FF181818">
+        <Grid Grid.Row="2" Background="#FF181818" x:Name="EditorGrid" Visibility="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={StaticResource True}}">
             <!-- CustomScroll.ScrollSpeed is still needed because when the ComboBox item is selected, the ScrollViewer has not been set yet. -->
             <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="5" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -191,6 +217,9 @@
                 </Grid>
             </ScrollViewer>
             <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
+        </Grid>
+        <Grid Grid.Row="2" Background="#FF181818" Visibility="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}}" x:Name="PreviewGrid">
+            <controls:ScorePreviewer x:Name="ScorePreviewer"></controls:ScorePreviewer>
         </Grid>
         <Grid Grid.Row="3">
             <StatusBar>

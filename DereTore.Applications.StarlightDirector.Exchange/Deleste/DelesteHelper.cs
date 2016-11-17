@@ -57,7 +57,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange.Deleste {
                     }
                 }
                 var bar = score.Bars[entry.MeasureIndex];
-                var totalBarGridCount = bar.GetTotalGridCount();
+                var totalBarGridCount = bar.TotalGridCount;
 
                 if (entry.FullLength > 0 && !totalBarGridCount.IsMultipleOf(entry.FullLength)) {
                     // Try to fit in the grid. E.g. Yumeiro Harmony measure #041.

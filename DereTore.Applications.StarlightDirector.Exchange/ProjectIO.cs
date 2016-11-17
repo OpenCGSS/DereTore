@@ -30,16 +30,37 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             return Load(fileName, version);
         }
 
-        internal static Project Load(string fileName, ProjectVersion versionOverride) {
+        internal static Project Load(string fileName, ProjectVersion versionOverride)
+        {
+            Project project = null;
             switch (versionOverride) {
                 case ProjectVersion.Unknown:
                     throw new ArgumentOutOfRangeException(nameof(versionOverride));
                 case ProjectVersion.V0_1:
-                    return LoadFromV01(fileName);
+                    project = LoadFromV01(fileName);
+                    break;
                 case ProjectVersion.V0_2:
-                    return LoadFromV02(fileName);
+                    project = LoadFromV02(fileName);
+                    break;
             }
-            return LoadCurrentVersion(fileName);
+
+            if (project == null)
+                project = LoadCurrentVersion(fileName);
+
+            // Update bar timings, sort notes
+            foreach (var difficulty in Difficulties)
+            {
+                var score = project.GetScore(difficulty);
+                foreach (var bar in score.Bars)
+                {
+                    bar.UpdateTimings();
+                    bar.Notes.Sort(Note.TimingThenPositionComparison);
+                }
+
+                score.Notes.Sort(Note.TimingThenPositionComparison);
+            }
+
+            return project;
         }
 
         private static void Save(Project project, string fileName, bool createNewDatabase, bool isBackup) {

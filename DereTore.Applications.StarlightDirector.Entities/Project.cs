@@ -145,6 +145,12 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         private void OnSettingsChanged(object sender, EventArgs e) {
             IsChanged = true;
+
+            foreach (var score in Scores.Values)
+            {
+                score.UpdateBarTimings();
+            }
+
             GlobalSettingsChanged.Raise(sender, e);
         }
 
