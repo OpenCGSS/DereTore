@@ -160,6 +160,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private static readonly Geometry RightNoteInnerGeometry =
             Geometry.Parse("M 36,15 C 24,-2 16,-2 15,15 C 16,32 24,32 36,15 Z");
 
+        private static readonly ScaleTransform FlickNoteOuterScale = new ScaleTransform(0.722, 0.722, 15, 15);
+        private static readonly ScaleTransform FlickNoteInnerScale = new ScaleTransform(0.5714, 0.5714, 15, 15);
+
+        private static readonly SolidColorBrush HitEffectBrush = Brushes.Gold;
+
         #endregion
 
         #region Computation and Positions
@@ -252,7 +257,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 }
 
                 // Sync line
-                // check LastT so that when HitNote arrives the line is gone
+                // check LastT so that when HoldNote arrives the line is gone
                 if (note.SyncTarget != null && note.LastT < 1)
                 {
                     dc.DrawLine(LinePens[1], new Point(note.X, note.Y), new Point(note.SyncTarget.X, note.SyncTarget.Y));
@@ -276,6 +281,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                 var center = new Point(note.X, note.Y);
 
+                 
                 switch (note.DrawType)
                 {
                     case 0:
@@ -285,10 +291,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     case 1:
                         dc.PushTransform(new TranslateTransform(note.X - 15, note.Y - 15));
                         dc.DrawGeometry(NoteShapeOutlineFill, NoteStrokePen, LeftNoteOuterGeometry);
-                        dc.PushTransform(new ScaleTransform(0.722, 0.722, 15, 15));
+                        dc.PushTransform(FlickNoteOuterScale);
                         dc.DrawGeometry(FlickNoteShapeFillOuter, FlickNoteShapeStrokePen, LeftNoteOuterGeometry);
                         dc.Pop();
-                        dc.PushTransform(new ScaleTransform(0.5714, 0.5714, 15, 15));
+                        dc.PushTransform(FlickNoteInnerScale);
                         dc.DrawGeometry(FlickNoteShapeFillInner, null, LeftNoteInnerGeometry);
                         dc.Pop();
                         dc.Pop();
@@ -296,10 +302,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     case 2:
                         dc.PushTransform(new TranslateTransform(note.X - 15, note.Y - 15));
                         dc.DrawGeometry(NoteShapeOutlineFill, NoteStrokePen, RightNoteOuterGeometry);
-                        dc.PushTransform(new ScaleTransform(0.722, 0.722, 15, 15));
+                        dc.PushTransform(FlickNoteOuterScale);
                         dc.DrawGeometry(FlickNoteShapeFillOuter, FlickNoteShapeStrokePen, RightNoteOuterGeometry);
                         dc.Pop();
-                        dc.PushTransform(new ScaleTransform(0.5714, 0.5714, 15, 15));
+                        dc.PushTransform(FlickNoteInnerScale);
                         dc.DrawGeometry(FlickNoteShapeFillInner, null, RightNoteInnerGeometry);
                         dc.Pop();
                         dc.Pop();
@@ -321,8 +327,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     continue;
 
                 var t = _hitEffectCountdown[i]/(double) HitEffectFrames;
-                dc.DrawEllipse(new SolidColorBrush(Color.FromArgb((byte)(t*200), 0xFF, 0xFF, 0)), null, _endPoints[i], NoteSize,
+
+                dc.PushOpacity(t);
+                dc.DrawEllipse(HitEffectBrush, null, _endPoints[i], NoteSize,
                     NoteSize);
+                dc.Pop();
 
                 --_hitEffectCountdown[i];
             }
