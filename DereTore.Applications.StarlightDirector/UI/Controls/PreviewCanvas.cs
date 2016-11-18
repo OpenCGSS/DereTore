@@ -248,7 +248,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
                 if (note.LastT == 0 || note.Done)
-                    return;
+                    continue;
 
                 // Hold line
                 if (note.IsHoldStart)

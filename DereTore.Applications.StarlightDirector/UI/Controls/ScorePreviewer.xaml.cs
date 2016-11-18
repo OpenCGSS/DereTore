@@ -75,7 +75,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     Timing = (int) (note.HitTiming*1000),
                     LastT = 0,
                     HitPosition = pos - 1,
-                    DrawType = note.Type == NoteType.Hold ? 3 : (int) note.FlickType
+                    DrawType = (note.IsTap && !note.IsHoldEnd) || note.IsFlick ? (int)note.FlickType : 3
                 };
 
                 if (note.IsHoldStart)
