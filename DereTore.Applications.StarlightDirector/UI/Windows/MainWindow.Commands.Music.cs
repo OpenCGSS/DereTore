@@ -108,9 +108,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             CmdMusicStop.RaiseCanExecuteChanged();
         }
 
-        internal TimeSpan MusicTime()
+        internal double MusicTime()
         {
-            return _waveReader.CurrentTime;
+            return _waveReader?.CurrentTime.TotalMilliseconds ?? Double.MaxValue;
         }
 
         private AudioOut _selectedWaveOut;

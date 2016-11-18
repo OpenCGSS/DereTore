@@ -35,17 +35,20 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         // rendering
         private volatile bool _isPreviewing;
-        private readonly List<int> _hitEffectCountdown;
+        private readonly List<int> _hitEffectStartTime;
+        private readonly List<double> _hitEffectT;
         private readonly EventWaitHandle _renderCompleteHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
-        public int HitEffectFrames { get; set; }
+        public double HitEffectMilliseconds { get; set; }
 
         public PreviewCanvas()
         {
-            _hitEffectCountdown = new List<int>();
+            _hitEffectStartTime = new List<int>();
+            _hitEffectT = new List<double>();
             for (int i = 0; i < 5; ++i)
             {
-                _hitEffectCountdown.Add(0);
+                _hitEffectStartTime.Add(0);
+                _hitEffectT.Add(0);
             }
         }
 
@@ -97,9 +100,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             _isPreviewing = false;
         }
 
-        public void NoteHit(int position)
+        private void NoteHit(int position, int songTime)
         {
-            _hitEffectCountdown[position] = HitEffectFrames;
+            _hitEffectStartTime[position] = songTime;
         }
 
         #region Brushes and Pens
@@ -207,7 +210,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 {
                     if (!note.EffectShown)
                     {
-                        NoteHit(note.HitPosition);
+                        NoteHit(note.HitPosition, songTime);
                         note.EffectShown = true;
                     }
 
@@ -224,6 +227,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 {
                     _notesHead = i;
                     headUpdated = true;
+                }
+            }
+
+            // Update hit effects
+            for (int i = 0; i < 5; ++i)
+            {
+                if (_hitEffectStartTime[i] == 0)
+                    continue;
+
+                var diff = songTime - _hitEffectStartTime[i];
+                if (diff <= HitEffectMilliseconds)
+                {
+                    _hitEffectT[i] = 1 - diff/HitEffectMilliseconds;
+                }
+                else
+                {
+                    _hitEffectT[i] = 0;
                 }
             }
         }
@@ -323,17 +343,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         {
             for (int i = 0; i < 5; ++i)
             {
-                if (_hitEffectCountdown[i] == 0)
+                var t = _hitEffectT[i];
+
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (t == 0)
                     continue;
 
-                var t = _hitEffectCountdown[i]/(double) HitEffectFrames;
-
                 dc.PushOpacity(t);
-                dc.DrawEllipse(HitEffectBrush, null, _endPoints[i], NoteSize,
-                    NoteSize);
+                dc.DrawEllipse(HitEffectBrush, null, _endPoints[i], NoteSize, NoteSize);
                 dc.Pop();
-
-                --_hitEffectCountdown[i];
             }
         }
 

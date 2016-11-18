@@ -4,16 +4,10 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using DereTore.Applications.StarlightDirector.Extensions;
 using DereTore.Applications.StarlightDirector.Entities;
-using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 using System.Linq;
 using DereTore.Applications.StarlightDirector.UI.Controls.Models;
 using DereTore.Applications.StarlightDirector.UI.Windows;
-using LineTuple = System.Tuple<int, double, double, double, double>;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls
 {
@@ -164,8 +158,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private void DrawPreviewFrame()
         {
             // frame rate
-            var targetFrameTime = 1000 / _targetFps;
-            MainCanvas.HitEffectFrames = (int) (_targetFps / 5); // effect lasts for 0.2 second
+            double targetFrameTime = 0;
+            if (_targetFps < Double.MaxValue)
+            {
+                targetFrameTime = 1000/_targetFps;
+            }
+
+            MainCanvas.HitEffectMilliseconds = 200;
 
             // drawing and timing
             var startTime = DateTime.UtcNow;
@@ -186,7 +185,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 int songTime;
                 if (_shouldPlayMusic)
                 {
-                    songTime = (int)_window.MusicTime().TotalMilliseconds;
+                    var time = _window.MusicTime();
+                    if (time == Double.MaxValue)
+                    {
+                        EndPreview();
+                        continue;
+                    }
+
+                    songTime = (int)time;
                 }
                 else
                 {
@@ -199,14 +205,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                 // wait for next frame
 
-                var frameEllapsedTime = (DateTime.UtcNow - frameStartTime).TotalMilliseconds;
-                if (frameEllapsedTime < targetFrameTime)
+                if (targetFrameTime > 0)
                 {
-                    Thread.Sleep((int) (targetFrameTime - frameEllapsedTime));
-                }
-                else
-                {
-                    Debug.WriteLine($"[Warning] Frame ellapsed time {frameEllapsedTime:N2} exceeds target.");
+                    var frameEllapsedTime = (DateTime.UtcNow - frameStartTime).TotalMilliseconds;
+                    if (frameEllapsedTime < targetFrameTime)
+                    {
+                        Thread.Sleep((int)(targetFrameTime - frameEllapsedTime));
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"[Warning] Frame ellapsed time {frameEllapsedTime:N2} exceeds target.");
+                    }
                 }
             }
         }

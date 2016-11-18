@@ -181,6 +181,9 @@
                     <fluent:ComboBox Header="Fps" IsEditable="False" SelectedIndex="1">
                         <ComboBoxItem Content="30" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
                         <ComboBoxItem Content="60" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="90" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="120" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
+                        <ComboBoxItem Content="Unlimited" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
                     </fluent:ComboBox>
                     <fluent:ComboBox Header="Speed" IsEditable="False" SelectedIndex="8">
                         <ComboBoxItem Content="0" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
