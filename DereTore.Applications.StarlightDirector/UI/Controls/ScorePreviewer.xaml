@@ -7,7 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" Background="Transparent">
     <Grid>
-        <Canvas x:Name="LineCanvas"></Canvas>
-        <Canvas x:Name="PreviewCanvas"></Canvas>
+        <local:PreviewCanvas x:Name="MainCanvas"></local:PreviewCanvas>
     </Grid>
 </UserControl>

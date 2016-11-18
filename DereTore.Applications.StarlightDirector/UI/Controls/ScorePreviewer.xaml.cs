@@ -12,7 +12,7 @@ using DereTore.Applications.StarlightDirector.Entities;
 using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 using System.Linq;
 using DereTore.Applications.StarlightDirector.UI.Windows;
-using LineTuple = System.Tuple<double, double, double, double>;
+using LineTuple = System.Tuple<int, double, double, double, double>;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls
 {
@@ -38,10 +38,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             public double LastT { get; set; }
             public double X { get; set; }
             public double Y { get; set; }
-            public SimpleScoreNote ScoreNote { get; set; }
-            public Line HoldLine { get; set; }
-            public Line GroupLine { get; set; }
-            public Line SyncLine { get; set; }
+            public int DrawType { get; set; }
+            public int HitPosition { get; set; }
         }
 
         private const double NoteMarginTop = 20;
@@ -49,9 +47,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private const double NoteXBetween = 80;
         private const double NoteSize = 30;
         private const double NoteRadius = NoteSize / 2;
-        private const double HoldLineThickness = 16;
-        private const double SyncLineThickness = 8;
-        private const double GridLineThickness = 1;
 
         // used by frame update thread
         private Score _score;
@@ -62,27 +57,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private int _startTime;
         private double _approachTime;
 
-        // WPF new object performance is horrible, so we use pools to reuse them
-        private readonly Queue<SimpleScoreNote> _scoreNotePool = new Queue<SimpleScoreNote>();
-        private readonly Queue<Line> _linePool = new Queue<Line>();
-
         // screen positions
         private double _noteStartY;
         private double _noteEndY;
         private List<double> _noteX;
-        private double _lineOffset;
-
-        private readonly Brush _relationBrush = Application.Current.FindResource<Brush>(App.ResourceKeys.RelationBorderBrush);
-        private readonly Brush _gridBrush = Brushes.DarkGray;
-
+        
         // window-related
         private readonly MainWindow _window;
         private bool _shouldPlayMusic;
-
-        // note hit effect!
-        private int _noteHitCounter;
-        private int _noteHitMax;
-        private Line _effectedLine;
 
         public ScorePreviewer()
         {
@@ -129,8 +111,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     Timing = (int) (note.HitTiming*1000),
                     LastT = 0,
                     X = _noteX[pos - 1],
-                    Y = _noteStartY
+                    Y = _noteStartY,
+                    HitPosition = pos - 1
                 };
+
+                snote.DrawType = note.Type == NoteType.Hold ? 3 : (int) note.FlickType;
 
                 if (note.IsHoldStart)
                 {
@@ -161,9 +146,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 }
             }
 
-            // draw some grid lines
-            DrawGrid();
-
             // music
             _shouldPlayMusic = ShouldPlayMusic();
 
@@ -187,45 +169,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private void ComputePositions()
         {
             _noteStartY = NoteMarginTop;
-            _noteEndY = PreviewCanvas.ActualHeight - NoteMarginBottom;
-            _noteX[0] = (PreviewCanvas.ActualWidth - 4*NoteXBetween - 5*NoteSize)/2;
+            _noteEndY = MainCanvas.ActualHeight - NoteMarginBottom;
+            _noteX[0] = (MainCanvas.ActualWidth - 4*NoteXBetween - 5*NoteSize)/2;
             for (int i = 1; i < 5; ++i)
             {
                 _noteX[i] = _noteX[i - 1] + NoteXBetween + NoteSize;
             }
-
-            _lineOffset = NoteRadius;
-        }
-
-        private void DrawGrid()
-        {
-            var lines = new List<LineTuple>();
-
-            foreach (var x in _noteX)
-            {
-                lines.Add(new LineTuple(x, _noteStartY, x, _noteEndY));
-            }
-            lines.Add(new LineTuple(_noteX[0], _noteStartY, _noteX[4], _noteStartY));
-            lines.Add(new LineTuple(_noteX[0], _noteEndY, _noteX[4], _noteEndY));
-            lines.Add(new LineTuple(_noteX[0], _noteEndY, _noteX[4], _noteEndY));
-
-            foreach (var line in lines)
-            {
-                // after the loop, _effectedLine will be the LAST line
-                _effectedLine = new Line
-                {
-                    Stroke = _gridBrush,
-                    StrokeThickness = GridLineThickness,
-                    X1 = line.Item1 + _lineOffset,
-                    Y1 = line.Item2 + _lineOffset,
-                    X2 = line.Item3 + _lineOffset,
-                    Y2 = line.Item4 + _lineOffset
-                };
-                LineCanvas.Children.Add(_effectedLine);
-            }
-
-            _effectedLine.Stroke = Brushes.Gold;
-            _effectedLine.Opacity = 0;
         }
 
         // These methods invokes the main thread and perform the tasks
@@ -246,150 +195,31 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             Dispatcher.Invoke(new Action(() => _window.StopMusic()));
         }
 
-        private readonly Action<UIElement, double, double> _setPositionInCanvasAction =
-            (elem, x, y) =>
-            {
-                Canvas.SetLeft(elem, x);
-                Canvas.SetTop(elem, y);
-            };
-
-        private SimpleScoreNote CreateScoreNote(SimpleNote note)
-        {
-            return Dispatcher.Invoke(new Func<SimpleScoreNote>(() =>
-            {
-                if (_scoreNotePool.Count == 0)
-                {
-                    var scoreNote = new SimpleScoreNote {Note = note.Note};
-                    PreviewCanvas.Children.Add(scoreNote);
-                    Canvas.SetTop(scoreNote, 0);
-                    Canvas.SetLeft(scoreNote, 0);
-                    return scoreNote;
-                }
-                else
-                {
-                    var scoreNote = _scoreNotePool.Dequeue();
-                    scoreNote.Note = note.Note;
-                    Canvas.SetTop(scoreNote, 0);
-                    Canvas.SetLeft(scoreNote, 0);
-                    scoreNote.Visibility = Visibility.Visible;
-                    return scoreNote;
-                }
-            })) as SimpleScoreNote;
-        }
-
-        private void SetPositionInCanvas(UIElement elem, double x, double y)
-        {
-            Dispatcher.Invoke(_setPositionInCanvasAction, elem, x, y);
-        }
-
-        private void ReleaseScoreNote(SimpleScoreNote scoreNote)
-        {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                scoreNote.Visibility = Visibility.Collapsed;
-                _scoreNotePool.Enqueue(scoreNote);
-            }));
-        }
-
-        private void ReleaseLine(Line line)
-        {
-            if (line == null)
-                return;
-
-            Dispatcher.Invoke(new Action(() =>
-            {
-                line.Visibility = Visibility.Collapsed;
-                _linePool.Enqueue(line);
-            }));
-        }
-
-        private void ClearCanvases()
-        {
-            Dispatcher.Invoke(new Action(() =>
-            {
-                PreviewCanvas.Children.Clear();
-                LineCanvas.Children.Clear();
-            }));
-        }
-
         #endregion
 
-        /// <summary>
-        /// Helper used by DrawLines.
-        /// </summary>
-        private Line CreateLineOnCurrentThread(double thickness)
+        private void ComputeLine(SimpleNote note)
         {
-            Line line;
-            if (_linePool.Count == 0)
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            if (note.LastT == 0 || note.Done)
+                return;
+
+            // Hold line
+            if (note.IsHoldStart)
             {
-                line = new Line
-                {
-                    Stroke = _relationBrush,
-                    StrokeThickness = thickness
-                };
-                LineCanvas.Children.Add(line);
-            }
-            else
-            {
-                line = _linePool.Dequeue();
-                line.Visibility = Visibility.Visible;
-                line.StrokeThickness = thickness;
+                MainCanvas.Lines.Add(new LineTuple(0, note.X, note.Y, note.HoldTarget.X, note.HoldTarget.Y));
             }
 
-            return line;
-        }
-
-        /// <summary>
-        /// Draw lines. MUST BE CALLED ON MAIN THREAD
-        /// </summary>
-        private void DrawLines()
-        {
-            foreach (var note in _notes)
+            // Sync line
+            // check LastT so that when HitNote arrives the line is gone
+            if (note.SyncTarget != null && note.LastT < 1)
             {
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (note.LastT == 0 || note.Done)
-                    continue;
+                MainCanvas.Lines.Add(new LineTuple(1, note.X, note.Y, note.SyncTarget.X, note.SyncTarget.Y));
+            }
 
-                // Hold line
-                if (note.IsHoldStart)
-                {
-                    if (note.HoldLine == null)
-                    {
-                        note.HoldLine = CreateLineOnCurrentThread(HoldLineThickness);
-                    }
-
-                    note.HoldLine.X1 = note.HoldLine.X2 = note.X + _lineOffset;
-                    note.HoldLine.Y1 = note.Y + _lineOffset;
-                    note.HoldLine.Y2 = note.HoldTarget.Y + _lineOffset;
-                }
-
-                // Sync line
-                // check LastT so that when HitNote arrives the line is gone
-                if (note.SyncTarget != null && note.LastT < 1)
-                {
-                    if (note.SyncLine == null)
-                    {
-                        note.SyncLine = CreateLineOnCurrentThread(SyncLineThickness);
-                    }
-
-                    note.SyncLine.X1 = note.X + _lineOffset;
-                    note.SyncLine.Y1 = note.SyncLine.Y2 = note.Y + _lineOffset;
-                    note.SyncLine.X2 = note.SyncTarget.X + _lineOffset;
-                }
-
-                // Flicker line
-                if (note.GroupTarget != null && note.LastT < 1)
-                {
-                    if (note.GroupLine == null)
-                    {
-                        note.GroupLine = CreateLineOnCurrentThread(SyncLineThickness);
-                    }
-
-                    note.GroupLine.X1 = note.X + _lineOffset;
-                    note.GroupLine.Y1 = note.Y + _lineOffset;
-                    note.GroupLine.X2 = note.GroupTarget.X + _lineOffset;
-                    note.GroupLine.Y2 = note.GroupTarget.Y + _lineOffset;
-                }
+            // Flicker line
+            if (note.GroupTarget != null && note.LastT < 1)
+            {
+                MainCanvas.Lines.Add(new LineTuple(2, note.X, note.Y, note.GroupTarget.X, note.GroupTarget.Y));
             }
         }
 
@@ -400,7 +230,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         {
             // computation parameters
             var targetFrameTime = 1000 / _targetFps;
-            _noteHitMax = (int) (_targetFps / 5); // effect lasts for 0.2 second
+            MainCanvas.HitEffectFrames = (int) (_targetFps / 5); // effect lasts for 0.2 second
 
             // fix start time
             _startTime -= (int)_approachTime;
@@ -420,15 +250,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             {
                 if (!_isPreviewing)
                 {
-                    ClearCanvases();
-
-                    _linePool.Clear();
                     _notes.Clear();
-                    _scoreNotePool.Clear();
                     return;
                 }
 
                 var frameStartTime = DateTime.UtcNow;
+
+                // compute time
 
                 int songTime;
                 if (_shouldPlayMusic)
@@ -440,6 +268,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     songTime = (int)(frameStartTime - startTime).TotalMilliseconds + _startTime;
                 }
 
+                // reset canvas
+
+                MainCanvas.Notes.Clear();
+                MainCanvas.Lines.Clear();
+
+                // compute notes
+
+                int computeStart = notesHead;
+                int computeEnd = notesHead;
                 bool headUpdated = false;
                 for (int i = notesHead; i < _notes.Count; ++i)
                 {
@@ -457,10 +294,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     if (note.Done)
                         continue;
 
-                    if (note.ScoreNote == null)
-                    {
-                        note.ScoreNote =  CreateScoreNote(note);
-                    }
+                    computeEnd = i;
 
                     var t = diff/ _approachTime;
                     if (t > 1)
@@ -470,52 +304,43 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                     // change this line if you want game-like approaching path
                     note.Y = _noteStartY + t*(_noteEndY - _noteStartY);
-                    SetPositionInCanvas(note.ScoreNote, note.X, note.Y);
+
+                    MainCanvas.Notes.Add(new Tuple<int, double, double>(note.DrawType, note.X, note.Y));
 
                     // note arrive at bottom
                     if (diff > _approachTime)
                     {
-                        ReleaseLine(note.SyncLine);
-                        ReleaseLine(note.GroupLine);
-                        note.SyncLine = null;
-                        note.GroupLine = null;
+                        MainCanvas.NoteHit(note.HitPosition);
 
                         // Hit and flick notes end immediately
                         // Hold note heads end after its duration
                         if (!note.IsHoldStart || diff > _approachTime + note.Duration)
                         {
-                            ReleaseScoreNote(note.ScoreNote);
-                            ReleaseLine(note.HoldLine);
-                            note.ScoreNote = null;
-                            note.HoldLine = null;
-
                             note.Done = true;
+                        }                 
+                    }
 
-                            // note hit effect
-                            _noteHitCounter = _noteHitMax;
-                        }
-
-                        if (!headUpdated)
-                        {
-                            notesHead = i;
-                            headUpdated = true;
-                        }                        
+                    // update head to be the first note that is not done
+                    if (!note.Done && !headUpdated)
+                    {
+                        notesHead = i;
+                        headUpdated = true;
                     }
                 }
 
-                // Draw sync, group, hold lines
-                Dispatcher.Invoke(new Action(DrawLines));
+                // compute lines
 
-                // Do note hit effect
-                if (_noteHitCounter >= 0)
+                for (int i = computeStart; i <= computeEnd; ++i)
                 {
-                    Dispatcher.Invoke(new Action(() =>
-                    {
-                        double et = _noteHitCounter/(double) _noteHitMax; // from 1 to 0
-                        _effectedLine.Opacity = et;
-                    }));
-                    --_noteHitCounter;
+                    ComputeLine(_notes[i]);
                 }
+
+                // wait for rendering
+
+                Dispatcher.Invoke(new Action(() => MainCanvas.InvalidateVisual()));
+                MainCanvas.RenderCompleteHandle.WaitOne();
+
+                // wait for next frame
 
                 var frameEllapsedTime = (DateTime.UtcNow - frameStartTime).TotalMilliseconds;
                 if (frameEllapsedTime < targetFrameTime)
