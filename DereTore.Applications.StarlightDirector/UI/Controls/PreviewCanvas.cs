@@ -150,6 +150,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             new Pen(RelationBrush, 8)   // group line
         };
 
+        private static readonly Geometry LeftNoteOuterGeometry =
+    Geometry.Parse("M -6,15 A 24,24 0 0 1 15,0 A 15,15 0 0 1 15,30 A 24,24 0 0 1 -6,15 Z");
+        private static readonly Geometry LeftNoteInnerGeometry =
+            Geometry.Parse("M -6,15 C 6,-2 20,-2 15,15 C 21,32 6,32 -6,15 Z");
+
+        private static readonly Geometry RightNoteOuterGeometry =
+    Geometry.Parse("M 36,15 A 24,24 0 0 0 15,0 A 15,15 0 0 0 15,30 A 24,24 0 0 0 36,15 Z");
+        private static readonly Geometry RightNoteInnerGeometry =
+            Geometry.Parse("M 36,15 C 24,-2 16,-2 15,15 C 16,32 24,32 36,15 Z");
+
         #endregion
 
         #region Computation and Positions
@@ -269,10 +279,30 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 switch (note.DrawType)
                 {
                     case 0:
-                    case 1:
-                    case 2:
                         dc.DrawEllipse(NoteShapeOutlineFill, NoteStrokePen, center, NoteRadius, NoteRadius);
                         dc.DrawEllipse(NormalNoteShapeFill, NormalNoteShapeStrokePen, center, NoteRadius - 4, NoteRadius - 4);
+                        break;
+                    case 1:
+                        dc.PushTransform(new TranslateTransform(note.X - 15, note.Y - 15));
+                        dc.DrawGeometry(NoteShapeOutlineFill, NoteStrokePen, LeftNoteOuterGeometry);
+                        dc.PushTransform(new ScaleTransform(0.722, 0.722, 15, 15));
+                        dc.DrawGeometry(FlickNoteShapeFillOuter, FlickNoteShapeStrokePen, LeftNoteOuterGeometry);
+                        dc.Pop();
+                        dc.PushTransform(new ScaleTransform(0.5714, 0.5714, 15, 15));
+                        dc.DrawGeometry(FlickNoteShapeFillInner, null, LeftNoteInnerGeometry);
+                        dc.Pop();
+                        dc.Pop();
+                        break;
+                    case 2:
+                        dc.PushTransform(new TranslateTransform(note.X - 15, note.Y - 15));
+                        dc.DrawGeometry(NoteShapeOutlineFill, NoteStrokePen, RightNoteOuterGeometry);
+                        dc.PushTransform(new ScaleTransform(0.722, 0.722, 15, 15));
+                        dc.DrawGeometry(FlickNoteShapeFillOuter, FlickNoteShapeStrokePen, RightNoteOuterGeometry);
+                        dc.Pop();
+                        dc.PushTransform(new ScaleTransform(0.5714, 0.5714, 15, 15));
+                        dc.DrawGeometry(FlickNoteShapeFillInner, null, RightNoteInnerGeometry);
+                        dc.Pop();
+                        dc.Pop();
                         break;
                     case 3:
                         dc.DrawEllipse(NoteShapeOutlineFill, NoteStrokePen, center, NoteRadius, NoteRadius);
