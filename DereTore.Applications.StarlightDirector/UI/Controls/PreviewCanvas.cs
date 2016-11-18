@@ -35,21 +35,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         // rendering
         private volatile bool _isPreviewing;
-        private readonly List<int> _hitEffectStartTime;
-        private readonly List<double> _hitEffectT;
+        private List<int> _hitEffectStartTime;
+        private List<double> _hitEffectT;
         private readonly EventWaitHandle _renderCompleteHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         public double HitEffectMilliseconds { get; set; }
 
         public PreviewCanvas()
         {
-            _hitEffectStartTime = new List<int>();
-            _hitEffectT = new List<double>();
-            for (int i = 0; i < 5; ++i)
-            {
-                _hitEffectStartTime.Add(0);
-                _hitEffectT.Add(0);
-            }
+
         }
 
         public void Initialize(List<DrawingNote> notes, double approachTime)
@@ -82,6 +76,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             {
                 note.X = _noteX[note.HitPosition];
                 note.Y = _noteStartY;
+            }
+
+            // hit effect timing
+
+            _hitEffectStartTime = new List<int>();
+            _hitEffectT = new List<double>();
+            for (int i = 0; i < 5; ++i)
+            {
+                _hitEffectStartTime.Add(0);
+                _hitEffectT.Add(0);
             }
 
             _isPreviewing = true;
