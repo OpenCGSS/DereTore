@@ -178,7 +178,7 @@
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Options">
                     <fluent:CheckBox Header="From beginning" IsChecked="{Binding ElementName=Me, Path=PreviewFromStart}"></fluent:CheckBox>
-                    <fluent:ComboBox Header="Fps" IsEditable="False" SelectedIndex="1">
+                    <fluent:ComboBox Header="Fps" IsEditable="False" SelectedIndex="3">
                         <ComboBoxItem Content="30" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
                         <ComboBoxItem Content="60" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
                         <ComboBoxItem Content="90" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
