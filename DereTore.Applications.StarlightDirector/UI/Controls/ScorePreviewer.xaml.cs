@@ -214,9 +214,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                 // wait for next frame
 
+                _lastFrameEndtime = DateTime.UtcNow;
                 if (targetFrameTime > 0)
                 {
-                    _lastFrameEndtime = DateTime.UtcNow;
                     var frameEllapsedTime = (_lastFrameEndtime - frameStartTime).TotalMilliseconds;
                     if (frameEllapsedTime < targetFrameTime)
                     {
