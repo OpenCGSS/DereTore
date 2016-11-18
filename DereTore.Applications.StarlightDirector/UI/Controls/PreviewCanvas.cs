@@ -24,6 +24,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private double _noteStartY;
         private double _noteEndY;
         private readonly List<double> _noteX = new List<double>();
+        private readonly List<Point> _startPoints = new List<Point>();
+        private readonly List<Point> _endPoints = new List<Point>();
 
         // computation
         private List<DrawingNote> _notes;
@@ -63,6 +65,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             for (int i = 1; i < 5; ++i)
             {
                 _noteX.Add(_noteX.Last() + NoteXBetween + NoteSize);
+            }
+
+            for (int i = 0; i < 5; ++i)
+            {
+                _startPoints.Add(new Point(_noteX[i], _noteStartY));
+                _endPoints.Add(new Point(_noteX[i], _noteEndY));
             }
 
             // initialize note positions
@@ -131,6 +139,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         private static readonly Pen FlickNoteShapeStrokePen = new Pen(FlickNoteShapeStroke, 1);
 
+        private static readonly Pen GridPen = new Pen(Brushes.DarkGray, 1);
+
         private static readonly Brush RelationBrush =  Application.Current.FindResource<Brush>(App.ResourceKeys.RelationBorderBrush);
 
         private static readonly Pen[] LinePens =
@@ -180,7 +190,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 // note arrive at bottom
                 if (diff > _approachTime)
                 {
-                    NoteHit(note.HitPosition);
+                    if (!note.EffectShown)
+                    {
+                        NoteHit(note.HitPosition);
+                        note.EffectShown = true;
+                    }
 
                     // Hit and flick notes end immediately
                     // Hold note heads end after its duration
@@ -202,6 +216,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         #endregion
 
         #region Rendering
+
+        private void DrawGrid(DrawingContext dc)
+        {
+            for (int i = 0; i < 5; ++i)
+            {
+                dc.DrawLine(GridPen, _startPoints[i], _endPoints[i]);
+            }
+        }
 
         private void DrawLines(DrawingContext dc)
         {
@@ -239,6 +261,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             for (int i = _notesHead; i <= _notesTail; ++i)
             {
                 var note = _notes[i];
+                if (note.Done)
+                    continue;
+
                 var center = new Point(note.X, note.Y);
 
                 switch (note.DrawType)
@@ -258,6 +283,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             }
         }
 
+        private void DrawEffect(DrawingContext dc)
+        {
+            for (int i = 0; i < 5; ++i)
+            {
+                if (_hitEffectCountdown[i] == 0)
+                    continue;
+
+                var t = _hitEffectCountdown[i]/(double) HitEffectFrames;
+                dc.DrawEllipse(new SolidColorBrush(Color.FromArgb((byte)(t*200), 0xFF, 0xFF, 0)), null, _endPoints[i], NoteSize,
+                    NoteSize);
+
+                --_hitEffectCountdown[i];
+            }
+        }
+
         protected override void OnRender(DrawingContext dc)
         {
             _renderCompleteHandle.Reset();
@@ -270,7 +310,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 return;
             }
 
+            DrawGrid(dc);
             DrawLines(dc);
+            DrawEffect(dc);
             DrawNotes(dc);
 
             _renderCompleteHandle.Set();

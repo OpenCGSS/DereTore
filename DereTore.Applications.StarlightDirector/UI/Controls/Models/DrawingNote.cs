@@ -24,5 +24,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Models
         public double Y { get; set; }
         public int DrawType { get; set; }
         public int HitPosition { get; set; }
+        public bool EffectShown { get; set; }
     }
 }
