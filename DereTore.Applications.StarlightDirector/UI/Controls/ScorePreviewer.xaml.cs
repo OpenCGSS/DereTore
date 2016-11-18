@@ -25,6 +25,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private double _targetFps;
         private int _startTime;
 
+        // music time fixing
+        private int _lastSongTime = 0;
+        private DateTime _lastFrameEndtime;
+
         // window-related
         private readonly MainWindow _window;
         private bool _shouldPlayMusic;
@@ -193,6 +197,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     }
 
                     songTime = (int)time;
+                    if (songTime > 0 && songTime == _lastSongTime)
+                    {
+                        songTime += (int)(frameStartTime - _lastFrameEndtime).TotalMilliseconds;
+                    }
+                    _lastSongTime = songTime;
                 }
                 else
                 {
@@ -207,7 +216,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
                 if (targetFrameTime > 0)
                 {
-                    var frameEllapsedTime = (DateTime.UtcNow - frameStartTime).TotalMilliseconds;
+                    _lastFrameEndtime = DateTime.UtcNow;
+                    var frameEllapsedTime = (_lastFrameEndtime - frameStartTime).TotalMilliseconds;
                     if (frameEllapsedTime < targetFrameTime)
                     {
                         Thread.Sleep((int)(targetFrameTime - frameEllapsedTime));
