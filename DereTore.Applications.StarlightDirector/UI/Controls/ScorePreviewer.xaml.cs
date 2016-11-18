@@ -26,7 +26,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private int _startTime;
 
         // music time fixing
-        private int _lastSongTime = 0;
+        private int _lastMusicTime;
+        private int _lastComputedSongTime;
         private DateTime _lastFrameEndtime;
 
         // window-related
@@ -197,11 +198,18 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     }
 
                     songTime = (int)time;
-                    if (songTime > 0 && songTime == _lastSongTime)
+                    if (songTime > 0 && songTime == _lastMusicTime)
                     {
-                        songTime += (int)(frameStartTime - _lastFrameEndtime).TotalMilliseconds;
+                        // music time not updated, add frame time
+                        _lastComputedSongTime += (int) (frameStartTime - _lastFrameEndtime).TotalMilliseconds;
+                        songTime = _lastComputedSongTime;
                     }
-                    _lastSongTime = songTime;
+                    else
+                    {
+                        // music time updated
+                        _lastComputedSongTime = songTime;
+                        _lastMusicTime = songTime;
+                    }
                 }
                 else
                 {
