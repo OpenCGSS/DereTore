@@ -158,10 +158,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\Primitives\SimpleScoreNote.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="UI\Controls\ScoreEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -203,6 +199,8 @@
     <Compile Include="UIHelper.cs" />
     <Compile Include="CommandHelper.cs" />
     <Compile Include="ResourceKeys.cs" />
+    <Compile Include="UI\Controls\Models\DrawingNote.cs" />
+    <Compile Include="UI\Controls\PreviewCanvas.cs" />
     <Compile Include="UI\Controls\Primitives\LineLayer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\Primitives\LineLayer.xaml.cs">
       <DependentUpon>LineLayer.xaml</DependentUpon>
@@ -235,9 +233,6 @@
     <Compile Include="UI\Controls\Primitives\ScoreBar.Placeholder.cs" />
     <Compile Include="UI\Controls\Primitives\ScoreBar.Rendering.cs" />
     <Compile Include="UI\Controls\Primitives\ScoreBar.TextAndLocation.cs" />
-    <Compile Include="UI\Controls\Primitives\SimpleScoreNote.xaml.cs">
-      <DependentUpon>SimpleScoreNote.xaml</DependentUpon>
-    </Compile>
     <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScoreEditor.Editing.cs" />
     <Compile Include="UI\Controls\ScoreEditor.EventHandlers.cs" />
