@@ -110,6 +110,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         {
             var item = e.OriginalSource as ComboBoxItem;
             double fps;
+            var s = item?.Content?.ToString();
+            if (s == "Unlimited")
+            {
+                PreviewFps = Double.MaxValue;
+                return;
+            }
+
             if (Double.TryParse(item?.Content?.ToString(), out fps))
             {
                 PreviewFps = fps;
