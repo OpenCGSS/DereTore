@@ -174,7 +174,7 @@
             </fluent:RibbonTabItem>
             <fluent:RibbonTabItem Header="Preview" KeyTip="P">
                 <fluent:RibbonGroupBox Header="Control">
-                    <fluent:Button Header="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonTextConverter}}" Command="{x:Static local:MainWindow.CmdPreviewToggle}" LargeIcon="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonIconConverter}}"/>
+                    <fluent:Button Header="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonTextConverter}}" Command="{x:Static local:MainWindow.CmdPreviewToggle}" LargeIcon="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonIconConverter}}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Options">
                     <fluent:CheckBox Header="From beginning" IsChecked="{Binding ElementName=Me, Path=PreviewFromStart}"></fluent:CheckBox>
@@ -221,7 +221,7 @@
             </ScrollViewer>
             <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
         </Grid>
-        <Grid Grid.Row="2" Background="#FF181818" Visibility="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}}" x:Name="PreviewGrid">
+        <Grid Grid.Row="2" Background="#FF181818" Visibility="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
             <controls:ScorePreviewer x:Name="ScorePreviewer"></controls:ScorePreviewer>
         </Grid>
         <Grid Grid.Row="3">

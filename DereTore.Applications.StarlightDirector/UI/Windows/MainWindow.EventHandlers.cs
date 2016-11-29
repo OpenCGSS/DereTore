@@ -57,6 +57,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             }
             _autoSaveTimer.Stop();
             ClearBackup();
+            if (ScorePreviewer.IsPreviewing) {
+                ScorePreviewer.EndPreview();
+            }
 
             _temporaryMessageTimer.Elapsed -= TemporaryMessageTimer_OnElapsed;
             _temporaryMessageTimer?.Dispose();
@@ -106,30 +109,25 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             Dispatcher.Invoke(new Action(SaveBackup));
         }
 
-        private void PreviewFpsComboBoxItem_Selected(object sender, System.Windows.RoutedEventArgs e)
-        {
+        private void PreviewFpsComboBoxItem_Selected(object sender, RoutedEventArgs e) {
             var item = e.OriginalSource as ComboBoxItem;
             double fps;
             var s = item?.Content?.ToString();
-            if (s == "Unlimited")
-            {
-                PreviewFps = Double.MaxValue;
+            if (s == "Unlimited") {
+                PreviewFps = double.PositiveInfinity;
                 return;
             }
 
-            if (Double.TryParse(item?.Content?.ToString(), out fps))
-            {
+            if (double.TryParse(item?.Content?.ToString(), out fps)) {
                 PreviewFps = fps;
-            }        
+            }
         }
 
-        private void PreviewSpeedComboBoxItem_Selected(object sender, System.Windows.RoutedEventArgs e)
-        {
+        private void PreviewSpeedComboBoxItem_Selected(object sender, RoutedEventArgs e) {
             var item = e.OriginalSource as ComboBoxItem;
-            int spd;
-            if (Int32.TryParse(item?.Content?.ToString(), out spd))
-            {
-                PreviewSpeed = spd;
+            int speed;
+            if (int.TryParse(item?.Content?.ToString(), out speed)) {
+                PreviewSpeed = speed;
             }
         }
     }

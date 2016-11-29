@@ -59,8 +59,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             e.CanExecute = r;
         }
 
-        private void CmdMusicStop_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
+        private void CmdMusicStop_Executed(object sender, ExecutedRoutedEventArgs e) {
             StopMusic();
         }
 
@@ -77,11 +76,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
 
         internal bool MusicLoaded => Editor.Project?.HasMusic ?? false;
 
-        internal void PlayMusic(double milliseconds)
-        {
+        internal void PlayMusic(double startOffsetInMillis) {
             var o = _selectedWaveOut;
-            if (o == null)
-            {
+            if (o == null) {
                 o = new AudioOut(AudioClientShareMode.Shared, 0);
                 var fileStream = new FileStream(Project.MusicFileName, FileMode.Open, FileAccess.Read);
                 _waveReader = new WaveFileReader(fileStream);
@@ -90,27 +87,28 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 _selectedWaveOut = o;
             }
 
-            if (o.PlaybackState == PlaybackState.Playing)
-            {
+            if (o.PlaybackState == PlaybackState.Playing) {
                 o.Stop();
             }
 
-            _waveReader.CurrentTime = TimeSpan.FromMilliseconds(milliseconds);
+            _waveReader.CurrentTime = TimeSpan.FromMilliseconds(startOffsetInMillis);
             o.Play();
             CmdMusicPlay.RaiseCanExecuteChanged();
         }
 
-        internal void StopMusic()
-        {
+        internal void StopMusic() {
             var o = _selectedWaveOut;
             o?.Stop();
             SelectedWaveOut_PlaybackStopped(o, EventArgs.Empty);
             CmdMusicStop.RaiseCanExecuteChanged();
         }
 
-        internal double MusicTime()
-        {
-            return _waveReader?.CurrentTime.TotalMilliseconds ?? Double.MaxValue;
+        internal TimeSpan? GetCurrentMusicTime() {
+            return _waveReader?.CurrentTime;
+        }
+
+        internal TimeSpan? GetMusicTotalTime() {
+            return _waveReader.TotalTime;
         }
 
         private AudioOut _selectedWaveOut;

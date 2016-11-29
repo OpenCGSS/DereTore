@@ -9,21 +9,19 @@ using System.Linq;
 using DereTore.Applications.StarlightDirector.UI.Controls.Models;
 using DereTore.Applications.StarlightDirector.UI.Windows;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls
-{
+namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// <summary>
     /// Interaction logic for ScorePreviewer.xaml
     /// </summary>
-    public partial class ScorePreviewer
-    {
+    public partial class ScorePreviewer {
 
         // used by frame update thread
         private Score _score;
-        private volatile bool _isPreviewing;
         private Task _task;
         private readonly List<DrawingNote> _notes = new List<DrawingNote>();
         private double _targetFps;
         private int _startTime;
+        private volatile bool _isPreviewing;
 
         // music time fixing
         private int _lastMusicTime;
@@ -34,28 +32,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         private readonly MainWindow _window;
         private bool _shouldPlayMusic;
 
-        public ScorePreviewer()
-        {
+        public ScorePreviewer() {
             InitializeComponent();
             _window = Application.Current.MainWindow as MainWindow;
         }
 
-        public void BeginPreview(Score score, double targetFps, int startTime, double approachTime)
-        {
+        public void BeginPreview(Score score, double targetFps, int startTime, double approachTime) {
             // setup parameters
 
             _score = score;
-            _isPreviewing = true;
             _targetFps = targetFps;
             _startTime = startTime;
 
             // prepare notes
 
-            foreach (var note in _score.Notes)
-            {
+            foreach (var note in _score.Notes) {
                 // can I draw it?
-                if (note.Type != NoteType.TapOrFlick && note.Type != NoteType.Hold)
-                {
+                if (note.Type != NoteType.TapOrFlick && note.Type != NoteType.Hold) {
                     continue;
                 }
                 var pos = (int)note.FinishPosition;
@@ -65,21 +58,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 if (pos == 0)
                     continue;
 
-                var snote = new DrawingNote
-                {
+                var snote = new DrawingNote {
                     Note = note,
                     Done = false,
                     Duration = 0,
                     IsHoldStart = note.IsHoldStart,
-                    Timing = (int) (note.HitTiming*1000),
+                    Timing = (int)(note.HitTiming * 1000),
                     LastT = 0,
                     HitPosition = pos - 1,
                     DrawType = (note.IsTap && !note.IsHoldEnd) || note.IsFlick ? (int)note.FlickType : 3
                 };
 
-                if (note.IsHoldStart)
-                {
-                    snote.Duration = (int) (note.HoldTarget.HitTiming*1000) - (int) (note.HitTiming*1000);
+                if (note.IsHoldStart) {
+                    snote.Duration = (int)(note.HoldTarget.HitTiming * 1000) - (int)(note.HitTiming * 1000);
                 }
 
                 _notes.Add(snote);
@@ -89,20 +80,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
             // prepare note relationships
 
-            foreach (var snote in _notes)
-            {
-                if (snote.IsHoldStart)
-                {
+            foreach (var snote in _notes) {
+                if (snote.IsHoldStart) {
                     snote.HoldTarget = _notes.FirstOrDefault(note => note.Note.ID == snote.Note.HoldTargetID);
                 }
 
-                if (snote.Note.HasNextSync)
-                {
+                if (snote.Note.HasNextSync) {
                     snote.SyncTarget = _notes.FirstOrDefault(note => note.Note.ID == snote.Note.NextSyncTarget.ID);
                 }
 
-                if (snote.Note.HasNextFlick)
-                {
+                if (snote.Note.HasNextFlick) {
                     snote.GroupTarget = _notes.FirstOrDefault(note => note.Note.ID == snote.Note.NextFlickNoteID);
                 }
             }
@@ -123,35 +110,30 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
             // go
 
-            if (_shouldPlayMusic)
-            {
+            if (_shouldPlayMusic) {
                 StartMusic(_startTime);
             }
 
-            _task = new Task(DrawPreviewFrame);
+            _task = new Task(DrawPreviewFrames);
             _task.Start();
         }
 
-        public void EndPreview()
-        {
-            if (_shouldPlayMusic)
-            {
+        public void EndPreview() {
+            if (_shouldPlayMusic) {
                 StopMusic();
             }
 
-            _isPreviewing = false;
+            IsPreviewing = false;
         }
 
         // These methods invokes the main thread and perform the tasks
         #region Multithreading Invoke
 
-        private void StartMusic(double milliseconds)
-        {
+        private void StartMusic(double milliseconds) {
             Dispatcher.Invoke(new Action(() => _window.PlayMusic(milliseconds)));
         }
 
-        private void StopMusic()
-        {
+        private void StopMusic() {
             Dispatcher.Invoke(new Action(() => _window.StopMusic()));
         }
 
@@ -160,82 +142,73 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
         /// <summary>
         /// Running in a background thread, refresh the locations of notes periodically. It tries to keep the target frame rate.
         /// </summary>
-        private void DrawPreviewFrame()
-        {
+        private void DrawPreviewFrames() {
             // frame rate
             double targetFrameTime = 0;
-            if (_targetFps < Double.MaxValue)
-            {
-                targetFrameTime = 1000/_targetFps;
+            if (double.IsInfinity(_targetFps)) {
+                targetFrameTime = 1000 / _targetFps;
             }
 
             MainCanvas.HitEffectMilliseconds = 200;
 
             // drawing and timing
             var startTime = DateTime.UtcNow;
+            TimeSpan? musicCurrentTime = null;
+            var musicTotalTime = _window.GetMusicTotalTime();
 
-            while (true)
-            {
-                if (!_isPreviewing)
-                {
-                    MainCanvas.Stop();
-                    _notes.Clear();
-                    return;
+            while (_isPreviewing) {
+                if (_shouldPlayMusic) {
+                    musicCurrentTime = _window.GetCurrentMusicTime();
+                    if (musicCurrentTime.HasValue && musicTotalTime.HasValue && musicCurrentTime.Value >= musicTotalTime.Value) {
+                        EndPreview();
+                        break;
+                    }
                 }
 
                 var frameStartTime = DateTime.UtcNow;
 
                 // compute time
 
-                int songTime;
-                if (_shouldPlayMusic)
-                {
-                    var time = _window.MusicTime();
-                    if (time == Double.MaxValue)
-                    {
+                int musicTimeInMillis;
+                if (_shouldPlayMusic) {
+                    if (musicCurrentTime == null) {
                         EndPreview();
-                        continue;
+                        break;
                     }
 
-                    songTime = (int)time;
-                    if (songTime > 0 && songTime == _lastMusicTime)
-                    {
+                    musicTimeInMillis = (int)musicCurrentTime.Value.TotalMilliseconds;
+                    if (musicTimeInMillis > 0 && musicTimeInMillis == _lastMusicTime) {
                         // music time not updated, add frame time
-                        _lastComputedSongTime += (int) (frameStartTime - _lastFrameEndtime).TotalMilliseconds;
-                        songTime = _lastComputedSongTime;
-                    }
-                    else
-                    {
+                        _lastComputedSongTime += (int)(frameStartTime - _lastFrameEndtime).TotalMilliseconds;
+                        musicTimeInMillis = _lastComputedSongTime;
+                    } else {
                         // music time updated
-                        _lastComputedSongTime = songTime;
-                        _lastMusicTime = songTime;
+                        _lastComputedSongTime = musicTimeInMillis;
+                        _lastMusicTime = musicTimeInMillis;
                     }
-                }
-                else
-                {
-                    songTime = (int)(frameStartTime - startTime).TotalMilliseconds + _startTime;
+                } else {
+                    musicTimeInMillis = (int)(frameStartTime - startTime).TotalMilliseconds + _startTime;
                 }
 
                 // wait for rendering
 
-                MainCanvas.RenderFrameBlocked(songTime);
+                MainCanvas.RenderFrameBlocked(musicTimeInMillis);
 
                 // wait for next frame
 
                 _lastFrameEndtime = DateTime.UtcNow;
-                if (targetFrameTime > 0)
-                {
+                if (targetFrameTime > 0) {
                     var frameEllapsedTime = (_lastFrameEndtime - frameStartTime).TotalMilliseconds;
-                    if (frameEllapsedTime < targetFrameTime)
-                    {
+                    if (frameEllapsedTime < targetFrameTime) {
                         Thread.Sleep((int)(targetFrameTime - frameEllapsedTime));
-                    }
-                    else
-                    {
+                    } else {
                         Debug.WriteLine($"[Warning] Frame ellapsed time {frameEllapsedTime:N2} exceeds target.");
                     }
                 }
             }
+
+            MainCanvas.Stop();
+            _notes.Clear();
         }
     }
 }
