@@ -1,28 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Windows;
 using System.Windows.Input;
 using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
 
-namespace DereTore.Applications.StarlightDirector.UI.Windows
-{
-    partial class MainWindow
-    {
+namespace DereTore.Applications.StarlightDirector.UI.Windows {
+    partial class MainWindow {
+
         public static readonly ICommand CmdPreviewToggle = CommandHelper.RegisterCommand("F5");
 
         // Speed (Approach Rate, in [0, 10]) -> Approach Time (ms)
         // Adapted from osu!
         private static readonly int[] ArTable = { 1800, 1680, 1560, 1440, 1320, 1200, 1050, 900, 750, 600, 450 };
 
-        private void CmdPreviewToggle_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            IsPreviewing = !IsPreviewing;
-
-            if (IsPreviewing)
-            {
+        private void CmdPreviewToggle_Executed(object sender, ExecutedRoutedEventArgs e) {
+            ScorePreviewer.IsPreviewing = !ScorePreviewer.IsPreviewing;
+            if (ScorePreviewer.IsPreviewing) {
                 var offset = Project.Settings.StartTimeOffset;
                 var fps = PreviewFps;
                 var startTime = 0;
@@ -30,22 +23,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows
                 // compute current time
                 // find the ScoreNote that appears at the bottom of screen
                 // TODO: not very accurate (maybe acceptable?)
-                if (!PreviewFromStart)
-                {
+                if (!PreviewFromStart) {
                     var minY = ScrollViewer.ExtentHeight - ScrollViewer.VerticalOffset - ScrollViewer.ViewportHeight;
                     var notes = Editor.ScoreNotes.OrderBy(sn => sn.Note.HitTiming);
-                    ScoreNote note = null;
-                    foreach (var sn in notes)
-                    {
-                        if (sn.Y > minY)
-                        {
-                            note = sn;
-                            break;
-                        }
-                    }
+                    var note = notes.FirstOrDefault(sn => sn.Y > minY);
 
-                    if (note != null)
-                    {
+                    if (note != null) {
                         startTime = (int)(1000 * (note.Note.HitTiming - offset));
                     }
                 }
@@ -54,22 +37,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows
 
                 // delay a second before preview
                 // so that the view is switched and the previewer can correctly get dimensions
-                var delayThread = new Thread(() =>
-                {
+                var delayThread = new Thread(() => {
                     Thread.Sleep(1000);
                     Dispatcher.Invoke(new Action(() => ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty], fps, startTime, approachTime)));
                 });
                 delayThread.Start();
-            }
-            else
-            {
+            } else {
                 ScorePreviewer.EndPreview();
             }
         }
 
-        private void CmdPreviewToggle_CanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
+        private void CmdPreviewToggle_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.Score != null;
         }
+
     }
 }

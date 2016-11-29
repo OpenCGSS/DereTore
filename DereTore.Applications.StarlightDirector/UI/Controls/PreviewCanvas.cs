@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,10 +8,9 @@ using System.Windows.Media;
 using DereTore.Applications.StarlightDirector.Extensions;
 using DereTore.Applications.StarlightDirector.UI.Controls.Models;
 
-namespace DereTore.Applications.StarlightDirector.UI.Controls
-{
-    public class PreviewCanvas : Canvas
-    {
+namespace DereTore.Applications.StarlightDirector.UI.Controls {
+    public class PreviewCanvas : Canvas {
+
         // constants
         private const double NoteMarginTop = 20;
         private const double NoteMarginBottom = 60;
@@ -41,13 +39,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         public double HitEffectMilliseconds { get; set; }
 
-        public PreviewCanvas()
-        {
+        public PreviewCanvas() {
 
         }
 
-        public void Initialize(List<DrawingNote> notes, double approachTime)
-        {
+        public void Initialize(List<DrawingNote> notes, double approachTime) {
             _notes = notes;
             _approachTime = approachTime;
             _notesHead = 0;
@@ -59,21 +55,18 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
             _noteX.Clear();
             _noteX.Add((ActualWidth - 4 * NoteXBetween - 5 * NoteSize) / 2);
-            for (int i = 1; i < 5; ++i)
-            {
+            for (int i = 1; i < 5; ++i) {
                 _noteX.Add(_noteX.Last() + NoteXBetween + NoteSize);
             }
 
-            for (int i = 0; i < 5; ++i)
-            {
+            for (int i = 0; i < 5; ++i) {
                 _startPoints.Add(new Point(_noteX[i], _noteStartY));
                 _endPoints.Add(new Point(_noteX[i], _noteEndY));
             }
 
             // initialize note positions
 
-            foreach (var note in _notes)
-            {
+            foreach (var note in _notes) {
                 note.X = _noteX[note.HitPosition];
                 note.Y = _noteStartY;
             }
@@ -82,8 +75,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
             _hitEffectStartTime = new List<int>();
             _hitEffectT = new List<double>();
-            for (int i = 0; i < 5; ++i)
-            {
+            for (int i = 0; i < 5; ++i) {
                 _hitEffectStartTime.Add(0);
                 _hitEffectT.Add(0);
             }
@@ -91,21 +83,18 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             _isPreviewing = true;
         }
 
-        public void RenderFrameBlocked(int songTime)
-        {
-            ComputeFrame(songTime);
+        public void RenderFrameBlocked(int musicTimeInMillis) {
+            ComputeFrame(musicTimeInMillis);
 
             Dispatcher.Invoke(new Action(InvalidateVisual));
             _renderCompleteHandle.WaitOne();
         }
 
-        public void Stop()
-        {
+        public void Stop() {
             _isPreviewing = false;
         }
 
-        private void NoteHit(int position, int songTime)
-        {
+        private void NoteHit(int position, int songTime) {
             _hitEffectStartTime[position] = songTime;
         }
 
@@ -148,7 +137,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         private static readonly Pen GridPen = new Pen(Brushes.DarkGray, 1);
 
-        private static readonly Brush RelationBrush =  Application.Current.FindResource<Brush>(App.ResourceKeys.RelationBorderBrush);
+        private static readonly Brush RelationBrush = Application.Current.FindResource<Brush>(App.ResourceKeys.RelationBorderBrush);
 
         private static readonly Pen[] LinePens =
         {
@@ -176,16 +165,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         #region Computation and Positions
 
-        private void SetNotePosition(DrawingNote note, double t)
-        {
+        private void SetNotePosition(DrawingNote note, double t) {
             note.Y = _noteStartY + t * (_noteEndY - _noteStartY);
         }
 
-        private void ComputeFrame(int songTime)
-        {
+        private void ComputeFrame(int musicTimeInMillis) {
             var headUpdated = false;
-            for (int i = _notesHead; i < _notes.Count; ++i)
-            {
+            for (int i = _notesHead; i < _notes.Count; ++i) {
                 var note = _notes[i];
 
                 /*
@@ -194,7 +180,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                  * diff == approachTime --- arrive at end
                  * diff >  approachTime --- ended
                  */
-                var diff = songTime - note.Timing + _approachTime;
+                var diff = musicTimeInMillis - note.Timing + _approachTime;
                 if (diff < 0)
                     break;
                 if (note.Done)
@@ -210,43 +196,35 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                 SetNotePosition(note, t);
 
                 // note arrive at bottom
-                if (diff > _approachTime)
-                {
-                    if (!note.EffectShown)
-                    {
-                        NoteHit(note.HitPosition, songTime);
+                if (diff > _approachTime) {
+                    if (!note.EffectShown) {
+                        NoteHit(note.HitPosition, musicTimeInMillis);
                         note.EffectShown = true;
                     }
 
                     // Hit and flick notes end immediately
                     // Hold note heads end after its duration
-                    if (!note.IsHoldStart || diff > _approachTime + note.Duration)
-                    {
+                    if (!note.IsHoldStart || diff > _approachTime + note.Duration) {
                         note.Done = true;
                     }
                 }
 
                 // update head to be the first note that is not done
-                if (!note.Done && !headUpdated)
-                {
+                if (!note.Done && !headUpdated) {
                     _notesHead = i;
                     headUpdated = true;
                 }
             }
 
             // Update hit effects
-            for (int i = 0; i < 5; ++i)
-            {
+            for (int i = 0; i < 5; ++i) {
                 if (_hitEffectStartTime[i] == 0)
                     continue;
 
-                var diff = songTime - _hitEffectStartTime[i];
-                if (diff <= HitEffectMilliseconds)
-                {
-                    _hitEffectT[i] = 1 - diff/HitEffectMilliseconds;
-                }
-                else
-                {
+                var diff = musicTimeInMillis - _hitEffectStartTime[i];
+                if (diff <= HitEffectMilliseconds) {
+                    _hitEffectT[i] = 1 - diff / HitEffectMilliseconds;
+                } else {
                     _hitEffectT[i] = 0;
                 }
             }
@@ -256,18 +234,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
 
         #region Rendering
 
-        private void DrawGrid(DrawingContext dc)
-        {
-            for (int i = 0; i < 5; ++i)
-            {
+        private void DrawGrid(DrawingContext dc) {
+            for (int i = 0; i < 5; ++i) {
                 dc.DrawLine(GridPen, _startPoints[i], _endPoints[i]);
             }
         }
 
-        private void DrawLines(DrawingContext dc)
-        {
-            for (int i = _notesHead; i <= _notesTail; ++i)
-            {
+        private void DrawLines(DrawingContext dc) {
+            for (int i = _notesHead; i <= _notesTail; ++i) {
                 var note = _notes[i];
 
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
@@ -275,39 +249,33 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
                     continue;
 
                 // Hold line
-                if (note.IsHoldStart)
-                {
+                if (note.IsHoldStart) {
                     dc.DrawLine(LinePens[0], new Point(note.X, note.Y), new Point(note.HoldTarget.X, note.HoldTarget.Y));
                 }
 
                 // Sync line
                 // check LastT so that when HoldNote arrives the line is gone
-                if (note.SyncTarget != null && note.LastT < 1)
-                {
+                if (note.SyncTarget != null && note.LastT < 1) {
                     dc.DrawLine(LinePens[1], new Point(note.X, note.Y), new Point(note.SyncTarget.X, note.SyncTarget.Y));
                 }
 
                 // Flicker line
-                if (note.GroupTarget != null && note.LastT < 1)
-                {
+                if (note.GroupTarget != null && note.LastT < 1) {
                     dc.DrawLine(LinePens[2], new Point(note.X, note.Y), new Point(note.GroupTarget.X, note.GroupTarget.Y));
                 }
             }
         }
 
-        private void DrawNotes(DrawingContext dc)
-        {
-            for (int i = _notesHead; i <= _notesTail; ++i)
-            {
+        private void DrawNotes(DrawingContext dc) {
+            for (int i = _notesHead; i <= _notesTail; ++i) {
                 var note = _notes[i];
                 if (note.Done)
                     continue;
 
                 var center = new Point(note.X, note.Y);
 
-                 
-                switch (note.DrawType)
-                {
+
+                switch (note.DrawType) {
                     case 0:
                         dc.DrawEllipse(NoteShapeOutlineFill, NoteStrokePen, center, NoteRadius, NoteRadius);
                         dc.DrawEllipse(NormalNoteShapeFill, NormalNoteShapeStrokePen, center, NoteRadius - 4, NoteRadius - 4);
@@ -343,10 +311,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             }
         }
 
-        private void DrawEffect(DrawingContext dc)
-        {
-            for (int i = 0; i < 5; ++i)
-            {
+        private void DrawEffect(DrawingContext dc) {
+            for (int i = 0; i < 5; ++i) {
                 var t = _hitEffectT[i];
 
                 // ReSharper disable once CompareOfFloatsByEqualityOperator
@@ -359,14 +325,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls
             }
         }
 
-        protected override void OnRender(DrawingContext dc)
-        {
+        protected override void OnRender(DrawingContext dc) {
             _renderCompleteHandle.Reset();
 
             base.OnRender(dc);
 
-            if (!_isPreviewing)
-            {
+            if (!_isPreviewing) {
                 _renderCompleteHandle.Set();
                 return;
             }

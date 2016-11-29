@@ -41,7 +41,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
         }
 
         public static string VersionPrerelease => "alpha";
-        public static string CodeName => "Rin";
+        public static string CodeName => "Mio";
 
         private static readonly List<KeyValuePair<string, string>> Contributors = new List<KeyValuePair<string, string>> {
             new KeyValuePair<string, string>("2GM2A", null),
@@ -53,6 +53,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls.Pages {
             new KeyValuePair<string, string>("chieri", "https://github.com/laurencedu"),
             new KeyValuePair<string, string>("dante", null),
             new KeyValuePair<string, string>("hyspace", "https://github.com/hyspace"),
+            new KeyValuePair<string, string>("logchan", "https://github.com/logchan"),
             new KeyValuePair<string, string>("statementreply", "https://github.com/statementreply"),
             new KeyValuePair<string, string>("だいずP", "https://twitter.com/DICE__game"),
             new KeyValuePair<string, string>("のんのん", "https://twitter.com/blueapple25130"),

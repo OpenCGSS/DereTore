@@ -241,6 +241,7 @@
     <Compile Include="UI\Controls\ScoreEditor.Properties.cs" />
     <Compile Include="UI\Controls\ScoreEditor.Viewing.cs" />
     <Compile Include="UI\Controls\Primitives\ScoreNote.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScorePreviewer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScorePreviewer.xaml.cs">
       <DependentUpon>ScorePreviewer.xaml</DependentUpon>
     </Compile>

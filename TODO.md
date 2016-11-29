@@ -28,9 +28,9 @@
   - [x] More efficient rendering (`ScrollViewer`)
     - [x] Score Lens
 - [x] Preview
-  - [ ] <del>Live preview</del> (see Deleste)
+  - [x] <del>Live preview</del> (see Deleste)
   - [ ] Inlined audio spectrum
-  - [ ] Simple preview audio playback.
+  - [x] Simple preview audio playback.
   - [x] Changeable sound effect in preview
 - [ ] Interop
   - [x] Support for building score database

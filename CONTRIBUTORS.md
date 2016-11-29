@@ -5,6 +5,7 @@
 - [chieri](https://github.com/laurencedu)
 - [hyspace](https://github.com/hyspace)
 - [statementreply](https://github.com/statementreply)
+- [logchan](https://github.com/logchan)
 - [@のんのん](https://twitter.com/blueapple25130)
 
 ## Testers

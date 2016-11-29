@@ -1,11 +1,11 @@
 ﻿<UserControl x:Class="DereTore.Applications.StarlightDirector.UI.Controls.Pages.AboutPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:DereTore.Applications.StarlightDirector.UI.Controls.Pages"
              xmlns:sd="clr-namespace:DereTore.Applications.StarlightDirector"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="400" d:DesignWidth="600"
              Loaded="AboutPage_OnLoaded">
     <UserControl.Resources>
@@ -55,7 +55,8 @@
                     <Hyperlink CommandParameter="https://github.com/JoshClose/CsvHelper">CsvHelper</Hyperlink><LineBreak/>
                     <Hyperlink CommandParameter="https://github.com/fluentribbon/Fluent.Ribbon">Fluent.Ribbon</Hyperlink><LineBreak/>
                     <Hyperlink CommandParameter="https://github.com/MiloszKrajewski/lz4net">lz4net</Hyperlink><LineBreak/>
-                </TextBlock>    
+                    <Hyperlink CommandParameter="https://github.com/RaduMC/UnityStudio">UnityStudio</Hyperlink> (and its <Hyperlink CommandParameter="https://github.com/Perfare/UnityStudio">fork</Hyperlink>)<LineBreak/>
+                </TextBlock>
                 <LineBreak/>
                 <TextBlock FontSize="12">
                     <Bold>Special thanks to</Bold> (in character ordinal order):<LineBreak/>

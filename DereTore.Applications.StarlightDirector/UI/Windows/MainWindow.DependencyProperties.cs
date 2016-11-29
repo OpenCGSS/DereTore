@@ -26,12 +26,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             private set { SetValue(TemporaryMessageProperty, value); }
         }
 
-        public bool IsPreviewing
-        {
-            get { return (bool)GetValue(IsPreviewingProperty); }
-            set { SetValue(IsPreviewingProperty, value); }
-        }
-
         public double PreviewFps
         {
             get { return (double)GetValue(PreviewFpsProperty); }
