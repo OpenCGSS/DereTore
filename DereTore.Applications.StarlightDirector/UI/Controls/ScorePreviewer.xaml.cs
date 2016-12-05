@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -8,6 +9,8 @@ using DereTore.Applications.StarlightDirector.Entities;
 using System.Linq;
 using DereTore.Applications.StarlightDirector.UI.Controls.Models;
 using DereTore.Applications.StarlightDirector.UI.Windows;
+using NAudio.CoreAudioApi;
+using NAudio.Wave;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// <summary>
@@ -26,6 +29,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private double _targetFps;
         private int _startTime;
         private volatile bool _isPreviewing;
+
+        // hit sound
+        private const string HitSoundFile = "hitsound.wav";
+        private const string FlickSoundFile = "flicksound.wav";
+        private WasapiOut[] _hitAudios = {null, null};
+        private DateTime[] _hitModifiedTimes = {new DateTime(), new DateTime()};
+        private WaveFileReader[] _hitWaves = {null, null};
+        private MemoryStream[] _hitMem = {null, null};
+        private EventWaitHandle _hitsoundHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         // music time fixing
         private int _lastMusicTime;
@@ -140,6 +152,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
             MainCanvas.Initialize(_notes, approachTime);
 
+            // hit sound
+
+            LoadHitSounds();
+            new Task(HitSoundTask).Start();
+
             // go
 
             if (_shouldPlayMusic) {
@@ -156,6 +173,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
 
             IsPreviewing = false;
+            _hitsoundHandle.Set();
         }
 
         // These methods invokes the main thread and perform the tasks
@@ -228,6 +246,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
                 MainCanvas.RenderFrameBlocked(musicTimeInMillis);
 
+                // play hitsound
+
+                _hitsoundHandle.Set();
+
                 // wait for next frame
 
                 _lastFrameEndtime = DateTime.UtcNow;
@@ -253,5 +275,80 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 _loaded = true;
             }
         }
+
+        #region Hit Sound
+
+        private MemoryStream MsFromFile(string file)
+        {
+            var ms = new MemoryStream();
+            using (var fs = new FileStream(file, FileMode.Open))
+            {
+                fs.CopyTo(ms);
+            }
+            ms.Seek(0, SeekOrigin.Begin);
+            return ms;
+        }
+
+        private void SetHitsoundAudio(int index, MemoryStream ms)
+        {
+            _hitAudios[index]?.Stop();
+            _hitAudios[index]?.Dispose();
+            _hitWaves[index]?.Close();
+
+            _hitMem[index] = ms;
+            _hitWaves[index] = new WaveFileReader(ms);
+            _hitAudios[index] = new WasapiOut(AudioClientShareMode.Shared, 0);
+            _hitAudios[index].Init(_hitWaves[index]);
+        }
+
+        private void LoadHitSounds()
+        {
+            try
+            {
+                if (File.Exists(HitSoundFile) && _hitModifiedTimes[0] != File.GetLastWriteTime(HitSoundFile))
+                {
+                    SetHitsoundAudio(0, MsFromFile(HitSoundFile));
+                }
+
+                if (File.Exists(FlickSoundFile) && _hitModifiedTimes[1] != File.GetLastWriteTime(FlickSoundFile))
+                {
+                    SetHitsoundAudio(1, MsFromFile(FlickSoundFile));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load hitsounds:{Environment.NewLine}{ex.Message}","Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// Runs in a separate thread to play hitsound
+        /// </summary>
+        private void HitSoundTask()
+        {
+            _hitsoundHandle.WaitOne();
+
+            while (_isPreviewing)
+            {
+                for (int i = 0; i < 2; ++i)
+                {
+                    if (!MainCanvas.ShallPlaySoundEffect[i])
+                        continue;
+
+                    // note: no need to stop audio
+
+                    if (_hitWaves[i] != null)
+                    {
+                        _hitWaves[i].Seek(0, SeekOrigin.Begin);
+                        _hitAudios[i].Play();
+                    }
+                }
+
+                _hitsoundHandle.WaitOne();
+            }
+        }
+
+        #endregion
     }
 }

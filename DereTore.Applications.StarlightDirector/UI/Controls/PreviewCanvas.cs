@@ -38,6 +38,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private readonly EventWaitHandle _renderCompleteHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         public double HitEffectMilliseconds { get; set; }
+        public bool[] ShallPlaySoundEffect { get; } = {false, false};
 
         public PreviewCanvas() {
 
@@ -94,8 +95,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             _isPreviewing = false;
         }
 
-        private void NoteHit(int position, int songTime) {
-            _hitEffectStartTime[position] = songTime;
+        private void NoteHit(DrawingNote note, int songTime) {
+            _hitEffectStartTime[note.HitPosition] = songTime;
+            if (note.DrawType == 1 || note.DrawType == 2)
+            {
+                ShallPlaySoundEffect[1] = true;
+            }
+            else
+            {
+                ShallPlaySoundEffect[0] = true;
+            }
         }
 
         #region Brushes and Pens
@@ -170,6 +179,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         private void ComputeFrame(int musicTimeInMillis) {
+            ShallPlaySoundEffect[0] = ShallPlaySoundEffect[1] = false;
+
             var headUpdated = false;
             for (int i = _notesHead; i < _notes.Count; ++i) {
                 var note = _notes[i];
@@ -198,13 +209,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 // note arrive at bottom
                 if (diff > _approachTime) {
                     if (!note.EffectShown) {
-                        NoteHit(note.HitPosition, musicTimeInMillis);
+                        NoteHit(note, musicTimeInMillis);
                         note.EffectShown = true;
                     }
 
-                    // Hit and flick notes end immediately
-                    // Hold note heads end after its duration
-                    if (!note.IsHoldStart || diff > _approachTime + note.Duration) {
+                    // Hit and flick notes has Duration 0
+                    if (diff > _approachTime + note.Duration) {
                         note.Done = true;
                     }
                 }
