@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using System.Windows.Input;
-using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
+using DereTore.Applications.StarlightDirector.Entities;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {
@@ -18,18 +16,51 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             if (ScorePreviewer.IsPreviewing) {
                 var fps = PreviewFps;
                 var startTime = 0;
+                var score = Project.Scores[Project.Difficulty];
 
-                // magic formulas, accurate if BPM is constant
+                // find start time, accurate even if BPM is variant
                 if (!PreviewFromStart && ScrollViewer.ExtentHeight > 0)
                 {
+                    /*
+                     * First, we find the percentage of scroll
+                     * Since bar margin is constant, we can compute targetGrid = total #grids * percentage, which is the grid we should start at
+                     * Then, we find where this grid is and set startTime to be its time
+                     */
                     var perc = (ScrollViewer.ExtentHeight - ScrollViewer.VerticalOffset - ScrollViewer.ViewportHeight)/ScrollViewer.ExtentHeight;
                     var lastBar = Editor.ScoreBars.LastOrDefault();
+
+                    var totalGrids = 0;
+                    foreach (var bar in score.Bars)
+                    {
+                        totalGrids += bar.TotalGridCount;
+                    }
 
                     if (perc > 0 && lastBar != null)
                     {
                         var projectOffset = Project.Settings.StartTimeOffset;
+                        var targetGrid = totalGrids * perc;
+                        var bar = score.Bars[0];
+                        var gridSum = 0;
+                        for (int i = 1; i < score.Bars.Count; ++i)
+                        {
+                            gridSum += score.Bars[i].TotalGridCount;
+                            if (gridSum > targetGrid)
+                            {
+                                gridSum -= score.Bars[i].TotalGridCount;
+                                bar = score.Bars[i - 1];
+                                break;
+                            }
+                        }
 
-                        startTime = (int) (1000*perc*(lastBar.Bar.StartTime + lastBar.Bar.TimeLength - projectOffset) + 1000 * projectOffset);
+                        for (int i = 1; i < bar.TotalGridCount; ++i)
+                        {
+                            ++gridSum;
+                            if (gridSum > targetGrid)
+                            {
+                                startTime = (int) (1000*(bar.TimeAtGrid(i - 1) - projectOffset) + 1000*projectOffset);
+                                break;
+                            }
+                        }
                     }
                 }
 
@@ -38,7 +69,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                     startTime = 0;
 
                 double approachTime = ArTable[PreviewSpeed];
-                ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty], fps, startTime, approachTime);
+                ScorePreviewer.BeginPreview(score, fps, startTime, approachTime);
             } else {
                 ScorePreviewer.EndPreview();
             }
