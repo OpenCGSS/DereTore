@@ -104,9 +104,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 }
 
                 // skip notes that are done before start time
-                if (snote.Timing + snote.Duration < startTime - approachTime)
+                if (snote.Timing + snote.Duration < startTime)
                 {
                     continue;
+                }
+
+                // skip hit effect of hold note start if started before
+                if (snote.IsHoldStart && snote.Timing < startTime)
+                {
+                    snote.EffectShown = true;
                 }
 
                 _notes.Add(snote);
@@ -142,14 +148,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
             _shouldPlayMusic = _window != null && _window.MusicLoaded;
 
-            // fix start time
-
-            _startTime -= (int)approachTime;
-            if (_startTime < 0)
-                _startTime = 0;
-
             // prepare canvas
 
+            approachTime *= ActualHeight / 484.04;
             MainCanvas.Initialize(_notes, approachTime);
 
             // hit sound
@@ -174,6 +175,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
             IsPreviewing = false;
             _hitsoundHandle.Set();
+
+            // ensure responding to dimension change
+            _loaded = false;
+
+            // clear canvas
+            MainCanvas.InvalidateVisual();
         }
 
         // These methods invokes the main thread and perform the tasks
@@ -269,7 +276,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private void ScorePreviewer_OnLayoutUpdated(object sender, EventArgs e)
         {
-            if (!_loaded && ActualWidth > 0 && ActualHeight > 0)
+            if (_isPreviewing && !_loaded && ActualWidth > 0 && ActualHeight > 0)
             {
                 _loaded = true;
                 _loadHandle.Set();

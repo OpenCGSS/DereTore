@@ -19,14 +19,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 var fps = PreviewFps;
                 var startTime = 0;
 
+                // magic formulas, accurate if BPM is constant
                 if (!PreviewFromStart && ScrollViewer.ExtentHeight > 0)
                 {
-                    var perc = (ScrollViewer.ExtentHeight - ScrollViewer.VerticalOffset)/ScrollViewer.ExtentHeight;
+                    var perc = (ScrollViewer.ExtentHeight - ScrollViewer.VerticalOffset - ScrollViewer.ViewportHeight)/ScrollViewer.ExtentHeight;
                     var lastBar = Editor.ScoreBars.LastOrDefault();
 
-                    if (lastBar != null)
+                    if (perc > 0 && lastBar != null)
                     {
-                        startTime = (int) (perc*(lastBar.Bar.StartTime + lastBar.Bar.TimeLength)*1000);
+                        var projectOffset = Project.Settings.StartTimeOffset;
+
+                        startTime = (int) (1000*perc*(lastBar.Bar.StartTime + lastBar.Bar.TimeLength - projectOffset) + 1000 * projectOffset);
                     }
                 }
 

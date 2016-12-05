@@ -60,6 +60,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 _noteX.Add(_noteX.Last() + NoteXBetween + NoteSize);
             }
 
+            _startPoints.Clear();
+            _endPoints.Clear();
             for (int i = 0; i < 5; ++i) {
                 _startPoints.Add(new Point(_noteX[i], _noteStartY));
                 _endPoints.Add(new Point(_noteX[i], _noteEndY));
