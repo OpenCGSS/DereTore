@@ -247,6 +247,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         {
             if (!_loaded && ActualWidth > 0 && ActualHeight > 0)
             {
+                _loadHandle.Set();
                 _loaded = true;
             }
         }
