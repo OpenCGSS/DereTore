@@ -186,7 +186,9 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             // drawing and timing
             var startTime = DateTime.UtcNow;
             TimeSpan? musicCurrentTime = null;
-            var musicTotalTime = _window.GetMusicTotalTime();
+            TimeSpan? musicTotalTime = null;
+            if (_shouldPlayMusic)
+                musicTotalTime = _window.GetMusicTotalTime();
 
             while (_isPreviewing) {
                 if (_shouldPlayMusic) {

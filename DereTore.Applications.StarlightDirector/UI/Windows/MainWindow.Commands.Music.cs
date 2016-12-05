@@ -108,7 +108,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         }
 
         internal TimeSpan? GetMusicTotalTime() {
-            return _waveReader.TotalTime;
+            return _waveReader?.TotalTime;
         }
 
         private AudioOut _selectedWaveOut;
