@@ -30,6 +30,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private int _notesHead;
         private int _notesTail;
         private double _approachTime;
+        private List<DrawingBar> _bars;
+        private int _barsHead;
 
         // rendering
         private volatile bool _isPreviewing;
@@ -44,10 +46,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         }
 
-        public void Initialize(List<DrawingNote> notes, double approachTime) {
+        public void Initialize(List<DrawingNote> notes, List<DrawingBar> bars,  double approachTime) {
             _notes = notes;
+            _bars = bars;
             _approachTime = approachTime;
             _notesHead = 0;
+            _barsHead = 0;
 
             // compute positions
 
@@ -172,6 +176,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         private static readonly SolidColorBrush HitEffectBrush = Brushes.Gold;
 
+        private static readonly Pen[] BarPens =
+        {
+            new Pen(new SolidColorBrush(Color.FromArgb(0xff, 0xf6, 0xf6, 0x0a)), 2),
+            new Pen(new SolidColorBrush(Color.FromArgb(0xff, 0xfd, 0xaf, 0xc9)), 2),
+            new Pen(new SolidColorBrush(Color.FromArgb(0xff, 0xc6, 0xc0, 0xe2)), 2),
+            new Pen(new SolidColorBrush(Color.FromArgb(0xff, 0xd5, 0xd5, 0xd5)), 1)
+        };
+
         #endregion
 
         #region Computation and Positions
@@ -228,6 +240,24 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 }
             }
 
+            // Update bars
+            for (int i = _barsHead; i < _bars.Count; ++i)
+            {
+                var bar = _bars[i];
+                var diff = musicTimeInMillis - _bars[i].Timing + _approachTime;
+                if (diff <= 0)
+                    break;
+                if (diff > _approachTime)
+                {
+                    ++_barsHead;
+                    continue;
+                }
+
+                var t = diff/_approachTime;
+                bar.T = t;
+                bar.Y = (_noteEndY - _noteStartY)*t + _noteStartY;
+            }
+
             // Update hit effects
             for (int i = 0; i < 5; ++i) {
                 if (_hitEffectStartTime[i] == 0)
@@ -275,6 +305,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 if (note.GroupTarget != null && note.LastT < 1) {
                     dc.DrawLine(LinePens[2], new Point(note.X, note.Y), new Point(note.GroupTarget.X, note.GroupTarget.Y));
                 }
+            }
+
+            // bar lines
+            for (int i = _barsHead; i < _bars.Count; ++i)
+            {
+                var bar = _bars[i];
+                if (bar.T <= 0)
+                    break;
+
+                dc.DrawLine(BarPens[bar.DrawType], new Point(_noteX[0], bar.Y), new Point(_noteX[4], bar.Y));
             }
         }
 

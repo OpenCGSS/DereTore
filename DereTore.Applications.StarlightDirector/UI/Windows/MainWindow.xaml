@@ -202,6 +202,14 @@
                     <fluent:CheckBox Header="From beginning" IsChecked="{Binding ElementName=Me, Path=PreviewFromStart}"></fluent:CheckBox>
                     <fluent:TextBox Header="Offset:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Me, Path=PreviewStartOffset, Converter={StaticResource DoubleToStringConverter}}"/>
                 </fluent:RibbonGroupBox>
+                <fluent:RibbonGroupBox Header="Bar lines">
+                    <fluent:ComboBox Header="Bar level" IsEditable="False" SelectedIndex="{Binding ElementName=Me, Path=PreviewBarLevel, Mode=TwoWay}">
+                        <ComboBoxItem Content="None"></ComboBoxItem>
+                        <ComboBoxItem Content="Bar"></ComboBoxItem>
+                        <ComboBoxItem Content="Signature"></ComboBoxItem>
+                        <ComboBoxItem Content="1/4 Signature"></ComboBoxItem>
+                    </fluent:ComboBox>
+                </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
         <Grid Grid.Row="2" Background="#FF181818" x:Name="EditorGrid" Visibility="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={StaticResource True}}">

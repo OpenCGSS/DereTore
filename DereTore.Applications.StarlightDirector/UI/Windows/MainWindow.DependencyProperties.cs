@@ -50,6 +50,15 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             set { SetValue(PreviewStartOffsetProperty, value); }
         }
 
+        public int PreviewBarLevel
+        {
+            get { return (int)GetValue(PreviewBarLevelProperty); }
+            set { SetValue(PreviewBarLevelProperty, value); }
+        }
+
+        public static readonly DependencyProperty PreviewBarLevelProperty =
+            DependencyProperty.Register("PreviewBarLevel", typeof(int), typeof(MainWindow), new PropertyMetadata(1));
+
         public static readonly DependencyProperty PreviewStartOffsetProperty =
             DependencyProperty.Register("PreviewStartOffset", typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
 

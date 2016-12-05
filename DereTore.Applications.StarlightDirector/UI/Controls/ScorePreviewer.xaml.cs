@@ -29,6 +29,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private double _targetFps;
         private int _startTime;
         private volatile bool _isPreviewing;
+        private readonly List<DrawingBar> _bars = new List<DrawingBar>();
 
         // hit sound
         private const string HitSoundFile = "hitsound.wav";
@@ -148,10 +149,42 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
             _shouldPlayMusic = _window != null && _window.MusicLoaded;
 
+            // prepare bars
+
+            if (_window != null && _window.PreviewBarLevel > 0)
+            {
+                var level = _window.PreviewBarLevel;
+
+                foreach (var bar in score.Bars)
+                {
+                    _bars.Add(new DrawingBar {DrawType = 0, Timing = (int) (bar.StartTime*1000)});
+                    if (level > 1)
+                    {
+                        for (int sig = 0; sig < bar.Signature; ++sig)
+                        {
+                            if (sig > 0)
+                                _bars.Add(new DrawingBar {DrawType = 1, Timing = (int) (bar.TimeAtSignature(sig)*1000)});
+
+                            if (level > 2 && bar.GridPerSignature % 4 == 0)
+                            {
+                                for (int grid = bar.GridPerSignature / 4; grid < bar.GridPerSignature; grid += bar.GridPerSignature/4)
+                                {
+                                    _bars.Add(new DrawingBar
+                                    {
+                                        DrawType = 2,
+                                        Timing = (int)(bar.TimeAtGrid(sig * bar.GridPerSignature + grid) * 1000)
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // prepare canvas
 
             approachTime *= ActualHeight / 484.04;
-            MainCanvas.Initialize(_notes, approachTime);
+            MainCanvas.Initialize(_notes, _bars, approachTime);
 
             // hit sound
 
@@ -180,6 +213,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             _loaded = false;
 
             // clear canvas
+            MainCanvas.Stop();
             MainCanvas.InvalidateVisual();
         }
 
@@ -270,8 +304,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 }
             }
 
-            MainCanvas.Stop();
             _notes.Clear();
+            _bars.Clear();
         }
 
         private void ScorePreviewer_OnLayoutUpdated(object sender, EventArgs e)
