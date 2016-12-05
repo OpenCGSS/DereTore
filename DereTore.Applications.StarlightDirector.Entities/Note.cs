@@ -13,7 +13,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public int ID { get; private set; }
 
         [JsonIgnore]
-        public double HitTiming => Bar.StartTime + Bar.TimeLength*(IndexInGrid/(double) Bar.TotalGridCount);
+        public double HitTiming => Bar.TimeAtGrid(IndexInGrid);
 
         private int _indexInGrid;
 
@@ -499,7 +499,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
         }
 
-        private void ExtraParams_ParamsChanged(object sender, EventArgs e) {
+        private void ExtraParams_ParamsChanged(object sender, EventArgs e)
+        {
+            // if we a BPM note is changed, inform the Bar to update its timings
+            Bar?.UpdateTimings();
             ExtraParamsChanged.Raise(sender, e);
         }
 

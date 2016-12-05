@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,24 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         [JsonIgnore]
         public int TotalGridCount => Signature*GridPerSignature;
+
+        private double[] _timeAtGrid;
+
+        public double TimeAtSignature(int signature)
+        {
+            if (signature < 0 || signature >= Signature)
+                throw new ArgumentException("signature out of range");
+
+            return TimeAtGrid(signature*GridPerSignature);
+        }
+
+        public double TimeAtGrid(int grid)
+        {
+            if (grid < 0 || grid >= TotalGridCount)
+                throw new ArgumentException("grid out of range");
+
+            return _timeAtGrid[grid];
+        }
 
         public void UpdateTimings()
         {
@@ -64,6 +83,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         {
             var length = 0.0;
             Note lastBpmNote = null;
+            _timeAtGrid = new double[TotalGridCount];
 
             // find all BpmNotes and compute the length between them
             foreach (var note in Notes)
@@ -76,6 +96,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     // length between start and first BpmNote
                     length += DirectorHelper.BpmToSeconds(StartBpm)
                               *Signature*note.IndexInGrid/TotalGridCount;
+                    for (int i = 1; i <= note.IndexInGrid; ++i)
+                    {
+                        // TODO: fill in here
+                    }
                 }
                 else
                 {
@@ -83,6 +107,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     var deltaGridCount = note.IndexInGrid - lastBpmNote.IndexInGrid;
                     length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm)
                               *Signature*deltaGridCount/TotalGridCount;
+                    for (int i = lastBpmNote.IndexInGrid + 1; i <= note.IndexInGrid; ++i)
+                    {
+                        // TODO: fill in here
+                    }
                 }
                 
                 lastBpmNote = note;
@@ -94,10 +122,15 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             {
                 length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm)
                           *Signature*(TotalGridCount - lastBpmNote.IndexInGrid)/TotalGridCount;
+                // TODO: update grid time
             }
             else
             {
                 length = DirectorHelper.BpmToSeconds(StartBpm) * Signature;
+                for (int i = 0; i < TotalGridCount; ++i)
+                {
+                    _timeAtGrid[i] = StartTime + length*i/TotalGridCount;
+                }
             }
 
             TimeLength = length;
