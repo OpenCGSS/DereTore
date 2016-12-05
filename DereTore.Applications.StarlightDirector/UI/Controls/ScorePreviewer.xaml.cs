@@ -15,6 +15,10 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
     /// </summary>
     public partial class ScorePreviewer {
 
+        // first-time loading
+        private bool _loaded;
+        private EventWaitHandle _loadHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+
         // used by frame update thread
         private Score _score;
         private Task _task;
@@ -38,6 +42,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         }
 
         public void BeginPreview(Score score, double targetFps, int startTime, double approachTime) {
+            // wait if not loaded yet
+            if (!_loaded)
+            {
+                new Task(() =>
+                {
+                    _loadHandle.WaitOne();
+                    Dispatcher.BeginInvoke(
+                        new Action<Score, double, int, double>(BeginPreview), 
+                        score, targetFps, startTime, approachTime);
+                }).Start();
+                return;
+            }
+
             // setup parameters
 
             _score = score;
@@ -51,6 +68,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 if (note.Type != NoteType.TapOrFlick && note.Type != NoteType.Hold) {
                     continue;
                 }
+
                 var pos = (int)note.FinishPosition;
                 if (pos == 0)
                     pos = (int)note.StartPosition;
@@ -73,7 +91,21 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                     snote.Duration = (int)(note.HoldTarget.HitTiming * 1000) - (int)(note.HitTiming * 1000);
                 }
 
+                // skip notes that are done before start time
+                if (snote.Timing + snote.Duration < startTime - approachTime)
+                {
+                    continue;
+                }
+
                 _notes.Add(snote);
+            }
+
+            // end if no notes
+            if (_notes.Count == 0)
+            {
+                // TODO: alert user?
+                IsPreviewing = false;
+                return;
             }
 
             _notes.Sort((a, b) => a.Timing - b.Timing);
@@ -145,7 +177,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private void DrawPreviewFrames() {
             // frame rate
             double targetFrameTime = 0;
-            if (double.IsInfinity(_targetFps)) {
+            if (!double.IsInfinity(_targetFps)) {
                 targetFrameTime = 1000 / _targetFps;
             }
 
@@ -209,6 +241,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
             MainCanvas.Stop();
             _notes.Clear();
+        }
+
+        private void ScorePreviewer_OnLayoutUpdated(object sender, EventArgs e)
+        {
+            if (!_loaded && ActualWidth > 0 && ActualHeight > 0)
+            {
+                _loaded = true;
+            }
         }
     }
 }

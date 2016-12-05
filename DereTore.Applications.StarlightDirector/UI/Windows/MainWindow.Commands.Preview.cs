@@ -34,14 +34,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
                 }
 
                 double approachTime = ArTable[PreviewSpeed];
-
-                // delay a second before preview
-                // so that the view is switched and the previewer can correctly get dimensions
-                var delayThread = new Thread(() => {
-                    Thread.Sleep(1000);
-                    Dispatcher.Invoke(new Action(() => ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty], fps, startTime, approachTime)));
-                });
-                delayThread.Start();
+                ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty], fps, startTime, approachTime);
             } else {
                 ScorePreviewer.EndPreview();
             }
