@@ -176,6 +176,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Notes.Remove(note);
             Score.Notes.Remove(note);
             Score.Project.ExistingIDs.Remove(note.ID);
+            if (note.Type == NoteType.VariantBpm)
+            {
+                UpdateTimingsChain();
+            }
             return true;
         }
 
