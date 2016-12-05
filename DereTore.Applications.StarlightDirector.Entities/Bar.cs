@@ -171,5 +171,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
         }
 
+        // Note object will call this when IndexInGrid is changed
+        internal void SortNotes()
+        {
+            Notes.Sort(Note.TimingThenPositionComparison);
+            Score.Notes.Sort(Note.TimingThenPositionComparison);
+        }
     }
 }

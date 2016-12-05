@@ -15,9 +15,19 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         [JsonIgnore]
         public double HitTiming => Bar.StartTime + Bar.TimeLength*(IndexInGrid/(double) Bar.TotalGridCount);
 
+        private int _indexInGrid;
+
         // "PositionInGrid" was the first name of this property used in serialization.
         [JsonProperty("positionInGrid")]
-        public int IndexInGrid { get; set; }
+        public int IndexInGrid
+        {
+            get { return _indexInGrid; }
+            set
+            {
+                _indexInGrid = value;
+                Bar?.SortNotes();
+            }
+        }
 
         public NoteType Type {
             get { return (NoteType)GetValue(TypeProperty); }
