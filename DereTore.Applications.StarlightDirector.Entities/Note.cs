@@ -502,7 +502,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         private void ExtraParams_ParamsChanged(object sender, EventArgs e)
         {
             // if we a BPM note is changed, inform the Bar to update its timings
-            Bar?.UpdateTimings();
+            Bar?.UpdateTimingsChain();
             ExtraParamsChanged.Raise(sender, e);
         }
 
