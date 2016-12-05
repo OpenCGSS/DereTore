@@ -177,7 +177,6 @@
                     <fluent:Button Header="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonTextConverter}}" Command="{x:Static local:MainWindow.CmdPreviewToggle}" LargeIcon="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource PreviewStatusToButtonIconConverter}}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Options">
-                    <fluent:CheckBox Header="From beginning" IsChecked="{Binding ElementName=Me, Path=PreviewFromStart}"></fluent:CheckBox>
                     <fluent:ComboBox Header="Fps" IsEditable="False" SelectedIndex="3">
                         <ComboBoxItem Content="30" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
                         <ComboBoxItem Content="60" Selected="PreviewFpsComboBoxItem_Selected"></ComboBoxItem>
@@ -199,9 +198,13 @@
                         <ComboBoxItem Content="10" Selected="PreviewSpeedComboBoxItem_Selected"></ComboBoxItem>
                     </fluent:ComboBox>
                 </fluent:RibbonGroupBox>
+                <fluent:RibbonGroupBox Header="Start time">
+                    <fluent:CheckBox Header="From beginning" IsChecked="{Binding ElementName=Me, Path=PreviewFromStart}"></fluent:CheckBox>
+                    <fluent:TextBox Header="Offset:" InputWidth="75" VerticalContentAlignment="Center" Text="{Binding ElementName=Me, Path=PreviewStartOffset, Converter={StaticResource DoubleToStringConverter}}"/>
+                </fluent:RibbonGroupBox>
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
-        <Grid Grid.Row="2" Background="#FF181818" x:Name="EditorGrid" Visibility="{Binding ElementName=Me, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={StaticResource True}}">
+        <Grid Grid.Row="2" Background="#FF181818" x:Name="EditorGrid" Visibility="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={StaticResource True}}">
             <!-- CustomScroll.ScrollSpeed is still needed because when the ComboBox item is selected, the ScrollViewer has not been set yet. -->
             <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="5" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">

@@ -44,21 +44,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             set { SetValue(PreviewSpeedProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for PreviewSpeed.  This enables animation, styling, binding, etc...
+        public double PreviewStartOffset
+        {
+            get { return (double)GetValue(PreviewStartOffsetProperty); }
+            set { SetValue(PreviewStartOffsetProperty, value); }
+        }
+
+        public static readonly DependencyProperty PreviewStartOffsetProperty =
+            DependencyProperty.Register("PreviewStartOffset", typeof(double), typeof(MainWindow), new PropertyMetadata(0.0));
+
         public static readonly DependencyProperty PreviewSpeedProperty =
             DependencyProperty.Register("PreviewSpeed", typeof(int), typeof(MainWindow), new PropertyMetadata(8));
 
-        // Using a DependencyProperty as the backing store for PreviewFromStart.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PreviewFromStartProperty =
             DependencyProperty.Register("PreviewFromStart", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
 
-        // Using a DependencyProperty as the backing store for PreviewFps.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty PreviewFpsProperty =
             DependencyProperty.Register("PreviewFps", typeof(double), typeof(MainWindow), new PropertyMetadata(60.0));
-
-        // Using a DependencyProperty as the backing store for IsPreviewing.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsPreviewingProperty =
-            DependencyProperty.Register("IsPreviewing", typeof(bool), typeof(MainWindow), new PropertyMetadata(false));
 
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(nameof(Project), typeof(Project), typeof(MainWindow),
             new PropertyMetadata(null, OnProjectChanged));

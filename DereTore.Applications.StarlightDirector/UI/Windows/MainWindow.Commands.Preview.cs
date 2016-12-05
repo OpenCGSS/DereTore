@@ -16,22 +16,23 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdPreviewToggle_Executed(object sender, ExecutedRoutedEventArgs e) {
             ScorePreviewer.IsPreviewing = !ScorePreviewer.IsPreviewing;
             if (ScorePreviewer.IsPreviewing) {
-                var offset = Project.Settings.StartTimeOffset;
                 var fps = PreviewFps;
                 var startTime = 0;
 
-                // compute current time
-                // find the ScoreNote that appears at the bottom of screen
-                // TODO: not very accurate (maybe acceptable?)
-                if (!PreviewFromStart) {
-                    var minY = ScrollViewer.ExtentHeight - ScrollViewer.VerticalOffset - ScrollViewer.ViewportHeight;
-                    var notes = Editor.ScoreNotes.OrderBy(sn => sn.Note.HitTiming);
-                    var note = notes.FirstOrDefault(sn => sn.Y > minY);
+                if (!PreviewFromStart && ScrollViewer.ExtentHeight > 0)
+                {
+                    var perc = (ScrollViewer.ExtentHeight - ScrollViewer.VerticalOffset)/ScrollViewer.ExtentHeight;
+                    var lastBar = Editor.ScoreBars.LastOrDefault();
 
-                    if (note != null) {
-                        startTime = (int)(1000 * (note.Note.HitTiming - offset));
+                    if (lastBar != null)
+                    {
+                        startTime = (int) (perc*(lastBar.Bar.StartTime + lastBar.Bar.TimeLength)*1000);
                     }
                 }
+
+                startTime += (int)(PreviewStartOffset*1000);
+                if (startTime < 0)
+                    startTime = 0;
 
                 double approachTime = ArTable[PreviewSpeed];
                 ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty], fps, startTime, approachTime);
