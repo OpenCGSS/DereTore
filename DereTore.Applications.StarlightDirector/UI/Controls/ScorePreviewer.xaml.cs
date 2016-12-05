@@ -20,7 +20,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         // first-time loading
         private bool _loaded;
-        private EventWaitHandle _loadHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private readonly EventWaitHandle _loadHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         // used by frame update thread
         private Score _score;
@@ -34,11 +34,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         // hit sound
         private const string HitSoundFile = "hitsound.wav";
         private const string FlickSoundFile = "flicksound.wav";
-        private WasapiOut[] _hitAudios = {null, null};
-        private DateTime[] _hitModifiedTimes = {new DateTime(), new DateTime()};
-        private WaveFileReader[] _hitWaves = {null, null};
-        private MemoryStream[] _hitMem = {null, null};
-        private EventWaitHandle _hitsoundHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private readonly WasapiOut[] _hitAudios = {null, null};
+        private readonly DateTime[] _hitModifiedTimes = {new DateTime(), new DateTime()};
+        private readonly WaveFileReader[] _hitWaves = {null, null};
+        private readonly MemoryStream[] _hitMem = {null, null};
+        private readonly EventWaitHandle _hitsoundHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         // music time fixing
         private int _lastMusicTime;

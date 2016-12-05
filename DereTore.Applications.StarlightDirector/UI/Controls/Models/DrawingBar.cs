@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace DereTore.Applications.StarlightDirector.UI.Controls.Models
+﻿namespace DereTore.Applications.StarlightDirector.UI.Controls.Models
 {
     /// <summary>
     /// Internal representation of bars for drawing

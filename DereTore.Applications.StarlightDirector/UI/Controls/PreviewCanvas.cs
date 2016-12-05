@@ -42,10 +42,6 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         public double HitEffectMilliseconds { get; set; }
         public bool[] ShallPlaySoundEffect { get; } = {false, false};
 
-        public PreviewCanvas() {
-
-        }
-
         public void Initialize(List<DrawingNote> notes, List<DrawingBar> bars,  double approachTime) {
             _notes = notes;
             _bars = bars;
