@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DereTore.Applications.StarlightDirector.Entities;
+﻿using DereTore.Applications.StarlightDirector.Entities;
 
 namespace DereTore.Applications.StarlightDirector.UI.Controls.Models
 {

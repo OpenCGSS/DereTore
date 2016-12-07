@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
+﻿using System.Linq;
 using System.Windows.Input;
-using DereTore.Applications.StarlightDirector.UI.Controls.Primitives;
+using DereTore.Applications.StarlightDirector.Entities;
 
 namespace DereTore.Applications.StarlightDirector.UI.Windows {
     partial class MainWindow {
@@ -16,32 +14,62 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdPreviewToggle_Executed(object sender, ExecutedRoutedEventArgs e) {
             ScorePreviewer.IsPreviewing = !ScorePreviewer.IsPreviewing;
             if (ScorePreviewer.IsPreviewing) {
-                var offset = Project.Settings.StartTimeOffset;
                 var fps = PreviewFps;
                 var startTime = 0;
+                var score = Project.Scores[Project.Difficulty];
 
-                // compute current time
-                // find the ScoreNote that appears at the bottom of screen
-                // TODO: not very accurate (maybe acceptable?)
-                if (!PreviewFromStart) {
-                    var minY = ScrollViewer.ExtentHeight - ScrollViewer.VerticalOffset - ScrollViewer.ViewportHeight;
-                    var notes = Editor.ScoreNotes.OrderBy(sn => sn.Note.HitTiming);
-                    var note = notes.FirstOrDefault(sn => sn.Y > minY);
+                // find start time, accurate even if BPM is variant
+                if (!PreviewFromStart && ScrollViewer.ExtentHeight > 0)
+                {
+                    /*
+                     * First, we find the percentage of scroll
+                     * Since bar margin is constant, we can compute targetGrid = total #grids * percentage, which is the grid we should start at
+                     * Then, we find where this grid is and set startTime to be its time
+                     */
+                    var perc = (ScrollViewer.ExtentHeight - ScrollViewer.VerticalOffset - ScrollViewer.ViewportHeight)/ScrollViewer.ExtentHeight;
+                    var lastBar = Editor.ScoreBars.LastOrDefault();
 
-                    if (note != null) {
-                        startTime = (int)(1000 * (note.Note.HitTiming - offset));
+                    var totalGrids = 0;
+                    foreach (var bar in score.Bars)
+                    {
+                        totalGrids += bar.TotalGridCount;
+                    }
+
+                    if (perc > 0 && lastBar != null)
+                    {
+                        var projectOffset = Project.Settings.StartTimeOffset;
+                        var targetGrid = totalGrids * perc;
+                        var bar = score.Bars[0];
+                        var gridSum = 0;
+                        for (int i = 1; i < score.Bars.Count; ++i)
+                        {
+                            gridSum += score.Bars[i].TotalGridCount;
+                            if (gridSum > targetGrid)
+                            {
+                                gridSum -= score.Bars[i].TotalGridCount;
+                                bar = score.Bars[i - 1];
+                                break;
+                            }
+                        }
+
+                        for (int i = 1; i < bar.TotalGridCount; ++i)
+                        {
+                            ++gridSum;
+                            if (gridSum > targetGrid)
+                            {
+                                startTime = (int) (1000*(bar.TimeAtGrid(i - 1) - projectOffset) + 1000*projectOffset);
+                                break;
+                            }
+                        }
                     }
                 }
 
-                double approachTime = ArTable[PreviewSpeed];
+                startTime += (int)(PreviewStartOffset*1000);
+                if (startTime < 0)
+                    startTime = 0;
 
-                // delay a second before preview
-                // so that the view is switched and the previewer can correctly get dimensions
-                var delayThread = new Thread(() => {
-                    Thread.Sleep(1000);
-                    Dispatcher.Invoke(new Action(() => ScorePreviewer.BeginPreview(Project.Scores[Project.Difficulty], fps, startTime, approachTime)));
-                });
-                delayThread.Start();
+                double approachTime = ArTable[PreviewSpeed];
+                ScorePreviewer.BeginPreview(score, fps, startTime, approachTime);
             } else {
                 ScorePreviewer.EndPreview();
             }

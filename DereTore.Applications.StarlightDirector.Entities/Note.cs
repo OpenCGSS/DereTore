@@ -13,11 +13,21 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public int ID { get; private set; }
 
         [JsonIgnore]
-        public double HitTiming => Bar.StartTime + Bar.TimeLength*(IndexInGrid/(double) Bar.TotalGridCount);
+        public double HitTiming => Bar.TimeAtGrid(IndexInGrid);
+
+        private int _indexInGrid;
 
         // "PositionInGrid" was the first name of this property used in serialization.
         [JsonProperty("positionInGrid")]
-        public int IndexInGrid { get; set; }
+        public int IndexInGrid
+        {
+            get { return _indexInGrid; }
+            set
+            {
+                _indexInGrid = value;
+                Bar?.SortNotes();
+            }
+        }
 
         public NoteType Type {
             get { return (NoteType)GetValue(TypeProperty); }
@@ -489,7 +499,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
         }
 
-        private void ExtraParams_ParamsChanged(object sender, EventArgs e) {
+        private void ExtraParams_ParamsChanged(object sender, EventArgs e)
+        {
+            // if we a BPM note is changed, inform the Bar to update its timings
+            Bar?.UpdateTimingsChain();
             ExtraParamsChanged.Raise(sender, e);
         }
 

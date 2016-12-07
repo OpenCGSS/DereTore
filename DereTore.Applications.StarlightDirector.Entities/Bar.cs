@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,24 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         [JsonIgnore]
         public int TotalGridCount => Signature*GridPerSignature;
+
+        private double[] _timeAtGrid;
+
+        public double TimeAtSignature(int signature)
+        {
+            if (signature < 0 || signature >= Signature)
+                throw new ArgumentException("signature out of range");
+
+            return TimeAtGrid(signature*GridPerSignature);
+        }
+
+        public double TimeAtGrid(int grid)
+        {
+            if (grid < 0 || grid >= TotalGridCount)
+                throw new ArgumentException("grid out of range");
+
+            return _timeAtGrid[grid];
+        }
 
         public void UpdateTimings()
         {
@@ -53,17 +72,32 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                     continue;
                 }
 
-                StartBpm = Notes.Last(note => note.Type == NoteType.VariantBpm).ExtraParams.NewBpm;
+                StartBpm = bar.Notes.Last(note => note.Type == NoteType.VariantBpm).ExtraParams.NewBpm;
                 return;
             }
 
             StartBpm = Score.Project.Settings.GlobalBpm;
         }
 
+        /// <summary>
+        /// Fill _timeAtGrid, index in range [from, to], assuming constant BPM (bpm) starting from referenceIdx
+        /// </summary>
+        private void SetTimeAtGrid(int from, int to, double bpm, int referenceIdx)
+        {
+            var secondsPerSignature = DirectorHelper.BpmToSeconds(bpm);
+            for (int i = from; i <= to; ++i)
+            {
+                var numGrids = i - referenceIdx;
+                _timeAtGrid[i] = _timeAtGrid[referenceIdx] + numGrids*secondsPerSignature/GridPerSignature;
+            }
+        }
+
         private void UpdateTimeLength()
         {
             var length = 0.0;
             Note lastBpmNote = null;
+            _timeAtGrid = new double[TotalGridCount];
+            _timeAtGrid[0] = StartTime;
 
             // find all BpmNotes and compute the length between them
             foreach (var note in Notes)
@@ -74,15 +108,15 @@ namespace DereTore.Applications.StarlightDirector.Entities {
                 if (lastBpmNote == null)
                 {
                     // length between start and first BpmNote
-                    length += DirectorHelper.BpmToSeconds(StartBpm)
-                              *Signature*note.IndexInGrid/TotalGridCount;
+                    length += DirectorHelper.BpmToSeconds(StartBpm)*note.IndexInGrid/GridPerSignature;
+                    SetTimeAtGrid(1, note.IndexInGrid, StartBpm, 0);
                 }
                 else
                 {
                     // length between prev BpmNote and current
                     var deltaGridCount = note.IndexInGrid - lastBpmNote.IndexInGrid;
-                    length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm)
-                              *Signature*deltaGridCount/TotalGridCount;
+                    length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm)*deltaGridCount/GridPerSignature;
+                    SetTimeAtGrid(lastBpmNote.IndexInGrid + 1, note.IndexInGrid, lastBpmNote.ExtraParams.NewBpm, lastBpmNote.IndexInGrid);
                 }
                 
                 lastBpmNote = note;
@@ -92,15 +126,39 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             // if it's null, there is no BpmNote in the bar
             if (lastBpmNote != null)
             {
-                length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm)
-                          *Signature*(TotalGridCount - lastBpmNote.IndexInGrid)/TotalGridCount;
+                length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm)*(TotalGridCount - lastBpmNote.IndexInGrid)/GridPerSignature;
+                SetTimeAtGrid(lastBpmNote.IndexInGrid + 1, TotalGridCount - 1, lastBpmNote.ExtraParams.NewBpm, lastBpmNote.IndexInGrid);
             }
             else
             {
                 length = DirectorHelper.BpmToSeconds(StartBpm) * Signature;
+                for (int i = 0; i < TotalGridCount; ++i)
+                {
+                    _timeAtGrid[i] = StartTime + length*i/TotalGridCount;
+                }
             }
 
             TimeLength = length;
+        }
+
+        /// <summary>
+        /// UpdateTimings() of this Bar and all Bars in the Score after this one
+        /// </summary>
+        internal void UpdateTimingsChain()
+        {
+            var myIdx = Score.Bars.IndexOf(this);
+
+            if (myIdx >= 0)
+            {
+                for (int i = myIdx; i < Score.Bars.Count; ++i)
+                {
+                    Score.Bars[i].UpdateTimings();
+                }
+            }
+            else
+            {
+                UpdateTimings();
+            }
         }
 
         public Note AddNote() {
@@ -118,6 +176,10 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Notes.Remove(note);
             Score.Notes.Remove(note);
             Score.Project.ExistingIDs.Remove(note.ID);
+            if (note.Type == NoteType.VariantBpm)
+            {
+                UpdateTimingsChain();
+            }
             return true;
         }
 
@@ -171,5 +233,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             }
         }
 
+        // Note object will call this when IndexInGrid is changed
+        internal void SortNotes()
+        {
+            Notes.Sort(Note.TimingThenPositionComparison);
+            Score.Notes.Sort(Note.TimingThenPositionComparison);
+        }
     }
 }
