@@ -32,12 +32,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         private readonly List<DrawingBar> _bars = new List<DrawingBar>();
 
         // hit sound
-        private const string HitSoundFile = "hitsound.wav";
-        private const string FlickSoundFile = "flicksound.wav";
-        private readonly WasapiOut[] _hitAudios = {null, null};
-        private readonly DateTime[] _hitModifiedTimes = {new DateTime(), new DateTime()};
-        private readonly WaveFileReader[] _hitWaves = {null, null};
-        private readonly MemoryStream[] _hitMem = {null, null};
+        private static readonly string HitSoundFile = "Resources/SFX/director/se_live_tap_perfect.wav";
+        private static readonly string FlickSoundFile = "Resources/SFX/director/se_live_flic_perfect.wav";
+        private readonly WasapiOut[] _hitAudios = { null, null };
+        private readonly DateTime[] _hitModifiedTimes = { new DateTime(), new DateTime() };
+        private readonly WaveFileReader[] _hitWaves = { null, null };
+        private readonly MemoryStream[] _hitMem = { null, null };
         private readonly EventWaitHandle _hitsoundHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         // music time fixing
@@ -56,13 +56,11 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         public void BeginPreview(Score score, double targetFps, int startTime, double approachTime) {
             // wait if not loaded yet
-            if (!_loaded)
-            {
-                new Task(() =>
-                {
+            if (!_loaded) {
+                new Task(() => {
                     _loadHandle.WaitOne();
                     Dispatcher.BeginInvoke(
-                        new Action<Score, double, int, double>(BeginPreview), 
+                        new Action<Score, double, int, double>(BeginPreview),
                         score, targetFps, startTime, approachTime);
                 }).Start();
                 return;
@@ -105,14 +103,12 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 }
 
                 // skip notes that are done before start time
-                if (snote.Timing + snote.Duration < startTime)
-                {
+                if (snote.Timing + snote.Duration < startTime) {
                     continue;
                 }
 
                 // skip hit effect of hold note start if started before
-                if (snote.IsHoldStart && snote.Timing < startTime)
-                {
+                if (snote.IsHoldStart && snote.Timing < startTime) {
                     snote.EffectShown = true;
                 }
 
@@ -120,8 +116,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             }
 
             // end if no notes
-            if (_notes.Count == 0)
-            {
+            if (_notes.Count == 0) {
                 // TODO: alert user?
                 IsPreviewing = false;
                 return;
@@ -151,26 +146,19 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
             // prepare bars
 
-            if (_window != null && _window.PreviewBarLevel > 0)
-            {
+            if (_window != null && _window.PreviewBarLevel > 0) {
                 var level = _window.PreviewBarLevel;
 
-                foreach (var bar in score.Bars)
-                {
-                    _bars.Add(new DrawingBar {DrawType = 0, Timing = (int) (bar.StartTime*1000)});
-                    if (level > 1)
-                    {
-                        for (int sig = 0; sig < bar.Signature; ++sig)
-                        {
+                foreach (var bar in score.Bars) {
+                    _bars.Add(new DrawingBar { DrawType = 0, Timing = (int)(bar.StartTime * 1000) });
+                    if (level > 1) {
+                        for (int sig = 0; sig < bar.Signature; ++sig) {
                             if (sig > 0)
-                                _bars.Add(new DrawingBar {DrawType = 1, Timing = (int) (bar.TimeAtSignature(sig)*1000)});
+                                _bars.Add(new DrawingBar { DrawType = 1, Timing = (int)(bar.TimeAtSignature(sig) * 1000) });
 
-                            if (level > 2 && bar.GridPerSignature % 4 == 0)
-                            {
-                                for (int grid = bar.GridPerSignature / 4; grid < bar.GridPerSignature; grid += bar.GridPerSignature/4)
-                                {
-                                    _bars.Add(new DrawingBar
-                                    {
+                            if (level > 2 && bar.GridPerSignature % 4 == 0) {
+                                for (int grid = bar.GridPerSignature / 4; grid < bar.GridPerSignature; grid += bar.GridPerSignature / 4) {
+                                    _bars.Add(new DrawingBar {
                                         DrawType = 2,
                                         Timing = (int)(bar.TimeAtGrid(sig * bar.GridPerSignature + grid) * 1000)
                                     });
@@ -308,10 +296,8 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             _bars.Clear();
         }
 
-        private void ScorePreviewer_OnLayoutUpdated(object sender, EventArgs e)
-        {
-            if (_isPreviewing && !_loaded && ActualWidth > 0 && ActualHeight > 0)
-            {
+        private void ScorePreviewer_OnLayoutUpdated(object sender, EventArgs e) {
+            if (_isPreviewing && !_loaded && ActualWidth > 0 && ActualHeight > 0) {
                 _loaded = true;
                 _loadHandle.Set();
             }
@@ -319,19 +305,16 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
 
         #region Hit Sound
 
-        private MemoryStream MsFromFile(string file)
-        {
+        private MemoryStream MsFromFile(string file) {
             var ms = new MemoryStream();
-            using (var fs = new FileStream(file, FileMode.Open))
-            {
+            using (var fs = new FileStream(file, FileMode.Open)) {
                 fs.CopyTo(ms);
             }
             ms.Seek(0, SeekOrigin.Begin);
             return ms;
         }
 
-        private void SetHitsoundAudio(int index, MemoryStream ms)
-        {
+        private void SetHitsoundAudio(int index, MemoryStream ms) {
             _hitAudios[index]?.Stop();
             _hitAudios[index]?.Dispose();
             _hitWaves[index]?.Close();
@@ -342,23 +325,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             _hitAudios[index].Init(_hitWaves[index]);
         }
 
-        private void LoadHitSounds()
-        {
-            try
-            {
-                if (File.Exists(HitSoundFile) && _hitModifiedTimes[0] != File.GetLastWriteTime(HitSoundFile))
-                {
+        private void LoadHitSounds() {
+            try {
+                if (File.Exists(HitSoundFile) && _hitModifiedTimes[0] != File.GetLastWriteTime(HitSoundFile)) {
                     SetHitsoundAudio(0, MsFromFile(HitSoundFile));
                 }
 
-                if (File.Exists(FlickSoundFile) && _hitModifiedTimes[1] != File.GetLastWriteTime(FlickSoundFile))
-                {
+                if (File.Exists(FlickSoundFile) && _hitModifiedTimes[1] != File.GetLastWriteTime(FlickSoundFile)) {
                     SetHitsoundAudio(1, MsFromFile(FlickSoundFile));
                 }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to load hitsounds:{Environment.NewLine}{ex.Message}","Error",
+            } catch (Exception ex) {
+                MessageBox.Show($"Failed to load hitsounds:{Environment.NewLine}{ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -366,21 +343,17 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
         /// <summary>
         /// Runs in a separate thread to play hitsound
         /// </summary>
-        private void HitSoundTask()
-        {
+        private void HitSoundTask() {
             _hitsoundHandle.WaitOne();
 
-            while (_isPreviewing)
-            {
-                for (int i = 0; i < 2; ++i)
-                {
+            while (_isPreviewing) {
+                for (int i = 0; i < 2; ++i) {
                     if (!MainCanvas.ShallPlaySoundEffect[i])
                         continue;
 
                     // note: no need to stop audio
 
-                    if (_hitWaves[i] != null)
-                    {
+                    if (_hitWaves[i] != null) {
                         _hitWaves[i].Seek(0, SeekOrigin.Begin);
                         _hitAudios[i].Play();
                     }
