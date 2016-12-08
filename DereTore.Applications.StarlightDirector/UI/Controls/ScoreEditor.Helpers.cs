@@ -142,12 +142,13 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             heightPercentage = 0;
             height = 0;
             var pt = pointRelativeToThis;
+            pt = TranslatePoint(pt, BarLayer);
             var hit = VisualTreeHelper.HitTest(BarLayer, pt);
             var scoreBar = (hit?.VisualHit as FrameworkElement)?.FindVisualParent<ScoreBar>();
             if (scoreBar == null) {
                 return null;
             }
-            pt = TranslatePoint(pt, scoreBar);
+            pt = BarLayer.TranslatePoint(pt, scoreBar);
             height = scoreBar.Height;
             heightPercentage = pt.Y / height;
             return scoreBar;
