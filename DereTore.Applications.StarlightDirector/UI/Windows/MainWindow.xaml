@@ -227,7 +227,6 @@
                             </fluent:ContextMenu>
                         </controls:ScoreEditor.ContextMenu>
                     </controls:ScoreEditor>
-                    <controls:ScoreViewer x:Name="Viewer"/>
                 </Grid>
             </ScrollViewer>
             <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>

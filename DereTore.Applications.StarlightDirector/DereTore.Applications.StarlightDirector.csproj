@@ -178,10 +178,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\ScoreViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="UI\Windows\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -245,9 +241,6 @@
     <Compile Include="UI\Controls\ScorePreviewer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\ScorePreviewer.xaml.cs">
       <DependentUpon>ScorePreviewer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\ScoreViewer.xaml.cs">
-      <DependentUpon>ScoreViewer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Controls\ScoreViewerBase.cs" />
     <Compile Include="UI\Controls\ScoreViewerBase.DependencyProperties.cs" />
@@ -397,6 +390,12 @@
     <Resource Include="Resources\Mayu\mayu-06.png" />
     <Resource Include="Resources\Icons\ViewMiscRelationIndicatorVisibility.png" />
     <Resource Include="Resources\Icons\ViewMiscInvertScrollDirection.png" />
+    <Content Include="Resources\SFX\director\se_live_flic_perfect.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\SFX\director\se_live_tap_perfect.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="x64\sqlite3.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

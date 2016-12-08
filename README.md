@@ -10,7 +10,7 @@ The goal of DereTore is to improve gaming experience in [Idolmaster Cinderella G
 
 **Downloads:**
 
-- [Nightly build](https://ci.appveyor.com/api/projects/hozuki/DereTore/artifacts/deretore-toolkit-x86.zip?job=Platform%3A+x86) (Windows, x86)
+- [Nightly build](https://ci.appveyor.com/api/projects/hozuki/deretore-avoh8/artifacts/deretore-toolkit-x86.zip?job=Platform%3A+x86) (Windows, x86)
 - [Releases](https://github.com/OpenCGSS/DereTore/releases)
 
 Wonder [how this name comes from](Notes.md#the-name)?
