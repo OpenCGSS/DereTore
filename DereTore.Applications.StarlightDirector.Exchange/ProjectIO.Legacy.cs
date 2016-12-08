@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,11 +31,15 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                         }
                     }
                 }
-            } catch (Exception) {
+            } catch (Exception ex) {
+                Debug.Print(ex.Message);
+                Debug.Print(ex.StackTrace);
             }
             try {
                 string versionString = null;
-                using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
+                var builder = new SQLiteConnectionStringBuilder();
+                builder.DataSource = fileName;
+                using (var connection = new SQLiteConnection(builder.ToString())) {
                     connection.Open();
                     var command = connection.CreateCommand();
                     command.CommandText = $"SELECT value FROM {Names.Table_Main} WHERE key = @key;";
@@ -73,12 +78,16 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     return ProjectVersion.Unknown;
                 }
             } catch (Exception ex) {
+                Debug.Print(ex.Message);
+                Debug.Print(ex.StackTrace);
                 return ProjectVersion.Unknown;
             }
         }
 
         private static Project LoadFromV01(string fileInput) {
             Project project;
+            ScoreSettings settings = null;
+
             using (var fileStream = File.Open(fileInput, FileMode.Open, FileAccess.Read)) {
                 using (var reader = new StreamReader(fileStream, Encoding.ASCII)) {
                     reader.ReadLine();
@@ -97,7 +106,6 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
 
                     // Score settings
                     var rawScores = p.Property("scores").Values();
-                    ScoreSettings settings = null;
                     foreach (var token in rawScores) {
                         var rawScore = (JObject)((JProperty)token).Value;
                         var settingsProp = rawScore.Property("settings");
@@ -105,12 +113,6 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                         if (settings != null) {
                             break;
                         }
-                    }
-                    if (settings != null) {
-                        project.Settings.GlobalBpm = settings.GlobalBpm;
-                        project.Settings.GlobalGridPerSignature = settings.GlobalGridPerSignature;
-                        project.Settings.GlobalSignature = settings.GlobalSignature;
-                        project.Settings.StartTimeOffset = settings.StartTimeOffset;
                     }
                 }
             }
@@ -120,6 +122,14 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 score.ResolveReferences(project);
                 score.FixSyncNotes();
                 score.Difficulty = difficulty;
+            }
+
+            // Call score.ResolveReferences() first.
+            if (settings != null) {
+                project.Settings.GlobalBpm = settings.GlobalBpm;
+                project.Settings.GlobalGridPerSignature = settings.GlobalGridPerSignature;
+                project.Settings.GlobalSignature = settings.GlobalSignature;
+                project.Settings.StartTimeOffset = settings.StartTimeOffset;
             }
 
             project.SaveFileName = fileInput;
@@ -138,7 +148,9 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 IsChanged = false,
                 SaveFileName = fileName
             };
-            using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
+            var builder = new SQLiteConnectionStringBuilder();
+            builder.DataSource = fileName;
+            using (var connection = new SQLiteConnection(builder.ToString())) {
                 connection.Open();
                 SQLiteCommand getValues = null;
 

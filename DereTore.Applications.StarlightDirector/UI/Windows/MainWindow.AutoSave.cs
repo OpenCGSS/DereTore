@@ -31,7 +31,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             ShowTemporaryMessage(message);
         }
 
-        private void ClearBackup() {
+        private static void ClearBackup() {
             var directoryPath = App.GetDirectoryPath(App.DirectorPath.AutoBackup);
             if (!Directory.Exists(directoryPath)) {
                 Directory.CreateDirectory(directoryPath);
@@ -39,13 +39,14 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
             var directory = new DirectoryInfo(directoryPath);
             var files = directory.GetFiles();
             foreach (var fileInfo in files) {
-                if (fileInfo.Exists) {
-                    try {
-                        // It happens sometimes. E.g., when Starlight Director is writing the autosave file at the same time.
-                        fileInfo.Delete();
-                    } catch (IOException ex) {
-                        MessageBox.Show(ex.Message, App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    }
+                if (!fileInfo.Exists) {
+                    continue;
+                }
+                try {
+                    // It happens sometimes. E.g., when Starlight Director is writing the autosave file at the same time.
+                    fileInfo.Delete();
+                } catch (IOException ex) {
+                    MessageBox.Show(ex.Message, App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 }
             }
         }

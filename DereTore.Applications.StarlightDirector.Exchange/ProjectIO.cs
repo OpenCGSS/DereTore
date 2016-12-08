@@ -30,8 +30,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             return Load(fileName, version);
         }
 
-        internal static Project Load(string fileName, ProjectVersion versionOverride)
-        {
+        internal static Project Load(string fileName, ProjectVersion versionOverride) {
             Project project = null;
             switch (versionOverride) {
                 case ProjectVersion.Unknown:
@@ -48,11 +47,9 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 project = LoadCurrentVersion(fileName);
 
             // Update bar timings, sort notes
-            foreach (var difficulty in Difficulties)
-            {
+            foreach (var difficulty in Difficulties) {
                 var score = project.GetScore(difficulty);
-                foreach (var bar in score.Bars)
-                {
+                foreach (var bar in score.Bars) {
                     bar.UpdateTimings();
                     bar.Notes.Sort(Note.TimingThenPositionComparison);
                 }
@@ -71,7 +68,9 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
             } else {
                 File.Delete(fileName);
             }
-            using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
+            var builder = new SQLiteConnectionStringBuilder();
+            builder.DataSource = fileName;
+            using (var connection = new SQLiteConnection(builder.ToString())) {
                 connection.Open();
                 SQLiteCommand setValue = null, insertNote = null, insertNoteID = null, insertBarParams = null, insertSpecialNote = null;
 
@@ -156,7 +155,9 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                 IsChanged = false,
                 SaveFileName = fileName
             };
-            using (var connection = new SQLiteConnection($"Data Source={fileName}")) {
+            var builder = new SQLiteConnectionStringBuilder();
+            builder.DataSource = fileName;
+            using (var connection = new SQLiteConnection(builder.ToString())) {
                 connection.Open();
                 SQLiteCommand getValues = null;
 
@@ -228,7 +229,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                     }
                     var score = project.GetScore(difficulty);
                     foreach (var note in score.Notes) {
-                        note.IndexInGrid *= k;
+                        note.SetIndexInGridWithoutSorting(note.IndexInGrid * k);
                     }
                 }
             } else if (oldGrids % newGrids == 0) {
@@ -244,7 +245,7 @@ namespace DereTore.Applications.StarlightDirector.Exchange {
                         if (note.IndexInGrid % k != 0) {
                             incompatibleNotes.Add(note);
                         } else {
-                            note.IndexInGrid /= k;
+                            note.SetIndexInGridWithoutSorting(note.IndexInGrid / k);
                         }
                     }
                 }
