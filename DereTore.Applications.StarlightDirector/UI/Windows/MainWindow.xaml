@@ -41,7 +41,7 @@
                         <fluent:BackstageTabItem Header="Summary" KeyTip="M">
                             <pages:SummaryPage/>
                         </fluent:BackstageTabItem>
-                        <fluent:BackstageTabItem Header="Recent" KeyTip="R">
+                        <fluent:BackstageTabItem Header="Recent" KeyTip="R" Visibility="Collapsed">
                             <pages:RecentPage/>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="Build" KeyTip="B">

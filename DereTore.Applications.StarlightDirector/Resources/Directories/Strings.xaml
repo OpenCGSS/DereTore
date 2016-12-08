@@ -41,9 +41,9 @@
     <system:String x:Key="DelesteImportingWillReplaceCurrentScorePrompt">Importing a Delestue beatmap will replace current score and change your project settings like BPM or start time offset. Do you want to save your work first?</system:String>
     <system:String x:Key="DelesteWarningsAppearedPrompt">Some warnings were raised during the importing process. You can stop and try to edit the source file to eliminate those warnings, or continue and let Starlight Director modify the measures/notes automatically. Automatic modification may cause unexpected results in note positions or relations. &#x0a;Do you want to continue loading the modified score?</system:String>
 
-    <system:String x:Key="SummaryTotalNotes">Total Notes in Current Score</system:String>
-    <system:String x:Key="SummaryTotalBars">Total Measures in Current Score</system:String>
-    <system:String x:Key="SummaryMusicFile">Music File</system:String>
+    <system:String x:Key="SummaryTotalNotes">Total notes in current score</system:String>
+    <system:String x:Key="SummaryTotalBars">Total measures in current score</system:String>
+    <system:String x:Key="SummaryMusicFile">Music file</system:String>
 
     <system:String x:Key="Unsaved">Unsaved</system:String>
 </ResourceDictionary>
