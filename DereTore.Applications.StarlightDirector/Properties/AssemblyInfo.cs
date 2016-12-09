@@ -50,6 +50,6 @@ using System.Windows;
 // 方法是按如下所示使用“*”: :
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.3.0.0")]
-[assembly: AssemblyFileVersion("0.6.0.0")]
+[assembly: AssemblyFileVersion("0.6.1.0")]
 [assembly: Guid("de69897a-be1b-410a-a159-814b5f4033b4")]
 
