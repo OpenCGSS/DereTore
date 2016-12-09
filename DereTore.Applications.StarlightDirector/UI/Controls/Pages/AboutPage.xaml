@@ -35,16 +35,18 @@
             <TextBlock Grid.Column="0" FontSize="15">
                 <TextBlock>
                     <Bold FontSize="30"><Run Text="{x:Static sd:App.Title}"/></Bold><LineBreak/>
-                    <TextBlock FontSize="12">
-                        ver <Run Name="VersionText"/>
+                    <TextBlock FontSize="12" Margin="0 5">
+                        version <Run Name="VersionText"/>
                         <Run Text="{x:Static local:AboutPage.VersionPrerelease}"/>
                         "<Run Text="{x:Static local:AboutPage.CodeName}"/>"
                     </TextBlock>
                     <LineBreak/>
                     Score and music creator for <Hyperlink CommandParameter="http://cinderella.idolmaster.jp/sl-stage/">Idolmaster Cinderella Girls: Starlight Stage</Hyperlink>
                     <LineBreak/>
-                    Developed and maintained by <Hyperlink CommandParameter="https://github.com/hozuki">hozuki</Hyperlink>
-                    at its <Hyperlink CommandParameter="https://github.com/hozuki/DereTore">GitHub repository</Hyperlink>
+                    <TextBlock FontSize="12">
+                        Originally developed by <Hyperlink CommandParameter="https://github.com/hozuki">hozuki</Hyperlink>, now maintained at
+                        <Hyperlink CommandParameter="https://github.com/OpenCGSS/DereTore">OpenCGSS/DereTore</Hyperlink>.
+                    </TextBlock>
                 </TextBlock>
                 <LineBreak/><LineBreak/>
                 <TextBlock FontSize="12">

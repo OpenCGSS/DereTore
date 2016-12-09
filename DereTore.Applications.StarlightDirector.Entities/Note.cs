@@ -19,11 +19,9 @@ namespace DereTore.Applications.StarlightDirector.Entities {
 
         // "PositionInGrid" was the first name of this property used in serialization.
         [JsonProperty("positionInGrid")]
-        public int IndexInGrid
-        {
+        public int IndexInGrid {
             get { return _indexInGrid; }
-            set
-            {
+            set {
                 _indexInGrid = value;
                 Bar?.SortNotes();
             }
@@ -249,8 +247,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public static readonly DependencyProperty ExtraParamsProperty = DependencyProperty.Register(nameof(ExtraParams), typeof(NoteExtraParams), typeof(Note),
             new PropertyMetadata(null, OnExtraParamsChanged));
 
-        public static readonly Comparison<Note> TimingThenPositionComparison = (x, y) =>
-        {
+        public static readonly Comparison<Note> TimingThenPositionComparison = (x, y) => {
             var r = TimingComparison(x, y);
             return r == 0 ? TrackPositionComparison(x, y) : r;
         };
@@ -318,7 +315,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
              *     ... <==> second_prev
              */
             if (first == second) {
-               throw new ArgumentException("A note should not be connected to itself", nameof(second));
+                throw new ArgumentException("A note should not be connected to itself", nameof(second));
             } else if (first?.NextSyncTarget == second && second?.PrevSyncTarget == first) {
                 return;
             }
@@ -473,6 +470,11 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Type = type;
         }
 
+        // Why is ugly functions like this even exist?
+        internal void SetIndexInGridWithoutSorting(int newIndex) {
+            _indexInGrid = newIndex;
+        }
+
         private static void OnTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = (Note)obj;
             note.IsFlick = note.IsFlickInternal();
@@ -499,8 +501,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             return Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
         }
 
-        private void ExtraParams_ParamsChanged(object sender, EventArgs e)
-        {
+        private void ExtraParams_ParamsChanged(object sender, EventArgs e) {
             // if we a BPM note is changed, inform the Bar to update its timings
             Bar?.UpdateTimingsChain();
             ExtraParamsChanged.Raise(sender, e);

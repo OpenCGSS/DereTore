@@ -41,7 +41,7 @@
                         <fluent:BackstageTabItem Header="Summary" KeyTip="M">
                             <pages:SummaryPage/>
                         </fluent:BackstageTabItem>
-                        <fluent:BackstageTabItem Header="Recent" KeyTip="R">
+                        <fluent:BackstageTabItem Header="Recent" KeyTip="R" Visibility="Collapsed">
                             <pages:RecentPage/>
                         </fluent:BackstageTabItem>
                         <fluent:BackstageTabItem Header="Build" KeyTip="B">
@@ -227,7 +227,6 @@
                             </fluent:ContextMenu>
                         </controls:ScoreEditor.ContextMenu>
                     </controls:ScoreEditor>
-                    <controls:ScoreViewer x:Name="Viewer"/>
                 </Grid>
             </ScrollViewer>
             <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>

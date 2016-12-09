@@ -31,6 +31,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdEditNoteStartPosition1_Executed(object sender, ExecutedRoutedEventArgs e) {
             var scoreNotes = Editor.GetSelectedScoreNotes();
             ChangeNoteStartPositionTo(scoreNotes, NotePosition.Left);
+            Editor.UnselectAllScoreNotes();
             NotifyProjectChanged();
         }
 
@@ -41,6 +42,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdEditNoteStartPosition2_Executed(object sender, ExecutedRoutedEventArgs e) {
             var scoreNotes = Editor.GetSelectedScoreNotes();
             ChangeNoteStartPositionTo(scoreNotes, NotePosition.CenterLeft);
+            Editor.UnselectAllScoreNotes();
             NotifyProjectChanged();
         }
 
@@ -51,6 +53,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdEditNoteStartPosition3_Executed(object sender, ExecutedRoutedEventArgs e) {
             var scoreNotes = Editor.GetSelectedScoreNotes();
             ChangeNoteStartPositionTo(scoreNotes, NotePosition.Center);
+            Editor.UnselectAllScoreNotes();
             NotifyProjectChanged();
         }
 
@@ -61,6 +64,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdEditNoteStartPosition4_Executed(object sender, ExecutedRoutedEventArgs e) {
             var scoreNotes = Editor.GetSelectedScoreNotes();
             ChangeNoteStartPositionTo(scoreNotes, NotePosition.CenterRight);
+            Editor.UnselectAllScoreNotes();
             NotifyProjectChanged();
         }
 
@@ -71,6 +75,7 @@ namespace DereTore.Applications.StarlightDirector.UI.Windows {
         private void CmdEditNoteStartPosition5_Executed(object sender, ExecutedRoutedEventArgs e) {
             var scoreNotes = Editor.GetSelectedScoreNotes();
             ChangeNoteStartPositionTo(scoreNotes, NotePosition.Right);
+            Editor.UnselectAllScoreNotes();
             NotifyProjectChanged();
         }
 

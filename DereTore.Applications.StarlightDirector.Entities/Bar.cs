@@ -24,51 +24,46 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         public int GridPerSignature => Params?.UserDefinedGridPerSignature ?? Score.Project.Settings.GlobalGridPerSignature;
 
         [JsonIgnore]
-        public int TotalGridCount => Signature*GridPerSignature;
+        public int TotalGridCount => Signature * GridPerSignature;
 
         private double[] _timeAtGrid;
 
-        public double TimeAtSignature(int signature)
-        {
+        public double TimeAtSignature(int signature) {
             if (signature < 0 || signature >= Signature)
                 throw new ArgumentException("signature out of range");
 
-            return TimeAtGrid(signature*GridPerSignature);
+            return TimeAtGrid(signature * GridPerSignature);
         }
 
-        public double TimeAtGrid(int grid)
-        {
+        public double TimeAtGrid(int grid) {
             if (grid < 0 || grid >= TotalGridCount)
                 throw new ArgumentException("grid out of range");
 
             return _timeAtGrid[grid];
         }
 
-        public void UpdateTimings()
-        {
+        public void UpdateTimings() {
             UpdateStartTime();
             UpdateStartBpm();
             UpdateTimeLength();
         }
 
-        private void UpdateStartTime()
-        {
+        private void UpdateStartTime() {
             var bars = Score.Bars;
-
-            StartTime = Score.Project.Settings.StartTimeOffset;
-            for (int i = 0; i < Index; ++i)
-            {
-                StartTime += bars[i].TimeLength;
+            var startTime = Score.Project.Settings.StartTimeOffset;
+            var thisIndex = Index;
+            if (bars.Count > 0) {
+                for (var i = 0; i < thisIndex; ++i) {
+                    startTime += bars[i].TimeLength;
+                }
             }
+            StartTime = startTime;
         }
 
-        private void UpdateStartBpm()
-        {
-            for (int i = Index - 1; i >= 0; --i)
-            {
+        private void UpdateStartBpm() {
+            for (int i = Index - 1; i >= 0; --i) {
                 var bar = Score.Bars[i];
-                if (bar.Notes.All(note => note.Type != NoteType.VariantBpm))
-                {
+                if (bar.Notes.All(note => note.Type != NoteType.VariantBpm)) {
                     continue;
                 }
 
@@ -82,59 +77,48 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         /// <summary>
         /// Fill _timeAtGrid, index in range [from, to], assuming constant BPM (bpm) starting from referenceIdx
         /// </summary>
-        private void SetTimeAtGrid(int from, int to, double bpm, int referenceIdx)
-        {
+        private void SetTimeAtGrid(int from, int to, double bpm, int referenceIdx) {
             var secondsPerSignature = DirectorHelper.BpmToSeconds(bpm);
-            for (int i = from; i <= to; ++i)
-            {
+            for (int i = from; i <= to; ++i) {
                 var numGrids = i - referenceIdx;
-                _timeAtGrid[i] = _timeAtGrid[referenceIdx] + numGrids*secondsPerSignature/GridPerSignature;
+                _timeAtGrid[i] = _timeAtGrid[referenceIdx] + numGrids * secondsPerSignature / GridPerSignature;
             }
         }
 
-        private void UpdateTimeLength()
-        {
+        private void UpdateTimeLength() {
             var length = 0.0;
             Note lastBpmNote = null;
             _timeAtGrid = new double[TotalGridCount];
             _timeAtGrid[0] = StartTime;
 
             // find all BpmNotes and compute the length between them
-            foreach (var note in Notes)
-            {
+            foreach (var note in Notes) {
                 if (note.Type != NoteType.VariantBpm)
                     continue;
 
-                if (lastBpmNote == null)
-                {
+                if (lastBpmNote == null) {
                     // length between start and first BpmNote
-                    length += DirectorHelper.BpmToSeconds(StartBpm)*note.IndexInGrid/GridPerSignature;
+                    length += DirectorHelper.BpmToSeconds(StartBpm) * note.IndexInGrid / GridPerSignature;
                     SetTimeAtGrid(1, note.IndexInGrid, StartBpm, 0);
-                }
-                else
-                {
+                } else {
                     // length between prev BpmNote and current
                     var deltaGridCount = note.IndexInGrid - lastBpmNote.IndexInGrid;
-                    length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm)*deltaGridCount/GridPerSignature;
+                    length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm) * deltaGridCount / GridPerSignature;
                     SetTimeAtGrid(lastBpmNote.IndexInGrid + 1, note.IndexInGrid, lastBpmNote.ExtraParams.NewBpm, lastBpmNote.IndexInGrid);
                 }
-                
+
                 lastBpmNote = note;
             }
 
             // length from the last BpmNote to end
             // if it's null, there is no BpmNote in the bar
-            if (lastBpmNote != null)
-            {
-                length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm)*(TotalGridCount - lastBpmNote.IndexInGrid)/GridPerSignature;
+            if (lastBpmNote != null) {
+                length += DirectorHelper.BpmToSeconds(lastBpmNote.ExtraParams.NewBpm) * (TotalGridCount - lastBpmNote.IndexInGrid) / GridPerSignature;
                 SetTimeAtGrid(lastBpmNote.IndexInGrid + 1, TotalGridCount - 1, lastBpmNote.ExtraParams.NewBpm, lastBpmNote.IndexInGrid);
-            }
-            else
-            {
+            } else {
                 length = DirectorHelper.BpmToSeconds(StartBpm) * Signature;
-                for (int i = 0; i < TotalGridCount; ++i)
-                {
-                    _timeAtGrid[i] = StartTime + length*i/TotalGridCount;
+                for (int i = 0; i < TotalGridCount; ++i) {
+                    _timeAtGrid[i] = StartTime + length * i / TotalGridCount;
                 }
             }
 
@@ -144,19 +128,14 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         /// <summary>
         /// UpdateTimings() of this Bar and all Bars in the Score after this one
         /// </summary>
-        internal void UpdateTimingsChain()
-        {
+        internal void UpdateTimingsChain() {
             var myIdx = Score.Bars.IndexOf(this);
 
-            if (myIdx >= 0)
-            {
-                for (int i = myIdx; i < Score.Bars.Count; ++i)
-                {
+            if (myIdx >= 0) {
+                for (int i = myIdx; i < Score.Bars.Count; ++i) {
                     Score.Bars[i].UpdateTimings();
                 }
-            }
-            else
-            {
+            } else {
                 UpdateTimings();
             }
         }
@@ -176,8 +155,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
             Notes.Remove(note);
             Score.Notes.Remove(note);
             Score.Project.ExistingIDs.Remove(note.ID);
-            if (note.Type == NoteType.VariantBpm)
-            {
+            if (note.Type == NoteType.VariantBpm) {
                 UpdateTimingsChain();
             }
             return true;
@@ -234,8 +212,7 @@ namespace DereTore.Applications.StarlightDirector.Entities {
         }
 
         // Note object will call this when IndexInGrid is changed
-        internal void SortNotes()
-        {
+        internal void SortNotes() {
             Notes.Sort(Note.TimingThenPositionComparison);
             Score.Notes.Sort(Note.TimingThenPositionComparison);
         }

@@ -31,30 +31,29 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
                 return;
             }
 
-            var temporaryMap = new Dictionary<Note, ScoreNote>();
+            var temporaryMap = new Dictionary<int, ScoreNote>();
             var allGamingNotes = new List<Note>();
             var noteProcessed = new Dictionary<int, bool>();
             // OK the fun part is here.
-            foreach (var bar in toBeSet.Bars)
-            {
+            foreach (var bar in toBeSet.Bars) {
                 var scoreBar = AddScoreBar(null, false, bar);
-                foreach (var note in bar.Notes)
-                {
-                    if (!note.IsGamingNote)
-                    {
+                foreach (var note in bar.Notes) {
+                    if (!note.IsGamingNote) {
                         continue;
                     }
                     var scoreNote = AddScoreNote(scoreBar, note.IndexInGrid, note.FinishPosition, note);
-                    temporaryMap.Add(note, scoreNote);
-                    allGamingNotes.Add(note);
-                    noteProcessed[note.ID] = false;
+                    if (scoreNote == null) {
+                        Debug.Print("Error creating ScoreNote. Please check project content.");
+                    } else {
+                        temporaryMap.Add(note.ID, scoreNote);
+                        allGamingNotes.Add(note);
+                        noteProcessed[note.ID] = false;
+                    }
                 }
             }
 
-            foreach (var note in allGamingNotes)
-            {
-                if (!noteProcessed[note.ID])
-                {
+            foreach (var note in allGamingNotes) {
+                if (!noteProcessed[note.ID]) {
                     ProcessNoteRelations(note, noteProcessed, temporaryMap, LineLayer.NoteRelations);
                 }
             }
@@ -70,46 +69,43 @@ namespace DereTore.Applications.StarlightDirector.UI.Controls {
             Debug.Print("Done: ScoreEditor.ReloadScore().");
         }
 
-        private static void ProcessNoteRelations(Note root, IDictionary<int, bool> noteProcessed, IDictionary<Note, ScoreNote> map, NoteRelationCollection relations)
-        {
+        private static void ProcessNoteRelations(Note root, IDictionary<int, bool> noteProcessed, IDictionary<int, ScoreNote> map, NoteRelationCollection relations) {
             var waitingList = new Queue<Note>();
             waitingList.Enqueue(root);
-            while (waitingList.Count > 0)
-            {
+            while (waitingList.Count > 0) {
                 var note = waitingList.Dequeue();
-                if (noteProcessed[note.ID])
-                {
+                if (noteProcessed[note.ID]) {
                     continue;
                 }
                 noteProcessed[note.ID] = true;
 
                 if (note.HasPrevSync) {
-                    if (!relations.ContainsPair(map[note], map[note.PrevSyncTarget])) {
-                        relations.Add(map[note], map[note.PrevSyncTarget], NoteRelation.Sync);
+                    if (!relations.ContainsPair(map[note.ID], map[note.PrevSyncTarget.ID])) {
+                        relations.Add(map[note.ID], map[note.PrevSyncTarget.ID], NoteRelation.Sync);
                         waitingList.Enqueue(note.PrevSyncTarget);
                     }
                 }
                 if (note.HasNextSync) {
-                    if (!relations.ContainsPair(map[note], map[note.NextSyncTarget])) {
-                        relations.Add(map[note], map[note.NextSyncTarget], NoteRelation.Sync);
+                    if (!relations.ContainsPair(map[note.ID], map[note.NextSyncTarget.ID])) {
+                        relations.Add(map[note.ID], map[note.NextSyncTarget.ID], NoteRelation.Sync);
                         waitingList.Enqueue(note.NextSyncTarget);
                     }
                 }
                 if (note.HasNextFlick) {
-                    if (!relations.ContainsPair(map[note], map[note.NextFlickNote])) {
-                        relations.Add(map[note], map[note.NextFlickNote], NoteRelation.Flick);
+                    if (!relations.ContainsPair(map[note.ID], map[note.NextFlickNote.ID])) {
+                        relations.Add(map[note.ID], map[note.NextFlickNote.ID], NoteRelation.Flick);
                         waitingList.Enqueue(note.NextFlickNote);
                     }
                 }
                 if (note.HasPrevFlick) {
-                    if (!relations.ContainsPair(map[note], map[note.PrevFlickNote])) {
-                        relations.Add(map[note], map[note.PrevFlickNote], NoteRelation.Flick);
+                    if (!relations.ContainsPair(map[note.ID], map[note.PrevFlickNote.ID])) {
+                        relations.Add(map[note.ID], map[note.PrevFlickNote.ID], NoteRelation.Flick);
                         waitingList.Enqueue(note.PrevFlickNote);
                     }
                 }
                 if (note.IsHoldStart) {
-                    if (!relations.ContainsPair(map[note], map[note.HoldTarget])) {
-                        relations.Add(map[note], map[note.HoldTarget], NoteRelation.Hold);
+                    if (!relations.ContainsPair(map[note.ID], map[note.HoldTarget.ID])) {
+                        relations.Add(map[note.ID], map[note.HoldTarget.ID], NoteRelation.Hold);
                         waitingList.Enqueue(note.HoldTarget);
                     }
                 }
