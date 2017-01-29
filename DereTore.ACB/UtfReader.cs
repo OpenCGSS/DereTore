@@ -18,7 +18,7 @@ namespace DereTore.ACB {
         public bool IsEncrypted => _isEncrypted;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="baseOffset">Offset of the UTF table, starting from the beginning of ACB file.</param>
@@ -132,36 +132,37 @@ namespace DereTore.ACB {
             return BitConverter.ToSingle(temp, 0);
         }
 
-        public string ReadZeroEndedAsciiAsAscii(Stream stream, long baseOffset, long utfOffset) {
-            var asciiVal = new StringBuilder();
-            var fileSize = stream.Length;
+        public string ReadZeroEndedStringAsAscii(Stream stream, long baseOffset, long utfOffset) {
             if (!IsEncrypted) {
-                asciiVal.Append(stream.PeekZeroEndedStringAsAscii(baseOffset + utfOffset));
-            } else {
-                stream.Position = baseOffset + utfOffset;
-                if (utfOffset < _currentUtfStringOffset) {
-                    _currentUtfStringOffset = 0;
-                }
+                return stream.PeekZeroEndedStringAsAscii(baseOffset + utfOffset);
+            }
 
-                if (_currentUtfStringOffset == 0) {
-                    _currentStringXor = _seed;
-                }
-                for (var j = _currentUtfStringOffset; j < utfOffset; j++) {
-                    if (j > 0) {
-                        _currentStringXor *= _increment;
-                    }
-                    _currentUtfStringOffset++;
-                }
-                for (var i = utfOffset; i < fileSize - (baseOffset + utfOffset); i++) {
+            stream.Position = baseOffset + utfOffset;
+            if (utfOffset < _currentUtfStringOffset) {
+                _currentUtfStringOffset = 0;
+            }
+
+            if (_currentUtfStringOffset == 0) {
+                _currentStringXor = _seed;
+            }
+            for (var j = _currentUtfStringOffset; j < utfOffset; j++) {
+                if (j > 0) {
                     _currentStringXor *= _increment;
-                    _currentUtfStringOffset++;
-                    var encryptedByte = (byte)stream.ReadByte();
-                    var decryptedByte = (byte)(encryptedByte ^ _currentStringXor);
-                    if (decryptedByte == 0) {
-                        break;
-                    } else {
-                        asciiVal.Append((char)decryptedByte);
-                    }
+                }
+                _currentUtfStringOffset++;
+            }
+
+            var asciiVal = new StringBuilder();
+            var remained = stream.Length - stream.Position - (baseOffset + utfOffset);
+            for (var i = 0; i < remained; i++) {
+                _currentStringXor *= _increment;
+                _currentUtfStringOffset++;
+                var encryptedByte = (byte)stream.ReadByte();
+                var decryptedByte = (byte)(encryptedByte ^ _currentStringXor);
+                if (decryptedByte == 0) {
+                    break;
+                } else {
+                    asciiVal.Append((char)decryptedByte);
                 }
             }
             return asciiVal.ToString();

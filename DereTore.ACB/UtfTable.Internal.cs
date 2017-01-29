@@ -71,6 +71,7 @@ namespace DereTore.ACB {
                         keys.Add(LcgSeedKey, (byte)seed);
                         keys.Add(LcgIncrementKey, (byte)increment);
                         keysFound = true;
+                        break;
                     }
                 }
             }
