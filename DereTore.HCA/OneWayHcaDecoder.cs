@@ -5,23 +5,28 @@ namespace DereTore.HCA {
 
         public OneWayHcaDecoder(Stream sourceStream)
             : base(sourceStream) {
-            _status = new DecodeStatus();
         }
 
         public OneWayHcaDecoder(Stream sourceStream, DecodeParams decodeParams)
             : base(sourceStream, decodeParams) {
-            _status = new DecodeStatus();
         }
 
-        public int DecodeData(byte[] buffer, out bool hasMore) {
-            return DecodeData(buffer, ref _status, out hasMore);
+        public uint DecodeBlocks(byte[] buffer) {
+            if (!HasMore) {
+                return 0;
+            }
+            var decodedBlockCount = DecodeBlocks(buffer, _blockIndex);
+            _blockIndex += decodedBlockCount;
+            return decodedBlockCount;
         }
 
-        public bool HasMore() {
-            return HasMore(ref _status);
-        }
+        public bool HasMore => _blockIndex < HcaInfo.BlockCount;
 
-        private DecodeStatus _status;
+        public uint LengthInSamples => HcaHelper.CalculateLengthInSamples(HcaInfo);
+
+        public float LengthInSeconds => HcaHelper.CalculateLengthInSeconds(HcaInfo);
+
+        private uint _blockIndex = 0;
 
     }
 }

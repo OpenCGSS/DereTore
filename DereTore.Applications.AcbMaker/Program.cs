@@ -47,7 +47,7 @@ namespace DereTore.Applications.AcbMaker {
 
         private static HeaderTable GetFullTable(string hcaFileName, string songName) {
             HcaInfo info;
-            int lengthInSamples;
+            uint lengthInSamples;
             float lengthInSeconds;
             using (var fileStream = File.Open(hcaFileName, FileMode.Open, FileAccess.Read)) {
                 var decoder = new OneWayHcaDecoder(fileStream);
@@ -82,7 +82,7 @@ namespace DereTore.Applications.AcbMaker {
                     NumChannels = (byte)info.ChannelCount,
                     LoopFlag = 1,
                     SamplingRate = (ushort)info.SamplingRate,
-                    NumSamples = (uint)lengthInSamples,
+                    NumSamples = lengthInSamples,
                     ExtensionData = ushort.MaxValue
                }
             };

@@ -7,60 +7,65 @@ using DereTore.StarlightStage;
 namespace DereTore.Applications.Hca2Wav {
     internal static class Program {
 
-        private static void Main(string[] args) {
-            if (args.Length < 1 || args.Length > 6) {
+        private static int Main(string[] args) {
+            var options = new Options();
+            var succeeded = CommandLine.Parser.Default.ParseArguments(args, options);
+            if (!succeeded) {
                 Console.WriteLine(HelpMessage);
-                return;
+                return CommandLine.Parser.DefaultExitCodeFail;
             }
-            var inputFileName = args[0];
-            var varArgStart = 1;
-            string outputFileName;
-            if (args.Length > 1 && args[1][0] != '-') {
-                outputFileName = args[1];
-                varArgStart = 2;
+
+            if (string.IsNullOrWhiteSpace(options.OutputFileName)) {
+                var fileInfo = new FileInfo(options.InputFileName);
+                options.OutputFileName = fileInfo.FullName.Substring(0, fileInfo.FullName.Length - fileInfo.Extension.Length);
+                options.OutputFileName += ".wav";
+            }
+
+            uint key1, key2;
+            var formatProvider = new NumberFormatInfo();
+            if (!string.IsNullOrWhiteSpace(options.Key1)) {
+                if (!uint.TryParse(options.Key1, NumberStyles.HexNumber, formatProvider, out key1)) {
+                    Console.WriteLine("ERROR: key 1 is of wrong format.");
+                    return CommandLine.Parser.DefaultExitCodeFail;
+                }
             } else {
-                var fileInfo = new FileInfo(inputFileName);
-                outputFileName = fileInfo.FullName.Substring(0, fileInfo.FullName.Length - fileInfo.Extension.Length);
-                outputFileName += ".wav";
+                key1 = CgssCipher.Key1;
             }
-            uint key1 = CgssCipher.Key1, key2 = CgssCipher.Key2;
-            for (var i = varArgStart; i < args.Length; ++i) {
-                var arg = args[i];
-                if (arg[0] == '-' || arg[0] == '/') {
-                    switch (arg.Substring(1)) {
-                        case "a":
-                            key1 = uint.Parse(args[++i], NumberStyles.HexNumber);
-                            break;
-                        case "b":
-                            key2 = uint.Parse(args[++i], NumberStyles.HexNumber);
-                            break;
-                        default:
-                            break;
+            if (!string.IsNullOrWhiteSpace(options.Key2)) {
+                if (!uint.TryParse(options.Key2, NumberStyles.HexNumber, formatProvider, out key2)) {
+                    Console.WriteLine("ERROR: key 2 is of wrong format.");
+                    return CommandLine.Parser.DefaultExitCodeFail;
+                }
+            } else {
+                key2 = CgssCipher.Key2;
+            }
+
+            using (var inputFileStream = File.Open(options.InputFileName, FileMode.Open, FileAccess.Read)) {
+                using (var outputFileStream = File.Open(options.OutputFileName, FileMode.Create, FileAccess.Write)) {
+                    var decodeParams = DecodeParams.CreateDefault();
+                    decodeParams.Key1 = key1;
+                    decodeParams.Key2 = key2;
+                    var audioParams = AudioParams.CreateDefault();
+                    audioParams.InfiniteLoop = options.InfiniteLoop;
+                    audioParams.SimulatedLoopCount = options.SimulatedLoopCount;
+                    audioParams.OutputWaveHeader = options.OutputWaveHeader;
+                    using (var hcaStream = new HcaAudioStream(inputFileStream, decodeParams, audioParams)) {
+                        var read = 1;
+                        var dataBuffer = new byte[1024];
+                        while (read > 0) {
+                            read = hcaStream.Read(dataBuffer, 0, dataBuffer.Length);
+                            if (read > 0) {
+                                outputFileStream.Write(dataBuffer, 0, read);
+                            }
+                        }
                     }
                 }
             }
 
-            using (var inputFileStream = File.Open(inputFileName, FileMode.Open, FileAccess.Read)) {
-                using (var outputFileStream = File.Open(outputFileName, FileMode.Create, FileAccess.Write)) {
-                    var decoder = new OneWayHcaDecoder(inputFileStream, new DecodeParams {
-                        Key1 = key1,
-                        Key2 = key2
-                    });
-                    var waveHeaderBuffer = new byte[decoder.GetMinWaveHeaderBufferSize()];
-                    decoder.WriteWaveHeader(waveHeaderBuffer);
-                    outputFileStream.Write(waveHeaderBuffer, 0, waveHeaderBuffer.Length);
-                    var hasMore = true;
-                    var read = 1;
-                    var dataBuffer = new byte[decoder.GetMinWaveDataBufferSize() * 10];
-                    while (hasMore && read > 0) {
-                        read = decoder.DecodeData(dataBuffer, out hasMore);
-                        outputFileStream.Write(dataBuffer, 0, read);
-                    }
-                }
-            }
+            return 0;
         }
 
-        private static readonly string HelpMessage = "Usage: hca2wav.exe <input HCA> [<output WAVE = <input HCA>.wav>] [-a <key 1>] [-b <key 2>]";
+        private static readonly string HelpMessage = "Usage: hca2wav.exe -i <input HCA> [-o <output WAVE = <input HCA>.wav>] [-a <key 1>] [-b <key 2>] [-l <loop count>] [--infinite] [--header]";
 
     }
 }

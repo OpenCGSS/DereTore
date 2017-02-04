@@ -19,6 +19,13 @@ namespace DereTore {
             }
         }
 
+        public static int Write(this Stream stream, sbyte value) {
+            unchecked {
+                stream.WriteByte((byte)value);
+            }
+            return 1;
+        }
+
         public static int Write(this Stream stream, int value) {
             if (!BitConverter.IsLittleEndian) {
                 value = DereToreHelper.SwapEndian(value);

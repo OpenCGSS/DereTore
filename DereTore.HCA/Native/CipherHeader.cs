@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace DereTore.HCA.Interop {
+namespace DereTore.HCA.Native {
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct CipherHeader {
 

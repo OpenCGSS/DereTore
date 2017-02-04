@@ -7,7 +7,6 @@ namespace DereTore.HCA {
         WaveHeaderTransmitting = 1,
         WaveHeaderTransmitted = 2,
         DataTransmitting = 4,
-        DataTransmitted = 8,
-        CanDoHasMoreCheck = WaveHeaderTransmitting | WaveHeaderTransmitted | DataTransmitting,
+        DataTransmitted = 8
     }
 }
