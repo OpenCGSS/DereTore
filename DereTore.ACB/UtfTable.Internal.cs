@@ -41,41 +41,34 @@ namespace DereTore.ACB {
             }
         }
 
-        private static Dictionary<string, byte> GetKeysForEncryptedUtfTable(byte[] encryptedUtfSignature) {
-            var keys = new Dictionary<string, byte>(2);
-            var keysFound = false;
-            for (var seed = 0; seed <= byte.MaxValue; seed++) {
-                if (keysFound) {
-                    break;
-                }
-                if ((encryptedUtfSignature[0] ^ seed) != UtfSignature[0]) {
+        private static bool GetKeysForEncryptedUtfTable(byte[] encryptedUtfSignature, out byte seed, out byte increment) {
+            for (var s = 0; s <= byte.MaxValue; s++) {
+                if ((encryptedUtfSignature[0] ^ s) != UtfSignature[0]) {
                     continue;
                 }
-                for (var increment = 0; increment <= byte.MaxValue; increment++) {
-                    if (keysFound) {
-                        break;
-                    }
-                    var m = (byte)(seed * increment);
+                for (var i = 0; i <= byte.MaxValue; i++) {
+                    var m = (byte)(s * i);
                     if ((encryptedUtfSignature[1] ^ m) != UtfSignature[1]) {
                         continue;
                     }
-                    var t = (byte)increment;
+                    var t = (byte)i;
                     for (var j = 2; j < UtfSignature.Length; j++) {
                         m *= t;
                         if ((encryptedUtfSignature[j] ^ m) != UtfSignature[j]) {
                             break;
                         }
-                        if (j != UtfSignature.Length - 1) {
+                        if (j < UtfSignature.Length - 1) {
                             continue;
                         }
-                        keys.Add(LcgSeedKey, (byte)seed);
-                        keys.Add(LcgIncrementKey, (byte)increment);
-                        keysFound = true;
-                        break;
+                        seed = (byte)s;
+                        increment = (byte)i;
+                        return true;
                     }
                 }
             }
-            return keys;
+            seed = 0;
+            increment = 0;
+            return false;
         }
 
         private byte[] CheckEncryption(byte[] magicBytes) {
@@ -85,11 +78,12 @@ namespace DereTore.ACB {
                 return magicBytes;
             } else {
                 _isEncrypted = true;
-                var lcgKeys = GetKeysForEncryptedUtfTable(magicBytes);
-                if (lcgKeys.Count != 2) {
+                byte seed, increment;
+                var keysFound = GetKeysForEncryptedUtfTable(magicBytes, out seed, out increment);
+                if (!keysFound) {
                     throw new FormatException($"Unable to decrypt UTF table at offset 0x{_offset:x8}");
                 } else {
-                    _utfReader = new UtfReader(lcgKeys[LcgSeedKey], lcgKeys[LcgIncrementKey], IsEncrypted);
+                    _utfReader = new UtfReader(seed, increment, IsEncrypted);
                 }
                 return UtfSignature;
             }
@@ -358,8 +352,6 @@ namespace DereTore.ACB {
         }
 
         internal static readonly byte[] UtfSignature = { 0x40, 0x55, 0x54, 0x46 }; // '@UTF'
-        private static readonly string LcgSeedKey = "SEED";
-        private static readonly string LcgIncrementKey = "INC";
 
         private readonly string _acbFileName;
         private readonly Stream _stream;
