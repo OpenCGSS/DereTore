@@ -157,9 +157,9 @@ namespace DereTore.HCA {
             if (MagicValues.IsMagicMatch(v, MagicValues.CIPH)) {
                 CipherHeader header;
                 stream.Read(out header);
-                hcaInfo.CiphType = (CipherType)DereToreHelper.SwapEndian(header.Type);
+                hcaInfo.CipherType = (CipherType)DereToreHelper.SwapEndian(header.Type);
             } else {
-                hcaInfo.CiphType = CipherType.NoChipher;
+                hcaInfo.CipherType = CipherType.NoChipher;
             }
             // RVA
             v = stream.PeekUInt32LE();

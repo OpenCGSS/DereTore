@@ -16,12 +16,14 @@ namespace DereTore.HCA {
             if (!_ath.Initialize(hcaInfo.AthType, hcaInfo.SamplingRate)) {
                 throw new HcaException(ErrorMessages.GetAthInitializationFailed(), ActionResult.AthInitFailed);
             }
-            if (!_cipher.Initialize(hcaInfo.CiphType, _decodeParams.Key1, _decodeParams.Key2)) {
+            var decodeParams = _decodeParams;
+            var cipherType = decodeParams.CipherTypeOverrideEnabled ? decodeParams.OverriddenCipherType : hcaInfo.CipherType;
+            if (!_cipher.Initialize(cipherType, decodeParams.Key1, decodeParams.Key2)) {
                 throw new HcaException(ErrorMessages.GetCiphInitializationFailed(), ActionResult.CiphInitFailed);
             }
-            _channels = new Channel[0x10];
-            for (var i = 0; i < _channels.Length; ++i) {
-                _channels[i] = Channel.CreateDefault();
+            var channels = _channels = new Channel[0x10];
+            for (var i = 0; i < channels.Length; ++i) {
+                channels[i] = Channel.CreateDefault();
             }
             var r = new byte[10];
             uint b = hcaInfo.ChannelCount / hcaInfo.CompR03;
@@ -71,9 +73,9 @@ namespace DereTore.HCA {
                 }
             }
             for (uint i = 0; i < hcaInfo.ChannelCount; ++i) {
-                _channels[i].Type = r[i];
-                _channels[i].Value3 = (uint)(hcaInfo.CompR06 + hcaInfo.CompR07);
-                _channels[i].Count = (uint)(hcaInfo.CompR06 + (r[i] != 2 ? hcaInfo.CompR07 : 0));
+                channels[i].Type = r[i];
+                channels[i].Value3 = (uint)(hcaInfo.CompR06 + hcaInfo.CompR07);
+                channels[i].Count = (uint)(hcaInfo.CompR06 + (r[i] != 2 ? hcaInfo.CompR07 : 0));
             }
         }
 

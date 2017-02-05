@@ -26,5 +26,8 @@ namespace DereTore.Applications.Hca2Wav {
         [Option('e', "header", Required = false)]
         public bool OutputWaveHeader { get; set; } = true;
 
+        [Option('c', "cipher", Required = false)]
+        public uint OverriddenCipherType { get; set; }
+
     }
 }

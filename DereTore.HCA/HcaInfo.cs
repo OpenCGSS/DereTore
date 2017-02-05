@@ -26,7 +26,7 @@
         public ushort LoopR01;
         public ushort LoopR02;
         public bool LoopFlag;
-        public CipherType CiphType;
+        public CipherType CipherType;
         public float RvaVolume;
         public uint CommentLength;
         public byte[] Comment;

@@ -18,10 +18,10 @@ namespace DereTore.ACB {
             var offset = _offset;
 
             var magic = stream.PeekBytes(offset, 4);
+            magic = CheckEncryption(magic);
             if (!AcbHelper.AreDataIdentical(magic, UtfSignature)) {
-                throw new FormatException($"'@UTF' signature is not found in '{_acbFileName}' at offset 0x{offset.ToString("x8")}.");
+                throw new FormatException($"'@UTF' signature (or its encrypted equivalent) is not found in '{_acbFileName}' at offset 0x{offset:x8}.");
             }
-            CheckEncryption(magic);
             using (var tableDataStream = GetTableDataStream(stream, offset)) {
                 var header = GetUtfHeader(tableDataStream);
                 _utfHeader = header;
@@ -78,18 +78,20 @@ namespace DereTore.ACB {
             return keys;
         }
 
-        private void CheckEncryption(byte[] magicBytes) {
+        private byte[] CheckEncryption(byte[] magicBytes) {
             if (AcbHelper.AreDataIdentical(magicBytes, UtfSignature)) {
                 _isEncrypted = false;
                 _utfReader = new UtfReader();
+                return magicBytes;
             } else {
                 _isEncrypted = true;
                 var lcgKeys = GetKeysForEncryptedUtfTable(magicBytes);
                 if (lcgKeys.Count != 2) {
-                    throw new FormatException($"Unable to decrypt UTF table at offset 0x{_offset.ToString("x8")}");
+                    throw new FormatException($"Unable to decrypt UTF table at offset 0x{_offset:x8}");
                 } else {
                     _utfReader = new UtfReader(lcgKeys[LcgSeedKey], lcgKeys[LcgIncrementKey], IsEncrypted);
                 }
+                return UtfSignature;
             }
         }
 

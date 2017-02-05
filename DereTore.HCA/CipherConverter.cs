@@ -138,7 +138,7 @@ namespace DereTore.HCA {
 
         private void InitializeCiphers() {
             _cipherFrom = new Cipher();
-            _cipherFrom.Initialize(HcaInfo.CiphType, _ccFrom.Key1, _ccFrom.Key2);
+            _cipherFrom.Initialize(HcaInfo.CipherType, _ccFrom.Key1, _ccFrom.Key2);
             _cipherTo = new Cipher();
             _cipherTo.Initialize(_ccTo.CipherType, _ccTo.Key1, _ccTo.Key2);
         }
