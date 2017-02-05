@@ -2,41 +2,126 @@
 using System.IO;
 
 namespace DereTore.HCA {
-    internal static class WaveHelper {
+    public static class WaveHelper {
 
-        public static int DecodeToStreamInR32(float f, Stream stream) {
-            return stream.Write(f);
+        public static readonly IWaveWriter U8 = new WaveWriterU8();
+        public static readonly IWaveWriter S16 = new WaveWriterS16();
+        public static readonly IWaveWriter S32 = new WaveWriterS32();
+        public static readonly IWaveWriter R32 = new WaveWriterR32();
+
+        private class WaveWriterU8 : IWaveWriter {
+
+            public uint BytesPerSample => 1;
+
+            public SamplingMode SamplingMode => SamplingMode.U8;
+
+            public uint DecodeToBuffer(float f, byte[] buffer, uint offset) {
+                if (offset >= buffer.Length) {
+                    throw new ArgumentOutOfRangeException(nameof(offset));
+                }
+                var s = (sbyte)((int)(f * 0xff) - 0x80);
+                unchecked {
+                    buffer[offset] = (byte)s;
+                }
+                return 1;
+            }
+
+            public uint DecodeToStream(float f, Stream stream) {
+                return (uint)stream.Write((sbyte)((int)(f * 0xff) - 0x80));
+            }
+
         }
 
-        public static int DecodeToStreamInS16(float f, Stream stream) {
-            return stream.Write((short)(f * 0x7fff));
+        private class WaveWriterS16 : IWaveWriter {
+
+            public uint BytesPerSample => 2;
+
+            public SamplingMode SamplingMode => SamplingMode.S16;
+
+            public uint DecodeToBuffer(float f, byte[] buffer, uint offset) {
+                if (offset >= buffer.Length) {
+                    throw new ArgumentOutOfRangeException(nameof(offset));
+                }
+                var value = (short)(f * 0x7fff);
+                if (!BitConverter.IsLittleEndian) {
+                    value = DereToreHelper.SwapEndian(value);
+                }
+                var bytes = BitConverter.GetBytes(value);
+                var bytesWritten = 0u;
+                for (var i = 0; i < 2; ++i) {
+                    if (offset + i > buffer.Length) {
+                        break;
+                    }
+                    buffer[offset + i] = bytes[i];
+                    ++bytesWritten;
+                }
+                return bytesWritten;
+            }
+
+            public uint DecodeToStream(float f, Stream stream) {
+                return (uint)stream.Write((short)(f * 0x7fff));
+            }
         }
 
-        public static int DecodeToStreamInS32(float f, Stream stream) {
-            return stream.Write((int)(f * 0x7fffffff));
+        private class WaveWriterS32 : IWaveWriter {
+
+            public uint BytesPerSample => 4;
+
+            public SamplingMode SamplingMode => SamplingMode.S32;
+
+            public uint DecodeToBuffer(float f, byte[] buffer, uint offset) {
+                if (offset >= buffer.Length) {
+                    throw new ArgumentOutOfRangeException(nameof(offset));
+                }
+                var value = (short)(f * 0x7fffffff);
+                if (!BitConverter.IsLittleEndian) {
+                    value = DereToreHelper.SwapEndian(value);
+                }
+                var bytes = BitConverter.GetBytes(value);
+                var bytesWritten = 0u;
+                for (var i = 0; i < 4; ++i) {
+                    if (offset + i >= buffer.Length) {
+                        break;
+                    }
+                    buffer[offset + i] = bytes[i];
+                    ++bytesWritten;
+                }
+                return bytesWritten;
+            }
+
+            public uint DecodeToStream(float f, Stream stream) {
+                return (uint)stream.Write((short)(f * 0x7fffffff));
+            }
         }
 
-        public static int DecodeToBufferInR32(float f, byte[] buffer, int startIndex) {
-            if (!BitConverter.IsLittleEndian) {
-                f = DereToreHelper.SwapEndian(f);
-            }
-            var bytes = BitConverter.GetBytes(f);
-            for (var i = 0; i < 4; ++i) {
-                buffer[startIndex + i] = bytes[i];
-            }
-            return 4;
-        }
+        private class WaveWriterR32 : IWaveWriter {
 
-        public static int DecodeToBufferInS16(float f, byte[] buffer, int startIndex) {
-            var value = (short)(f * 0x7fff);
-            if (!BitConverter.IsLittleEndian) {
-                value = DereToreHelper.SwapEndian(value);
+            public uint BytesPerSample => 4;
+
+            public SamplingMode SamplingMode => SamplingMode.R32;
+
+            public uint DecodeToBuffer(float f, byte[] buffer, uint offset) {
+                if (offset >= buffer.Length) {
+                    throw new ArgumentOutOfRangeException(nameof(offset));
+                }
+                if (!BitConverter.IsLittleEndian) {
+                    f = DereToreHelper.SwapEndian(f);
+                }
+                var bytes = BitConverter.GetBytes(f);
+                var bytesWritten = 0u;
+                for (var i = 0; i < 4; ++i) {
+                    if (offset + i >= buffer.Length) {
+                        break;
+                    }
+                    buffer[offset + i] = bytes[i];
+                    ++bytesWritten;
+                }
+                return bytesWritten;
             }
-            var bytes = BitConverter.GetBytes(value);
-            for (var i = 0; i < 2; ++i) {
-                buffer[startIndex + i] = bytes[i];
+
+            public uint DecodeToStream(float f, Stream stream) {
+                return (uint)stream.Write(f);
             }
-            return 2;
         }
 
     }

@@ -82,12 +82,30 @@ namespace DereTore.HCA {
             return actionResult < 0;
         }
 
-        public static int CalculateLengthInSamples(HcaInfo hcaInfo) {
-            return (int)hcaInfo.BlockCount * (int)hcaInfo.ChannelCount * 0x80 * 8;
+        public static uint CalculateLengthInSamples(HcaInfo hcaInfo) {
+            return hcaInfo.BlockCount * hcaInfo.ChannelCount * 0x80 * 8;
+        }
+
+        public static uint CalculateLengthInSamples(HcaInfo hcaInfo, uint loopCount, bool infiniteLoop) {
+            if (infiniteLoop) {
+                return uint.MaxValue;
+            }
+            var totalBlockCount = hcaInfo.BlockCount;
+            totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart + 1) * loopCount;
+            return totalBlockCount * hcaInfo.ChannelCount * 0x80 * 8;
         }
 
         public static float CalculateLengthInSeconds(HcaInfo hcaInfo) {
             return hcaInfo.BlockCount * 0x80 * 8 / (float)hcaInfo.SamplingRate;
+        }
+
+        public static float CalculateLengthInSeconds(HcaInfo hcaInfo, uint loopCount, bool infiniteLoop) {
+            if (infiniteLoop) {
+                return float.MaxValue;
+            }
+            var totalBlockCount = hcaInfo.BlockCount;
+            totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart + 1) * loopCount;
+            return totalBlockCount * 0x80 * 8 / (float)hcaInfo.SamplingRate;
         }
 
         private static readonly ushort[] ChecksumTable = {

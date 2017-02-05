@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using DereTore.HCA.Interop;
+using DereTore.HCA.Native;
 
 namespace DereTore.HCA {
     public sealed class CipherConverter : HcaReader {
@@ -26,7 +26,7 @@ namespace DereTore.HCA {
         public bool EncryptHeaderSignatures { get; set; }
 
         private void UpdateHeader() {
-            var dataOffset = _hcaInfo.DataOffset;
+            var dataOffset = HcaInfo.DataOffset;
             var buffer = new byte[dataOffset];
             var sourceStream = SourceStream;
             var outputStream = _outputStream;
@@ -116,11 +116,12 @@ namespace DereTore.HCA {
         }
 
         private void ConvertData() {
+            var hcaInfo = HcaInfo;
             var sourceStream = SourceStream;
             var outputStream = _outputStream;
-            var dataOffset = _hcaInfo.DataOffset;
-            var totalBlockCount = _hcaInfo.BlockCount;
-            var buffer = new byte[_hcaInfo.BlockSize];
+            var dataOffset = hcaInfo.DataOffset;
+            var totalBlockCount = hcaInfo.BlockCount;
+            var buffer = new byte[hcaInfo.BlockSize];
 
             sourceStream.Seek(dataOffset, SeekOrigin.Begin);
             for (var i = 0; i < totalBlockCount; ++i) {
@@ -137,7 +138,7 @@ namespace DereTore.HCA {
 
         private void InitializeCiphers() {
             _cipherFrom = new Cipher();
-            _cipherFrom.Initialize(_hcaInfo.CiphType, _ccFrom.Key1, _ccFrom.Key2);
+            _cipherFrom.Initialize(HcaInfo.CipherType, _ccFrom.Key1, _ccFrom.Key2);
             _cipherTo = new Cipher();
             _cipherTo.Initialize(_ccTo.CipherType, _ccTo.Key1, _ccTo.Key2);
         }
