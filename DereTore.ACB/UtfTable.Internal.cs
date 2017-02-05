@@ -22,7 +22,7 @@ namespace DereTore.ACB {
             if (!AcbHelper.AreDataIdentical(magic, UtfSignature)) {
                 throw new FormatException($"'@UTF' signature (or its encrypted equivalent) is not found in '{_acbFileName}' at offset 0x{offset:x8}.");
             }
-            using (var tableDataStream = GetTableDataStream(stream, offset)) {
+            using (var tableDataStream = GetTableDataStream()) {
                 var header = GetUtfHeader(tableDataStream);
                 _utfHeader = header;
                 _rows = new Dictionary<string, UtfField>[header.RowCount];
@@ -89,21 +89,24 @@ namespace DereTore.ACB {
             }
         }
 
-        private Stream GetTableDataStream(Stream stream, long offset) {
+        private Stream GetTableDataStream() {
+            var stream = _stream;
+            var offset = _offset;
             var tableSize = (int)_utfReader.PeekUInt32(stream, offset, 4) + 8;
             if (!IsEncrypted) {
                 return AcbHelper.ExtractToNewStream(stream, offset, tableSize);
             }
             // Another reading process. Unlike the one with direct reading, this may encounter UTF table decryption.
             var originalPosition = stream.Position;
-            stream.Seek(offset, SeekOrigin.Begin);
             var totalBytesRead = 0;
             var memory = new byte[tableSize];
             var currentIndex = 0;
+            var currentOffset = offset;
             do {
                 var shouldRead = tableSize - totalBytesRead;
-                var buffer = _utfReader.PeekBytes(stream, offset, shouldRead, totalBytesRead);
+                var buffer = _utfReader.PeekBytes(stream, currentOffset, shouldRead, totalBytesRead);
                 Array.Copy(buffer, 0, memory, currentIndex, buffer.Length);
+                currentOffset += buffer.Length;
                 currentIndex += buffer.Length;
                 totalBytesRead += buffer.Length;
             } while (totalBytesRead < tableSize);
@@ -124,15 +127,15 @@ namespace DereTore.ACB {
                 stream.Seek(offset, SeekOrigin.Begin);
             }
             var header = new UtfHeader {
-                TableSize = stream.PeekUInt32BE(4),
-                Unknown1 = stream.PeekUInt16BE(8),
-                PerRowDataOffset = (uint)stream.PeekUInt16BE(10) + 8,
-                StringTableOffset = stream.PeekUInt32BE(12) + 8,
-                ExtraDataOffset = stream.PeekUInt32BE(16) + 8,
-                TableNameOffset = stream.PeekUInt32BE(20),
-                FieldCount = stream.PeekUInt16BE(24),
-                RowSize = stream.PeekUInt16BE(26),
-                RowCount = stream.PeekUInt32BE(28)
+                TableSize = stream.PeekUInt32BE(offset + 4),
+                Unknown1 = stream.PeekUInt16BE(offset + 8),
+                PerRowDataOffset = (uint)stream.PeekUInt16BE(offset + 10) + 8,
+                StringTableOffset = stream.PeekUInt32BE(offset + 12) + 8,
+                ExtraDataOffset = stream.PeekUInt32BE(offset + 16) + 8,
+                TableNameOffset = stream.PeekUInt32BE(offset + 20),
+                FieldCount = stream.PeekUInt16BE(offset + 24),
+                RowSize = stream.PeekUInt16BE(offset + 26),
+                RowCount = stream.PeekUInt32BE(offset + 28)
             };
             header.TableName = stream.PeekZeroEndedStringAsAscii(header.StringTableOffset + header.TableNameOffset);
             return header;
@@ -144,10 +147,10 @@ namespace DereTore.ACB {
             var baseOffset = _offset;
             for (uint i = 0; i < header.RowCount; i++) {
                 var currentOffset = schemaOffset;
-                long currentRowBase = header.PerRowDataOffset + header.RowSize * i;
-                long currentRowOffset = 0;
                 var row = new Dictionary<string, UtfField>();
                 rows[i] = row;
+                long currentRowOffset = 0;
+                long currentRowBase = header.PerRowDataOffset + header.RowSize * i;
 
                 for (var j = 0; j < header.FieldCount; j++) {
                     var field = new UtfField {
@@ -221,7 +224,7 @@ namespace DereTore.ACB {
                                     currentOffset += 1;
                                     break;
                                 default:
-                                    throw new FormatException($"Unknown column type at offset: 0x{currentOffset.ToString("x8")}");
+                                    throw new FormatException($"Unknown column type at offset: 0x{currentOffset:x8}");
                             }
                             break;
                         case ColumnStorage.PerRow:
@@ -283,12 +286,12 @@ namespace DereTore.ACB {
                                     currentRowOffset += 1;
                                     break;
                                 default:
-                                    throw new FormatException($"Unknown column type at offset: 0x{currentOffset.ToString("x8")}");
+                                    throw new FormatException($"Unknown column type at offset: 0x{currentOffset:x8}");
                             }
                             field.ConstrainedType = (ColumnType)field.Type;
                             break;
                         default:
-                            throw new FormatException($"Unknown column storage at offset: 0x{currentOffset.ToString("x8")}");
+                            throw new FormatException($"Unknown column storage at offset: 0x{currentOffset:x8}");
                     }
                     // Union polyfill
                     field.ConstrainedType = constrainedType;
