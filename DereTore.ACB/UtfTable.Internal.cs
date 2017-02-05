@@ -83,7 +83,7 @@ namespace DereTore.ACB {
                 if (!keysFound) {
                     throw new FormatException($"Unable to decrypt UTF table at offset 0x{_offset:x8}");
                 } else {
-                    _utfReader = new UtfReader(seed, increment, IsEncrypted);
+                    _utfReader = new UtfReader(seed, increment);
                 }
                 return UtfSignature;
             }

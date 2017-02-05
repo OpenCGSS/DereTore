@@ -9,10 +9,10 @@ namespace DereTore.ACB {
             _isEncrypted = false;
         }
 
-        public UtfReader(byte seed, byte increment, bool isEncrypted) {
+        public UtfReader(byte seed, byte increment) {
             _seed = seed;
             _increment = increment;
-            _isEncrypted = isEncrypted;
+            _isEncrypted = true;
         }
 
         public bool IsEncrypted => _isEncrypted;
