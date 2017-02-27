@@ -100,24 +100,29 @@ namespace DereTore.HCA {
             var a = (d.GetBit(9) << 8) - d.GetBit(7);
             var channels = _channels;
             var ath = _ath;
-            for (var i = 0; i < hcaInfo.ChannelCount; ++i) {
-                channels[i].Decode1(d, hcaInfo.CompR09, a, ath.Table);
+            try {
+                for (var i = 0; i < hcaInfo.ChannelCount; ++i) {
+                    channels[i].Decode1(d, hcaInfo.CompR09, a, ath.Table);
+                }
+                for (var i = 0; i < 8; ++i) {
+                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
+                        channels[j].Decode2(d);
+                    }
+                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
+                        channels[j].Decode3(hcaInfo.CompR09, hcaInfo.CompR08, (uint)(hcaInfo.CompR07 + hcaInfo.CompR06), hcaInfo.CompR05);
+                    }
+                    for (var j = 0; j < hcaInfo.ChannelCount - 1; ++j) {
+                        Channel.Decode4(ref channels[j], ref channels[j + 1], i, (uint)(hcaInfo.CompR05 - hcaInfo.CompR06), hcaInfo.CompR06, hcaInfo.CompR07);
+                    }
+                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
+                        channels[j].Decode5(i);
+                    }
+                }
+                return blockData.Length;
+            } catch (IndexOutOfRangeException ex) {
+                const string message = "Index access exception detected. It is probably because you are using an incorrect HCA key pair while decoding a type 56 HCA file.";
+                throw new HcaException(message, ActionResult.DecodeFailed, ex);
             }
-            for (var i = 0; i < 8; ++i) {
-                for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
-                    channels[j].Decode2(d);
-                }
-                for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
-                    channels[j].Decode3(hcaInfo.CompR09, hcaInfo.CompR08, (uint)(hcaInfo.CompR07 + hcaInfo.CompR06), hcaInfo.CompR05);
-                }
-                for (var j = 0; j < hcaInfo.ChannelCount - 1; ++j) {
-                    Channel.Decode4(ref channels[j], ref channels[j + 1], i, (uint)(hcaInfo.CompR05 - hcaInfo.CompR06), hcaInfo.CompR06, hcaInfo.CompR07);
-                }
-                for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
-                    channels[j].Decode5(i);
-                }
-            }
-            return blockData.Length;
         }
 
         private void TransformWaveDataBlocks(Stream source, byte[] destination, uint startBlockIndex, uint blockCount, IWaveWriter waveWriter) {
