@@ -1,6 +1,6 @@
-﻿# DereTore.Applications.ScoreEditor
+﻿# DereTore Score Viewer
 
-A simple score editor for CGSS live music.
+A simple score viewer for CGSS live music.
 
 An example of [Hotel Moonside](http://www.project-imas.com/wiki/Hotel_Moonside), showing the most famous 'X' swiping notes:
 
