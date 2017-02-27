@@ -141,6 +141,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="README.md" />
+    <None Include="Resources\Live\smileing.bdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Live\smileing.acb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\SFX\se_live_03.acb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -9,6 +9,8 @@ namespace DereTore.Applications.ScoreViewer.Model {
         TapOrFlick = 1,
         [Description("Hold")]
         Hold = 2,
+        [Description("Slide")]
+        Slide = 3,
 
         Debug1 = 81,
         Debug2 = 82,

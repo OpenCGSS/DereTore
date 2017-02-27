@@ -86,37 +86,61 @@ namespace DereTore.Applications.ScoreViewer.Model {
                     case NoteType.TapOrFlick:
                         if (note.IsSync) {
                             if (note.SyncPairNote == null) {
-                                r.Add($"Missing sync pair note at note ID #{note.Id}.");
+                                r.Add($"Missing sync pair note at note ID #{note.ID}.");
                                 b = false;
                             }
                         }
                         if (note.IsFlick) {
-                            if (!flickGroupNoteCount.ContainsKey(note.FlickGroupId)) {
-                                flickGroupNoteCount.Add(note.FlickGroupId, 0);
+                            if (!flickGroupNoteCount.ContainsKey(note.GroupID)) {
+                                flickGroupNoteCount.Add(note.GroupID, 0);
                             }
-                            ++flickGroupNoteCount[note.FlickGroupId];
+                            ++flickGroupNoteCount[note.GroupID];
                         }
                         break;
                     case NoteType.Hold:
                         if (note.IsSync) {
                             if (note.SyncPairNote == null) {
-                                r.Add($"Missing sync pair note at note ID #{note.Id}.");
+                                r.Add($"Missing sync pair note at note ID #{note.ID}.");
                                 b = false;
                             }
                         }
                         if (note.NextHoldNote != null && note.PrevHoldNote != null) {
-                            r.Add($"Note ${note.Id} has both previous and next hold notes.");
+                            r.Add($"Note ${note.ID} has both previous and next hold notes.");
                             b = false;
                         }
                         if (note.NextHoldNote != null) {
                             if (note.NextHoldNote.PrevHoldNote != note) {
-                                r.Add($"Broken next hold note detected at note ID #{note.Id}.");
+                                r.Add($"Broken next hold note detected at note ID #{note.ID}.");
                             }
                         }
                         if (note.PrevHoldNote != null) {
                             if (note.PrevHoldNote.NextHoldNote != note) {
-                                r.Add($"Broken previous hold note detected at note ID #{note.Id}.");
+                                r.Add($"Broken previous hold note detected at note ID #{note.ID}.");
                             }
+                        }
+                        if (note.NextHoldNote == null && note.PrevHoldNote == null) {
+                            r.Add($"Note ${note.ID} is a lonely hold note.");
+                        }
+                        break;
+                    case NoteType.Slide:
+                        if (note.IsSync) {
+                            if (note.SyncPairNote == null) {
+                                r.Add($"Missing sync pair note at note ID #{note.ID}.");
+                                b = false;
+                            }
+                        }
+                        if (note.NextSlideNote != null) {
+                            if (note.NextSlideNote.PrevSlideNote != note) {
+                                r.Add($"Broken next slide note detected at note ID #{note.ID}.");
+                            }
+                        }
+                        if (note.PrevSlideNote != null) {
+                            if (note.PrevSlideNote.NextSlideNote != note) {
+                                r.Add($"Broken previous slide note detected at note ID #{note.ID}.");
+                            }
+                        }
+                        if (note.NextSlideNote == null && note.PrevSlideNote == null) {
+                            r.Add($"Note ${note.ID} is a lonely slide note.");
                         }
                         break;
                 }
@@ -138,7 +162,7 @@ namespace DereTore.Applications.ScoreViewer.Model {
                     config.TrimFields = false;
                     using (var csv = new CsvWriter(writer, config)) {
                         var newList = new List<Note>(Notes);
-                        newList.Sort((n1, n2) => n1.Id.CompareTo(n2.Id));
+                        newList.Sort((n1, n2) => n1.ID.CompareTo(n2.ID));
                         csv.WriteRecords(newList);
                     }
                 }
@@ -207,6 +231,7 @@ namespace DereTore.Applications.ScoreViewer.Model {
             var notes = _editableNotes;
             var holdNotesToBeMatched = new List<Note>();
             var flickGroupNoteCount = new Dictionary<int, int>();
+            var slideGroupNoteCount = new Dictionary<int, int>();
             var i = 0;
             foreach (var note in notes) {
                 switch (note.Type) {
@@ -214,23 +239,27 @@ namespace DereTore.Applications.ScoreViewer.Model {
                         if (note.IsSync) {
                             var syncPairItem = notes.FirstOrDefault(n => n != note && n.HitTiming.Equals(note.HitTiming) && n.IsSync);
                             if (syncPairItem == null) {
-                                throw new FormatException($"Missing sync pair note at note ID #{note.Id}.");
+                                throw new FormatException($"Missing sync pair note at note ID #{note.ID}.");
                             }
                             note.SyncPairNote = syncPairItem;
                         }
                         if (note.IsFlick) {
-                            if (!flickGroupNoteCount.ContainsKey(note.FlickGroupId)) {
-                                flickGroupNoteCount.Add(note.FlickGroupId, 0);
+                            if (!flickGroupNoteCount.ContainsKey(note.GroupID)) {
+                                flickGroupNoteCount.Add(note.GroupID, 0);
                             }
-                            ++flickGroupNoteCount[note.FlickGroupId];
-                            var nextFlickItem = notes.Skip(i + 1).FirstOrDefault(n => n.IsFlick && n.FlickGroupId != 0 && n.FlickGroupId == note.FlickGroupId);
+                            ++flickGroupNoteCount[note.GroupID];
+                            var nextFlickItem = notes.Skip(i + 1).FirstOrDefault(n => (n.IsFlick || n.IsSlide) && n.GroupID != 0 && n.GroupID == note.GroupID);
                             if (nextFlickItem == null) {
-                                if (flickGroupNoteCount[note.FlickGroupId] < 2) {
-                                    Debug.WriteLine($"[WARNING] No enough flick notes to form a flick group at note ID #{note.Id}, group ID {note.FlickGroupId}.");
+                                if (flickGroupNoteCount[note.GroupID] < 2) {
+                                    Debug.WriteLine($"[WARNING] No enough flick notes to form a flick group at note ID #{note.ID}, group ID {note.GroupID}.");
                                 }
                             } else {
                                 note.NextFlickNote = nextFlickItem;
                                 nextFlickItem.PrevFlickNote = note;
+                                if (nextFlickItem.IsSlide) {
+                                    note.NextSlideNote = nextFlickItem;
+                                    nextFlickItem.PrevSlideNote = note;
+                                }
                             }
                         }
                         break;
@@ -238,7 +267,7 @@ namespace DereTore.Applications.ScoreViewer.Model {
                         if (note.IsSync) {
                             var syncPairItem = notes.FirstOrDefault(n => n != note && n.HitTiming.Equals(note.HitTiming) && n.IsSync);
                             if (syncPairItem == null) {
-                                throw new FormatException($"Missing sync pair note at note ID #{note.Id}.");
+                                throw new FormatException($"Missing sync pair note at note ID #{note.ID}.");
                             }
                             note.SyncPairNote = syncPairItem;
                         }
@@ -248,7 +277,7 @@ namespace DereTore.Applications.ScoreViewer.Model {
                         }
                         var endHoldItem = notes.Skip(i + 1).FirstOrDefault(n => n.FinishPosition == note.FinishPosition);
                         if (endHoldItem == null) {
-                            throw new FormatException($"Missing end hold note at note ID #{note.Id}.");
+                            throw new FormatException($"Missing end hold note at note ID #{note.ID}.");
                         }
                         note.NextHoldNote = endHoldItem;
                         endHoldItem.PrevHoldNote = note;
@@ -256,6 +285,35 @@ namespace DereTore.Applications.ScoreViewer.Model {
                         // See song_1001, 'Master' difficulty, #189-#192, #479-#483.
                         endHoldItem.StartPosition = note.StartPosition;
                         holdNotesToBeMatched.Add(endHoldItem);
+                        break;
+                    case NoteType.Slide:
+                        if (!slideGroupNoteCount.ContainsKey(note.GroupID)) {
+                            slideGroupNoteCount.Add(note.GroupID, 0);
+                        }
+                        if (note.IsSync) {
+                            var syncPairItem = notes.FirstOrDefault(n => n != note && n.HitTiming.Equals(note.HitTiming) && n.IsSync);
+                            if (syncPairItem == null) {
+                                throw new FormatException($"Missing sync pair note at note ID #{note.ID}.");
+                            }
+                            note.SyncPairNote = syncPairItem;
+                        }
+                        if (holdNotesToBeMatched.Contains(note)) {
+                            holdNotesToBeMatched.Remove(note);
+                            break;
+                        }
+                        var nextSlideItem = notes.Skip(i + 1).FirstOrDefault(n => (n.IsSlide || n.IsFlick) && n.GroupID == note.GroupID);
+                        if (nextSlideItem == null) {
+                            if (slideGroupNoteCount[note.GroupID] < 2) {
+                                Debug.WriteLine($"[WARNING] No enough slide notes to form a slide group at note ID #{note.ID}, group ID {note.GroupID}.");
+                            }
+                        } else {
+                            note.NextSlideNote = nextSlideItem;
+                            nextSlideItem.PrevHoldNote = note;
+                            if (nextSlideItem.FlickType != NoteStatus.Tap) {
+                                note.NextFlickNote = nextSlideItem;
+                                nextSlideItem.PrevFlickNote = note;
+                            }
+                        }
                         break;
                 }
                 ++i;

@@ -12,7 +12,7 @@ namespace DereTore.Applications.ScoreViewer.Controls {
             var centerY = clientSize.Height * BaseLineYPosition;
             foreach (var position in AvatarCenterXEndPositions) {
                 var centerX = clientSize.Width * position;
-                renderParams.Graphics.FillEllipse(Brushes.Firebrick, centerX - AvatarCircleRadius, centerY - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
+                renderParams.Graphics.FillEllipse(AvatarBrush, centerX - AvatarCircleRadius, centerY - AvatarCircleRadius, AvatarCircleDiameter, AvatarCircleDiameter);
             }
         }
 
@@ -21,7 +21,7 @@ namespace DereTore.Applications.ScoreViewer.Controls {
             float p1 = AvatarCenterXStartPositions[0], p5 = AvatarCenterXStartPositions[AvatarCenterXStartPositions.Length - 1];
             float x1 = clientSize.Width * p1, x2 = clientSize.Width * p5;
             var ceilingY = FutureNoteCeiling * clientSize.Height;
-            renderParams.Graphics.DrawLine(Pens.Red, x1, ceilingY, x2, ceilingY);
+            renderParams.Graphics.DrawLine(CeilingPen, x1, ceilingY, x2, ceilingY);
         }
 
         public static void GetVisibleNotes(double now, List<Note> notes, out int startIndex, out int endIndex) {
@@ -50,6 +50,7 @@ namespace DereTore.Applications.ScoreViewer.Controls {
                 switch (note.Type) {
                     case NoteType.TapOrFlick:
                     case NoteType.Hold:
+                    case NoteType.Slide:
                         if (IsNoteOnStage(note, renderParams.Now)) {
                             if (note.EditorSelected) {
                                 DrawSelectedRect(renderParams, note, Pens.White);
@@ -80,11 +81,24 @@ namespace DereTore.Applications.ScoreViewer.Controls {
                             }
                         }
                         break;
+                    case NoteType.Slide:
+                        if (note.HasNextSlide) {
+                            DrawSlideLine(renderParams, note, note.NextSlideNote);
+                        }
+                        if (note.HasPrevSlide) {
+                            if (!IsNoteOnStage(note.PrevSlideNote, renderParams.Now)) {
+                                DrawSlideLine(renderParams, note.PrevSlideNote, note);
+                            }
+                        }
+                        break;
                 }
                 switch (note.Type) {
                     case NoteType.TapOrFlick:
                     case NoteType.Hold:
                         DrawSimpleNote(renderParams, note);
+                        break;
+                    case NoteType.Slide:
+                        DrawSlideNote(renderParams, note);
                         break;
                 }
             }
@@ -106,10 +120,14 @@ namespace DereTore.Applications.ScoreViewer.Controls {
                 x2 = GetNoteXPosition(renderParams, note2);
             float r = GetNoteRadius(renderParams, note2);
             float xLeft = Math.Min(x1, x2), xRight = Math.Max(x1, x2);
-            renderParams.Graphics.DrawLine(Pens.DodgerBlue, xLeft + r, y, xRight - r, y);
+            renderParams.Graphics.DrawLine(SyncLinePen, xLeft + r, y, xRight - r, y);
         }
 
         public static void DrawHoldLine(RenderParams renderParams, Note startNote, Note endNote) {
+            DrawHoldLine(renderParams, startNote, endNote, HoldLinePen);
+        }
+
+        public static void DrawHoldLine(RenderParams renderParams, Note startNote, Note endNote, Pen pen) {
             var graphics = renderParams.Graphics;
             var now = renderParams.Now;
             OnStageStatus s1 = GetNoteOnStageStatus(startNote, now), s2 = GetNoteOnStageStatus(endNote, now);
@@ -128,11 +146,49 @@ namespace DereTore.Applications.ScoreViewer.Controls {
             float xcontrol1, xcontrol2, ycontrol1, ycontrol2;
             GetBezierFromQuadratic(x1, xmid, x2, out xcontrol1, out xcontrol2);
             GetBezierFromQuadratic(y1, ymid, y2, out ycontrol1, out ycontrol2);
-            graphics.DrawBezier(Pens.Yellow, x1, y1, xcontrol1, ycontrol1, xcontrol2, ycontrol2, x2, y2);
+            graphics.DrawBezier(pen, x1, y1, xcontrol1, ycontrol1, xcontrol2, ycontrol2, x2, y2);
+        }
+
+        public static void DrawSlideLine(RenderParams renderParams, Note startNote, Note endNote) {
+            if (endNote.IsFlick) {
+                DrawFlickLine(renderParams, startNote, endNote);
+                return;
+            }
+            var now = renderParams.Now;
+            if (startNote.IsSlideEnd || IsNoteOnStage(startNote, now)) {
+                DrawHoldLine(renderParams, startNote, endNote, SlideLinePen);
+                return;
+            }
+            if (IsNotePassed(startNote, now)) {
+                var nextSlideNote = startNote.NextSlideNote;
+                if (nextSlideNote == null) {
+                    // Actually, here is an example of invalid format. :)
+                    DrawHoldLine(renderParams, startNote, endNote, SlideLinePen);
+                    return;
+                }
+                if (IsNotePassed(nextSlideNote, now)) {
+                    return;
+                }
+                var startX = GetEndXByNotePosition(renderParams.ClientSize, startNote.FinishPosition);
+                var endX = GetEndXByNotePosition(renderParams.ClientSize, nextSlideNote.FinishPosition);
+                var y1 = GetAvatarYPosition(renderParams.ClientSize);
+                var x1 = (float)((now - startNote.HitTiming) / (nextSlideNote.HitTiming - startNote.HitTiming)) * (endX - startX) + startX;
+                float t1 = GetNoteTransformedTime(renderParams, startNote, true, true);
+                float t2 = GetNoteTransformedTime(renderParams, endNote, true, true);
+                float tmid = (t1 + t2) * 0.5f;
+                float x2 = GetNoteXPosition(renderParams, endNote.FinishPosition, endNote.StartPosition, t2);
+                float xmid = GetNoteXPosition(renderParams, endNote.FinishPosition, endNote.StartPosition, tmid);
+                float y2 = GetNoteYPosition(renderParams, t2);
+                float ymid = GetNoteYPosition(renderParams, tmid);
+                float xcontrol1, xcontrol2, ycontrol1, ycontrol2;
+                GetBezierFromQuadratic(x1, xmid, x2, out xcontrol1, out xcontrol2);
+                GetBezierFromQuadratic(y1, ymid, y2, out ycontrol1, out ycontrol2);
+                renderParams.Graphics.DrawBezier(SlideLinePen, x1, y1, xcontrol1, ycontrol1, xcontrol2, ycontrol2, x2, y2);
+            }
         }
 
         public static void DrawFlickLine(RenderParams renderParams, Note startNote, Note endNote) {
-            DrawSimpleLine(renderParams, startNote, endNote, Pens.OliveDrab);
+            DrawSimpleLine(renderParams, startNote, endNote, FlickLinePen);
         }
 
         public static void DrawSimpleLine(RenderParams renderParams, Note startNote, Note endNote, Pen pen) {
@@ -148,20 +204,60 @@ namespace DereTore.Applications.ScoreViewer.Controls {
         }
 
         public static void DrawSimpleNote(RenderParams renderParams, Note note) {
+            DrawSimpleNote(renderParams, note, NoteBaseBrush);
+        }
+
+        public static void DrawSimpleNote(RenderParams renderParams, Note note, Brush baseColorBrush) {
             if (!IsNoteOnStage(note, renderParams.Now)) {
                 return;
             }
             var graphics = renderParams.Graphics;
             float x = GetNoteXPosition(renderParams, note), y = GetNoteYPosition(renderParams, note);
             float r = GetNoteRadius(renderParams, note);
-            graphics.FillEllipse(Brushes.DarkMagenta, x - r, y - r, r * 2f, r * 2f);
-            if (note.IsFlick) {
+            graphics.FillEllipse(baseColorBrush, x - r, y - r, r * 2f, r * 2f);
+
+            switch (note.FlickType) {
+                case NoteStatus.FlickLeft:
+                    graphics.FillPie(NoteDirectionBrush, x - r, y - r, r * 2f, r * 2f, 135, 90);
+                    break;
+                case NoteStatus.FlickRight:
+                    graphics.FillPie(NoteDirectionBrush, x - r, y - r, r * 2f, r * 2f, -45, 90);
+                    break;
+            }
+        }
+
+        public static void DrawSlideNote(RenderParams renderParams, Note note) {
+            var now = renderParams.Now;
+            var noteBrush = note.IsSlideMiddle ? SlideNoteTranslucentBrush : SlideNoteBaseBrush;
+            if (note.IsSlideEnd || IsNoteOnStage(note, now)) {
+                DrawSimpleNote(renderParams, note, noteBrush);
+                return;
+            }
+            if (IsNotePassed(note, now)) {
+                // Now the slide note is "sliding" on the base line.
+                var nextSlideNote = note.NextSlideNote;
+                if (nextSlideNote == null) {
+                    // Actually, here is an example of invalid format. :)
+                    DrawSimpleNote(renderParams, note, noteBrush);
+                    return;
+                }
+                if (IsNotePassed(nextSlideNote, now)) {
+                    return;
+                }
+                var startX = GetEndXByNotePosition(renderParams.ClientSize, note.FinishPosition);
+                var endX = GetEndXByNotePosition(renderParams.ClientSize, nextSlideNote.FinishPosition);
+                var y = GetAvatarYPosition(renderParams.ClientSize);
+                var x = (float)((now - note.HitTiming) / (nextSlideNote.HitTiming - note.HitTiming)) * (endX - startX) + startX;
+                var graphics = renderParams.Graphics;
+                var r = AvatarCircleRadius;
+                graphics.FillEllipse(SlideNoteBaseBrush, x - r, y - r, r * 2f, r * 2f);
+
                 switch (note.FlickType) {
                     case NoteStatus.FlickLeft:
-                        graphics.FillPie(Brushes.DarkOrange, x - r, y - r, r * 2f, r * 2f, 135, 90);
+                        graphics.FillPie(NoteDirectionBrush, x - r, y - r, r * 2f, r * 2f, 135, 90);
                         break;
                     case NoteStatus.FlickRight:
-                        graphics.FillPie(Brushes.DarkOrange, x - r, y - r, r * 2f, r * 2f, -45, 90);
+                        graphics.FillPie(NoteDirectionBrush, x - r, y - r, r * 2f, r * 2f, -45, 90);
                         break;
                 }
             }
@@ -312,6 +408,17 @@ namespace DereTore.Applications.ScoreViewer.Controls {
             OnStage,
             Passed
         }
+
+        public static readonly Brush AvatarBrush = Brushes.Firebrick;
+        public static readonly Pen CeilingPen = Pens.Red;
+        public static readonly Brush NoteBaseBrush = Brushes.DarkSlateBlue;
+        public static readonly Brush SlideNoteBaseBrush = Brushes.DarkMagenta;
+        public static readonly Brush SlideNoteTranslucentBrush = Brushes.Magenta;
+        public static readonly Brush NoteDirectionBrush = Brushes.ForestGreen;
+        public static readonly Pen HoldLinePen = Pens.Yellow;
+        public static readonly Pen SyncLinePen = Pens.DodgerBlue;
+        public static readonly Pen FlickLinePen = Pens.OliveDrab;
+        public static readonly Pen SlideLinePen = Pens.LightPink;
 
         public static float FutureTimeWindow = 1f;
         public static readonly float PastTimeWindow = 0.2f;

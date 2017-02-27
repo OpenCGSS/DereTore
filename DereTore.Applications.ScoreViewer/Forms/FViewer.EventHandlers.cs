@@ -156,7 +156,7 @@ namespace DereTore.Applications.ScoreViewer.Forms {
                         if (!(note.HitTiming < prev) && (note.HitTiming < now)) {
                             if (note.IsFlick) {
                                 _sfxManager.PlayWave(_currentFlickHcaFileName, TimeSpan.FromSeconds(note.HitTiming), PlayerSettings.SfxVolume);
-                            } else if (note.IsTap || note.IsHold) {
+                            } else if (note.IsTap || note.IsHold || note.IsSlide) {
                                 _sfxManager.PlayWave(_currentTapHcaFileName, TimeSpan.FromSeconds(note.HitTiming), PlayerSettings.SfxVolume);
                             }
                         }
