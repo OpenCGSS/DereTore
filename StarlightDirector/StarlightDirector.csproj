@@ -1,0 +1,452 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EA6039D9-CFDA-44B5-BE32-F1256A649E18}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>StarlightDirector</RootNamespace>
+    <AssemblyName>StarlightDirector</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>StarlightDirector.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>SD-Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ControlzEx, Version=2.2.0.4, Culture=neutral, PublicKeyToken=f08b075e934b7045, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.2.2.0.4\lib\net40\ControlzEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Fluent, Version=4.0.3.394, Culture=neutral, PublicKeyToken=3e436e32a8c5546f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Fluent.Ribbon.4.0.3.394\lib\net40\Fluent.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NAudio, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.0\lib\net35\NAudio.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.104.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SQLite.Core.1.0.104.0\lib\net40\System.Data.SQLite.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\ControlzEx.2.2.0.4\lib\net40\System.Windows.Interactivity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Include="Resources\Directories\Booleans.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Directories\Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Directories\Icons.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Directories\Images.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Directories\Painting.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\Directories\Strings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Primitives\LineLayer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Pages\AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Pages\BuildPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Pages\ExportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Pages\ImportPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Pages\RecentPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Pages\SummaryPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Primitives\ScoreBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\ScoreEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Primitives\ScoreNote.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Primitives\ScrollViewerThumbnail.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\Primitives\SpecialNotePointer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\ScorePreviewer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Windows\MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.DirectorPath.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Extensions\ApplicationExtensions.cs" />
+    <Compile Include="Extensions\CommandExtensions.cs" />
+    <Compile Include="Extensions\ComparisonExtensions.cs" />
+    <Compile Include="Extensions\NotifyPropertyChangedExtensions.cs" />
+    <Compile Include="Extensions\VisualExtensions.cs" />
+    <Compile Include="UIHelper.cs" />
+    <Compile Include="CommandHelper.cs" />
+    <Compile Include="ResourceKeys.cs" />
+    <Compile Include="UI\Controls\Models\DrawingBar.cs" />
+    <Compile Include="UI\Controls\Models\DrawingNote.cs" />
+    <Compile Include="UI\Controls\PreviewCanvas.cs" />
+    <Compile Include="UI\Controls\Primitives\LineLayer.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\LineLayer.xaml.cs">
+      <DependentUpon>LineLayer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Pages\AboutPage.Commands.cs" />
+    <Compile Include="UI\Controls\Pages\AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Pages\BuildPage.Commands.cs" />
+    <Compile Include="UI\Controls\Pages\BuildPage.LiveMusicRecord.cs" />
+    <Compile Include="UI\Controls\Pages\BuildPage.xaml.cs">
+      <DependentUpon>BuildPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Pages\ExportPage.Commands.cs" />
+    <Compile Include="UI\Controls\Pages\ExportPage.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Pages\ExportPage.xaml.cs">
+      <DependentUpon>ExportPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Pages\ImportPage.Commands.cs" />
+    <Compile Include="UI\Controls\Pages\ImportPage.xaml.cs">
+      <DependentUpon>ImportPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Pages\RecentPage.xaml.cs">
+      <DependentUpon>RecentPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Pages\SummaryPage.xaml.cs">
+      <DependentUpon>SummaryPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Primitives\ScoreBar.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreBar.Placeholder.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreBar.Rendering.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreBar.TextAndLocation.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Editing.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.EventHandlers.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Helpers.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Layout.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Properties.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.Viewing.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreNote.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScorePreviewer.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\ScorePreviewer.xaml.cs">
+      <DependentUpon>ScorePreviewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\ScoreViewerBase.cs" />
+    <Compile Include="UI\Controls\ScoreViewerBase.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\ScrollViewerThumbnail.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\ScrollViewerThumbnail.xaml.cs">
+      <DependentUpon>ScrollViewerThumbnail.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Primitives\SpecialNotePointer.Commands.cs" />
+    <Compile Include="UI\Controls\Primitives\SpecialNotePointer.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Primitives\SpecialNotePointer.xaml.cs">
+      <DependentUpon>SpecialNotePointer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\ScoreViewerBase.Properties.cs" />
+    <Compile Include="UI\Converters\BooleanToValuesConverter.cs" />
+    <Compile Include="UI\Converters\ConverterGroupParameters.cs" />
+    <Compile Include="UI\Converters\EquityConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\BinaryOpConverterBase.cs" />
+    <Compile Include="UI\Converters\MathOp\LeftParenConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathConstantConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathConverterBase.cs" />
+    <Compile Include="UI\Converters\MathOp\MathExpressionConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathMultiplyConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathDivideConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathSubtractConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\MathAddConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\OpSymbolConverterBase.cs" />
+    <Compile Include="UI\Converters\MathOp\RightParenConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\UnaryOpConverterBase.cs" />
+    <Compile Include="UI\Converters\NoteFlickTypeToHorizontalMirrorConverter.cs" />
+    <Compile Include="UI\Converters\MultiValueConverterGroup.cs" />
+    <Compile Include="UI\Converters\NoteFlickTypeToVisibilityConverter.cs" />
+    <Compile Include="UI\Converters\NullableBooleanToVisibilityConverter.cs" />
+    <Compile Include="UI\Converters\NotePositionToTextConverter.cs" />
+    <Compile Include="UI\Converters\ValueConverterGroup.cs" />
+    <Compile Include="UI\CustomScroll.cs" />
+    <Compile Include="UI\EditMode.cs" />
+    <Compile Include="UI\Controls\Primitives\ScoreBar.xaml.cs">
+      <DependentUpon>ScoreBar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\ScoreEditor.Logic.Misc.cs" />
+    <Compile Include="UI\Controls\ScoreEditor.xaml.cs">
+      <DependentUpon>ScoreEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\Primitives\ScoreNote.xaml.cs">
+      <DependentUpon>ScoreNote.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Converters\DescribedEnumToStringConverter.cs" />
+    <Compile Include="UI\Converters\DifficultyToIndexConverter.cs" />
+    <Compile Include="UI\Converters\DifficultyToIsCheckedConverter.cs" />
+    <Compile Include="UI\Converters\EditModeToIsCheckedConverter.cs" />
+    <Compile Include="UI\Converters\MathOp\NegateConverter.cs" />
+    <Compile Include="UI\Converters\DoubleToStringConverter.cs" />
+    <Compile Include="UI\Converters\PositiveDoubleToStringConverter.cs" />
+    <Compile Include="UI\Converters\PositiveInt32ToStringConverter.cs" />
+    <Compile Include="UI\Controls\Pages\BuildPage.DependencyProperties.cs" />
+    <Compile Include="UI\Controls\Pages\IDirectorPage.cs" />
+    <Compile Include="UI\NoteRelationCollection.cs" />
+    <Compile Include="UI\ScoreBarHitTestEventArgs.cs" />
+    <Compile Include="UI\ScoreBarHitTestInfo.cs" />
+    <Compile Include="UI\Windows\MainWindow.AutoSave.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Background.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.ContextMenu.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Misc.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Edit.Bar.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Edit.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Edit.Mode.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.File.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Edit.Note.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Music.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.Preview.cs" />
+    <Compile Include="UI\Windows\MainWindow.Commands.View.cs" />
+    <Compile Include="UI\Windows\MainWindow.DependencyProperties.cs" />
+    <Compile Include="UI\Windows\MainWindow.EventHandlers.cs" />
+    <Compile Include="UI\Windows\MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <EmbeddedResource Include="app.manifest" />
+    <None Include="docs\user-guide_zh-CN.md" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icons\BarDelete.png" />
+    <Resource Include="Resources\Icons\BarEdit.png" />
+    <Resource Include="Resources\Icons\BarInsert.png" />
+    <Resource Include="Resources\Icons\FileNew.png" />
+    <Resource Include="Resources\Icons\FileOpen.png" />
+    <Resource Include="Resources\Icons\FileSave.png" />
+    <Resource Include="Resources\Icons\FileSaveAs.png" />
+    <Resource Include="Resources\Icons\FileExit.png" />
+    <Resource Include="Resources\Icons\EditMode.png" />
+    <Resource Include="Resources\Icons\NoteDelete.png" />
+    <Resource Include="Resources\Icons\NoteEdit.png" />
+    <Resource Include="Resources\Icons\PreviewStart.png" />
+    <Resource Include="Resources\Icons\BarAppend.png" />
+    <Resource Include="Resources\Icons\NoteInsert.png" />
+    <Resource Include="Resources\Icons\NoteAdd.png" />
+    <Resource Include="Resources\Icons\MusicPlay.png" />
+    <Resource Include="Resources\Icons\MusicSelectWaveFile.png" />
+    <Resource Include="Resources\Icons\MusicStop.png" />
+    <Resource Include="Resources\Icons\ScoreDifficulty.png" />
+    <Resource Include="Resources\Icons\FilePreferences.png" />
+    <Resource Include="Resources\Icons\BarAppendMany.png" />
+    <Resource Include="Resources\Icons\EditSelectAll.png" />
+    <Resource Include="Resources\Icons\ViewZoomIn.png" />
+    <Resource Include="Resources\Icons\ViewZoomOut.png" />
+    <Resource Include="Resources\Icons\EditModeClear.png" />
+    <Resource Include="Resources\Icons\EditModeFlick.png" />
+    <Resource Include="Resources\Icons\EditModeHold.png" />
+    <Resource Include="Resources\Icons\EditModeSelect.png" />
+    <Resource Include="Resources\Icons\EditModeSync.png" />
+    <Resource Include="Resources\Icons\ViewZoomToBeat.png" />
+    <Content Include="Resources\GameData\master.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Resource Include="SD-Icon.ico" />
+    <Resource Include="Resources\Mayu\mayu-01.png" />
+    <Resource Include="Resources\Mayu\mayu-02.png" />
+    <Resource Include="Resources\Mayu\mayu-03.png" />
+    <Resource Include="Resources\Mayu\mayu-04.png" />
+    <Resource Include="Resources\Mayu\mayu-05.png" />
+    <Resource Include="Resources\Mayu\mayu-06.png" />
+    <Resource Include="Resources\Icons\ViewMiscRelationIndicatorVisibility.png" />
+    <Resource Include="Resources\Icons\ViewMiscInvertScrollDirection.png" />
+    <Content Include="Resources\SFX\director\se_live_flic_perfect.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\SFX\director\se_live_tap_perfect.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="x64\sqlite3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="x86\sqlite3.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\StarlightDirector.Core\StarlightDirector.Core.csproj">
+      <Project>{7fb2a631-88c4-4c6b-9e8b-8eeeb40575d0}</Project>
+      <Name>StarlightDirector.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StarlightDirector.Entities\StarlightDirector.Entities.csproj">
+      <Project>{d78a4080-34f4-45ec-a8ef-87f95815e3bd}</Project>
+      <Name>StarlightDirector.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StarlightDirector.Exchange\StarlightDirector.Exchange.csproj">
+      <Project>{3ecdd0bb-215a-4437-b162-fc9d9285303d}</Project>
+      <Name>StarlightDirector.Exchange</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Common.Compression.LZ4\DereTore.Common.Compression.LZ4.csproj">
+      <Project>{bea07a30-c611-4d1c-9632-6cc103722baa}</Project>
+      <Name>DereTore.Common.Compression.LZ4</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Common.Interop\DereTore.Common.Interop.csproj">
+      <Project>{3a0d1281-a503-4e5d-9765-d7bf56f89266}</Project>
+      <Name>DereTore.Common.Interop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.Common\DereTore.Common.csproj">
+      <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
+      <Name>DereTore.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DereTore.StarlightStage\DereTore.StarlightStage.csproj">
+      <Project>{abd7f1b5-c4e3-4200-8e44-98b183dfee2c}</Project>
+      <Name>DereTore.StarlightStage</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\System.Data.SQLite.Core.1.0.104.0\build\net40\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.104.0\build\net40\System.Data.SQLite.Core.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。使用“NuGet 程序包还原”可下载这些程序包。有关更多信息，请参见 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\System.Data.SQLite.Core.1.0.104.0\build\net40\System.Data.SQLite.Core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Data.SQLite.Core.1.0.104.0\build\net40\System.Data.SQLite.Core.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
