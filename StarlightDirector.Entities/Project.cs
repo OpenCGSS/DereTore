@@ -120,7 +120,7 @@ namespace StarlightDirector.Entities {
         public static readonly DependencyProperty VersionProperty = DependencyProperty.Register(nameof(Version), typeof(string), typeof(Project),
             new PropertyMetadata(CurrentVersion));
 
-        public static string CurrentVersion => "0.3";
+        public static string CurrentVersion => ProjectVersion.Current.ToString();
 
         private static void OnDifficultyChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var project = obj as Project;
@@ -147,8 +147,7 @@ namespace StarlightDirector.Entities {
         private void OnSettingsChanged(object sender, EventArgs e) {
             IsChanged = true;
 
-            foreach (var score in Scores.Values)
-            {
+            foreach (var score in Scores.Values) {
                 score.UpdateBarTimings();
             }
 

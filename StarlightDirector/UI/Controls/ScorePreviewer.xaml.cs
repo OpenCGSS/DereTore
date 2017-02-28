@@ -135,8 +135,8 @@ namespace StarlightDirector.UI.Controls {
                     snote.SyncTarget = _notes.FirstOrDefault(note => note.Note.ID == snote.Note.NextSyncTarget.ID);
                 }
 
-                if (snote.Note.HasNextFlick) {
-                    snote.GroupTarget = _notes.FirstOrDefault(note => note.Note.ID == snote.Note.NextFlickNoteID);
+                if (snote.Note.HasNextFlickOrSlide) {
+                    snote.GroupTarget = _notes.FirstOrDefault(note => note.Note.ID == snote.Note.NextFlickOrSlideNoteID);
                 }
             }
 

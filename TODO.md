@@ -27,6 +27,7 @@
     - [x] Quick zooming to the level of seeing 1/8, 1/16, 1/24 note, etc.
   - [x] More efficient rendering (`ScrollViewer`)
     - [x] Score Lens
+  - [x] Slide notes (from CGSS v2.7.0+)
 - [x] Preview
   - [x] <del>Live preview</del> (see Deleste)
   - [ ] Inlined audio spectrum

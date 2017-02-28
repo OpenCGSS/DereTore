@@ -90,16 +90,16 @@ namespace StarlightDirector.UI.Controls {
                         waitingList.Enqueue(note.NextSyncTarget);
                     }
                 }
-                if (note.HasNextFlick) {
-                    if (!relations.ContainsPair(map[note.ID], map[note.NextFlickNote.ID])) {
-                        relations.Add(map[note.ID], map[note.NextFlickNote.ID], NoteRelation.Flick);
-                        waitingList.Enqueue(note.NextFlickNote);
+                if (note.HasNextFlickOrSlide) {
+                    if (!relations.ContainsPair(map[note.ID], map[note.NextFlickOrSlideNote.ID])) {
+                        relations.Add(map[note.ID], map[note.NextFlickOrSlideNote.ID], NoteRelation.FlickOrSlide);
+                        waitingList.Enqueue(note.NextFlickOrSlideNote);
                     }
                 }
-                if (note.HasPrevFlick) {
-                    if (!relations.ContainsPair(map[note.ID], map[note.PrevFlickNote.ID])) {
-                        relations.Add(map[note.ID], map[note.PrevFlickNote.ID], NoteRelation.Flick);
-                        waitingList.Enqueue(note.PrevFlickNote);
+                if (note.HasPrevFlickOrSlide) {
+                    if (!relations.ContainsPair(map[note.ID], map[note.PrevFlickOrSlideNote.ID])) {
+                        relations.Add(map[note.ID], map[note.PrevFlickOrSlideNote.ID], NoteRelation.FlickOrSlide);
+                        waitingList.Enqueue(note.PrevFlickOrSlideNote);
                     }
                 }
                 if (note.IsHoldStart) {

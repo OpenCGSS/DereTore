@@ -120,11 +120,11 @@ namespace StarlightDirector.UI.Controls {
                 if (mode == EditMode.Clear) {
                     ns.Reset();
                     LineLayer.NoteRelations.RemoveAll(start, NoteRelation.Hold);
-                    LineLayer.NoteRelations.RemoveAll(start, NoteRelation.Flick);
+                    LineLayer.NoteRelations.RemoveAll(start, NoteRelation.FlickOrSlide);
                     if (!start.Equals(end)) {
                         ne.Reset();
                         LineLayer.NoteRelations.RemoveAll(end, NoteRelation.Hold);
-                        LineLayer.NoteRelations.RemoveAll(end, NoteRelation.Flick);
+                        LineLayer.NoteRelations.RemoveAll(end, NoteRelation.FlickOrSlide);
                     }
                     LineLayer.InvalidateVisual();
                     Project.IsChanged = true;
@@ -145,12 +145,12 @@ namespace StarlightDirector.UI.Controls {
                     } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart)) {
                         // flick
                         var second = first.Equals(ns) ? ne : ns;
-                        if (first.HasNextFlick || second.HasPrevFlick) {
+                        if (first.HasNextFlickOrSlide || second.HasPrevFlickOrSlide) {
                             MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationIsFullPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             return;
                         }
                         Note.ConnectFlick(first, second);
-                        LineLayer.NoteRelations.Add(start, end, NoteRelation.Flick);
+                        LineLayer.NoteRelations.Add(start, end, NoteRelation.FlickOrSlide);
                         LineLayer.InvalidateVisual();
                     } else if (ns.FinishPosition == ne.FinishPosition && !ns.IsHold && !ne.IsHold && !first.IsFlick) {
                         // hold

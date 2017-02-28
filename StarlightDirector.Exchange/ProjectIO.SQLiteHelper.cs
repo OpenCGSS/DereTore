@@ -184,7 +184,7 @@ FOREIGN KEY ({Names.Column_ID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_I
                     command.ExecuteNonQuery();
                     command.CommandText = $@"CREATE TABLE {Names.Table_Notes} (
 {Names.Column_ID} INTEGER PRIMARY KEY NOT NULL, {Names.Column_Difficulty} INTEGER NOT NULL, {Names.Column_BarIndex} INTEGER NOT NULL, {Names.Column_IndexInGrid} INTEGER NOT NULL,
-{Names.Column_StartPosition} INTEGER NOT NULL, {Names.Column_FinishPosition} INTEGER NOT NULL, {Names.Column_FlickType} INTEGER NOT NULL,
+{Names.Column_NoteType} INTEGER NOT NULL, {Names.Column_StartPosition} INTEGER NOT NULL, {Names.Column_FinishPosition} INTEGER NOT NULL, {Names.Column_FlickType} INTEGER NOT NULL,
 {Names.Column_PrevFlickNoteID} INTEGER NOT NULL, {Names.Column_NextFlickNoteID} NOT NULL, {Names.Column_SyncTargetID} INTEGER NOT NULL, {Names.Column_HoldTargetID} INTEGER NOT NULL,
 FOREIGN KEY ({Names.Column_ID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}), FOREIGN KEY ({Names.Column_PrevFlickNoteID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}),
 FOREIGN KEY ({Names.Column_NextFlickNoteID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}), FOREIGN KEY ({Names.Column_SyncTargetID}) REFERENCES {Names.Table_NoteIDs}({Names.Column_ID}),
@@ -215,13 +215,14 @@ FOREIGN KEY ({Names.Column_HoldTargetID}) REFERENCES {Names.Table_NoteIDs}({Name
                 if (command == null) {
                     command = connection.CreateCommand();
                     command.CommandText = $@"INSERT INTO {Names.Table_Notes} (
-{Names.Column_ID}, {Names.Column_Difficulty}, {Names.Column_BarIndex}, {Names.Column_IndexInGrid}, {Names.Column_StartPosition}, {Names.Column_FinishPosition},
+{Names.Column_ID}, {Names.Column_Difficulty}, {Names.Column_BarIndex}, {Names.Column_IndexInGrid}, {Names.Column_NoteType}, {Names.Column_StartPosition}, {Names.Column_FinishPosition},
 {Names.Column_FlickType}, {Names.Column_PrevFlickNoteID}, {Names.Column_NextFlickNoteID}, {Names.Column_SyncTargetID}, {Names.Column_HoldTargetID}
-) VALUES (@id, @difficulty, @bar, @grid, @start, @finish, @flick, @prev_flick, @next_flick, @sync, @hold);";
+) VALUES (@id, @difficulty, @bar, @grid, @note_type, @start, @finish, @flick, @prev_flick, @next_flick, @sync, @hold);";
                     command.Parameters.Add("id", DbType.Int32);
                     command.Parameters.Add("difficulty", DbType.Int32);
                     command.Parameters.Add("bar", DbType.Int32);
                     command.Parameters.Add("grid", DbType.Int32);
+                    command.Parameters.Add("note_type", DbType.Int32);
                     command.Parameters.Add("start", DbType.Int32);
                     command.Parameters.Add("finish", DbType.Int32);
                     command.Parameters.Add("flick", DbType.Int32);
@@ -234,11 +235,12 @@ FOREIGN KEY ({Names.Column_HoldTargetID}) REFERENCES {Names.Table_NoteIDs}({Name
                 command.Parameters["difficulty"].Value = note.Bar.Score.Difficulty;
                 command.Parameters["bar"].Value = note.Bar.Index;
                 command.Parameters["grid"].Value = note.IndexInGrid;
+                command.Parameters["note_type"].Value = (int)note.Type;
                 command.Parameters["start"].Value = (int)note.StartPosition;
                 command.Parameters["finish"].Value = (int)note.FinishPosition;
                 command.Parameters["flick"].Value = (int)note.FlickType;
-                command.Parameters["prev_flick"].Value = note.PrevFlickNoteID;
-                command.Parameters["next_flick"].Value = note.NextFlickNoteID;
+                command.Parameters["prev_flick"].Value = note.PrevFlickOrSlideNoteID;
+                command.Parameters["next_flick"].Value = note.NextFlickOrSlideNoteID;
                 command.Parameters["sync"].Value = note.SyncTargetID;
                 command.Parameters["hold"].Value = note.HoldTargetID;
                 command.ExecuteNonQuery();
@@ -280,6 +282,7 @@ FOREIGN KEY ({Names.Column_HoldTargetID}) REFERENCES {Names.Table_NoteIDs}({Name
                     command.Parameters.Add("bar", DbType.Int32);
                     command.Parameters.Add("grid", DbType.Int32);
                     command.Parameters.Add("type", DbType.Int32);
+                    // Parameter values
                     command.Parameters.Add("pv", DbType.AnsiString);
                 }
                 command.Parameters["id"].Value = note.ID;

@@ -33,7 +33,7 @@ namespace StarlightDirector.UI.Controls.Primitives {
                     case NoteRelation.Sync:
                         pen = syncPen;
                         break;
-                    case NoteRelation.Flick:
+                    case NoteRelation.FlickOrSlide:
                         pen = flickPen;
                         break;
                     case NoteRelation.Hold:

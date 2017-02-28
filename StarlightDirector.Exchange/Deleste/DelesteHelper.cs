@@ -358,7 +358,7 @@ namespace StarlightDirector.Exchange.Deleste {
                 if (!Note.IsTypeGaming(compiledNote.Type)) {
                     continue;
                 }
-                writer.WriteLine("#{0},{1:000.000000}:{2}:{3}:{4}", compiledNote.FlickGroupID, compiledNote.HitTiming, (int)TranslateNoteType(compiledNote), (int)compiledNote.StartPosition, (int)compiledNote.FinishPosition);
+                writer.WriteLine("#{0},{1:000.000000}:{2}:{3}:{4}", compiledNote.GroupID, compiledNote.HitTiming, (int)TranslateNoteType(compiledNote), (int)compiledNote.StartPosition, (int)compiledNote.FinishPosition);
             }
         }
 

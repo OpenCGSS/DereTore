@@ -5,11 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:StarlightDirector.UI.Controls"
              xmlns:converters="clr-namespace:StarlightDirector.UI.Converters"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d"
              d:DesignHeight="30" d:DesignWidth="30"
              Name="Me"
              SizeChanged="ScoreNote_OnSizeChanged">
     <UserControl.Resources>
+        <sys:Double x:Key="OuterBorderSize">30</sys:Double>
+        <sys:Double x:Key="HoldInnerBorderSize1">22</sys:Double>
+        <sys:Double x:Key="HoldInnerBorderSize2">10</sys:Double>
         <SolidColorBrush x:Key="NoteShapeOutlineFill" Color="White"/>
         <SolidColorBrush x:Key="NormalNoteShapeStroke" Color="#FFFF3366"/>
         <LinearGradientBrush x:Key="NormalNoteShapeFill" StartPoint="0 1" EndPoint="0 0">
@@ -34,31 +38,32 @@
             </LinearGradientBrush.GradientStops>
         </LinearGradientBrush>
         <SolidColorBrush x:Key="FlickNoteShapeFillInner" Color="White"/>
+        <LinearGradientBrush x:Key="SlideNoteFillOuter" StartPoint="0 1" EndPoint="0 0">
+            <LinearGradientBrush.GradientStops>
+                <GradientStop Color="#E1A8FB" Offset="0"/>
+                <GradientStop Color="#A546DA" Offset="1"/>
+            </LinearGradientBrush.GradientStops>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="SlideNoteFillInner" Color="White"/>
     </UserControl.Resources>
-    <Grid>
+    <Canvas>
         <!-- Indicators -->
-        <Grid Margin="-5 -3">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="8"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="8"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="8"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="8"/>
-            </Grid.ColumnDefinitions>
-            <Canvas Grid.Row="0" Grid.Column="2" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreViewerBase}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
+        <Canvas>
+            <Canvas Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreViewerBase}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"
+                    Margin="-5 -3">
                 <Ellipse Width="8" Height="8" Fill="{StaticResource SyncNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSync, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
             </Canvas>
-            <Canvas Grid.Row="0" Grid.Column="0" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreViewerBase}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
+            <Canvas Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreViewerBase}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"
+                    Margin="27 -3">
                 <Ellipse Width="8" Height="8" Fill="{StaticResource FlickNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
+                <Ellipse Width="8" Height="8" Fill="{StaticResource SlideNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsSlide, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
             </Canvas>
-            <Canvas Grid.Row="2" Grid.Column="0" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreViewerBase}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
+            <Canvas Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=controls:ScoreViewerBase}, Path=AreRelationIndicatorsVisible, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"
+                    Margin="-5 27">
                 <Ellipse Width="8" Height="8" Fill="{StaticResource HoldNoteBorderBrush}" Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}"/>
             </Canvas>
-            <TextBlock Grid.Row="2" Grid.Column="2" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=Me, Path=TextStroke, Mode=OneWay}" RenderTransformOrigin="0.5 0.5"
-                           Text="{Binding ElementName=Me, Path=Note.StartPosition, Converter={StaticResource NotePositionToTextConverter}, Mode=OneWay}">
+            <TextBlock Margin="27 25" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{Binding ElementName=Me, Path=TextStroke, Mode=OneWay}"
+                       RenderTransformOrigin="0.5 0.5" Text="{Binding ElementName=Me, Path=Note.StartPosition, Converter={StaticResource NotePositionToTextConverter}, Mode=OneWay}">
                 <TextBlock.Visibility>
                     <MultiBinding Mode="OneWay" Converter="{StaticResource EquityToVisibilityConverter}">
                         <MultiBinding.ConverterParameter>
@@ -75,21 +80,23 @@
                     <ScaleTransform ScaleX="1" ScaleY="-1"/>
                 </TextBlock.RenderTransform>
             </TextBlock>
-        </Grid>
+        </Canvas>
         <!-- Normal note -->
-        <Grid>
-            <Ellipse Fill="{StaticResource NoteShapeOutlineFill}" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5"/>
-            <Ellipse Margin="4" Stroke="{StaticResource NormalNoteShapeStroke}" Fill="{StaticResource NormalNoteShapeFill}"/>
-        </Grid>
+        <Canvas Width="{StaticResource OuterBorderSize}" Height="{StaticResource OuterBorderSize}"
+                Visibility="{Binding ElementName=Me, Path=Note.IsTap, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
+            <Ellipse Width="{StaticResource OuterBorderSize}" Height="{StaticResource OuterBorderSize}" Fill="{StaticResource NoteShapeOutlineFill}" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5"/>
+            <Ellipse Width="{StaticResource HoldInnerBorderSize1}" Height="{StaticResource HoldInnerBorderSize1}" Margin="4" Stroke="{StaticResource NormalNoteShapeStroke}" Fill="{StaticResource NormalNoteShapeFill}"/>
+        </Canvas>
         <!-- Hold note -->
-        <Grid Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
-            <Ellipse Fill="{StaticResource NoteShapeOutlineFill}" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5"/>
-            <Ellipse Margin="4" Stroke="{StaticResource HoldNoteShapeStroke}" Fill="{StaticResource HoldNoteShapeFillOuter}"/>
-            <Ellipse Margin="10" Fill="{StaticResource HoldNoteShapeFillInner}"/>
-        </Grid>
+        <Canvas Width="{StaticResource OuterBorderSize}" Height="{StaticResource OuterBorderSize}"
+                Visibility="{Binding ElementName=Me, Path=Note.IsHold, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
+            <Ellipse Width="{StaticResource OuterBorderSize}" Height="{StaticResource OuterBorderSize}" Fill="{StaticResource NoteShapeOutlineFill}" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5"/>
+            <Ellipse Width="{StaticResource HoldInnerBorderSize1}" Height="{StaticResource HoldInnerBorderSize1}" Margin="4" Stroke="{StaticResource HoldNoteShapeStroke}" Fill="{StaticResource HoldNoteShapeFillOuter}"/>
+            <Ellipse Width="{StaticResource HoldInnerBorderSize2}" Height="{StaticResource HoldInnerBorderSize2}" Margin="10" Fill="{StaticResource HoldNoteShapeFillInner}"/>
+        </Canvas>
         <!-- Flick note -->
-        <Canvas Width="30" Height="30" RenderTransformOrigin="0.5 0.5"
-                Visibility="{Binding ElementName=Me, Path=Note.IsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
+        <Canvas Width="{StaticResource OuterBorderSize}" Height="{StaticResource OuterBorderSize}" RenderTransformOrigin="0.5 0.5"
+                Visibility="{Binding ElementName=Me, Path=Note.ShouldBeRenderedAsFlick, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
             <Path Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5" Data="M 36,15 A 24,24 0 0 0 15,0 A 15,15 0 0 0 15,30 A 24,24 0 0 0 36,15 Z" Fill="{StaticResource NoteShapeOutlineFill}"/>
             <Path Stroke="{StaticResource FlickNoteShapeStroke}" Fill="{StaticResource FlickNoteShapeFillOuter}" Width="26" Height="30" Canvas.Left="5" Data="M 36,15 A 24,24 0 0 0 15,0 A 15,15 0 0 0 15,30 A 24,24 0 0 0 36,15 Z" Stretch="Uniform"/>
             <Path Fill="{StaticResource FlickNoteShapeFillInner}" Width="12" Height="30" Canvas.Left="17" Data="M 36,15 C 24,-2 16,-2 15,15 C 16,32 24,32 36,15 Z" Stretch="Uniform"/>
@@ -97,7 +104,14 @@
                 <ScaleTransform ScaleX="{Binding ElementName=Me, Path=Note.FlickType, Converter={StaticResource NoteFlickTypeToHorizontalMirrorConverter}, Mode=OneWay}" ScaleY="1"/>
             </Canvas.RenderTransform>
         </Canvas>
-    </Grid>
+        <!-- Slide note -->
+        <Canvas Width="{StaticResource OuterBorderSize}" Height="{StaticResource OuterBorderSize}"
+                Visibility="{Binding ElementName=Me, Path=Note.ShouldBeRenderedAsSlide, Converter={StaticResource NullableBooleanToVisibilityConverter}, Mode=OneWay}">
+            <Ellipse Width="{StaticResource OuterBorderSize}" Height="{StaticResource OuterBorderSize}" Stroke="{Binding ElementName=Me, Path=Stroke, Mode=OneWay}" StrokeThickness="1.5" Fill="{StaticResource NoteShapeOutlineFill}"/>
+            <Ellipse Width="{StaticResource HoldInnerBorderSize1}" Height="{StaticResource HoldInnerBorderSize1}" Margin="4" Stroke="{StaticResource SlideNoteFillOuter}" StrokeThickness="6" Fill="{StaticResource SlideNoteFillInner}"/>
+            <Rectangle Width="24" Height="4" Margin="3 13" Fill="{StaticResource SlideNoteFillInner}"/>
+        </Canvas>
+    </Canvas>
 </UserControl>
 
 

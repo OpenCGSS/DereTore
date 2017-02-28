@@ -14,7 +14,7 @@ using StarlightDirector.Entities;
 namespace StarlightDirector.Exchange {
     partial class ProjectIO {
 
-        internal static ProjectVersion CheckProjectFileVersion(string fileName) {
+        internal static int CheckProjectFileVersion(string fileName) {
             try {
                 using (var fileStream = File.Open(fileName, FileMode.Open, FileAccess.Read)) {
                     var buffer = new byte[128];
@@ -75,6 +75,8 @@ namespace StarlightDirector.Exchange {
                     return ProjectVersion.V0_2;
                 } else if (v.Equals(0.3)) {
                     return ProjectVersion.V0_3;
+                } else if (v.Equals(ProjectVersion.V0_3_1)) {
+                    return ProjectVersion.V0_3_1;
                 } else {
                     return ProjectVersion.Unknown;
                 }

@@ -108,11 +108,11 @@ namespace StarlightDirector.Entities {
                 if (!note.IsGamingNote) {
                     continue;
                 }
-                if (note.NextFlickNoteID != EntityID.Invalid) {
-                    note.NextFlickNote = FindNoteByID(note.NextFlickNoteID);
+                if (note.NextFlickOrSlideNoteID != EntityID.Invalid) {
+                    note.NextFlickOrSlideNote = FindNoteByID(note.NextFlickOrSlideNoteID);
                 }
-                if (note.PrevFlickNoteID != EntityID.Invalid) {
-                    note.PrevFlickNote = FindNoteByID(note.PrevFlickNoteID);
+                if (note.PrevFlickOrSlideNoteID != EntityID.Invalid) {
+                    note.PrevFlickOrSlideNote = FindNoteByID(note.PrevFlickOrSlideNoteID);
                 }
                 if (note.HoldTargetID != EntityID.Invalid) {
                     note.HoldTarget = FindNoteByID(note.HoldTargetID);
@@ -146,10 +146,8 @@ namespace StarlightDirector.Entities {
             return Bars.SelectMany(bar => bar.Notes).FirstOrDefault(note => note.ID == noteID);
         }
 
-        internal void UpdateBarTimings()
-        {
-            foreach (var bar in Bars)
-            {
+        internal void UpdateBarTimings() {
+            foreach (var bar in Bars) {
                 bar.UpdateTimings();
             }
         }

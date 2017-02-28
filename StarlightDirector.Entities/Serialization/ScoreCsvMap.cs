@@ -14,7 +14,7 @@ namespace StarlightDirector.Entities.Serialization {
             Map(m => m.FinishPosition).Name("finishPos").TypeConverter<StringToIntConverter>();
             Map(m => m.FlickType).Name("status").TypeConverter<StringToIntConverter>();
             Map(m => m.IsSync).Name("sync").TypeConverter<IntToBoolConverter>();
-            Map(m => m.FlickGroupID).Name("groupId");
+            Map(m => m.GroupID).Name("groupId");
         }
 
         private sealed class IntToBoolConverter : ITypeConverter {

@@ -20,5 +20,6 @@
     <SolidColorBrush x:Key="SyncNoteBorderBrush" Color="DodgerBlue"/>
     <SolidColorBrush x:Key="FlickNoteBorderBrush" Color="Green"/>
     <SolidColorBrush x:Key="HoldNoteBorderBrush" Color="Gold"/>
+    <SolidColorBrush x:Key="SlideNoteBorderBrush" Color="Orchid"/>
     <SolidColorBrush x:Key="RelationBorderBrush" Color="#FFFFFFFF"/>
 </ResourceDictionary>

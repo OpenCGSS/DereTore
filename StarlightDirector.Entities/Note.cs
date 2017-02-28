@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.Windows;
 using DereTore;
 using Newtonsoft.Json;
@@ -30,7 +32,7 @@ namespace StarlightDirector.Entities {
 
         public NoteType Type {
             get { return (NoteType)GetValue(TypeProperty); }
-            private set { SetValue(TypeProperty, value); }
+            internal set { SetValue(TypeProperty, value); }
         }
 
         [JsonProperty]
@@ -65,75 +67,35 @@ namespace StarlightDirector.Entities {
             private set { SetValue(IsFlickProperty, value); }
         }
 
-        [JsonProperty]
-        public int PrevFlickNoteID { get; internal set; }
+        [JsonProperty("prevFlickNoteID")]
+        public int PrevFlickOrSlideNoteID { get; internal set; }
 
-        public Note PrevFlickNote {
-            get {
-                return _prevFlickNote;
-            }
+        public Note PrevFlickOrSlideNote {
+            get { return _prevFlickOrSlideNote; }
             set {
-                Note n1 = PrevFlickNote, n2 = NextFlickNote;
-                if (n1 == null && n2 == null && value != null) {
-                    FlickType = FinishPosition >= NotePosition.Center ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
-                }
-                _prevFlickNote = value;
-                n1 = PrevFlickNote;
-                n2 = NextFlickNote;
-                if (n1 == null && n2 == null) {
-                    if (!IsHoldStart) {
-                        FlickType = NoteFlickType.Tap;
-                    }
-                } else {
-                    // Currently there isn't an example of quick 'Z' turn appeared in CGSS (as shown below),
-                    // so the following completion method is good enough.
-                    //     -->
-                    //      ^
-                    //       \
-                    //      -->
-                    if (n2 != null) {
-                        FlickType = n2.FinishPosition > FinishPosition ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
-                    } else {
-                        FlickType = n1.FinishPosition > FinishPosition ? NoteFlickType.FlickLeft : NoteFlickType.FlickRight;
-                    }
-                }
-                PrevFlickNoteID = value?.ID ?? EntityID.Invalid;
+                UpdateFlickTypeStep1(value);
+                _prevFlickOrSlideNote = value;
+                UpdateFlickTypeStep2();
+                PrevFlickOrSlideNoteID = value?.ID ?? EntityID.Invalid;
             }
         }
 
-        public bool HasPrevFlick => Type == NoteType.TapOrFlick && PrevFlickNote != null;
+        public bool HasPrevFlickOrSlide => (Type == NoteType.TapOrFlick || Type == NoteType.Slide) && PrevFlickOrSlideNote != null;
 
-        [JsonProperty]
-        public int NextFlickNoteID { get; internal set; }
+        [JsonProperty("nextFlickNoteID")]
+        public int NextFlickOrSlideNoteID { get; internal set; }
 
-        public Note NextFlickNote {
-            get {
-                return _nextFlickNote;
-            }
+        public Note NextFlickOrSlideNote {
+            get { return _nextFlickOrSlideNote; }
             set {
-                Note n1 = PrevFlickNote, n2 = NextFlickNote;
-                if (n1 == null && n2 == null && value != null) {
-                    FlickType = FinishPosition >= NotePosition.Center ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
-                }
-                _nextFlickNote = value;
-                n1 = PrevFlickNote;
-                n2 = NextFlickNote;
-                if (n1 == null && n2 == null) {
-                    if (!IsHoldStart) {
-                        FlickType = NoteFlickType.Tap;
-                    }
-                } else {
-                    if (n2 != null) {
-                        FlickType = n2.FinishPosition > FinishPosition ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
-                    } else {
-                        FlickType = n1.FinishPosition > FinishPosition ? NoteFlickType.FlickLeft : NoteFlickType.FlickRight;
-                    }
-                }
-                NextFlickNoteID = value?.ID ?? EntityID.Invalid;
+                UpdateFlickTypeStep1(value);
+                _nextFlickOrSlideNote = value;
+                UpdateFlickTypeStep2();
+                NextFlickOrSlideNoteID = value?.ID ?? EntityID.Invalid;
             }
         }
 
-        public bool HasNextFlick => Type == NoteType.TapOrFlick && NextFlickNote != null;
+        public bool HasNextFlickOrSlide => (Type == NoteType.TapOrFlick || Type == NoteType.Slide) && NextFlickOrSlideNote != null;
 
         [Obsolete("This property is provided for forward compatibility only.")]
         [JsonProperty]
@@ -146,38 +108,31 @@ namespace StarlightDirector.Entities {
                         return EntityID.Invalid;
                     }
                     var final = PrevSyncTarget;
-                    for (; final.HasPrevSync; final = final.PrevSyncTarget)
-                        ;
+                    while (final.HasPrevSync) {
+                        final = final.PrevSyncTarget;
+                    }
                     return final.ID;
                 } else {
                     if (!HasNextSync) {
                         return EntityID.Invalid;
                     }
                     var final = NextSyncTarget;
-                    for (; final.HasNextSync; final = final.NextSyncTarget)
-                        ;
+                    while (final.HasNextSync) {
+                        final = final.NextSyncTarget;
+                    }
                     return final.ID;
                 }
             }
-            internal set { }
         }
 
         public Note PrevSyncTarget {
-            get {
-                return _prevSyncTarget;
-            }
-            internal set {
-                SetPrevSyncTargetInternal(value);
-            }
+            get { return _prevSyncTarget; }
+            internal set { SetPrevSyncTargetInternal(value); }
         }
 
         public Note NextSyncTarget {
-            get {
-                return _nextSyncTarget;
-            }
-            internal set {
-                SetNextSyncTargetInternal(value);
-            }
+            get { return _nextSyncTarget; }
+            internal set { SetNextSyncTargetInternal(value); }
         }
 
         public bool HasPrevSync => PrevSyncTarget != null;
@@ -197,9 +152,7 @@ namespace StarlightDirector.Entities {
         public int HoldTargetID { get; internal set; }
 
         public Note HoldTarget {
-            get {
-                return _holdTarget;
-            }
+            get { return _holdTarget; }
             set {
                 var origHoldTarget = _holdTarget;
                 _holdTarget = value;
@@ -213,7 +166,21 @@ namespace StarlightDirector.Entities {
             }
         }
 
-        public bool IsTap => Type == NoteType.TapOrFlick && FlickType == NoteFlickType.Tap;
+        public bool IsSlide {
+            get { return (bool)GetValue(IsSlideProperty); }
+            private set { SetValue(IsSlideProperty, value); }
+        }
+
+        public bool IsSlideStart => Type == NoteType.Slide && !HasPrevFlickOrSlide && HasNextFlickOrSlide;
+
+        public bool IsSlideContinuation => Type == NoteType.Slide && HasPrevFlickOrSlide && HasNextFlickOrSlide;
+
+        public bool IsSlideEnd => Type == NoteType.Slide && !HasNextFlickOrSlide && HasPrevFlickOrSlide;
+
+        public bool IsTap {
+            get { return (bool)GetValue(IsTapProperty); }
+            private set { SetValue(IsTapProperty, value); }
+        }
 
         public bool IsGamingNote => IsTypeGaming(Type);
 
@@ -222,6 +189,16 @@ namespace StarlightDirector.Entities {
         public NoteExtraParams ExtraParams {
             get { return (NoteExtraParams)GetValue(ExtraParamsProperty); }
             set { SetValue(ExtraParamsProperty, value); }
+        }
+
+        public bool ShouldBeRenderedAsFlick {
+            get { return (bool)GetValue(ShouldBeRenderedAsFlickProperty); }
+            private set { SetValue(ShouldBeRenderedAsFlickProperty, value); }
+        }
+
+        public bool ShouldBeRenderedAsSlide {
+            get { return (bool)GetValue(ShouldBeRenderedAsSlideProperty); }
+            private set { SetValue(ShouldBeRenderedAsSlideProperty, value); }
         }
 
         public static readonly DependencyProperty TypeProperty = DependencyProperty.Register(nameof(Type), typeof(NoteType), typeof(Note),
@@ -239,6 +216,12 @@ namespace StarlightDirector.Entities {
         public static readonly DependencyProperty IsHoldProperty = DependencyProperty.Register(nameof(IsHold), typeof(bool), typeof(Note),
             new PropertyMetadata(false));
 
+        public static readonly DependencyProperty IsSlideProperty = DependencyProperty.Register(nameof(IsSlide), typeof(bool), typeof(Note),
+            new PropertyMetadata(false));
+
+        public static readonly DependencyProperty IsTapProperty = DependencyProperty.Register(nameof(IsTap), typeof(bool), typeof(Note),
+            new PropertyMetadata(true));
+
         public static readonly DependencyProperty StartPositionProperty = DependencyProperty.Register(nameof(StartPosition), typeof(NotePosition), typeof(Note),
             new PropertyMetadata(NotePosition.Nowhere));
 
@@ -247,6 +230,12 @@ namespace StarlightDirector.Entities {
 
         public static readonly DependencyProperty ExtraParamsProperty = DependencyProperty.Register(nameof(ExtraParams), typeof(NoteExtraParams), typeof(Note),
             new PropertyMetadata(null, OnExtraParamsChanged));
+
+        public static readonly DependencyProperty ShouldBeRenderedAsFlickProperty = DependencyProperty.Register(nameof(ShouldBeRenderedAsFlick), typeof(bool), typeof(Note),
+            new PropertyMetadata(false));
+
+        public static readonly DependencyProperty ShouldBeRenderedAsSlideProperty = DependencyProperty.Register(nameof(ShouldBeRenderedAsSlide), typeof(bool), typeof(Note),
+            new PropertyMetadata(false));
 
         public static readonly Comparison<Note> TimingThenPositionComparison = (x, y) => {
             var r = TimingComparison(x, y);
@@ -279,11 +268,7 @@ namespace StarlightDirector.Entities {
             if (other == null) {
                 throw new ArgumentNullException(nameof(other));
             }
-            if (Equals(other)) {
-                return 0;
-            } else {
-                return TimingComparison(this, other);
-            }
+            return Equals(other) ? 0 : TimingComparison(this, other);
         }
 
         public static readonly Comparison<Note> TrackPositionComparison = (n1, n2) => ((int)n1.FinishPosition).CompareTo((int)n2.FinishPosition);
@@ -297,7 +282,7 @@ namespace StarlightDirector.Entities {
         }
 
         public static bool IsTypeGaming(NoteType type) {
-            return type == NoteType.TapOrFlick || type == NoteType.Hold;
+            return type == NoteType.TapOrFlick || type == NoteType.Hold || type == NoteType.Slide;
         }
 
         public static bool IsTypeSpecial(NoteType type) {
@@ -373,10 +358,10 @@ namespace StarlightDirector.Entities {
 
         public static void ConnectFlick(Note first, Note second) {
             if (first != null) {
-                first.NextFlickNote = second;
+                first.NextFlickOrSlideNote = second;
             }
             if (second != null) {
-                second.PrevFlickNote = first;
+                second.PrevFlickOrSlideNote = first;
             }
         }
 
@@ -387,44 +372,6 @@ namespace StarlightDirector.Entities {
             if (n2 != null) {
                 n2.HoldTarget = n1;
             }
-        }
-
-        internal bool TryGetFlickGroupID(out FlickGroupModificationResult modificationResult, out int knownGroupID, out Note groupStart) {
-            if (!IsFlick || (IsHoldEnd && !HasNextFlick)) {
-                knownGroupID = EntityID.Invalid;
-                modificationResult = FlickGroupModificationResult.Declined;
-                groupStart = null;
-                return false;
-            }
-            var groupItemCount = 0;
-            var temp = this;
-            // Compiler trick.
-            groupStart = temp;
-            while (temp != null) {
-                groupStart = temp;
-                temp = temp.PrevFlickNote;
-                ++groupItemCount;
-            }
-            temp = this;
-            ++groupItemCount;
-            while (temp.HasNextFlick) {
-                temp = temp.NextFlickNote;
-                ++groupItemCount;
-            }
-            if (groupItemCount < 2) {
-                // Actually, the flick group is not fully filled. We should throw an exception.
-                knownGroupID = EntityID.Invalid;
-                modificationResult = FlickGroupModificationResult.Declined;
-                return false;
-            }
-            if (groupStart.GroupID != EntityID.Invalid) {
-                knownGroupID = groupStart.GroupID;
-                modificationResult = FlickGroupModificationResult.Reused;
-            } else {
-                knownGroupID = EntityID.Invalid;
-                modificationResult = FlickGroupModificationResult.CreationPending;
-            }
-            return true;
         }
 
         internal int GroupID { get; set; }
@@ -441,18 +388,18 @@ namespace StarlightDirector.Entities {
         }
 
         internal void Reset() {
-            if (NextFlickNote != null) {
-                NextFlickNote.PrevFlickNote = null;
+            if (NextFlickOrSlideNote != null) {
+                NextFlickOrSlideNote.PrevFlickOrSlideNote = null;
             }
-            NextFlickNote = null;
-            if (PrevFlickNote != null) {
-                PrevFlickNote.NextFlickNote = null;
+            NextFlickOrSlideNote = null;
+            if (PrevFlickOrSlideNote != null) {
+                PrevFlickOrSlideNote.NextFlickOrSlideNote = null;
             }
-            PrevFlickNote = null;
+            PrevFlickOrSlideNote = null;
             if (HoldTarget != null) {
                 HoldTarget.HoldTarget = null;
                 if (HoldTarget != null) {
-                    if (!HoldTarget.HasNextFlick && !HoldTarget.HasPrevFlick && HoldTarget.FlickType != NoteFlickType.Tap) {
+                    if (!HoldTarget.HasNextFlickOrSlide && !HoldTarget.HasPrevFlickOrSlide && HoldTarget.FlickType != NoteFlickType.Tap) {
                         HoldTarget.FlickType = NoteFlickType.Tap;
                     }
                 }
@@ -479,11 +426,16 @@ namespace StarlightDirector.Entities {
         private static void OnTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = (Note)obj;
             note.IsFlick = note.IsFlickInternal();
+            note.IsTap = note.IsTapInternal();
+            note.IsSlide = note.IsSlideInternal();
+            note.UpdateFlickTypeStep2();
         }
 
         private static void OnFlickTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var note = (Note)obj;
             note.IsFlick = note.IsFlickInternal();
+            note.IsTap = note.IsTapInternal();
+            note.IsSlide = note.IsSlideInternal();
         }
 
         private static void OnExtraParamsChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
@@ -498,9 +450,61 @@ namespace StarlightDirector.Entities {
             }
         }
 
-        private bool IsFlickInternal() {
-            return Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
+        private void UpdateFlickTypeStep1(Note value) {
+            var n1 = PrevFlickOrSlideNote;
+            var n2 = NextFlickOrSlideNote;
+            if (IsSlide) {
+                FlickType = NoteFlickType.Tap;
+            } else {
+                if (n1 == null && n2 == null && value != null) {
+                    FlickType = FinishPosition >= NotePosition.Center ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
+                }
+            }
         }
+
+        private void UpdateFlickTypeStep2() {
+            var n1 = PrevFlickOrSlideNote;
+            var n2 = NextFlickOrSlideNote;
+            if (n1 == null && n2 == null) {
+                if (!IsHoldStart) {
+                    FlickType = NoteFlickType.Tap;
+                }
+            } else {
+                // Currently there isn't an example of quick 'Z' turn appeared in CGSS (as shown below),
+                // so the following completion method is good enough.
+                //     -->
+                //      ^
+                //       \
+                //      -->
+                //Debug.Print(HitTiming.ToString(CultureInfo.InvariantCulture));
+                if (IsSlide && (n2 == null || !n2.IsFlick)) {
+                    FlickType = NoteFlickType.Tap;
+                } else {
+                    if (n2 != null) {
+                        FlickType = n2.FinishPosition > FinishPosition ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
+                    } else {
+                        FlickType = n1.FinishPosition > FinishPosition ? NoteFlickType.FlickLeft : NoteFlickType.FlickRight;
+                    }
+                }
+            }
+
+            if (IsFlick || IsSlide) {
+                if (IsSlide) {
+                    ShouldBeRenderedAsSlide = HasNextFlickOrSlide && !NextFlickOrSlideNote.IsFlick;
+                } else {
+                    ShouldBeRenderedAsSlide = false;
+                }
+                ShouldBeRenderedAsFlick = !ShouldBeRenderedAsSlide;
+            } else {
+                ShouldBeRenderedAsFlick = ShouldBeRenderedAsSlide = false;
+            }
+        }
+
+        private bool IsFlickInternal() => Type == NoteType.TapOrFlick && (FlickType == NoteFlickType.FlickLeft || FlickType == NoteFlickType.FlickRight);
+
+        private bool IsTapInternal() => Type == NoteType.TapOrFlick && FlickType == NoteFlickType.Tap;
+
+        private bool IsSlideInternal() => Type == NoteType.Slide;
 
         private void ExtraParams_ParamsChanged(object sender, EventArgs e) {
             // if we a BPM note is changed, inform the Bar to update its timings
@@ -518,8 +522,8 @@ namespace StarlightDirector.Entities {
             IsSync = _prevSyncTarget != null || _nextSyncTarget != null;
         }
 
-        private Note _prevFlickNote;
-        private Note _nextFlickNote;
+        private Note _prevFlickOrSlideNote;
+        private Note _nextFlickOrSlideNote;
         private Note _prevSyncTarget;
         private Note _nextSyncTarget;
         private Note _holdTarget;

@@ -19,7 +19,7 @@ namespace StarlightDirector.Entities {
 
         public bool IsSync { get; set; }
 
-        public int FlickGroupID { get; set; }
+        public int GroupID { get; set; }
 
         internal static readonly Comparison<CompiledNote> IDComparison = (n1, n2) => n1.ID.CompareTo(n2.ID);
         internal static readonly Comparison<CompiledNote> TimingComparison = (n1, n2) => n1.HitTiming.CompareTo(n2.HitTiming);

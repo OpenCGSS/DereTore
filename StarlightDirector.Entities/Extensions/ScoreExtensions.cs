@@ -30,8 +30,7 @@ namespace StarlightDirector.Entities.Extensions {
 
             // The normal gaming notes.
             var noteId = 3;
-            foreach (var compiledNote in compiledNotes)
-            {
+            foreach (var compiledNote in compiledNotes) {
                 compiledNote.ID = noteId++;
             }
 
@@ -49,11 +48,17 @@ namespace StarlightDirector.Entities.Extensions {
             compiledNotes.Insert(0, scoreInfoNote);
             compiledNotes.Insert(1, songStartNote);
 
-            var lastBar = score.Bars.Last();
+            double endTiming;
+            if (score.Bars.Count > 0) {
+                var lastBar = score.Bars.Last();
+                endTiming = lastBar.StartTime + lastBar.TimeLength;
+            } else {
+                endTiming = 0;
+            }
             var songEndNote = new CompiledNote {
                 ID = noteId,
                 Type = NoteType.MusicEnd,
-                HitTiming = lastBar.StartTime + lastBar.TimeLength
+                HitTiming = endTiming
             };
             compiledNotes.Add(songEndNote);
         }
@@ -68,22 +73,22 @@ namespace StarlightDirector.Entities.Extensions {
 
         private static void CalculateGroupID(Note note, CompiledNote compiledNote) {
             if (note.GroupID != EntityID.Invalid) {
-                compiledNote.FlickGroupID = note.GroupID;
+                compiledNote.GroupID = note.GroupID;
             } else {
                 int groupID;
                 FlickGroupModificationResult result;
                 Note groupStart;
                 if (!note.TryGetFlickGroupID(out result, out groupID, out groupStart)) {
-                    // No need to set a group ID. E.g. the note is not a flick note.
+                    // No need to set a group ID. E.g. the note is not a flick / slide note.
                     return;
                 }
                 switch (result) {
                     case FlickGroupModificationResult.Reused:
-                        note.GroupID = compiledNote.FlickGroupID = groupID;
+                        note.GroupID = compiledNote.GroupID = groupID;
                         break;
                     case FlickGroupModificationResult.CreationPending:
                         groupID = FlickGroupIDGenerator.Next();
-                        groupStart.GroupID = note.GroupID = compiledNote.FlickGroupID = groupID;
+                        groupStart.GroupID = note.GroupID = compiledNote.GroupID = groupID;
                         break;
                 }
             }

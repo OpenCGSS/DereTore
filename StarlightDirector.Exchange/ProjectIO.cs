@@ -30,7 +30,7 @@ namespace StarlightDirector.Exchange {
             return Load(fileName, version);
         }
 
-        internal static Project Load(string fileName, ProjectVersion versionOverride) {
+        internal static Project Load(string fileName, int versionOverride) {
             Project project = null;
             switch (versionOverride) {
                 case ProjectVersion.Unknown:
@@ -41,10 +41,16 @@ namespace StarlightDirector.Exchange {
                 case ProjectVersion.V0_2:
                     project = LoadFromV02(fileName);
                     break;
+                case ProjectVersion.V0_3:
+                    // Note (2017-Feb-28):
+                    // Slide note is added to CGSS a month before. SLDPROJ format v0.3.1 uses the "prev_flick" and "next_flick" fields to
+                    // store slide notes relation info, because slide and flick notes have similar behaviors and they can be distinguished
+                    // by the "type" field. So v0.3.1 is a super set of v0.3. The exceptions are handled in ReadScore() (see below).
+                    break;
             }
 
             if (project == null)
-                project = LoadCurrentVersion(fileName);
+                project = LoadFromV03x(fileName);
 
             // Update bar timings, sort notes
             foreach (var difficulty in Difficulties) {
@@ -145,7 +151,7 @@ namespace StarlightDirector.Exchange {
             }
         }
 
-        private static Project LoadCurrentVersion(string fileName) {
+        private static Project LoadFromV03x(string fileName) {
             var fileInfo = new FileInfo(fileName);
             if (!fileInfo.Exists) {
                 throw new FileNotFoundException(string.Empty, fileName);
@@ -164,12 +170,23 @@ namespace StarlightDirector.Exchange {
                 // Main
                 var mainValues = SQLiteHelper.GetValues(connection, Names.Table_Main, ref getValues);
                 project.MusicFileName = mainValues[Names.Field_MusicFileName];
-                project.Version = mainValues[Names.Field_Version];
+                var projectVersionString = mainValues[Names.Field_Version];
+                float fProjectVersion;
+                float.TryParse(projectVersionString, out fProjectVersion);
+                if (fProjectVersion <= 0) {
+                    Debug.Print("WARNING: incorrect project version: {0}", projectVersionString);
+                    fProjectVersion = ProjectVersion.Current;
+                }
+                if (fProjectVersion < 1) {
+                    fProjectVersion *= 1000;
+                }
+                var projectVersion = (int)fProjectVersion;
+                // Keep project.Version property having the newest project version.
 
                 // Scores
                 foreach (var difficulty in Difficulties) {
                     var score = new Score(project, difficulty);
-                    ReadScore(connection, score);
+                    ReadScore(connection, score, projectVersion);
                     score.ResolveReferences(project);
                     score.FixSyncNotes();
                     score.Difficulty = difficulty;
@@ -258,9 +275,12 @@ namespace StarlightDirector.Exchange {
             }
         }
 
-        private static void ReadScore(SQLiteConnection connection, Score score) {
+        private static void ReadScore(SQLiteConnection connection, Score score, int projectVersion) {
             using (var table = new DataTable()) {
                 SQLiteHelper.ReadNotesTable(connection, score.Difficulty, table);
+                // v0.3.1: "note_type"
+                // Only flick existed when there is a flick-alike relation. Now, both flick and slide are possible.
+                var hasNoteTypeColumn = projectVersion >= ProjectVersion.V0_3_1;
                 foreach (DataRow row in table.Rows) {
                     var id = (int)(long)row[Names.Column_ID];
                     var barIndex = (int)(long)row[Names.Column_BarIndex];
@@ -271,6 +291,7 @@ namespace StarlightDirector.Exchange {
                     var prevFlick = (int)(long)row[Names.Column_PrevFlickNoteID];
                     var nextFlick = (int)(long)row[Names.Column_NextFlickNoteID];
                     var hold = (int)(long)row[Names.Column_HoldTargetID];
+                    var noteType = hasNoteTypeColumn ? (NoteType)(long)row[Names.Column_NoteType] : NoteType.TapOrFlick;
 
                     EnsureBarIndex(score, barIndex);
                     var bar = score.Bars[barIndex];
@@ -279,12 +300,13 @@ namespace StarlightDirector.Exchange {
                         note.IndexInGrid = grid;
                         note.StartPosition = start;
                         note.FinishPosition = finish;
+                        note.Type = noteType;
                         note.FlickType = flick;
-                        note.PrevFlickNoteID = prevFlick;
-                        note.NextFlickNoteID = nextFlick;
+                        note.PrevFlickOrSlideNoteID = prevFlick;
+                        note.NextFlickOrSlideNoteID = nextFlick;
                         note.HoldTargetID = hold;
                     } else {
-                        Debug.Print("Note with id {0} already exists.", id);
+                        Debug.Print("Note with ID '{0}' already exists.", id);
                     }
                 }
             }

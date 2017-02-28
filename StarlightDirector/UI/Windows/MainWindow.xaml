@@ -110,6 +110,10 @@
                         <fluent:MenuItem Header="Right (5)" Command="{x:Static local:MainWindow.CmdEditNoteStartPosition5}"/>
                     </fluent:DropDownButton>
                     <fluent:Button Header="Delete" Command="{x:Static local:MainWindow.CmdEditNoteDelete}" Size="Middle" Icon="{StaticResource RibbonIconNoteDelete}"/>
+                    <fluent:DropDownButton Header="Slide Type" Size="Middle">
+                        <fluent:MenuItem Header="Set to Flick" Command="{x:Static local:MainWindow.CmdEditNoteSetSlideTypeToFlick}"/>
+                        <fluent:MenuItem Header="Set to Slide" Command="{x:Static local:MainWindow.CmdEditNoteSetSlideTypeToSlide}"/>
+                    </fluent:DropDownButton>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Music">
                     <fluent:Button Header="Select File" Command="{x:Static local:MainWindow.CmdMusicSelectWaveFile}" LargeIcon="{StaticResource RibbonIconMusicSelectWaveFile}"/>
@@ -229,7 +233,8 @@
                     </controls:ScoreEditor>
                 </Grid>
             </ScrollViewer>
-            <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer}" Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
+            <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer, Mode=OneTime}"
+                                              Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
         </Grid>
         <Grid Grid.Row="2" Background="#FF181818" Visibility="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}}">
             <controls:ScorePreviewer x:Name="ScorePreviewer"></controls:ScorePreviewer>

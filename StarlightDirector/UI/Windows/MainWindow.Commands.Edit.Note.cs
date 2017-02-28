@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
 using StarlightDirector.Entities;
 using StarlightDirector.UI.Controls.Primitives;
@@ -14,6 +15,8 @@ namespace StarlightDirector.UI.Windows {
         public static readonly ICommand CmdEditNoteStartPosition4 = CommandHelper.RegisterCommand("Ctrl+4");
         public static readonly ICommand CmdEditNoteStartPosition5 = CommandHelper.RegisterCommand("Ctrl+5");
         public static readonly ICommand CmdEditNoteDelete = CommandHelper.RegisterCommand("Delete");
+        public static readonly ICommand CmdEditNoteSetSlideTypeToFlick = CommandHelper.RegisterCommand();
+        public static readonly ICommand CmdEditNoteSetSlideTypeToSlide = CommandHelper.RegisterCommand();
 
         private void CmdEditNoteAdd_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.HasSingleSelectedScoreBar && false;
@@ -101,6 +104,42 @@ namespace StarlightDirector.UI.Windows {
                     note.StartPosition = startPosition;
                 }
             }
+        }
+
+        private void CmdEditNoteSetSlideTypeToFlick_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            var notes = Editor.GetSelectedScoreNotes();
+            // The problem is that, in Note.UpdateFlickTypeStep2(), if we check n2.IsFlick from the first to the end in temporal
+            // order, we will always get 'true'. Therefore we must calculate IsFlick in reversed temporal order.
+            var scoreNotes = notes as ScoreNote[] ?? notes.ToArray();
+            e.CanExecute = scoreNotes.Any() && scoreNotes.All(t => t.Note.IsFlick || t.Note.IsSlide);
+        }
+
+        private void CmdEditNoteSetSlideTypeToFlick_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var notes = Editor.GetSelectedScoreNotes();
+            var scoreNotes = notes as List<ScoreNote> ?? notes.ToList();
+            scoreNotes.Sort((c1, c2) => Note.TimingThenPositionComparison(c1.Note, c2.Note));
+            scoreNotes.Reverse();
+            foreach (var scoreNote in scoreNotes) {
+                scoreNote.Note.Type = NoteType.TapOrFlick;
+            }
+            NotifyProjectChanged();
+        }
+
+        private void CmdEditNoteSetSlideTypeToSlide_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
+            var notes = Editor.GetSelectedScoreNotes();
+            var scoreNotes = notes as ScoreNote[] ?? notes.Reverse().ToArray();
+            e.CanExecute = scoreNotes.Any() && scoreNotes.All(t => (t.Note.IsFlick && !t.Note.IsHoldEnd) || t.Note.IsSlide);
+        }
+
+        private void CmdEditNoteSetSlideTypeToSlide_Executed(object sender, ExecutedRoutedEventArgs e) {
+            var notes = Editor.GetSelectedScoreNotes();
+            var scoreNotes = notes as List<ScoreNote> ?? notes.ToList();
+            scoreNotes.Sort((c1, c2) => Note.TimingThenPositionComparison(c1.Note, c2.Note));
+            scoreNotes.Reverse();
+            foreach (var scoreNote in scoreNotes) {
+                scoreNote.Note.Type = NoteType.Slide;
+            }
+            NotifyProjectChanged();
         }
 
     }
