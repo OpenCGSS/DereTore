@@ -9,7 +9,7 @@ using StarlightDirector.Extensions;
 using StarlightDirector.UI.Controls.Models;
 
 namespace StarlightDirector.UI.Controls {
-    public class PreviewCanvas : Canvas {
+    internal sealed class PreviewCanvas : Canvas {
 
         // constants
         private const double NoteMarginTop = 20;
@@ -40,9 +40,9 @@ namespace StarlightDirector.UI.Controls {
         private readonly EventWaitHandle _renderCompleteHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
 
         public double HitEffectMilliseconds { get; set; }
-        public bool[] ShallPlaySoundEffect { get; } = {false, false};
+        public bool[] ShallPlaySoundEffect { get; } = { false, false };
 
-        public void Initialize(List<DrawingNote> notes, List<DrawingBar> bars,  double approachTime) {
+        public void Initialize(List<DrawingNote> notes, List<DrawingBar> bars, double approachTime) {
             _notes = notes;
             _bars = bars;
             _approachTime = approachTime;
@@ -99,12 +99,9 @@ namespace StarlightDirector.UI.Controls {
 
         private void NoteHit(DrawingNote note, int songTime) {
             _hitEffectStartTime[note.HitPosition] = songTime;
-            if (note.DrawType == 1 || note.DrawType == 2)
-            {
+            if (note.DrawType == NoteDrawType.FlickLeft || note.DrawType == NoteDrawType.FlickRight) {
                 ShallPlaySoundEffect[1] = true;
-            }
-            else
-            {
+            } else {
                 ShallPlaySoundEffect[0] = true;
             }
         }
@@ -136,7 +133,15 @@ namespace StarlightDirector.UI.Controls {
         private static readonly LinearGradientBrush FlickNoteShapeFillOuter =
             new LinearGradientBrush(Color.FromRgb(0x22, 0x55, 0xBB), Color.FromRgb(0x88, 0xBB, 0xFF), 90.0);
 
+        private static readonly SolidColorBrush SlideNoteShapeStroke =
+            new SolidColorBrush(Color.FromRgb(0xDA, 0x70, 0xE6));
+
+        private static readonly LinearGradientBrush SlideNoteShapeFillOuter =
+            new LinearGradientBrush(Color.FromRgb(0xA5, 0x46, 0xDA), Color.FromRgb(0xE1, 0xA8, 0xFB), 90.0);
+
         private static readonly SolidColorBrush FlickNoteShapeFillInner = Brushes.White;
+
+        private static readonly SolidColorBrush SlideNoteShapeFillInner = Brushes.White;
 
         private static readonly Pen NoteStrokePen = new Pen(NoteStroke, 1.5);
 
@@ -145,6 +150,8 @@ namespace StarlightDirector.UI.Controls {
         private static readonly Pen HoldNoteShapeStrokePen = new Pen(HoldNoteShapeStroke, 1);
 
         private static readonly Pen FlickNoteShapeStrokePen = new Pen(FlickNoteShapeStroke, 1);
+
+        private static readonly Pen SlideNoteShapeStrokePen = new Pen(SlideNoteShapeStroke, 1);
 
         private static readonly Pen GridPen = new Pen(Brushes.DarkGray, 1);
 
@@ -237,21 +244,19 @@ namespace StarlightDirector.UI.Controls {
             }
 
             // Update bars
-            for (int i = _barsHead; i < _bars.Count; ++i)
-            {
+            for (int i = _barsHead; i < _bars.Count; ++i) {
                 var bar = _bars[i];
                 var diff = musicTimeInMillis - _bars[i].Timing + _approachTime;
                 if (diff <= 0)
                     break;
-                if (diff > _approachTime)
-                {
+                if (diff > _approachTime) {
                     ++_barsHead;
                     continue;
                 }
 
-                var t = diff/_approachTime;
+                var t = diff / _approachTime;
                 bar.T = t;
-                bar.Y = (_noteEndY - _noteStartY)*t + _noteStartY;
+                bar.Y = (_noteEndY - _noteStartY) * t + _noteStartY;
             }
 
             // Update hit effects
@@ -304,8 +309,7 @@ namespace StarlightDirector.UI.Controls {
             }
 
             // bar lines
-            for (int i = _barsHead; i < _bars.Count; ++i)
-            {
+            for (int i = _barsHead; i < _bars.Count; ++i) {
                 var bar = _bars[i];
                 if (bar.T <= 0)
                     break;
@@ -321,14 +325,12 @@ namespace StarlightDirector.UI.Controls {
                     continue;
 
                 var center = new Point(note.X, note.Y);
-
-
                 switch (note.DrawType) {
-                    case 0:
+                    case NoteDrawType.Tap:
                         dc.DrawEllipse(NoteShapeOutlineFill, NoteStrokePen, center, NoteRadius, NoteRadius);
                         dc.DrawEllipse(NormalNoteShapeFill, NormalNoteShapeStrokePen, center, NoteRadius - 4, NoteRadius - 4);
                         break;
-                    case 1:
+                    case NoteDrawType.FlickLeft:
                         dc.PushTransform(new TranslateTransform(note.X - 15, note.Y - 15));
                         dc.DrawGeometry(NoteShapeOutlineFill, NoteStrokePen, LeftNoteOuterGeometry);
                         dc.PushTransform(FlickNoteOuterScale);
@@ -339,7 +341,7 @@ namespace StarlightDirector.UI.Controls {
                         dc.Pop();
                         dc.Pop();
                         break;
-                    case 2:
+                    case NoteDrawType.FlickRight:
                         dc.PushTransform(new TranslateTransform(note.X - 15, note.Y - 15));
                         dc.DrawGeometry(NoteShapeOutlineFill, NoteStrokePen, RightNoteOuterGeometry);
                         dc.PushTransform(FlickNoteOuterScale);
@@ -350,10 +352,16 @@ namespace StarlightDirector.UI.Controls {
                         dc.Pop();
                         dc.Pop();
                         break;
-                    case 3:
+                    case NoteDrawType.Hold:
                         dc.DrawEllipse(NoteShapeOutlineFill, NoteStrokePen, center, NoteRadius, NoteRadius);
                         dc.DrawEllipse(HoldNoteShapeFillOuter, HoldNoteShapeStrokePen, center, NoteRadius - 4, NoteRadius - 4);
                         dc.DrawEllipse(HoldNoteShapeFillInner, null, center, NoteRadius - 10, NoteRadius - 10);
+                        break;
+                    case NoteDrawType.Slide:
+                        dc.DrawEllipse(NoteShapeOutlineFill, NoteStrokePen, center, NoteRadius, NoteRadius);
+                        dc.DrawEllipse(SlideNoteShapeFillOuter, SlideNoteShapeStrokePen, center, NoteRadius - 4, NoteRadius - 4);
+                        dc.DrawEllipse(SlideNoteShapeFillInner, null, center, NoteRadius - 10, NoteRadius - 10);
+                        dc.DrawRectangle(SlideNoteShapeFillInner, null, new Rect(new Point(3, 13), new Size(24, 4)));
                         break;
                 }
             }

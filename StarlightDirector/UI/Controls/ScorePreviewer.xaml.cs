@@ -76,7 +76,7 @@ namespace StarlightDirector.UI.Controls {
 
             foreach (var note in _score.Notes) {
                 // can I draw it?
-                if (note.Type != NoteType.TapOrFlick && note.Type != NoteType.Hold) {
+                if (note.Type != NoteType.TapOrFlick && note.Type != NoteType.Hold && note.Type != NoteType.Slide) {
                     continue;
                 }
 
@@ -87,6 +87,17 @@ namespace StarlightDirector.UI.Controls {
                 if (pos == 0)
                     continue;
 
+                NoteDrawType drawType;
+                if (note.IsHoldStart) {
+                    drawType = NoteDrawType.Hold;
+                } else if (note.ShouldBeRenderedAsFlick) {
+                    drawType = (NoteDrawType)note.FlickType;
+                } else if (note.ShouldBeRenderedAsSlide) {
+                    drawType = NoteDrawType.Slide;
+                } else {
+                    drawType = NoteDrawType.Tap;
+                }
+
                 var snote = new DrawingNote {
                     Note = note,
                     Done = false,
@@ -95,7 +106,7 @@ namespace StarlightDirector.UI.Controls {
                     Timing = (int)(note.HitTiming * 1000),
                     LastT = 0,
                     HitPosition = pos - 1,
-                    DrawType = (note.IsTap && !note.IsHoldEnd) || note.IsFlick ? (int)note.FlickType : 3
+                    DrawType = drawType
                 };
 
                 if (note.IsHoldStart) {

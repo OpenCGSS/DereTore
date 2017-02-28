@@ -197,6 +197,7 @@
     <Compile Include="ResourceKeys.cs" />
     <Compile Include="UI\Controls\Models\DrawingBar.cs" />
     <Compile Include="UI\Controls\Models\DrawingNote.cs" />
+    <Compile Include="UI\Controls\Models\NoteDrawType.cs" />
     <Compile Include="UI\Controls\PreviewCanvas.cs" />
     <Compile Include="UI\Controls\Primitives\LineLayer.DependencyProperties.cs" />
     <Compile Include="UI\Controls\Primitives\LineLayer.xaml.cs">

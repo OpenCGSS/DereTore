@@ -3,7 +3,7 @@
     /// <summary>
     /// Internal representation of bars for drawing
     /// </summary>
-    public class DrawingBar
+    internal sealed class DrawingBar
     {
         public int DrawType { get; set; }
         public int Timing { get; set; }

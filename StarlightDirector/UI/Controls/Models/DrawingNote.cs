@@ -5,7 +5,7 @@ namespace StarlightDirector.UI.Controls.Models
     /// <summary>
     /// Internal representation of notes for drawing
     /// </summary>
-    public class DrawingNote
+    internal sealed class DrawingNote
     {
         public Note Note { get; set; }
         public DrawingNote HoldTarget { get; set; }
@@ -18,7 +18,7 @@ namespace StarlightDirector.UI.Controls.Models
         public double LastT { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
-        public int DrawType { get; set; }
+        public NoteDrawType DrawType { get; set; }
         public int HitPosition { get; set; }
         public bool EffectShown { get; set; }
     }
