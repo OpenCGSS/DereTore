@@ -1,15 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using DereTore.Applications.ScoreViewer.Model;
 using DereTore.HCA;
+using DereTore.Interop;
 using DereTore.StarlightStage;
 //using Timer = System.Timers.Timer;
 using Timer = DereTore.Applications.ScoreViewer.ThreadingTimer;
 
 namespace DereTore.Applications.ScoreViewer.Forms {
     public partial class FViewer : Form {
+
+        static FViewer() {
+            try {
+                NativeStructures.DEVMODE devMode;
+                NativeMethods.EnumDisplaySettings(null, NativeConstants.ENUM_CURRENT_SETTINGS, out devMode);
+                ScreenRefreshRate = devMode.dmDisplayFrequency;
+            } catch (Exception ex) {
+                Debug.Print(ex.Message);
+                Debug.Print(ex.StackTrace);
+                ScreenRefreshRate = 60;
+            }
+        }
 
         public FViewer() {
             InitializeComponent();
@@ -98,6 +111,7 @@ namespace DereTore.Applications.ScoreViewer.Forms {
                     btnPlay.Enabled = false;
                     btnPause.Enabled = false;
                     btnStop.Enabled = false;
+                    chkLimitFrameRate.Enabled = true;
                     break;
                 case ViewerState.Loaded:
                     btnSelectAudio.Enabled = false;
@@ -110,6 +124,7 @@ namespace DereTore.Applications.ScoreViewer.Forms {
                     btnPlay.Enabled = true;
                     btnPause.Enabled = false;
                     btnStop.Enabled = false;
+                    chkLimitFrameRate.Enabled = true;
                     break;
                 case ViewerState.LoadedAndPlaying:
                     btnSelectAudio.Enabled = false;
@@ -122,6 +137,7 @@ namespace DereTore.Applications.ScoreViewer.Forms {
                     btnPlay.Enabled = false;
                     btnPause.Enabled = true;
                     btnStop.Enabled = true;
+                    chkLimitFrameRate.Enabled = false;
                     break;
                 case ViewerState.LoadedAndPaused:
                     btnSelectAudio.Enabled = false;
@@ -134,11 +150,17 @@ namespace DereTore.Applications.ScoreViewer.Forms {
                     btnPlay.Enabled = true;
                     btnPause.Enabled = false;
                     btnStop.Enabled = true;
+                    chkLimitFrameRate.Enabled = true;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
+
+        private static bool _naiveFrameLimiterEnabled = true;
+
+        private static readonly string DefaultTitle = "DereTore: Score Viewer";
+        private static readonly uint ScreenRefreshRate;
 
         private static readonly string AudioFilter = "All Supported Audio Formats (*.wav;*.acb;*.hca)|*.wav;*.acb;*.hca|ACB Archive (*.acb)|*.acb|Wave Audio (*.wav)|*.wav|HCA Audio (*.hca)|*.hca";
         private static readonly string ScoreFilter = "All Supported Score Formats (*.bdb;*.csv)|*.bdb;*.csv|Score Database (*.bdb)|*.bdb|Single Score (*.csv)|*.csv";
@@ -158,6 +180,7 @@ namespace DereTore.Applications.ScoreViewer.Forms {
         private string _currentTapHcaFileName;
 
         private readonly Timer timer = new Timer(5);
+        private uint _lastRedrawTime;
 
         private ScorePlayer _scorePlayer;
         private LiveMusicWaveStream _musicWaveStream;
@@ -173,5 +196,6 @@ namespace DereTore.Applications.ScoreViewer.Forms {
         private bool _codeValueChange;
         private readonly object _liveMusicSyncObject = new object();
         private readonly object _sfxSyncObject = new object();
+
     }
 }

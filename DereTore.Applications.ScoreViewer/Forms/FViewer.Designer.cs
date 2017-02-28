@@ -25,6 +25,7 @@ namespace DereTore.Applications.ScoreViewer.Forms {
         /// 使用代码编辑器修改此方法的内容。
         /// </summary>
         private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             this.btnSelectAudio = new System.Windows.Forms.Button();
             this.btnSelectScore = new System.Windows.Forms.Button();
             this.txtAudioFileName = new System.Windows.Forms.TextBox();
@@ -43,17 +44,19 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             this.label1 = new System.Windows.Forms.Label();
             this.trkFallingSpeed = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
-            this.editor = new DereTore.Applications.ScoreViewer.Controls.ScoreEditorControl();
             this.chkSfxOn = new System.Windows.Forms.CheckBox();
             this.trkMusicVolume = new System.Windows.Forms.TrackBar();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.trkSfxVolume = new System.Windows.Forms.TrackBar();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.editor = new DereTore.Applications.ScoreViewer.Controls.ScoreEditorControl();
+            this.chkLimitFrameRate = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.trkProgress)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkFallingSpeed)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.editor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkMusicVolume)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkSfxVolume)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.editor)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSelectAudio
@@ -187,7 +190,7 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             "SE 2",
             "SE 3",
             "SE 4"});
-            this.cboSoundEffect.Location = new System.Drawing.Point(807, 113);
+            this.cboSoundEffect.Location = new System.Drawing.Point(807, 135);
             this.cboSoundEffect.Name = "cboSoundEffect";
             this.cboSoundEffect.Size = new System.Drawing.Size(82, 20);
             this.cboSoundEffect.TabIndex = 26;
@@ -195,7 +198,7 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(772, 116);
+            this.label1.Location = new System.Drawing.Point(772, 138);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(29, 12);
             this.label1.TabIndex = 27;
@@ -203,23 +206,78 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             // 
             // trkFallingSpeed
             // 
-            this.trkFallingSpeed.Location = new System.Drawing.Point(843, 212);
+            this.trkFallingSpeed.Location = new System.Drawing.Point(843, 234);
             this.trkFallingSpeed.Maximum = 40;
             this.trkFallingSpeed.Minimum = 2;
             this.trkFallingSpeed.Name = "trkFallingSpeed";
             this.trkFallingSpeed.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trkFallingSpeed.Size = new System.Drawing.Size(45, 310);
+            this.trkFallingSpeed.Size = new System.Drawing.Size(45, 288);
             this.trkFallingSpeed.TabIndex = 28;
             this.trkFallingSpeed.Value = 2;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(772, 358);
+            this.label2.Location = new System.Drawing.Point(772, 363);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(47, 24);
             this.label2.TabIndex = 29;
             this.label2.Text = "Falling\r\nspeed:";
+            // 
+            // chkSfxOn
+            // 
+            this.chkSfxOn.AutoSize = true;
+            this.chkSfxOn.Checked = true;
+            this.chkSfxOn.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSfxOn.Location = new System.Drawing.Point(807, 161);
+            this.chkSfxOn.Name = "chkSfxOn";
+            this.chkSfxOn.Size = new System.Drawing.Size(60, 16);
+            this.chkSfxOn.TabIndex = 30;
+            this.chkSfxOn.Text = "SFX On";
+            this.chkSfxOn.UseVisualStyleBackColor = true;
+            // 
+            // trkMusicVolume
+            // 
+            this.trkMusicVolume.LargeChange = 50;
+            this.trkMusicVolume.Location = new System.Drawing.Point(807, 183);
+            this.trkMusicVolume.Maximum = 1000;
+            this.trkMusicVolume.Name = "trkMusicVolume";
+            this.trkMusicVolume.Size = new System.Drawing.Size(82, 45);
+            this.trkMusicVolume.TabIndex = 31;
+            this.trkMusicVolume.TickStyle = System.Windows.Forms.TickStyle.None;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(772, 183);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(35, 24);
+            this.label3.TabIndex = 32;
+            this.label3.Text = "Music\r\nvol.";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(772, 210);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(29, 24);
+            this.label4.TabIndex = 34;
+            this.label4.Text = "SFX\r\nvol.";
+            // 
+            // trkSfxVolume
+            // 
+            this.trkSfxVolume.LargeChange = 50;
+            this.trkSfxVolume.Location = new System.Drawing.Point(807, 210);
+            this.trkSfxVolume.Maximum = 1000;
+            this.trkSfxVolume.Name = "trkSfxVolume";
+            this.trkSfxVolume.Size = new System.Drawing.Size(82, 45);
+            this.trkSfxVolume.TabIndex = 33;
+            this.trkSfxVolume.TickStyle = System.Windows.Forms.TickStyle.None;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
             // 
             // editor
             // 
@@ -235,61 +293,24 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             this.editor.TabIndex = 0;
             this.editor.TabStop = false;
             // 
-            // chkSfxOn
+            // chkLimitFrameRate
             // 
-            this.chkSfxOn.AutoSize = true;
-            this.chkSfxOn.Checked = true;
-            this.chkSfxOn.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSfxOn.Location = new System.Drawing.Point(807, 139);
-            this.chkSfxOn.Name = "chkSfxOn";
-            this.chkSfxOn.Size = new System.Drawing.Size(60, 16);
-            this.chkSfxOn.TabIndex = 30;
-            this.chkSfxOn.Text = "SFX On";
-            this.chkSfxOn.UseVisualStyleBackColor = true;
-            // 
-            // trkMusicVolume
-            // 
-            this.trkMusicVolume.LargeChange = 50;
-            this.trkMusicVolume.Location = new System.Drawing.Point(807, 161);
-            this.trkMusicVolume.Maximum = 1000;
-            this.trkMusicVolume.Name = "trkMusicVolume";
-            this.trkMusicVolume.Size = new System.Drawing.Size(82, 45);
-            this.trkMusicVolume.TabIndex = 31;
-            this.trkMusicVolume.TickStyle = System.Windows.Forms.TickStyle.None;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(772, 161);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(35, 24);
-            this.label3.TabIndex = 32;
-            this.label3.Text = "Music\r\nvol.";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(772, 188);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(29, 24);
-            this.label4.TabIndex = 34;
-            this.label4.Text = "SFX\r\nvol.";
-            // 
-            // trkSfxVolume
-            // 
-            this.trkSfxVolume.LargeChange = 50;
-            this.trkSfxVolume.Location = new System.Drawing.Point(807, 188);
-            this.trkSfxVolume.Maximum = 1000;
-            this.trkSfxVolume.Name = "trkSfxVolume";
-            this.trkSfxVolume.Size = new System.Drawing.Size(82, 45);
-            this.trkSfxVolume.TabIndex = 33;
-            this.trkSfxVolume.TickStyle = System.Windows.Forms.TickStyle.None;
+            this.chkLimitFrameRate.AutoSize = true;
+            this.chkLimitFrameRate.Checked = true;
+            this.chkLimitFrameRate.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkLimitFrameRate.Location = new System.Drawing.Point(774, 113);
+            this.chkLimitFrameRate.Name = "chkLimitFrameRate";
+            this.chkLimitFrameRate.Size = new System.Drawing.Size(120, 16);
+            this.chkLimitFrameRate.TabIndex = 35;
+            this.chkLimitFrameRate.Text = "Limit frame rate";
+            this.chkLimitFrameRate.UseVisualStyleBackColor = true;
             // 
             // FViewer
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(900, 534);
+            this.Controls.Add(this.chkLimitFrameRate);
             this.Controls.Add(this.trkFallingSpeed);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.trkSfxVolume);
@@ -321,9 +342,9 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             this.Text = "DereTore: Score Viewer";
             ((System.ComponentModel.ISupportInitialize)(this.trkProgress)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkFallingSpeed)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.editor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkMusicVolume)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trkSfxVolume)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.editor)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -355,6 +376,8 @@ namespace DereTore.Applications.ScoreViewer.Forms {
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.TrackBar trkSfxVolume;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.CheckBox chkLimitFrameRate;
     }
 }
 

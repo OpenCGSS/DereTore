@@ -1,15 +1,23 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 using DereTore.Applications.ScoreViewer.Model;
+using Timer = System.Threading.Timer;
 
 namespace DereTore.Applications.ScoreViewer.Controls {
     public sealed class ScoreEditorControl : DoubleBufferedPictureBox {
 
         public ScoreEditorControl() {
             MouseEventsEnabled = true;
+            _timer = new Timer(OnTimer, null, 1000, 1000);
+        }
+
+        ~ScoreEditorControl() {
+            _timer.Dispose();
+            _timer = null;
         }
 
         [Browsable(false)]
@@ -96,6 +104,8 @@ namespace DereTore.Applications.ScoreViewer.Controls {
         /// </summary>
         public bool IsPreview { get; set; }
 
+        public uint FPS => _fps;
+
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
             if (_isPainting || Renderer.Instance.IsRendering) {
@@ -103,8 +113,10 @@ namespace DereTore.Applications.ScoreViewer.Controls {
             }
             _isPainting = true;
             e.Graphics.Clear(MouseEventsEnabled ? MouseEventAcceptedColor : MouseEventIgnoredColor);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             var renderParams = new RenderParams(e.Graphics, ClientSize, _elapsed.TotalSeconds, IsPreview);
             Renderer.Instance.RenderFrame(renderParams, Score?.Notes);
+            ++_frameCount;
             _isPainting = false;
         }
 
@@ -194,10 +206,18 @@ namespace DereTore.Applications.ScoreViewer.Controls {
             }
         }
 
+        private void OnTimer(object state) {
+            _fps = _frameCount;
+            _frameCount = 0;
+        }
+
         private bool _isPainting;
         private TimeSpan _elapsed;
         private Note _selectedNote;
         private Score _score;
+        private uint _fps;
+        private uint _frameCount;
+        private Timer _timer;
 
         private static readonly Color MouseEventAcceptedColor = Color.FromArgb(0x20, 0x20, 0x20);
         private static readonly Color MouseEventIgnoredColor = Color.Black;

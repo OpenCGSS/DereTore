@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using DereTore.Applications.ScoreViewer.Controls;
 using DereTore.Applications.ScoreViewer.Model;
+using DereTore.Interop;
 
 namespace DereTore.Applications.ScoreViewer.Forms {
     partial class FViewer {
@@ -28,6 +29,8 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             trkFallingSpeed.ValueChanged -= TrkFallingSpeed_ValueChanged;
             trkMusicVolume.ValueChanged -= TrkMusicVolume_ValueChanged;
             trkSfxVolume.ValueChanged -= TrkSfxVolume_ValueChanged;
+            chkLimitFrameRate.CheckedChanged -= ChkLimitFrameRate_CheckedChanged;
+            timer1.Tick -= Timer1_Tick;
         }
 
         private void RegisterEventHandlers() {
@@ -51,6 +54,12 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             trkFallingSpeed.ValueChanged += TrkFallingSpeed_ValueChanged;
             trkMusicVolume.ValueChanged += TrkMusicVolume_ValueChanged;
             trkSfxVolume.ValueChanged += TrkSfxVolume_ValueChanged;
+            chkLimitFrameRate.CheckedChanged += ChkLimitFrameRate_CheckedChanged;
+            timer1.Tick += Timer1_Tick;
+        }
+
+        private void ChkLimitFrameRate_CheckedChanged(object sender, EventArgs e) {
+            _naiveFrameLimiterEnabled = chkLimitFrameRate.Checked;
         }
 
         private void TrkSfxVolume_ValueChanged(object sender, EventArgs e) {
@@ -338,9 +347,17 @@ namespace DereTore.Applications.ScoreViewer.Forms {
             }
             lblTime.Text = $"{elapsed}/{total}";
             editor.SetTime(elapsed);
-            editor.Invalidate();
+            var time = NativeMethods.timeGetTime();
+            if (!_naiveFrameLimiterEnabled || (time - _lastRedrawTime > (uint)((float)1000 / ScreenRefreshRate - 4f * ScreenRefreshRate / 60))) {
+                editor.Invalidate();
+                _lastRedrawTime = time;
+            }
             editor.JudgeNotesEnteringOrExiting(elapsed);
             UpdateSfx(elapsed);
+        }
+
+        private void Timer1_Tick(object sender, EventArgs e) {
+            Text = $"{DefaultTitle} - FPS: {editor.FPS}";
         }
 
     }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using DereTore.Applications.ScoreViewer.Model;
 
@@ -94,8 +96,14 @@ namespace DereTore.Applications.ScoreViewer.Controls {
                 }
                 switch (note.Type) {
                     case NoteType.TapOrFlick:
+                        if (note.FlickType == NoteStatus.Tap) {
+                            DrawTapNote(renderParams, note);
+                        } else {
+                            DrawFlickNote(renderParams, note);
+                        }
+                        break;
                     case NoteType.Hold:
-                        DrawSimpleNote(renderParams, note);
+                        DrawHoldNote(renderParams, note);
                         break;
                     case NoteType.Slide:
                         DrawSlideNote(renderParams, note);
@@ -203,69 +211,125 @@ namespace DereTore.Applications.ScoreViewer.Controls {
             graphics.DrawLine(pen, x1, y1, x2, y2);
         }
 
-        public static void DrawSimpleNote(RenderParams renderParams, Note note) {
-            DrawSimpleNote(renderParams, note, NoteBaseBrush);
+        public static void DrawCommonNoteOutline(RenderParams renderParams, float x, float y, float r) {
+            renderParams.Graphics.FillEllipse(NoteCommonFill, x - r, y - r, r * 2, r * 2);
+            renderParams.Graphics.DrawEllipse(NoteCommonStroke, x - r, y - r, r * 2, r * 2);
         }
 
-        public static void DrawSimpleNote(RenderParams renderParams, Note note, Brush baseColorBrush) {
+        public static void DrawTapNote(RenderParams renderParams, Note note) {
             if (!IsNoteOnStage(note, renderParams.Now)) {
                 return;
             }
-            var graphics = renderParams.Graphics;
-            float x = GetNoteXPosition(renderParams, note), y = GetNoteYPosition(renderParams, note);
-            float r = GetNoteRadius(renderParams, note);
-            graphics.FillEllipse(baseColorBrush, x - r, y - r, r * 2f, r * 2f);
+            float x = GetNoteXPosition(renderParams, note),
+                y = GetNoteYPosition(renderParams, note),
+                r = GetNoteRadius(renderParams, note);
+            DrawCommonNoteOutline(renderParams, x, y, r);
 
-            switch (note.FlickType) {
-                case NoteStatus.FlickLeft:
-                    graphics.FillPie(NoteDirectionBrush, x - r, y - r, r * 2f, r * 2f, 135, 90);
-                    break;
-                case NoteStatus.FlickRight:
-                    graphics.FillPie(NoteDirectionBrush, x - r, y - r, r * 2f, r * 2f, -45, 90);
-                    break;
+            var graphics = renderParams.Graphics;
+            var r1 = r * ScaleFactor1;
+            using (var fill = GetFillBrush(x, y, r, TapNoteShapeFillColors)) {
+                graphics.FillEllipse(fill, x - r1, y - r1, r1 * 2, r1 * 2);
             }
+            graphics.DrawEllipse(TapNoteShapeStroke, x - r1, y - r1, r1 * 2, r1 * 2);
+        }
+
+        public static void DrawFlickNote(RenderParams renderParams, Note note) {
+            if (!IsNoteOnStage(note, renderParams.Now)) {
+                return;
+            }
+            if (note.FlickType == NoteStatus.Tap) {
+                Debug.Print("WARNING: Tap/hold/slide note requested in DrawFlickNote.");
+                return;
+            }
+            float x = GetNoteXPosition(renderParams, note),
+                y = GetNoteYPosition(renderParams, note),
+                r = GetNoteRadius(renderParams, note);
+            DrawCommonNoteOutline(renderParams, x, y, r);
+
+            var graphics = renderParams.Graphics;
+            var r1 = r * ScaleFactor1;
+            // Triangle
+            var polygon = new PointF[3];
+            if (note.FlickType == NoteStatus.FlickLeft) {
+                polygon[0] = new PointF(x - r1, y);
+                polygon[1] = new PointF(x + r1 / 2, y + r1 / 2 * Sqrt3);
+                polygon[2] = new PointF(x + r1 / 2, y - r1 / 2 * Sqrt3);
+
+            } else if (note.FlickType == NoteStatus.FlickRight) {
+                polygon[0] = new PointF(x + r1, y);
+                polygon[1] = new PointF(x - r1 / 2, y - r1 / 2 * Sqrt3);
+                polygon[2] = new PointF(x - r1 / 2, y + r1 / 2 * Sqrt3);
+            }
+            using (var fill = GetFillBrush(x, y, r, FlickNoteShapeFillOuterColors)) {
+                graphics.FillPolygon(fill, polygon);
+            }
+            graphics.DrawPolygon(FlickNoteShapeStroke, polygon);
+        }
+
+        public static void DrawHoldNote(RenderParams renderParams, Note note) {
+            if (!IsNoteOnStage(note, renderParams.Now)) {
+                return;
+            }
+            float x = GetNoteXPosition(renderParams, note),
+                y = GetNoteYPosition(renderParams, note),
+                r = GetNoteRadius(renderParams, note);
+            DrawCommonNoteOutline(renderParams, x, y, r);
+
+            var graphics = renderParams.Graphics;
+            var r1 = r * ScaleFactor1;
+            using (var fill = GetFillBrush(x, y, r, HoldNoteShapeFillOuterColors)) {
+                graphics.FillEllipse(fill, x - r1, y - r1, r1 * 2, r1 * 2);
+            }
+            graphics.DrawEllipse(HoldNoteShapeStroke, x - r1, y - r1, r1 * 2, r1 * 2);
+            var r2 = r * ScaleFactor3;
+            graphics.FillEllipse(HoldNoteShapeFillInner, x - r2, y - r2, r2 * 2, r2 * 2);
         }
 
         public static void DrawSlideNote(RenderParams renderParams, Note note) {
-            var now = renderParams.Now;
-            Brush noteBrush;
             if (note.FlickType != NoteStatus.Tap) {
-                noteBrush = NoteBaseBrush;
-            } else {
-                noteBrush = note.IsSlideMiddle ? SlideNoteTranslucentBrush : SlideNoteBaseBrush;
-            }
-            if (note.IsSlideEnd || IsNoteOnStage(note, now)) {
-                DrawSimpleNote(renderParams, note, noteBrush);
+                DrawFlickNote(renderParams, note);
                 return;
             }
-            if (IsNotePassed(note, now)) {
-                // Now the slide note is "sliding" on the base line.
+
+            float x, y, r;
+            Color[] fillColors;
+            var now = renderParams.Now;
+            if (note.IsSlideEnd || IsNoteOnStage(note, now)) {
+                x = GetNoteXPosition(renderParams, note);
+                y = GetNoteYPosition(renderParams, note);
+                r = GetNoteRadius(renderParams, note);
+                fillColors = note.IsSlideMiddle ? SlideNoteShapeFillOuterTranslucentColors : SlideNoteShapeFillOuterColors;
+            } else if (IsNotePassed(note, now)) {
+                if (!note.HasNextSlide || IsNotePassed(note.NextSlideNote, now)) {
+                    return;
+                }
                 var nextSlideNote = note.NextSlideNote;
                 if (nextSlideNote == null) {
                     // Actually, here is an example of invalid format. :)
-                    DrawSimpleNote(renderParams, note, noteBrush);
+                    DrawTapNote(renderParams, note);
                     return;
+                } else {
+                    var startX = GetEndXByNotePosition(renderParams.ClientSize, note.FinishPosition);
+                    var endX = GetEndXByNotePosition(renderParams.ClientSize, nextSlideNote.FinishPosition);
+                    y = GetAvatarYPosition(renderParams.ClientSize);
+                    x = (float)((now - note.HitTiming) / (nextSlideNote.HitTiming - note.HitTiming)) * (endX - startX) + startX;
+                    r = AvatarCircleRadius;
+                    fillColors = SlideNoteShapeFillOuterColors;
                 }
-                if (IsNotePassed(nextSlideNote, now)) {
-                    return;
-                }
-                var startX = GetEndXByNotePosition(renderParams.ClientSize, note.FinishPosition);
-                var endX = GetEndXByNotePosition(renderParams.ClientSize, nextSlideNote.FinishPosition);
-                var y = GetAvatarYPosition(renderParams.ClientSize);
-                var x = (float)((now - note.HitTiming) / (nextSlideNote.HitTiming - note.HitTiming)) * (endX - startX) + startX;
-                var graphics = renderParams.Graphics;
-                var r = AvatarCircleRadius;
-                graphics.FillEllipse(SlideNoteBaseBrush, x - r, y - r, r * 2f, r * 2f);
-
-                switch (note.FlickType) {
-                    case NoteStatus.FlickLeft:
-                        graphics.FillPie(NoteDirectionBrush, x - r, y - r, r * 2f, r * 2f, 135, 90);
-                        break;
-                    case NoteStatus.FlickRight:
-                        graphics.FillPie(NoteDirectionBrush, x - r, y - r, r * 2f, r * 2f, -45, 90);
-                        break;
-                }
+            } else {
+                return;
             }
+
+            DrawCommonNoteOutline(renderParams, x, y, r);
+            var graphics = renderParams.Graphics;
+            var r1 = r * ScaleFactor1;
+            using (var fill = GetFillBrush(x, y, r, fillColors)) {
+                graphics.FillEllipse(fill, x - r1, y - r1, r1 * 2, r1 * 2);
+            }
+            var r2 = r * ScaleFactor3;
+            graphics.FillEllipse(SlideNoteShapeFillInner, x - r2, y - r2, r2 * 2, r2 * 2);
+            var l = r * SlideNoteStrikeHeightFactor;
+            graphics.FillRectangle(SlideNoteShapeFillInner, x - r1 - 1, y - l, r1 * 2 + 2, l * 2);
         }
 
         public static void GetBezierFromQuadratic(float x1, float xmid, float x4, out float x2, out float x3) {
@@ -416,10 +480,6 @@ namespace DereTore.Applications.ScoreViewer.Controls {
 
         public static readonly Brush AvatarBrush = Brushes.Firebrick;
         public static readonly Pen CeilingPen = Pens.Red;
-        public static readonly Brush NoteBaseBrush = Brushes.DarkSlateBlue;
-        public static readonly Brush SlideNoteBaseBrush = Brushes.DarkMagenta;
-        public static readonly Brush SlideNoteTranslucentBrush = Brushes.Magenta;
-        public static readonly Brush NoteDirectionBrush = Brushes.ForestGreen;
         public static readonly Pen HoldLinePen = Pens.Yellow;
         public static readonly Pen SyncLinePen = Pens.DodgerBlue;
         public static readonly Pen FlickLinePen = Pens.OliveDrab;
@@ -434,6 +494,38 @@ namespace DereTore.Applications.ScoreViewer.Controls {
         public static readonly float BaseLineYPosition = 0.828125f;
         // Then we know the bottom is <BaseLineYPosition + (PastWindow / FutureWindow) * (BaseLineYPosition - Ceiling))>.
         public static readonly float FutureNoteCeiling = 0.21875f;
+
+        private static readonly float NoteShapeStrokeWidth = 1;
+
+        private static readonly float ScaleFactor1 = 0.8f;
+        private static readonly float ScaleFactor2 = 0.5f;
+        private static readonly float ScaleFactor3 = (float)1 / 3f;
+        private static readonly float SlideNoteStrikeHeightFactor = (float)4 / 30;
+        private static readonly PointF FillGradientTop = new PointF(0, 0);
+        private static readonly PointF FillGradientBottom = new PointF(0, AvatarCircleDiameter * ScaleFactor1);
+
+        public static readonly Pen NoteCommonStroke = new Pen(Color.FromArgb(0x22, 0x22, 0x22), NoteShapeStrokeWidth);
+        public static readonly Brush NoteCommonFill = Brushes.White;
+        public static readonly Pen TapNoteShapeStroke = new Pen(Color.FromArgb(0xFF, 0x33, 0x66), NoteShapeStrokeWidth);
+        public static readonly Color[] TapNoteShapeFillColors = { Color.FromArgb(0xFF, 0x99, 0xBB), Color.FromArgb(0xFF, 0x33, 0x66) };
+        public static readonly Pen HoldNoteShapeStroke = new Pen(Color.FromArgb(0xFF, 0xBB, 0x22), NoteShapeStrokeWidth);
+        public static readonly Color[] HoldNoteShapeFillOuterColors = { Color.FromArgb(0xFF, 0xDD, 0x66), Color.FromArgb(0xFF, 0xBB, 0x22) };
+        public static readonly Brush HoldNoteShapeFillInner = Brushes.White;
+        public static readonly Pen FlickNoteShapeStroke = new Pen(Color.FromArgb(0x22, 0x55, 0xBB), NoteShapeStrokeWidth);
+        public static readonly Color[] FlickNoteShapeFillOuterColors = { Color.FromArgb(0x88, 0xBB, 0xFF), Color.FromArgb(0x22, 0x55, 0xBB) };
+        public static readonly Brush FlickNoteShapeFillInner = Brushes.White;
+        public static readonly Color[] SlideNoteShapeFillOuterColors = { Color.FromArgb(0xA5, 0x46, 0xDA), Color.FromArgb(0xE1, 0xA8, 0xFB) };
+        public static readonly Color[] SlideNoteShapeFillOuterTranslucentColors = { Color.FromArgb(0x80, 0xA5, 0x46, 0xDA), Color.FromArgb(0x80, 0xE1, 0xA8, 0xFB) };
+        public static readonly Brush SlideNoteShapeFillInner = Brushes.White;
+
+        private static LinearGradientBrush GetFillBrush(float x, float y, float r, Color[] colors) {
+            var r1 = r * ScaleFactor1;
+            var top = new PointF(0, y - r1);
+            var bottom = new PointF(0, y + r1);
+            return new LinearGradientBrush(top, bottom, colors[0], colors[1]);
+        }
+
+        private static readonly float Sqrt3 = (float)Math.Sqrt(3);
 
     }
 }
