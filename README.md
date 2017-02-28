@@ -56,7 +56,7 @@ See it for yourself.
 
 **DereTore.HCA**
 
-The pure C# implementation of CRI HCA v2.0 decoder, based on [kawashima](https://github.com/Hozuki/kawashima).
+The pure C# implementation of CRI HCA v2.0 decoder, based on [kawashima](https://github.com/hozuki/kawashima).
 Here is its [readme](DereTore.HCA/README.md).
 
 **DereTore.ACB**
@@ -65,45 +65,46 @@ CRI ACB/AWB package manipulation library. Only necessary parts are implemented. 
 
 ### Applications
 
+Applications can be found in their own directories.
+
 **CipherConverter**
 
-The C# version of HCA cipher conversion utility. See **hcacc** in [hcatools](https://github.com/Hozuki/hcatools).
+The C# version of HCA cipher conversion utility. See **hcacc** in [hcatools](https://github.com/hozuki/libcgss).
 
 **Encoder**
 
-The C# version of HCA encoding utility. See **hcaenc** in [hcatools](https://github.com/Hozuki/hcatools).
+The C# version of HCA encoding utility. See **hcaenc** in [hcatools](https://github.com/hozuki/libcgss).
 
 **Hca2Wav**
 
-A console appilcation that converts HCA audio to WAVE audio. It is similar to DereTore.HCA.Test,
-but it outputs to a stream, in fixed linear sequence. It can be used as a clearer demo to integrate
-DereTore.HCA.
+A console appilcation that converts HCA audio to wave audio. It can be used as a demo to integrate
+*DereTore.HCA*.
 
-**AcbMaker**
+**ACB Maker**
 
 A tool for creating CGSS-compatible ACB archives. Here is its [readme](DereTore.Applications.AcbMaker/README.md).
 
-**MusicToolchain**
+**Music Toolchain**
 
 The utility that integrates **Encoder**, **CipherConverter** and **AcbMaker** into a streamline. Here
 is its [readme](DereTore.Applications.MusicToolchain/README.md).
 
-**ScoreEditor**
+**Score Viewer**
 
-Viewing and editing scores (collections of notes) of live music. Here is its [readme](DereTore.Applications.ScoreEditor/README.md).
+Viewing scores (beatmaps) of live music. Here is its [readme](DereTore.Applications.ScoreViewer/README.md).
 
-**StarlightDirector**
+**Starlight Director**
 
 The new score composer (still in alpha phase), the successor of ScoreEditor. Detailed readme and user manual will be written
 in the future. Let's celebrate its alpha release!
 
-**AcbUnzip**
+**ACB Unzip**
 
-An application that unpacks ACB archives.
+An application for unpacking ACB archives.
 
-**JacketCreator**
+**Jacket Creator**
 
-A utility for creating CD jackets.
+A utility for creating CD jackets. Used with score and music makers.
 
 ### Other
 

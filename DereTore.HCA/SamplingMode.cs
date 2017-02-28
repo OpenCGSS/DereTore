@@ -1,11 +1,11 @@
 ﻿namespace DereTore.HCA {
     public enum SamplingMode {
 
-        U8,
         S16,
+        R32,
+        U8,
         S24,
-        S32,
-        R32
+        S32
 
     }
 }

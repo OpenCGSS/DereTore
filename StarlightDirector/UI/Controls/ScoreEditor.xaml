@@ -1,0 +1,34 @@
+﻿<controls:ScoreViewerBase x:Class="StarlightDirector.UI.Controls.ScoreEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:StarlightDirector.UI.Controls"
+             xmlns:primitives="clr-namespace:StarlightDirector.UI.Controls.Primitives"
+             mc:Ignorable="d"
+             d:DesignHeight="284.667" d:DesignWidth="460.667" Width="635"
+             Background="Transparent" Focusable="True" IsTabStop="True"
+             FocusVisualStyle="{x:Null}" x:Name="Me"
+             MouseDown="ScoreEditor_OnMouseDown" MouseUp="ScoreEditor_OnMouseUp"
+             PreviewMouseDown="ScoreEditor_OnPreviewMouseDown" PreviewMouseUp="ScoreEditor_OnPreviewMouseUp" PreviewMouseMove="ScoreEditor_OnPreviewMouseMove">
+    <Grid HorizontalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="180"/>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="105"/>
+        </Grid.ColumnDefinitions>
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleY="-1" ScaleX="1" />
+        </Grid.LayoutTransform>
+        <Grid Name="ContentsGrid" Grid.Column="1">
+            <Canvas Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
+            <Canvas Name="EditingLineLayer">
+                <Line Name="EditingLine" Visibility="Hidden" StrokeThickness="{Binding ElementName=LineLayer, Path=SyncNoteLineThickness, Mode=OneWay}"/>
+            </Canvas>
+            <!-- This layout is weird but it is working! It's... magic! -->
+            <primitives:LineLayer x:Name="LineLayer"/>
+            <Canvas Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
+        </Grid>
+        <Canvas Grid.Column="2" Name="SpecialNoteLayer"/>
+    </Grid>
+</controls:ScoreViewerBase>

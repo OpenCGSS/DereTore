@@ -19,6 +19,17 @@
             };
         }
 
+        public static DecodeParams CreateDefault(uint key1, uint key2) {
+            return new DecodeParams {
+                Key1 = key1,
+                Key2 = key2,
+                Mode = SamplingMode.S16,
+                Volume = 1.0f,
+                CipherTypeOverrideEnabled = false,
+                OverriddenCipherType = CipherType.NoChipher
+            };
+        }
+
         public static readonly DecodeParams Default = CreateDefault();
 
     }
