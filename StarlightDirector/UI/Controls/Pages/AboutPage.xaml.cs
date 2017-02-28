@@ -41,7 +41,7 @@ namespace StarlightDirector.UI.Controls.Pages {
         }
 
         public static string VersionPrerelease => "alpha";
-        public static string CodeName => "Mio";
+        public static string CodeName => "Miku";
 
         private static readonly List<KeyValuePair<string, string>> Contributors = new List<KeyValuePair<string, string>> {
             new KeyValuePair<string, string>("2GM2A", null),
