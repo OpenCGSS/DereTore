@@ -228,7 +228,12 @@ namespace DereTore.Applications.ScoreViewer.Controls {
 
         public static void DrawSlideNote(RenderParams renderParams, Note note) {
             var now = renderParams.Now;
-            var noteBrush = note.IsSlideMiddle ? SlideNoteTranslucentBrush : SlideNoteBaseBrush;
+            Brush noteBrush;
+            if (note.FlickType != NoteStatus.Tap) {
+                noteBrush = NoteBaseBrush;
+            } else {
+                noteBrush = note.IsSlideMiddle ? SlideNoteTranslucentBrush : SlideNoteBaseBrush;
+            }
             if (note.IsSlideEnd || IsNoteOnStage(note, now)) {
                 DrawSimpleNote(renderParams, note, noteBrush);
                 return;
