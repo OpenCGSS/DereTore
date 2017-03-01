@@ -146,7 +146,7 @@ namespace StarlightDirector.Entities {
 
         public bool IsHoldStart => Type == NoteType.Hold && HoldTarget != null;
 
-        public bool IsHoldEnd => (Type == NoteType.TapOrFlick || Type == NoteType.Slide) && HoldTarget != null;
+        public bool IsHoldEnd => Type == NoteType.TapOrFlick && HoldTarget != null;
 
         [JsonProperty]
         public int HoldTargetID { get; internal set; }
