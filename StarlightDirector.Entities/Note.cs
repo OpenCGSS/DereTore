@@ -429,6 +429,7 @@ namespace StarlightDirector.Entities {
             note.IsTap = note.IsTapInternal();
             note.IsSlide = note.IsSlideInternal();
             note.UpdateFlickTypeStep2();
+            note.DecideRenderingAsFlickOrSlide();
         }
 
         private static void OnFlickTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
@@ -436,6 +437,7 @@ namespace StarlightDirector.Entities {
             note.IsFlick = note.IsFlickInternal();
             note.IsTap = note.IsTapInternal();
             note.IsSlide = note.IsSlideInternal();
+            note.DecideRenderingAsFlickOrSlide();
         }
 
         private static void OnExtraParamsChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
@@ -487,7 +489,9 @@ namespace StarlightDirector.Entities {
                     }
                 }
             }
+        }
 
+        private void DecideRenderingAsFlickOrSlide() {
             if (IsFlick || IsSlide) {
                 if (IsSlide) {
                     ShouldBeRenderedAsSlide = !HasNextFlickOrSlide || !NextFlickOrSlideNote.IsFlick;

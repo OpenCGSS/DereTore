@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -220,34 +221,38 @@ namespace StarlightDirector.UI.Controls {
             block.Inlines.Add($"Timing: {note.HitTiming:0.000000}s");
 
             string noteTypeString;
-            string noteExtra = null;
             if (note.IsTap) {
                 noteTypeString = "Tap";
-                if (note.IsHoldEnd) {
-                    noteExtra += "Hold: end";
-                }
             } else if (note.IsFlick) {
-                noteTypeString = "Flick";
-                noteExtra = note.FlickType == NoteFlickType.FlickLeft ? "Flick: left" : "Flick: right";
-                if (note.IsHoldEnd) {
-                    noteExtra += "; Hold: end";
-                }
+                noteTypeString = "Flick" + (note.FlickType == NoteFlickType.FlickLeft ? " (left)" : " (right)");
             } else if (note.IsHold) {
                 noteTypeString = "Hold";
             } else if (note.IsSlide) {
                 noteTypeString = "Slide";
                 if (note.IsSlideStart) {
-                    noteExtra = "Slide: start";
+                    noteTypeString += "(start)";
                 } else if (note.IsSlideContinuation) {
-                    noteExtra = "Slide: continuation";
+                    noteTypeString += "(continued)";
                 } else if (note.IsSlideEnd) {
-                    noteExtra = "Slide: end";
+                    noteTypeString += "(end)";
                 }
             } else {
                 noteTypeString = "#ERR";
             }
-            if (note.IsSync) {
-                noteTypeString += " (synced)";
+            string noteExtra = null;
+            if (note.IsSync || note.IsHoldEnd) {
+                var syncStr = note.IsSync ? "sync" : null;
+                var holdEndStr = note.IsHoldEnd ? "hold-end" : null;
+                var extras = new[] { syncStr, holdEndStr };
+                noteExtra = extras.Aggregate((prev, val) => {
+                    if (string.IsNullOrEmpty(prev)) {
+                        return val;
+                    }
+                    if (string.IsNullOrEmpty(val)) {
+                        return prev;
+                    }
+                    return prev + ", " + val;
+                });
             }
             block.Inlines.Add(new LineBreak());
             block.Inlines.Add($"Type: {noteTypeString}");
@@ -257,9 +262,9 @@ namespace StarlightDirector.UI.Controls {
             }
 
             block.Inlines.Add(new LineBreak());
-            block.Inlines.Add($"Start: {note.StartPosition}");
+            block.Inlines.Add($"Start: {(int)note.StartPosition}");
             block.Inlines.Add(new LineBreak());
-            block.Inlines.Add($"Finish: {note.FinishPosition}");
+            block.Inlines.Add($"Finish: {(int)note.FinishPosition}");
         }
 
         private void ScoreNote_MouseLeave(object sender, MouseEventArgs e) {
