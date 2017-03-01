@@ -69,7 +69,7 @@ namespace DereTore.Applications.ScoreViewer.Model {
         [Browsable(false)]
         public bool IsHoldPress => Type == NoteType.Hold && HasNextHold;
         [Browsable(false)]
-        public bool IsHoldRelease => Type == NoteType.Hold && HasPrevHold;
+        public bool IsHoldRelease => (Type == NoteType.TapOrFlick || Type == NoteType.Slide) && HasPrevHold;
         [Browsable(false)]
         public bool IsSlide => Type == NoteType.Slide;
         [Browsable(false)]
