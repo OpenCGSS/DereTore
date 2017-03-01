@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using StarlightDirector.Entities;
@@ -204,6 +205,65 @@ namespace StarlightDirector.UI.Controls {
                 }
             }
             e.Handled = true;
+        }
+
+        private void ScoreNote_MouseEnter(object sender, MouseEventArgs e) {
+            var block = NoteInfoBlock;
+            if (block == null) {
+                return;
+            }
+            var scoreNote = (ScoreNote)sender;
+            var note = scoreNote.Note;
+
+            block.Inlines.Add($"ID: {note.ID}");
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add($"Timing: {note.HitTiming:0.000000}s");
+
+            string noteTypeString;
+            string noteExtra = null;
+            if (note.IsTap) {
+                noteTypeString = "Tap";
+                if (note.IsHoldEnd) {
+                    noteExtra += "Hold: end";
+                }
+            } else if (note.IsFlick) {
+                noteTypeString = "Flick";
+                noteExtra = note.FlickType == NoteFlickType.FlickLeft ? "Flick: left" : "Flick: right";
+                if (note.IsHoldEnd) {
+                    noteExtra += "; Hold: end";
+                }
+            } else if (note.IsHold) {
+                noteTypeString = "Hold";
+            } else if (note.IsSlide) {
+                noteTypeString = "Slide";
+                if (note.IsSlideStart) {
+                    noteExtra = "Slide: start";
+                } else if (note.IsSlideContinuation) {
+                    noteExtra = "Slide: continuation";
+                } else if (note.IsSlideEnd) {
+                    noteExtra = "Slide: end";
+                }
+            } else {
+                noteTypeString = "#ERR";
+            }
+            if (note.IsSync) {
+                noteTypeString += " (synced)";
+            }
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add($"Type: {noteTypeString}");
+            if (!string.IsNullOrEmpty(noteExtra)) {
+                block.Inlines.Add(new LineBreak());
+                block.Inlines.Add(noteExtra);
+            }
+
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add($"Start: {note.StartPosition}");
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add($"Finish: {note.FinishPosition}");
+        }
+
+        private void ScoreNote_MouseLeave(object sender, MouseEventArgs e) {
+            NoteInfoBlock?.Inlines.Clear();
         }
 
         private void ScoreEditor_OnMouseDown(object sender, MouseButtonEventArgs e) {

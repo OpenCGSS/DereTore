@@ -217,12 +217,26 @@
             </fluent:RibbonTabItem>
         </fluent:Ribbon>
         <Grid Grid.Row="2" Background="#FF181818" x:Name="EditorGrid" Visibility="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}, ConverterParameter={StaticResource True}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Row="2" Grid.Column="2" x:Name="NoteInfo" Foreground="White" Margin="30 10"/>
             <!-- CustomScroll.ScrollSpeed is still needed because when the ComboBox item is selected, the ScrollViewer has not been set yet. -->
-            <ScrollViewer Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="5" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
+            <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
+                          x:Name="ScrollViewer" ui:CustomScroll.ScrollSpeed="5" PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel"
                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <Grid>
-                    <controls:ScoreEditor x:Name="Editor" MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
-                                      HorizontalAlignment="Center" ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}">
+                    <controls:ScoreEditor x:Name="Editor"
+                                          MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
+                                          HorizontalAlignment="Center" ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}"
+                                          NoteInfoBlock="{Binding ElementName=NoteInfo, Mode=OneTime}">
                         <controls:ScoreEditor.ContextMenu>
                             <fluent:ContextMenu>
                                 <fluent:MenuItem Header="Add s_pecial note">
@@ -233,7 +247,8 @@
                     </controls:ScoreEditor>
                 </Grid>
             </ScrollViewer>
-            <primitives:ScrollViewerThumbnail ScrollViewer="{Binding ElementName=ScrollViewer, Mode=OneTime}"
+            <primitives:ScrollViewerThumbnail Grid.Column="0" Grid.Row="0" Grid.RowSpan="3" Grid.ColumnSpan="3"
+                                              ScrollViewer="{Binding ElementName=ScrollViewer, Mode=OneTime}"
                                               Width="150" HorizontalAlignment="Left" VerticalAlignment="Stretch" Margin="10"/>
         </Grid>
         <Grid Grid.Row="2" Background="#FF181818" Visibility="{Binding ElementName=ScorePreviewer, Path=IsPreviewing, Converter={StaticResource NullableBooleanToVisibilityConverter}}">

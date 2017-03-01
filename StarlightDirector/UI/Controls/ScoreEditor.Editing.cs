@@ -114,6 +114,8 @@ namespace StarlightDirector.UI.Controls {
             scoreNote.MouseDown += ScoreNote_MouseDown;
             scoreNote.MouseUp += ScoreNote_MouseUp;
             scoreNote.MouseDoubleClick += ScoreNote_MouseDoubleClick;
+            scoreNote.MouseEnter += ScoreNote_MouseEnter;
+            scoreNote.MouseLeave += ScoreNote_MouseLeave;
             if (dataTemplate == null) {
                 Project.IsChanged = true;
             }
@@ -142,6 +144,8 @@ namespace StarlightDirector.UI.Controls {
             scoreNote.MouseDown -= ScoreNote_MouseDown;
             scoreNote.MouseUp -= ScoreNote_MouseUp;
             scoreNote.MouseDoubleClick -= ScoreNote_MouseDoubleClick;
+            scoreNote.MouseEnter -= ScoreNote_MouseEnter;
+            scoreNote.MouseLeave -= ScoreNote_MouseLeave;
             scoreNote.ContextMenu = null;
             EditableScoreNotes.Remove(scoreNote);
             LineLayer.NoteRelations.RemoveAll(scoreNote);
