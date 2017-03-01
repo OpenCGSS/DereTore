@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using StarlightDirector.Entities;
@@ -137,14 +139,14 @@ namespace StarlightDirector.UI.Controls {
                         throw new ArgumentOutOfRangeException(nameof(mode));
                     }
                     var first = ns < ne ? ns : ne;
+                    var second = first.Equals(ns) ? ne : ns;
                     if (ns.Bar == ne.Bar && ns.IndexInGrid == ne.IndexInGrid && !ns.IsSync && !ne.IsSync) {
                         // sync
                         Note.ConnectSync(ns, ne);
                         LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
                         LineLayer.InvalidateVisual();
-                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart)) {
+                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart) && !second.IsFlick) {
                         // flick
-                        var second = first.Equals(ns) ? ne : ns;
                         if (first.HasNextFlickOrSlide || second.HasPrevFlickOrSlide) {
                             MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationIsFullPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             return;
@@ -152,7 +154,7 @@ namespace StarlightDirector.UI.Controls {
                         Note.ConnectFlick(first, second);
                         LineLayer.NoteRelations.Add(start, end, NoteRelation.FlickOrSlide);
                         LineLayer.InvalidateVisual();
-                    } else if (ns.FinishPosition == ne.FinishPosition && !ns.IsHold && !ne.IsHold && !first.IsFlick) {
+                    } else if (ns.FinishPosition == ne.FinishPosition && !ns.IsHold && !ne.IsHold && !first.IsFlick && !first.IsSlide && !second.IsSlide) {
                         // hold
                         var anyObstacles = Score.Notes.AnyNoteBetween(ns, ne);
                         if (anyObstacles) {
@@ -204,6 +206,74 @@ namespace StarlightDirector.UI.Controls {
                 }
             }
             e.Handled = true;
+        }
+
+        private void ScoreNote_MouseEnter(object sender, MouseEventArgs e) {
+            var block = NoteInfoBlock;
+            if (block == null) {
+                return;
+            }
+            var scoreNote = (ScoreNote)sender;
+            var note = scoreNote.Note;
+
+            block.Inlines.Add($"ID: {note.ID}");
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add($"Timing: {note.HitTiming:0.000000}s");
+
+            string noteTypeString;
+            if (note.IsTap) {
+                noteTypeString = "Tap";
+            } else if (note.IsFlick) {
+                noteTypeString = "Flick";
+            } else if (note.IsHold) {
+                noteTypeString = "Hold";
+            } else if (note.IsSlide) {
+                noteTypeString = "Slide";
+                if (note.IsSlideStart) {
+                    noteTypeString += " (start)";
+                } else if (note.IsSlideContinuation) {
+                    noteTypeString += " (continued)";
+                } else if (note.IsSlideEnd) {
+                    noteTypeString += " (end)";
+                }
+            } else {
+                noteTypeString = "#ERR";
+            }
+            string noteExtra = null;
+            if (note.IsSync || note.IsHoldEnd) {
+                var syncStr = note.IsSync ? "sync" : null;
+                var holdEndStr = note.IsHoldEnd ? "hold-end" : null;
+                var extras = new[] { syncStr, holdEndStr };
+                noteExtra = extras.Aggregate((prev, val) => {
+                    if (string.IsNullOrEmpty(prev)) {
+                        return val;
+                    }
+                    if (string.IsNullOrEmpty(val)) {
+                        return prev;
+                    }
+                    return prev + ", " + val;
+                });
+            }
+            var flickStr = note.FlickType != NoteFlickType.Tap ? (note.FlickType == NoteFlickType.FlickLeft ? "left" : "right") : null;
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add($"Type: {noteTypeString}");
+            if (!string.IsNullOrEmpty(noteExtra)) {
+                block.Inlines.Add(new LineBreak());
+                block.Inlines.Add(noteExtra);
+            }
+            if (!string.IsNullOrEmpty(flickStr)) {
+                block.Inlines.Add(new LineBreak());
+                block.Inlines.Add($"Flick: {flickStr}");
+            }
+
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add($"Start: {(int)note.StartPosition}");
+            block.Inlines.Add(new LineBreak());
+            block.Inlines.Add($"Finish: {(int)note.FinishPosition}");
+        }
+
+        private void ScoreNote_MouseLeave(object sender, MouseEventArgs e) {
+            NoteInfoBlock?.Inlines.Clear();
         }
 
         private void ScoreEditor_OnMouseDown(object sender, MouseButtonEventArgs e) {

@@ -97,7 +97,11 @@ namespace DereTore.Applications.ScoreViewer.Controls {
                 switch (note.Type) {
                     case NoteType.TapOrFlick:
                         if (note.FlickType == NoteStatus.Tap) {
-                            DrawTapNote(renderParams, note);
+                            if (note.IsHoldRelease) {
+                                DrawHoldNote(renderParams, note);
+                            } else {
+                                DrawTapNote(renderParams, note);
+                            }
                         } else {
                             DrawFlickNote(renderParams, note);
                         }
