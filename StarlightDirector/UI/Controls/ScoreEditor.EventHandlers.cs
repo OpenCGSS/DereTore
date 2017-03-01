@@ -137,14 +137,14 @@ namespace StarlightDirector.UI.Controls {
                         throw new ArgumentOutOfRangeException(nameof(mode));
                     }
                     var first = ns < ne ? ns : ne;
+                    var second = first.Equals(ns) ? ne : ns;
                     if (ns.Bar == ne.Bar && ns.IndexInGrid == ne.IndexInGrid && !ns.IsSync && !ne.IsSync) {
                         // sync
                         Note.ConnectSync(ns, ne);
                         LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
                         LineLayer.InvalidateVisual();
-                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart)) {
+                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart) && !second.IsFlick) {
                         // flick
-                        var second = first.Equals(ns) ? ne : ns;
                         if (first.HasNextFlickOrSlide || second.HasPrevFlickOrSlide) {
                             MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationIsFullPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                             return;
@@ -152,7 +152,7 @@ namespace StarlightDirector.UI.Controls {
                         Note.ConnectFlick(first, second);
                         LineLayer.NoteRelations.Add(start, end, NoteRelation.FlickOrSlide);
                         LineLayer.InvalidateVisual();
-                    } else if (ns.FinishPosition == ne.FinishPosition && !ns.IsHold && !ne.IsHold && !first.IsFlick) {
+                    } else if (ns.FinishPosition == ne.FinishPosition && !ns.IsHold && !ne.IsHold && !first.IsFlick && !first.IsSlide && !second.IsSlide) {
                         // hold
                         var anyObstacles = Score.Notes.AnyNoteBetween(ns, ne);
                         if (anyObstacles) {

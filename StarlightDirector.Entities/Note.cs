@@ -490,7 +490,7 @@ namespace StarlightDirector.Entities {
 
             if (IsFlick || IsSlide) {
                 if (IsSlide) {
-                    ShouldBeRenderedAsSlide = HasNextFlickOrSlide && !NextFlickOrSlideNote.IsFlick;
+                    ShouldBeRenderedAsSlide = !HasNextFlickOrSlide || !NextFlickOrSlideNote.IsFlick;
                 } else {
                     ShouldBeRenderedAsSlide = false;
                 }
