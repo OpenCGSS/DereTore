@@ -224,17 +224,17 @@ namespace StarlightDirector.UI.Controls {
             if (note.IsTap) {
                 noteTypeString = "Tap";
             } else if (note.IsFlick) {
-                noteTypeString = "Flick" + (note.FlickType == NoteFlickType.FlickLeft ? " (left)" : " (right)");
+                noteTypeString = "Flick";
             } else if (note.IsHold) {
                 noteTypeString = "Hold";
             } else if (note.IsSlide) {
                 noteTypeString = "Slide";
                 if (note.IsSlideStart) {
-                    noteTypeString += "(start)";
+                    noteTypeString += " (start)";
                 } else if (note.IsSlideContinuation) {
-                    noteTypeString += "(continued)";
+                    noteTypeString += " (continued)";
                 } else if (note.IsSlideEnd) {
-                    noteTypeString += "(end)";
+                    noteTypeString += " (end)";
                 }
             } else {
                 noteTypeString = "#ERR";
@@ -254,11 +254,16 @@ namespace StarlightDirector.UI.Controls {
                     return prev + ", " + val;
                 });
             }
+            var flickStr = note.FlickType != NoteFlickType.Tap ? (note.FlickType == NoteFlickType.FlickLeft ? "left" : "right") : null;
             block.Inlines.Add(new LineBreak());
             block.Inlines.Add($"Type: {noteTypeString}");
             if (!string.IsNullOrEmpty(noteExtra)) {
                 block.Inlines.Add(new LineBreak());
                 block.Inlines.Add(noteExtra);
+            }
+            if (!string.IsNullOrEmpty(flickStr)) {
+                block.Inlines.Add(new LineBreak());
+                block.Inlines.Add($"Flick: {flickStr}");
             }
 
             block.Inlines.Add(new LineBreak());

@@ -173,7 +173,7 @@ namespace StarlightDirector.Entities {
 
         public bool IsSlideStart => Type == NoteType.Slide && !HasPrevFlickOrSlide && HasNextFlickOrSlide;
 
-        public bool IsSlideContinuation => Type == NoteType.Slide && HasPrevFlickOrSlide && HasNextFlickOrSlide;
+        public bool IsSlideContinuation => Type == NoteType.Slide && HasPrevFlickOrSlide && HasNextFlickOrSlide && PrevFlickOrSlideNote.IsSlide && NextFlickOrSlideNote.IsSlide;
 
         public bool IsSlideEnd => Type == NoteType.Slide && !HasNextFlickOrSlide && HasPrevFlickOrSlide;
 
