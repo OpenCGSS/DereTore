@@ -88,7 +88,7 @@ namespace StarlightDirector.UI.Controls {
                     continue;
 
                 NoteDrawType drawType;
-                if (note.IsHoldStart) {
+                if (note.IsHoldStart || (note.IsHoldEnd && note.IsTap)) {
                     drawType = NoteDrawType.Hold;
                 } else if (note.ShouldBeRenderedAsFlick) {
                     drawType = (NoteDrawType)note.FlickType;
