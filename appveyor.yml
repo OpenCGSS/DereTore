@@ -48,6 +48,12 @@ artifacts:
     name: WithVersion
   - path: deretore-toolkit-%PLATFORM%.zip
     name: Static
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
 deploy:
   - provider: GitHub
     tag: all-build_$(appveyor_build_version)-alpha
