@@ -19,22 +19,28 @@ environment:
 before_build:
   nuget restore
 after_build:
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip %APPVEYOR_BUILD_FOLDER%/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/StarlightDirector.exe.config
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.mdb
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.wav
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/DereTore.Applications.ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.wav
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - 7z a deretore-toolkit.zip %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/StarlightDirector.exe.config
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.mdb
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.wav
+  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.wav
   - copy deretore-toolkit.zip deretore-toolkit-%PLATFORM%-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
   - copy deretore-toolkit.zip deretore-toolkit-%PLATFORM%.zip
 artifacts:
@@ -42,6 +48,12 @@ artifacts:
     name: WithVersion
   - path: deretore-toolkit-%PLATFORM%.zip
     name: Static
+assembly_info:
+  patch: true
+  file: AssemblyInfo.*
+  assembly_version: "{version}"
+  assembly_file_version: "{version}"
+  assembly_informational_version: "{version}"
 deploy:
   - provider: GitHub
     tag: all-build_$(appveyor_build_version)-alpha
