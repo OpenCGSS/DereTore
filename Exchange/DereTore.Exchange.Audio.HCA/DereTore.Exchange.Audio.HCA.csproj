@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7C6FADD7-A0BB-4BF3-8992-3D89ACE1CC69}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DereTore.Exchange.Audio.HCA</RootNamespace>
+    <AssemblyName>DereTore.Exchange.Audio.HCA</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>default</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActionResult.cs" />
+    <Compile Include="Ath.cs" />
+    <Compile Include="AudioParams.cs" />
+    <Compile Include="HcaAudioStream.cs" />
+    <Compile Include="HcaAudioStreamBase.cs" />
+    <Compile Include="HcaAudioStreamDecodeState.cs" />
+    <Compile Include="HcaDecoder.Internal.cs" />
+    <Compile Include="HcaEncoderInfo.cs" />
+    <Compile Include="IWaveWriter.cs" />
+    <Compile Include="OneWayHcaDecoder.cs" />
+    <Compile Include="Channel.cs" />
+    <Compile Include="ChannelTables.cs" />
+    <Compile Include="Cipher.cs" />
+    <Compile Include="CipherConfig.cs" />
+    <Compile Include="CipherType.cs" />
+    <Compile Include="DataBits.cs" />
+    <Compile Include="DecodeParams.cs" />
+    <Compile Include="ErrorMessages.cs" />
+    <Compile Include="OneWayHcaAudioStream.cs" />
+    <Compile Include="CipherConverter.cs" />
+    <Compile Include="HcaDecoder.Private.cs" />
+    <Compile Include="HcaException.cs" />
+    <Compile Include="HcaReader.cs" />
+    <Compile Include="HcaInfo.cs" />
+    <Compile Include="HcaHelper.cs" />
+    <Compile Include="Native\AthHeader.cs" />
+    <Compile Include="Native\CipherHeader.cs" />
+    <Compile Include="Native\CommentHeader.cs" />
+    <Compile Include="Native\CompressHeader.cs" />
+    <Compile Include="Native\DecodeHeader.cs" />
+    <Compile Include="Native\FormatHeader.cs" />
+    <Compile Include="HcaDecoder.cs" />
+    <Compile Include="Native\HcaHeader.cs" />
+    <Compile Include="Native\LoopHeader.cs" />
+    <Compile Include="Native\RvaHeader.cs" />
+    <Compile Include="Native\VbrHeader.cs" />
+    <Compile Include="Native\WaveDataSection.cs" />
+    <Compile Include="Native\WaveRiffSection.cs" />
+    <Compile Include="Native\WaveNoteSection.cs" />
+    <Compile Include="Native\WaveSampleSection.cs" />
+    <Compile Include="MagicValues.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SamplingMode.cs" />
+    <Compile Include="WaveHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\DereTore.Common.StarlightStage\DereTore.Common.StarlightStage.csproj">
+      <Project>{abd7f1b5-c4e3-4200-8e44-98b183dfee2c}</Project>
+      <Name>DereTore.Common.StarlightStage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\DereTore.Common\DereTore.Common.csproj">
+      <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
+      <Name>DereTore.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
