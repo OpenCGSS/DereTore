@@ -145,7 +145,7 @@ namespace StarlightDirector.UI.Controls {
                         Note.ConnectSync(ns, ne);
                         LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
                         LineLayer.InvalidateVisual();
-                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart) && !second.IsFlick) {
+                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart) && (first.IsSlide == second.IsSlide)) {
                         // flick
                         if (first.HasNextFlickOrSlide || second.HasPrevFlickOrSlide) {
                             MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationIsFullPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -185,24 +185,22 @@ namespace StarlightDirector.UI.Controls {
             }
             var scoreNote = (ScoreNote)sender;
             var note = scoreNote.Note;
-            if (note.IsHoldEnd) {
-                if (note > note.HoldTarget) {
-                    switch (note.FlickType) {
-                        case NoteFlickType.Tap:
-                            note.FlickType = NoteFlickType.FlickLeft;
-                            Project.IsChanged = true;
-                            break;
-                        case NoteFlickType.FlickLeft:
-                            note.FlickType = NoteFlickType.FlickRight;
-                            Project.IsChanged = true;
-                            break;
-                        case NoteFlickType.FlickRight:
-                            note.FlickType = NoteFlickType.Tap;
-                            Project.IsChanged = true;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(note.FlickType));
-                    }
+            if (note.IsHoldEnd || note.IsSlideEnd) {
+                switch (note.FlickType) {
+                    case NoteFlickType.Tap:
+                        note.FlickType = NoteFlickType.FlickLeft;
+                        Project.IsChanged = true;
+                        break;
+                    case NoteFlickType.FlickLeft:
+                        note.FlickType = NoteFlickType.FlickRight;
+                        Project.IsChanged = true;
+                        break;
+                    case NoteFlickType.FlickRight:
+                        note.FlickType = NoteFlickType.Tap;
+                        Project.IsChanged = true;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(note.FlickType));
                 }
             }
             e.Handled = true;

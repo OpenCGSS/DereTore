@@ -492,7 +492,7 @@ namespace StarlightDirector.Entities {
         private void DecideRenderingAsFlickOrSlide() {
             if (IsFlick || IsSlide) {
                 if (IsSlide) {
-                    ShouldBeRenderedAsSlide = !HasNextFlickOrSlide || !NextFlickOrSlideNote.IsFlick;
+                    ShouldBeRenderedAsSlide = FlickType == NoteFlickType.Tap && (!HasNextFlickOrSlide || !NextFlickOrSlideNote.IsFlick);
                 } else {
                     ShouldBeRenderedAsSlide = false;
                 }
