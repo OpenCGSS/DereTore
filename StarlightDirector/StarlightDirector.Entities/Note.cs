@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using DereTore.Common;
 using Newtonsoft.Json;
@@ -75,6 +76,7 @@ namespace StarlightDirector.Entities {
                 _prevFlickOrSlideNote = value;
                 UpdateFlickTypeStep2();
                 PrevFlickOrSlideNoteID = value?.ID ?? EntityID.Invalid;
+                DecideRenderingAsFlickOrSlide();
             }
         }
 
@@ -90,6 +92,7 @@ namespace StarlightDirector.Entities {
                 _nextFlickOrSlideNote = value;
                 UpdateFlickTypeStep2();
                 NextFlickOrSlideNoteID = value?.ID ?? EntityID.Invalid;
+                DecideRenderingAsFlickOrSlide();
             }
         }
 
@@ -387,18 +390,27 @@ namespace StarlightDirector.Entities {
 
         internal void Reset() {
             if (NextFlickOrSlideNote != null) {
-                NextFlickOrSlideNote.PrevFlickOrSlideNote = null;
+                var next = NextFlickOrSlideNote;
+                next.PrevFlickOrSlideNote = null;
+                if (next.IsSlide && !next.IsSlideStart) {
+                    next.Type = NoteType.TapOrFlick;
+                }
             }
             NextFlickOrSlideNote = null;
             if (PrevFlickOrSlideNote != null) {
-                PrevFlickOrSlideNote.NextFlickOrSlideNote = null;
+                var prev = PrevFlickOrSlideNote;
+                prev.NextFlickOrSlideNote = null;
+                if (prev.IsSlide && !prev.IsSlideEnd) {
+                    prev.Type = NoteType.TapOrFlick;
+                }
             }
             PrevFlickOrSlideNote = null;
             if (HoldTarget != null) {
-                HoldTarget.HoldTarget = null;
-                if (HoldTarget != null) {
-                    if (!HoldTarget.HasNextFlickOrSlide && !HoldTarget.HasPrevFlickOrSlide && HoldTarget.FlickType != NoteFlickType.Tap) {
-                        HoldTarget.FlickType = NoteFlickType.Tap;
+                var hold = HoldTarget;
+                hold.HoldTarget = null;
+                if (hold != null) {
+                    if (!hold.HasNextFlickOrSlide && !hold.HasPrevFlickOrSlide && hold.FlickType != NoteFlickType.Tap) {
+                        hold.FlickType = NoteFlickType.Tap;
                     }
                 }
             }
@@ -496,6 +508,7 @@ namespace StarlightDirector.Entities {
                 } else {
                     ShouldBeRenderedAsSlide = false;
                 }
+                Debug.Print("Should be rendered as slide: {0}, ID={1}, reason: hasnextflickorslide={2}, nextisflick={3}", ShouldBeRenderedAsSlide, ID, HasNextFlickOrSlide, HasNextFlickOrSlide ? NextFlickOrSlideNote.IsFlick.ToString() : "null");
                 ShouldBeRenderedAsFlick = !ShouldBeRenderedAsSlide;
             } else {
                 ShouldBeRenderedAsFlick = ShouldBeRenderedAsSlide = false;
