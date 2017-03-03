@@ -440,6 +440,12 @@ namespace StarlightDirector.Entities {
             note.IsSlide = note.IsSlideInternal();
             note.UpdateFlickTypeStep2();
             note.DecideRenderingAsFlickOrSlide();
+
+            if (note.IsFlick) {
+                note.UpdateAsFlickNote();
+            } else if (note.IsSlide) {
+                note.UpdateAsSlideNote();
+            }
         }
 
         private static void OnFlickTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
@@ -534,6 +540,20 @@ namespace StarlightDirector.Entities {
         private void SetNextSyncTargetInternal(Note next) {
             _nextSyncTarget = next;
             IsSync = _prevSyncTarget != null || _nextSyncTarget != null;
+        }
+
+        private void UpdateAsSlideNote() {
+            if (HasPrevFlickOrSlide && PrevFlickOrSlideNote.IsSlide) {
+                PrevFlickOrSlideNote.FlickType = NoteFlickType.Tap;
+            }
+        }
+
+        private void UpdateAsFlickNote() {
+            if (HasPrevFlickOrSlide && PrevFlickOrSlideNote.IsSlide) {
+                var pos1 = (int)PrevFlickOrSlideNote.FinishPosition;
+                var pos2 = (int)FinishPosition;
+                PrevFlickOrSlideNote.FlickType = pos2 >= pos1 ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
+            }
         }
 
         private Note _prevFlickOrSlideNote;

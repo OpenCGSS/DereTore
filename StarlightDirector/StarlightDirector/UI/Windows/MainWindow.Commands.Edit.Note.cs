@@ -128,28 +128,29 @@ namespace StarlightDirector.UI.Windows {
         private void CmdEditNoteSetSlideTypeToSlide_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             var notes = Editor.GetSelectedScoreNotes();
             var scoreNotes = notes as List<ScoreNote> ?? notes.ToList();
-            if (scoreNotes.Count == 0) {
-                e.CanExecute = false;
-                return;
-            }
-            if (scoreNotes.Count == 1) {
-                var note = scoreNotes[0].Note;
-                if (note.HasPrevFlickOrSlide || note.HasNextFlickOrSlide) {
+            switch (scoreNotes.Count) {
+                case 0:
                     e.CanExecute = false;
                     return;
-                }
+                case 1:
+                    var note = scoreNotes[0].Note;
+                    if (note.HasPrevFlickOrSlide || note.HasNextFlickOrSlide) {
+                        e.CanExecute = false;
+                        return;
+                    }
+                    break;
             }
 
             Note groupPrevNote = null;
             scoreNotes.Sort((c1, c2) => Note.TimingThenPositionComparison(c1.Note, c2.Note));
             foreach (var scoreNote in scoreNotes) {
                 var note = scoreNote.Note;
-                if (!note.IsFlick && !note.IsSlide || note.IsHoldEnd) {
+                if ((!note.IsFlick && !note.IsSlide) || note.IsHoldEnd) {
                     e.CanExecute = false;
                     return;
                 }
                 var prevNote = note.PrevFlickOrSlideNote;
-                if (prevNote != null && prevNote != groupPrevNote) {
+                if (prevNote != null && prevNote != groupPrevNote && !prevNote.IsSlide) {
                     e.CanExecute = false;
                     return;
                 }

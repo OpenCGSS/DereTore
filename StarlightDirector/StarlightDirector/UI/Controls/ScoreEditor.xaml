@@ -20,6 +20,7 @@
         <Grid.LayoutTransform>
             <ScaleTransform ScaleY="-1" ScaleX="1" />
         </Grid.LayoutTransform>
+        <Canvas Grid.Column="2" Name="SpecialNoteLayer" Background="Transparent"/>
         <Grid Name="ContentsGrid" Grid.Column="1">
             <Canvas Name="BarLayer" SizeChanged="BarLayer_OnSizeChanged"/>
             <Canvas Name="EditingLineLayer">
@@ -29,6 +30,5 @@
             <primitives:LineLayer x:Name="LineLayer"/>
             <Canvas Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
         </Grid>
-        <Canvas Grid.Column="2" Name="SpecialNoteLayer" Background="Transparent"/>
     </Grid>
 </controls:ScoreViewerBase>
