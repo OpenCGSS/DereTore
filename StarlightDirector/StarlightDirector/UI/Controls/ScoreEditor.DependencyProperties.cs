@@ -21,14 +21,22 @@ namespace StarlightDirector.UI.Controls {
             set { SetValue(NoteInfoBlockProperty, value); }
         }
 
+        public ContextMenu ExtraNotesContextMenu {
+            get { return (ContextMenu)GetValue(ExtraNotesContextMenuProperty); }
+            set { SetValue(ExtraNotesContextMenuProperty, value); }
+        }
+
         public static readonly DependencyProperty EditModeProperty = DependencyProperty.Register(nameof(EditMode), typeof(EditMode), typeof(ScoreEditor),
-            new PropertyMetadata(EditMode.Select));
+            new PropertyMetadata(EditMode.CreateRelations));
 
         public static readonly DependencyProperty ProjectProperty = DependencyProperty.Register(nameof(Project), typeof(Project), typeof(ScoreEditor),
             new PropertyMetadata(null, OnProjectChanged));
 
         public static readonly DependencyProperty NoteInfoBlockProperty = DependencyProperty.Register(nameof(NoteInfoBlock), typeof(TextBlock), typeof(ScoreEditor),
             new PropertyMetadata(null));
+
+        public static readonly DependencyProperty ExtraNotesContextMenuProperty = DependencyProperty.Register(nameof(ExtraNotesContextMenu), typeof(ContextMenu), typeof(ScoreEditor),
+            new PropertyMetadata(null, OnExtraNotesContextMenuChanged));
 
         private static void OnProjectChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
             var editor = (ScoreEditor)obj;
@@ -41,6 +49,11 @@ namespace StarlightDirector.UI.Controls {
                 newProject.GlobalSettingsChanged += editor.OnScoreGlobalSettingsChanged;
             }
             CommandManager.InvalidateRequerySuggested();
+        }
+
+        private static void OnExtraNotesContextMenuChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
+            var editor = (ScoreEditor)obj;
+            editor.SpecialNoteLayer.ContextMenu = (ContextMenu)e.NewValue;
         }
 
     }

@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using DereTore.Common;
 using StarlightDirector.Entities;
 using StarlightDirector.Entities.Extensions;
 using StarlightDirector.Extensions;
@@ -75,14 +76,21 @@ namespace StarlightDirector.UI.Controls {
                 return;
             }
             var scoreNote = (ScoreNote)sender;
-            if (scoreNote.IsSelected) {
-                scoreNote.IsSelected = EditMode != EditMode.Select;
+            var isControlPressed = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+            if (isControlPressed) {
+                scoreNote.IsSelected = !scoreNote.IsSelected;
             } else {
-                scoreNote.IsSelected = true;
+                var originalSelected = scoreNote.IsSelected;
+                var originalMoreThanOneSelectedNotes = GetSelectedScoreNotes().CountMoreThan(1);
+                UnselectAllScoreNotes();
+                // !originalSelected || (originalSelected && originalAnySelectedNotes)
+                if (!originalSelected || originalMoreThanOneSelectedNotes) {
+                    scoreNote.IsSelected = true;
+                }
             }
-            if (scoreNote.IsSelected && EditMode != EditMode.Select && EditMode != EditMode.Clear) {
+            if (scoreNote.IsSelected && EditMode != EditMode.ResetNote) {
                 switch (EditMode) {
-                    case EditMode.Relations:
+                    case EditMode.CreateRelations:
                         EditingLine.Stroke = LineLayer.RelationBrush;
                         break;
                     default:
@@ -112,14 +120,11 @@ namespace StarlightDirector.UI.Controls {
             Debug.Assert(DraggingEndNote != null, "DraggingEndNote != null");
             if (DraggingStartNote != null && DraggingEndNote != null) {
                 var mode = EditMode;
-                if (mode == EditMode.Select) {
-                    return;
-                }
                 var start = DraggingStartNote;
                 var end = DraggingEndNote;
                 var ns = start.Note;
                 var ne = end.Note;
-                if (mode == EditMode.Clear) {
+                if (mode == EditMode.ResetNote) {
                     ns.Reset();
                     LineLayer.NoteRelations.RemoveAll(start, NoteRelation.Hold);
                     LineLayer.NoteRelations.RemoveAll(start, NoteRelation.FlickOrSlide);
@@ -135,7 +140,7 @@ namespace StarlightDirector.UI.Controls {
                         MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.NoteRelationAlreadyExistsPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
                         return;
                     }
-                    if (mode != EditMode.Relations) {
+                    if (mode != EditMode.CreateRelations) {
                         throw new ArgumentOutOfRangeException(nameof(mode));
                     }
                     var first = ns < ne ? ns : ne;
@@ -145,7 +150,7 @@ namespace StarlightDirector.UI.Controls {
                         Note.ConnectSync(ns, ne);
                         LineLayer.NoteRelations.Add(start, end, NoteRelation.Sync);
                         LineLayer.InvalidateVisual();
-                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart) && !second.IsFlick) {
+                    } else if (ns.FinishPosition != ne.FinishPosition && (ns.Bar != ne.Bar || ns.IndexInGrid != ne.IndexInGrid) && (!ns.IsHoldStart && !ne.IsHoldStart) && (first.IsSlide == second.IsSlide)) {
                         // flick
                         if (first.HasNextFlickOrSlide || second.HasPrevFlickOrSlide) {
                             MessageBox.Show(Application.Current.FindResource<string>(App.ResourceKeys.FlickRelationIsFullPrompt), App.Title, MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -185,24 +190,22 @@ namespace StarlightDirector.UI.Controls {
             }
             var scoreNote = (ScoreNote)sender;
             var note = scoreNote.Note;
-            if (note.IsHoldEnd) {
-                if (note > note.HoldTarget) {
-                    switch (note.FlickType) {
-                        case NoteFlickType.Tap:
-                            note.FlickType = NoteFlickType.FlickLeft;
-                            Project.IsChanged = true;
-                            break;
-                        case NoteFlickType.FlickLeft:
-                            note.FlickType = NoteFlickType.FlickRight;
-                            Project.IsChanged = true;
-                            break;
-                        case NoteFlickType.FlickRight:
-                            note.FlickType = NoteFlickType.Tap;
-                            Project.IsChanged = true;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(note.FlickType));
-                    }
+            if (note.IsHoldEnd || note.IsSlideEnd) {
+                switch (note.FlickType) {
+                    case NoteFlickType.Tap:
+                        note.FlickType = NoteFlickType.FlickLeft;
+                        Project.IsChanged = true;
+                        break;
+                    case NoteFlickType.FlickLeft:
+                        note.FlickType = NoteFlickType.FlickRight;
+                        Project.IsChanged = true;
+                        break;
+                    case NoteFlickType.FlickRight:
+                        note.FlickType = NoteFlickType.Tap;
+                        Project.IsChanged = true;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(note.FlickType));
                 }
             }
             e.Handled = true;
@@ -292,15 +295,12 @@ namespace StarlightDirector.UI.Controls {
                     var hitTestInfo = ((ScoreBar)element).HitTest(e.GetPosition(element));
                     LastHitTestInfo = hitTestInfo;
                 } else {
-                    ScoreBar s = null;
-                    foreach (var scoreBar in ScoreBars) {
-                        var top = Canvas.GetTop(scoreBar);
-                        var bottom = top + scoreBar.ActualHeight;
-                        if (top <= myPosition.Y && myPosition.Y < bottom) {
-                            s = scoreBar;
-                            break;
-                        }
-                    }
+                    var s = (from scoreBar in ScoreBars
+                                  let top = Canvas.GetTop(scoreBar)
+                                  let bottom = top + scoreBar.ActualHeight
+                                  where top <= myPosition.Y && myPosition.Y < bottom
+                                  select scoreBar)
+                                  .FirstOrDefault();
                     if (s != null) {
                         var hitTestInfo = s.HitTest(e.GetPosition(s));
                         LastHitTestInfo = hitTestInfo;

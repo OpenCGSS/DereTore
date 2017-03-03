@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using DereTore.Common;
 using Newtonsoft.Json;
@@ -75,6 +76,7 @@ namespace StarlightDirector.Entities {
                 _prevFlickOrSlideNote = value;
                 UpdateFlickTypeStep2();
                 PrevFlickOrSlideNoteID = value?.ID ?? EntityID.Invalid;
+                DecideRenderingAsFlickOrSlide();
             }
         }
 
@@ -90,6 +92,7 @@ namespace StarlightDirector.Entities {
                 _nextFlickOrSlideNote = value;
                 UpdateFlickTypeStep2();
                 NextFlickOrSlideNoteID = value?.ID ?? EntityID.Invalid;
+                DecideRenderingAsFlickOrSlide();
             }
         }
 
@@ -387,18 +390,27 @@ namespace StarlightDirector.Entities {
 
         internal void Reset() {
             if (NextFlickOrSlideNote != null) {
-                NextFlickOrSlideNote.PrevFlickOrSlideNote = null;
+                var next = NextFlickOrSlideNote;
+                next.PrevFlickOrSlideNote = null;
+                if (next.IsSlide && !next.IsSlideStart) {
+                    next.Type = NoteType.TapOrFlick;
+                }
             }
             NextFlickOrSlideNote = null;
             if (PrevFlickOrSlideNote != null) {
-                PrevFlickOrSlideNote.NextFlickOrSlideNote = null;
+                var prev = PrevFlickOrSlideNote;
+                prev.NextFlickOrSlideNote = null;
+                if (prev.IsSlide && !prev.IsSlideEnd) {
+                    prev.Type = NoteType.TapOrFlick;
+                }
             }
             PrevFlickOrSlideNote = null;
             if (HoldTarget != null) {
-                HoldTarget.HoldTarget = null;
-                if (HoldTarget != null) {
-                    if (!HoldTarget.HasNextFlickOrSlide && !HoldTarget.HasPrevFlickOrSlide && HoldTarget.FlickType != NoteFlickType.Tap) {
-                        HoldTarget.FlickType = NoteFlickType.Tap;
+                var hold = HoldTarget;
+                hold.HoldTarget = null;
+                if (hold != null) {
+                    if (!hold.HasNextFlickOrSlide && !hold.HasPrevFlickOrSlide && hold.FlickType != NoteFlickType.Tap) {
+                        hold.FlickType = NoteFlickType.Tap;
                     }
                 }
             }
@@ -428,6 +440,12 @@ namespace StarlightDirector.Entities {
             note.IsSlide = note.IsSlideInternal();
             note.UpdateFlickTypeStep2();
             note.DecideRenderingAsFlickOrSlide();
+
+            if (note.IsFlick) {
+                note.UpdateAsFlickNote();
+            } else if (note.IsSlide) {
+                note.UpdateAsSlideNote();
+            }
         }
 
         private static void OnFlickTypeChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e) {
@@ -492,7 +510,7 @@ namespace StarlightDirector.Entities {
         private void DecideRenderingAsFlickOrSlide() {
             if (IsFlick || IsSlide) {
                 if (IsSlide) {
-                    ShouldBeRenderedAsSlide = !HasNextFlickOrSlide || !NextFlickOrSlideNote.IsFlick;
+                    ShouldBeRenderedAsSlide = FlickType == NoteFlickType.Tap && (!HasNextFlickOrSlide || !NextFlickOrSlideNote.IsFlick);
                 } else {
                     ShouldBeRenderedAsSlide = false;
                 }
@@ -522,6 +540,20 @@ namespace StarlightDirector.Entities {
         private void SetNextSyncTargetInternal(Note next) {
             _nextSyncTarget = next;
             IsSync = _prevSyncTarget != null || _nextSyncTarget != null;
+        }
+
+        private void UpdateAsSlideNote() {
+            if (HasPrevFlickOrSlide && PrevFlickOrSlideNote.IsSlide) {
+                PrevFlickOrSlideNote.FlickType = NoteFlickType.Tap;
+            }
+        }
+
+        private void UpdateAsFlickNote() {
+            if (HasPrevFlickOrSlide && PrevFlickOrSlideNote.IsSlide) {
+                var pos1 = (int)PrevFlickOrSlideNote.FinishPosition;
+                var pos2 = (int)FinishPosition;
+                PrevFlickOrSlideNote.FlickType = pos2 >= pos1 ? NoteFlickType.FlickRight : NoteFlickType.FlickLeft;
+            }
         }
 
         private Note _prevFlickOrSlideNote;

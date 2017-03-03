@@ -1,9 +1,12 @@
-﻿namespace StarlightDirector.UI {
+﻿using System.ComponentModel;
+
+namespace StarlightDirector.UI {
     public enum EditMode {
 
-        Select,
-        Relations,
-        Clear
+        [Description("Mode: Create relations")]
+        CreateRelations,
+        [Description("Mode: Reset note")]
+        ResetNote
 
     }
 }

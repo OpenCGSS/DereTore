@@ -34,7 +34,7 @@ namespace StarlightDirector.UI.Controls.Primitives {
             row = (int)Math.Round((double)row / zoomMod) * zoomMod;
             var gridCrossingPosition = new Point(column * unitWidth, row * unitHeight);
             var distance = Point.Subtract(gridCrossingPosition, destPoint);
-            if (distance.Length > 2 * NoteRadius) {
+            if (distance.Length > HitTestRadiusScale * NoteRadius) {
                 return new ScoreBarHitTestInfo(this, Bar, new Point(), column, row, false, false);
             }
             if (column < 0 || column > columnCount - 1) {
@@ -132,6 +132,8 @@ namespace StarlightDirector.UI.Controls.Primitives {
         public static readonly int[] ZoomLevels = { 96, 48, 32, 24, 16, 12, 8, 6, 4, 3, 2, 1 };
         public static readonly int SignatureBase = ScoreSettings.DefaultGlobalGridPerSignature * ScoreSettings.DefaultGlobalSignature;
         public static readonly double ZoomFactor = 1.2;
+
+        private static readonly double HitTestRadiusScale = 1;
 
     }
 }

@@ -65,20 +65,12 @@
             </fluent:Ribbon.Menu>
             <fluent:RibbonTabItem Header="Home" KeyTip="H">
                 <fluent:RibbonGroupBox Header="Edit">
-                    <fluent:DropDownButton Header="Mode" Size="Large" LargeIcon="{StaticResource RibbonIconEditMode}">
-                        <fluent:MenuItem Header="_Select" Command="{x:Static local:MainWindow.CmdEditModeSelect}" Icon="{StaticResource RibbonIconEditModeSelect}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Select}}"/>
-                        <fluent:MenuItem Header="Create _relations" Command="{x:Static local:MainWindow.CmdEditModeEditRelations}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Relations}}"/>
-                        <fluent:MenuItem Header="_Clear relations" Command="{x:Static local:MainWindow.CmdEditModeClear}" Icon="{StaticResource RibbonIconEditModeClear}"
-                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.Clear}}"/>
+                    <fluent:DropDownButton Header="{Binding ElementName=Editor, Path=EditMode, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type ui:EditMode}, Mode=OneWay}" Size="Large" LargeIcon="{StaticResource RibbonIconEditMode}">
+                        <fluent:MenuItem Header="Create _relations" Command="{x:Static local:MainWindow.CmdEditModeCreateRelations}"
+                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.CreateRelations}}"/>
+                        <fluent:MenuItem Header="Reset _note" Command="{x:Static local:MainWindow.CmdEditModeResetNote}" Icon="{StaticResource RibbonIconEditModeClear}"
+                            IsChecked="{Binding ElementName=Editor, Path=EditMode, Mode=OneWay, Converter={StaticResource EditModeToIsCheckedConverter}, ConverterParameter={x:Static ui:EditMode.ResetNote}}"/>
                     </fluent:DropDownButton>
-                    <TextBlock Padding="4 2">
-                        <Run Text="Current: "/>
-                        <Bold>
-                            <Run Text="{Binding ElementName=Editor, Path=EditMode, Converter={StaticResource DescribedEnumToStringConverter}, ConverterParameter={x:Type ui:EditMode}, Mode=OneWay}"/>
-                        </Bold>
-                    </TextBlock>
                     <fluent:Button Header="Select All" Size="Middle" Command="{x:Static local:MainWindow.CmdEditSelectAll}" Icon="{StaticResource RibbonIconEditSelectAll}"/>
                 </fluent:RibbonGroupBox>
                 <fluent:RibbonGroupBox Header="Measure">
@@ -237,13 +229,13 @@
                                           MinHeight="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Path=ViewportHeight, Mode=OneWay}"
                                           HorizontalAlignment="Center" ScrollViewer="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=ScrollViewer}, Mode=OneWay}"
                                           NoteInfoBlock="{Binding ElementName=NoteInfo, Mode=OneTime}">
-                        <controls:ScoreEditor.ContextMenu>
+                        <controls:ScoreEditor.ExtraNotesContextMenu>
                             <fluent:ContextMenu>
                                 <fluent:MenuItem Header="Add s_pecial note">
                                     <fluent:MenuItem Header="_Variant BPM" Command="{x:Static local:MainWindow.CmdContextAddSpecialNoteVariantBpm}"/>
                                 </fluent:MenuItem>
                             </fluent:ContextMenu>
-                        </controls:ScoreEditor.ContextMenu>
+                        </controls:ScoreEditor.ExtraNotesContextMenu>
                     </controls:ScoreEditor>
                 </Grid>
             </ScrollViewer>
