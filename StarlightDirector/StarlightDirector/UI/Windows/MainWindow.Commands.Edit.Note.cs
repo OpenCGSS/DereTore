@@ -15,8 +15,8 @@ namespace StarlightDirector.UI.Windows {
         public static readonly ICommand CmdEditNoteStartPosition4 = CommandHelper.RegisterCommand("Ctrl+4");
         public static readonly ICommand CmdEditNoteStartPosition5 = CommandHelper.RegisterCommand("Ctrl+5");
         public static readonly ICommand CmdEditNoteDelete = CommandHelper.RegisterCommand("Delete");
-        public static readonly ICommand CmdEditNoteSetSlideTypeToFlick = CommandHelper.RegisterCommand();
-        public static readonly ICommand CmdEditNoteSetSlideTypeToSlide = CommandHelper.RegisterCommand();
+        public static readonly ICommand CmdEditNoteSetSlideTypeToFlick = CommandHelper.RegisterCommand("Ctrl+Shift+L");
+        public static readonly ICommand CmdEditNoteSetSlideTypeToSlide = CommandHelper.RegisterCommand("Ctrl+L");
 
         private void CmdEditNoteAdd_CanExecute(object sender, CanExecuteRoutedEventArgs e) {
             e.CanExecute = Editor.HasSingleSelectedScoreBar && false;
