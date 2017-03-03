@@ -508,7 +508,6 @@ namespace StarlightDirector.Entities {
                 } else {
                     ShouldBeRenderedAsSlide = false;
                 }
-                Debug.Print("Should be rendered as slide: {0}, ID={1}, reason: hasnextflickorslide={2}, nextisflick={3}", ShouldBeRenderedAsSlide, ID, HasNextFlickOrSlide, HasNextFlickOrSlide ? NextFlickOrSlideNote.IsFlick.ToString() : "null");
                 ShouldBeRenderedAsFlick = !ShouldBeRenderedAsSlide;
             } else {
                 ShouldBeRenderedAsFlick = ShouldBeRenderedAsSlide = false;

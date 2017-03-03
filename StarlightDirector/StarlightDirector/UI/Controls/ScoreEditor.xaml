@@ -29,6 +29,6 @@
             <primitives:LineLayer x:Name="LineLayer"/>
             <Canvas Name="NoteLayer" SizeChanged="NoteLayer_OnSizeChanged"/>
         </Grid>
-        <Canvas Grid.Column="2" Name="SpecialNoteLayer"/>
+        <Canvas Grid.Column="2" Name="SpecialNoteLayer" Background="Transparent"/>
     </Grid>
 </controls:ScoreViewerBase>

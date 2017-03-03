@@ -41,6 +41,19 @@ namespace DereTore.Common {
             return stringBuilder.ToString();
         }
 
+        public static bool CountMoreThan<T>(this IEnumerable<T> enumerable, int n) {
+            var counter = 0;
+            using (var iter = enumerable.GetEnumerator()) {
+                while (iter.MoveNext()) {
+                    ++counter;
+                    if (counter > n) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         private static readonly string DefaultEnumerableStringSeparator = ", ";
 
     }
