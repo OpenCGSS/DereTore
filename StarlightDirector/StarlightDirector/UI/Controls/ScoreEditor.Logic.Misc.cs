@@ -9,7 +9,7 @@ namespace StarlightDirector.UI.Controls {
     partial class ScoreEditor {
 
         internal void UpdateBarTexts() {
-            var startTime = 0d;
+            var startTime = ScoreBars?.FirstOrDefault()?.Bar?.StartTime ?? 0d;
             foreach (var scoreBar in ScoreBars) {
                 scoreBar.UpdateBarIndexText();
                 scoreBar.UpdateBarTimeText(TimeSpan.FromSeconds(startTime));
