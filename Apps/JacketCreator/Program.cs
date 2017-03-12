@@ -23,7 +23,7 @@ namespace DereTore.Apps.JacketCreator {
 
             options.SongID = Math.Abs(options.SongID) % 10000;
             if (string.IsNullOrEmpty(options.ImageFileName) && !File.Exists(options.ImageFileName)) {
-                Console.WriteLine($"ERROR: image file '{options.ImageFileName}' not found.");
+                Console.WriteLine($"ERROR: image file '{options.ImageFileName}' is not found.");
                 return;
             }
             var fullDirectoryName = (new DirectoryInfo(options.OutputDirectory)).FullName;
@@ -60,12 +60,12 @@ namespace DereTore.Apps.JacketCreator {
             bundleOptions.PvrPathID = options.PvrPathID;
             bundleOptions.DdsPathID = options.DdsPathID;
 
-            var fileName = fullDirectoryName + $"jacket_{options.SongID}_android.unity3d";
+            var fileName = Path.Combine(fullDirectoryName, $"jacket_{options.SongID}_android.unity3d");
             using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
                 bundleOptions.Platform = UnityPlatformID.Android;
                 JacketBundle.Serialize(bundleOptions, fileStream);
             }
-            fileName = fullDirectoryName + $"jacket_{options.SongID}_ios.unity3d";
+            fileName = Path.Combine(fullDirectoryName, $"jacket_{options.SongID}_ios.unity3d");
             using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
                 bundleOptions.Platform = UnityPlatformID.iOS;
                 JacketBundle.Serialize(bundleOptions, fileStream);
