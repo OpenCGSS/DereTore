@@ -378,6 +378,8 @@ namespace StarlightDirector.Exchange.Deleste {
                     }
                 case NoteType.Hold:
                     return DelesteNoteType.Hold;
+                case NoteType.Slide:
+                    return DelesteNoteType.Slide;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
