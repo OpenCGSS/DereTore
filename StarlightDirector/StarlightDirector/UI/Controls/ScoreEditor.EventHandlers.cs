@@ -31,7 +31,7 @@ namespace StarlightDirector.UI.Controls {
             var hitTestInfo = scoreBar.HitTest(e.GetPosition(scoreBar));
             if (e.ChangedButton == MouseButton.Left) {
                 if (hitTestInfo.IsValid) {
-                    var scoreNote = AddScoreNote(scoreBar, hitTestInfo, null);
+                    var scoreNote = AddScoreNote(scoreBar, hitTestInfo, false, null);
                     if (scoreNote != null) {
                         var note = scoreNote.Note;
                         if (note.IsSync) {
