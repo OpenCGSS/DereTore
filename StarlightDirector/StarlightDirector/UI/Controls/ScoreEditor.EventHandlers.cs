@@ -296,11 +296,10 @@ namespace StarlightDirector.UI.Controls {
                     LastHitTestInfo = hitTestInfo;
                 } else {
                     var s = (from scoreBar in ScoreBars
-                                  let top = Canvas.GetTop(scoreBar)
-                                  let bottom = top + scoreBar.ActualHeight
-                                  where top <= myPosition.Y && myPosition.Y < bottom
-                                  select scoreBar)
-                                  .FirstOrDefault();
+                             let pos = e.GetPosition(scoreBar)
+                             where pos.Y >= 0 && pos.Y < scoreBar.ActualHeight
+                             select scoreBar)
+                             .FirstOrDefault();
                     if (s != null) {
                         var hitTestInfo = s.HitTest(e.GetPosition(s));
                         LastHitTestInfo = hitTestInfo;
