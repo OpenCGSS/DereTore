@@ -29,21 +29,23 @@ namespace StarlightDirector.UI.Controls.Primitives {
             const int columnCount = 5;
             double unitWidth = width / (columnCount - 1), unitHeight = height / Bar.TotalGridCount;
             var column = (int)Math.Round(destPoint.X / unitWidth);
-            var row = (int)Math.Round(destPoint.Y / unitHeight);
+            var rawRow = destPoint.Y / unitHeight;
             var zoomMod = GetBestFitZoomMod();
-            row = (int)Math.Round((double)row / zoomMod) * zoomMod;
+            var row = (int)Math.Round(rawRow / zoomMod) * zoomMod;
             var gridCrossingPosition = new Point(column * unitWidth, row * unitHeight);
             var distance = Point.Subtract(gridCrossingPosition, destPoint);
+            bool isValid = true;
             if (distance.Length > HitTestRadiusScale * NoteRadius) {
-                return new ScoreBarHitTestInfo(this, Bar, new Point(), column, row, false, false);
+                isValid = false;
             }
             if (column < 0 || column > columnCount - 1) {
-                return new ScoreBarHitTestInfo(this, Bar, new Point(), column, row, false, false);
+                isValid = false;
             }
-            if (row < 0 || row >= Bar.TotalGridCount) {
-                return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, true, false);
+            if (row < 0) {
+                isValid = false;
             }
-            return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, false, true);
+            bool isInNextBar = (row >= Bar.TotalGridCount);
+            return new ScoreBarHitTestInfo(this, Bar, pointRelativeToScoreBar, column, row, isInNextBar, isValid);
         }
 
         public void UpdateBarTimeText() {

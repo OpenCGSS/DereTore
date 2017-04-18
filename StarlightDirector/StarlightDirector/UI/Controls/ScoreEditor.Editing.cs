@@ -56,16 +56,23 @@ namespace StarlightDirector.UI.Controls {
             RemoveScoreNotes(scoreNotes, true, true);
         }
 
-        public SpecialNotePointer AddSpecialNote(ScoreBar scoreBar, ScoreBarHitTestInfo info, NoteType type) {
+        public SpecialNotePointer AddSpecialNote(ScoreBar scoreBar, ScoreBarHitTestInfo info, bool isFromPrevBar, NoteType type) {
             if (!info.IsInNextBar) {
-                return AddSpecialNote(scoreBar, info.Row, type);
+                var row = info.Row;
+                if (isFromPrevBar && row < 0) {
+                    row = 0;
+                }
+                return AddSpecialNote(scoreBar, row, type);
+            }
+            if (isFromPrevBar) {
+                return null;
             }
             var nextBar = ScoreBars.FirstOrDefault(b => b.Bar.Index > scoreBar.Bar.Index);
             if (nextBar == null) {
                 return null;
             }
             var point = scoreBar.TranslatePoint(info.HitPoint, nextBar);
-            return AddSpecialNote(nextBar, nextBar.HitTest(point), type);
+            return AddSpecialNote(nextBar, nextBar.HitTest(point), true, type);
         }
 
         public SpecialNotePointer AddSpecialNote(ScoreBar scoreBar, int row, NoteType type) {
@@ -122,9 +129,9 @@ namespace StarlightDirector.UI.Controls {
             return scoreNote;
         }
 
-        private ScoreNote AddScoreNote(ScoreBar scoreBar, ScoreBarHitTestInfo info, Note dataTemplate) {
-            if (!info.IsValid || info.Row < 0 || info.Column < 0) {
-                if (!info.IsInNextBar) {
+        private ScoreNote AddScoreNote(ScoreBar scoreBar, ScoreBarHitTestInfo info, bool isFromPrevBar, Note dataTemplate) {
+            if (info.IsInNextBar) {
+                if (isFromPrevBar) {
                     return null;
                 }
                 var nextBar = ScoreBars.FirstOrDefault(b => b.Bar.Index > scoreBar.Bar.Index);
@@ -132,9 +139,16 @@ namespace StarlightDirector.UI.Controls {
                     return null;
                 }
                 var point = scoreBar.TranslatePoint(info.HitPoint, nextBar);
-                return AddScoreNote(nextBar, nextBar.HitTest(point), dataTemplate);
+                return AddScoreNote(nextBar, nextBar.HitTest(point), true, dataTemplate);
             }
-            return AddScoreNote(scoreBar, info.Row, info.Column, dataTemplate);
+            var row = info.Row;
+            if (isFromPrevBar && row < 0) {
+                row = 0;
+            }
+            if (!info.IsValid || row < 0 || info.Column < 0) {
+                return null;
+            }
+            return AddScoreNote(scoreBar, row, info.Column, dataTemplate);
         }
 
         private void RemoveScoreNote(ScoreNote scoreNote, bool modifiesModel, bool repositionLines) {

@@ -15,7 +15,7 @@ namespace StarlightDirector.UI.Windows {
             if (hitTestInfo == null) {
                 return;
             }
-            Editor.AddSpecialNote(hitTestInfo.ScoreBar, hitTestInfo, NoteType.VariantBpm);
+            Editor.AddSpecialNote(hitTestInfo.ScoreBar, hitTestInfo, false, NoteType.VariantBpm);
         }
 
     }
