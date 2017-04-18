@@ -1,6 +1,6 @@
 ﻿# https://www.appveyor.com/docs/appveyor-yml/
 
-version: 0.7.3.{build}
+version: 0.7.5.{build}
 branches:
   only:
     - master
@@ -58,8 +58,6 @@ assembly_info:
   assembly_informational_version: "{version}"
 deploy:
   - provider: GitHub
-    tag: all-build_$(appveyor_build_version)-alpha
-    release: deretore-toolkit-build_$(appveyor_build_version)
     description: 'DereTore Toolkit'
     auth_token:
       secure: u+MFjjY665AT4PHJ2bFMINBLnnnwSj1jLnNeFZoWfeYbomTNSPOmdahffmZa+dRH
