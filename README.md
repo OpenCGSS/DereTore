@@ -1,4 +1,4 @@
-﻿# DereTore
+# DereTore
 
 [![AppVeyor](https://img.shields.io/appveyor/ci/hozuki/deretore-avoh8.svg)](https://ci.appveyor.com/project/hozuki/deretore-avoh8)
 [![GitHub contributors](https://img.shields.io/github/contributors/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore/graphs/contributors)
@@ -12,6 +12,9 @@ The goal of DereTore is to improve gaming experience in [Idolmaster Cinderella G
 
 - [Nightly build](https://ci.appveyor.com/api/projects/hozuki/deretore-avoh8/artifacts/deretore-toolkit-x86.zip?job=Platform%3A+x86) (Windows, x86)
 - [Releases](https://github.com/OpenCGSS/DereTore/releases)
+
+A newer version of Starlight Director (beatmap editor) can be found [here](https://github.com/hozuki/StarlightDirector). However, if you
+want to build ACB music, currently you are still advised to use `MTC` in this repository.
 
 Wonder [how this name comes from](docs/Notes.md#the-name)?
 
