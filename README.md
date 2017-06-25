@@ -1,5 +1,7 @@
 # DereTore
 
+**IMPORTANT: beginning from version 3.0.3, CGSS is compiled by IL2CPP, which may cause some of the applications in this repository not being able to work. We are struggling with it.**
+
 [![AppVeyor](https://img.shields.io/appveyor/ci/hozuki/deretore-avoh8.svg)](https://ci.appveyor.com/project/hozuki/deretore-avoh8)
 [![GitHub contributors](https://img.shields.io/github/contributors/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore/graphs/contributors)
 [![Libraries.io for GitHub](https://img.shields.io/librariesio/github/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore)
