@@ -133,10 +133,11 @@ namespace DereTore.Exchange.Audio.HCA {
 
         public void Decode3(uint a, uint b, uint c, uint d) {
             if (Type != 2 && b != 0) {
-                float[] listFloat = ChannelTables.Decode3ListSingle[1];
+                float[] listFloat = ChannelTables.Decode3ListSingle;
+                int offset = ChannelTables.Decode3ListOffset;
                 for (uint i = 0, k = c, l = c - 1; i < a; ++i) {
                     for (uint j = 0; j < b && k < d; ++j, --l) {
-                        Block[k++] = listFloat[GetValue3(i) - Value[l]] * Block[l];
+                        Block[k++] = listFloat[GetValue3(i) - Value[l] + offset] * Block[l];
                     }
                 }
                 Block[0x80 - 1] = 0;
