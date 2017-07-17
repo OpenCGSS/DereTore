@@ -10,12 +10,12 @@
             for (var i = 0; i < _decode1ScaleSingle.Length; ++i) {
                 _decode1ScaleSingle[i] = HcaHelper.UInt32ToSingleBits(_decode1ScaleUInt[i]);
             }
-            _decode3ListSingle = new float[_decode3ListUInt.Length][];
-            for (var i = 0; i < _decode3ListSingle.Length; ++i) {
-                _decode3ListSingle[i] = new float[_decode3ListUInt[i].Length];
-                for (var j = 0; j < _decode3ListSingle[i].Length; ++j) {
-                    _decode3ListSingle[i][j] = HcaHelper.UInt32ToSingleBits(_decode3ListUInt[i][j]);
-                }
+            _decode3ListSingle = new float[_decode3ListUInt[0].Length + _decode3ListUInt[1].Length];
+            for (var i = 0; i < _decode3ListUInt[0].Length; ++i) {
+                _decode3ListSingle[i] = HcaHelper.UInt32ToSingleBits(_decode3ListUInt[0][i]);
+            }
+            for (var i = 0; i < _decode3ListUInt[1].Length; ++i) {
+                _decode3ListSingle[i + _decode3ListOffset] = HcaHelper.UInt32ToSingleBits(_decode3ListUInt[1][i]);
             }
             _decode4ListSingle = new float[_decode4ListUInt.Length];
             for (var i = 0; i < _decode4ListSingle.Length; ++i) {
@@ -47,7 +47,9 @@
 
         public static float[] Decode2List3 => _decode2List3;
 
-        public static float[][] Decode3ListSingle => _decode3ListSingle;
+        public static float[] Decode3ListSingle => _decode3ListSingle;
+
+        public static int Decode3ListOffset => _decode3ListOffset;
 
         public static float[] Decode4ListSingle => _decode4ListSingle;
 
@@ -147,7 +149,9 @@
             }
         };
 
-        private static float[][] _decode3ListSingle;
+        private static float[] _decode3ListSingle;
+
+        private static readonly int _decode3ListOffset = _decode3ListUInt[0].Length;
 
         private static readonly uint[] _decode4ListUInt = {
             // v2.0
