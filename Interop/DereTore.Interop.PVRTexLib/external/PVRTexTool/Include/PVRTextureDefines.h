@@ -136,5 +136,5 @@ namespace pvrtexture
      @brief         Useful typedef for generating maps of MetaData blocks.
 	*****************************************************************************/
 	typedef CPVRTMap<uint32, CPVRTMap<uint32,MetaDataBlock> > MetaDataMap;
-};
+}
 #endif //_PVRTEXTURE_DEFINES_H
