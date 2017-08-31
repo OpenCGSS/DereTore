@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using DereTore.Common;
@@ -59,8 +59,16 @@ namespace DereTore.Exchange.Archive.ACB {
                     case 3:
                     case 8:
                         if (i == 0) {
-                            refItemOffset = synthTable.GetFieldOffset(0, "ReferenceItems").Value;
-                            refItemSize = synthTable.GetFieldSize(0, "ReferenceItems").Value;
+                            var refItemOffsetNullable = synthTable.GetFieldOffset(0, "ReferenceItems");
+                            if (refItemOffsetNullable == null) {
+                                throw new AcbFieldMissingException("ReferenceItems");
+                            }
+                            refItemOffset = refItemOffsetNullable.Value;
+                            var refItemSizeNullable = synthTable.GetFieldSize(0, "ReferenceItems");
+                            if (refItemSizeNullable == null) {
+                                throw new AcbFieldMissingException("ReferenceItems");
+                            }
+                            refItemSize = refItemSizeNullable.Value;
                             refCorrection = refItemSize - 2;
                         } else {
                             refCorrection += 4;
@@ -70,18 +78,38 @@ namespace DereTore.Exchange.Archive.ACB {
                         throw new FormatException($"Unexpected ReferenceType '{cues[i].ReferenceType}' for CueIndex: '{i}.'");
                 }
 
-                if (refItemSize > 0) {
+                if (refItemSize != 0) {
                     cue.WaveformIndex = stream.PeekUInt16BE(refItemOffset + refCorrection);
-                    var waveformId = waveformTable.GetFieldValueAsNumber<ushort>(cue.WaveformIndex, "Id");
-                    if (!waveformId.HasValue) {
-                        // MemoryAwbId is for ADX2LE encoder.
-                        waveformId = waveformTable.GetFieldValueAsNumber<ushort>(cue.WaveformIndex, "MemoryAwbId");
+                    var isStreamingNullable = waveformTable.GetFieldValueAsNumber<byte>(cue.WaveformIndex, "Streaming");
+                    if (isStreamingNullable != null) {
+                        cue.IsStreaming = isStreamingNullable.Value != 0;
+
+                        var waveformIdNullable = waveformTable.GetFieldValueAsNumber<ushort>(cue.WaveformIndex, "Id");
+                        if (waveformIdNullable != null) {
+                            cue.WaveformId = waveformIdNullable.Value;
+                        } else if (cue.IsStreaming) {
+                            waveformIdNullable = waveformTable.GetFieldValueAsNumber<ushort>(cue.WaveformIndex, "StreamAwbId");
+                            if (waveformIdNullable == null) {
+                                throw new AcbFieldMissingException("StreamAwbId");
+                            }
+                            cue.WaveformId = waveformIdNullable.Value;
+                        } else {
+                            // MemoryAwbId is for ADX2LE encoder.
+                            waveformIdNullable = waveformTable.GetFieldValueAsNumber<ushort>(cue.WaveformIndex, "MemoryAwbId");
+                            if (waveformIdNullable == null) {
+                                throw new AcbFieldMissingException("MemoryAwbId");
+                            }
+                            cue.WaveformId = waveformIdNullable.Value;
+                        }
+
+                        var encTypeNullable = waveformTable.GetFieldValueAsNumber<byte>(cue.WaveformIndex, "EncodeType");
+                        if (encTypeNullable == null) {
+                            throw new AcbFieldMissingException("EncodeType");
+                        }
+                        cue.EncodeType = encTypeNullable.Value;
+
+                        cue.IsWaveformIdentified = true;
                     }
-                    cue.WaveformId = waveformId.GetValueOrDefault();
-                    cue.EncodeType = waveformTable.GetFieldValueAsNumber<byte>(cue.WaveformIndex, "EncodeType").Value;
-                    var isStreaming = waveformTable.GetFieldValueAsNumber<byte>(cue.WaveformIndex, "Streaming").Value;
-                    cue.IsStreaming = isStreaming != 0;
-                    cue.IsWaveformIdentified = true;
                 }
             }
         }
@@ -94,10 +122,17 @@ namespace DereTore.Exchange.Archive.ACB {
             _cueNameToWaveform = cueNameToWaveform;
 
             for (var i = 0; i < cueNameTable.Rows.Length; ++i) {
-                var cueIndex = cueNameTable.GetFieldValueAsNumber<ushort>(i, "CueIndex").Value;
+                var cueIndexNullable = cueNameTable.GetFieldValueAsNumber<ushort>(i, "CueIndex");
+                if (cueIndexNullable == null) {
+                    throw new AcbFieldMissingException("CueIndex");
+                }
+                var cueIndex = cueIndexNullable.Value;
                 var cue = cues[cueIndex];
                 if (cue.IsWaveformIdentified) {
                     var cueName = cueNameTable.GetFieldValueAsString(i, "CueName");
+                    if (cueName == null) {
+                        throw new AcbFieldMissingException("CueName");
+                    }
                     cueName += GetExtensionForEncodeType(cue.EncodeType);
                     if (includeCueIdInFileName) {
                         cueName = cue.CueId.ToString("D5") + "_" + cueName;
@@ -119,8 +154,40 @@ namespace DereTore.Exchange.Archive.ACB {
             }
         }
 
+        private Stream GetDataStreamFromCueInfo(AcbCueRecord cue, string fileNameForErrorInfo) {
+            if (!cue.IsWaveformIdentified) {
+                throw new InvalidOperationException($"File '{fileNameForErrorInfo}' is not identified.");
+            }
+            if (cue.IsStreaming) {
+                var externalAwb = ExternalAwb;
+                if (externalAwb == null) {
+                    throw new InvalidOperationException($"External AWB does not exist for streaming file '{fileNameForErrorInfo}'.");
+                }
+                if (!externalAwb.Files.ContainsKey(cue.WaveformId)) {
+                    throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in AWB file {externalAwb.FileName}.");
+                }
+                var targetExternalFile = externalAwb.Files[cue.WaveformId];
+                using (var fs = File.Open(externalAwb.FileName, FileMode.Open, FileAccess.Read)) {
+                    return AcbHelper.ExtractToNewStream(fs, targetExternalFile.FileOffsetAligned, (int)targetExternalFile.FileLength);
+                }
+            } else {
+                var internalAwb = InternalAwb;
+                if (internalAwb == null) {
+                    throw new InvalidOperationException($"Internal AWB is not found for memory file '{fileNameForErrorInfo}' in '{AcbFileName}'.");
+                }
+                if (!internalAwb.Files.ContainsKey(cue.WaveformId)) {
+                    throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in internal AWB in {AcbFileName}.");
+                }
+                var targetInternalFile = internalAwb.Files[cue.WaveformId];
+                return AcbHelper.ExtractToNewStream(Stream, targetInternalFile.FileOffsetAligned, (int)targetInternalFile.FileLength);
+            }
+        }
+
         private Afs2Archive GetInternalAwbArchive() {
             var internalAwbOffset = GetFieldOffset(0, "AwbFile");
+            if (internalAwbOffset == null) {
+                throw new AcbFieldMissingException("AwbFile");
+            }
             var internalAwb = new Afs2Archive(Stream, internalAwbOffset.Value, AcbFileName, false);
             internalAwb.Initialize();
             return internalAwb;

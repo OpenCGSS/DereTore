@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using DereTore.Exchange.Archive.ACB;
 
@@ -13,18 +13,37 @@ namespace DereTore.Apps.AcbUnzip {
             var fileName = args[0];
             var fileInfo = new FileInfo(fileName);
 
-            var fullDirPath = Path.Combine(fileInfo.DirectoryName ?? string.Empty, string.Format(DirTemplate, fileInfo.Name));
+            var fullDirPath = Path.Combine(fileInfo.DirectoryName, string.Format(DirTemplate, fileInfo.Name));
             if (!Directory.Exists(fullDirPath)) {
                 Directory.CreateDirectory(fullDirPath);
             }
 
             using (var acb = AcbFile.FromFile(fileName)) {
-                var fileNames = acb.GetFileNames();
-                foreach (var s in fileNames) {
+                var archivedEntryNames = acb.GetFileNames();
+                for (var i = 0; i < archivedEntryNames.Length; ++i) {
+                    var isCueNonEmpty = archivedEntryNames[i] != null;
+                    var s = archivedEntryNames[i] ?? AcbFile.GetSymbolicFileNameFromCueId((uint)i);
                     var extractName = Path.Combine(fullDirPath, s);
-                    using (var fs = new FileStream(extractName, FileMode.Create, FileAccess.Write)) {
-                        using (var source = acb.OpenDataStream(s)) {
-                            WriteFile(source, fs);
+                    try {
+                        using (var source = isCueNonEmpty ? acb.OpenDataStream(s) : acb.OpenDataStream((uint)i)) {
+                            using (var fs = new FileStream(extractName, FileMode.Create, FileAccess.Write)) {
+                                WriteFile(source, fs);
+                            }
+                        }
+                    } catch (Exception ex) {
+                        var origForeground = ConsoleColor.Gray;
+                        try {
+                            origForeground = Console.ForegroundColor;
+                        } catch {
+                        }
+                        try {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                        } catch {
+                        }
+                        Console.WriteLine(ex.Message);
+                        try {
+                            Console.ForegroundColor = origForeground;
+                        } catch {
                         }
                     }
                     Console.WriteLine(s);

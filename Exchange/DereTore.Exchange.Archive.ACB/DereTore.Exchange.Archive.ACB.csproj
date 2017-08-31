@@ -57,6 +57,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AcbException.cs" />
+    <Compile Include="AcbFieldMissingException.cs" />
     <Compile Include="AcbFile.cs" />
     <Compile Include="AcbFile.Internal.cs" />
     <Compile Include="AcbHelper.cs" />
