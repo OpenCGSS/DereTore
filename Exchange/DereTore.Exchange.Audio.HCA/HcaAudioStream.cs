@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -94,7 +94,7 @@ namespace DereTore.Exchange.Audio.HCA {
             var length = Length;
             count = HasLoop && audioParams.InfiniteLoop ? Math.Min(count, buffer.Length - offset) : Math.Min((int)(length - position), count);
             if (_decodedBlocks.Count < hcaInfo.BlockCount) {
-                if (HasLoop) {
+                if (HasLoop && audioParams.SimulatedLoopCount > 0) {
                     EnsureSoundDataDecodedWithLoops(position, count);
                 } else {
                     EnsureSoundDataDecoded(position, count);
