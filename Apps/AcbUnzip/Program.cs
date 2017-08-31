@@ -30,6 +30,7 @@ namespace DereTore.Apps.AcbUnzip {
                                 WriteFile(source, fs);
                             }
                         }
+                        Console.WriteLine(s);
                     } catch (Exception ex) {
                         var origForeground = ConsoleColor.Gray;
                         try {
@@ -46,7 +47,6 @@ namespace DereTore.Apps.AcbUnzip {
                         } catch {
                         }
                     }
-                    Console.WriteLine(s);
                 }
             }
         }
