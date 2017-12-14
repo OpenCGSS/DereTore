@@ -1,11 +1,11 @@
-﻿using CommandLine;
+using CommandLine;
 using DereTore.Common.StarlightStage;
 using DereTore.Exchange.Audio.HCA;
 
 namespace DereTore.Apps.Hca2Wav {
     public sealed class Options {
 
-        [Option('i', "in", Required = true)]
+        [ValueOption(0)]
         public string InputFileName { get; set; } = string.Empty;
 
         [Option('o', "out", Required = false)]

@@ -65,7 +65,7 @@ namespace DereTore.Apps.Hca2Wav {
             return 0;
         }
 
-        private static readonly string HelpMessage = "Usage: hca2wav.exe -i <input HCA> [-o <output WAVE = <input HCA>.wav>] [-a <key 1>] [-b <key 2>] [-l <loop count>] [--infinite] [--header]";
+        private static readonly string HelpMessage = "Usage: hca2wav.exe <input HCA> [-o <output WAVE = <input HCA>.wav>] [-a <key 1>] [-b <key 2>] [-l <loop count>] [--infinite] [--header]";
 
     }
 }
