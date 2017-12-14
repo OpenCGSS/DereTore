@@ -20,3 +20,7 @@
 - [@だいずP](https://twitter.com/DICE__game)
 - [@山杉](https://twitter.com/ymsgu)
 - [@羽田皐月](https://twitter.com/iinosuke01)
+
+## Other
+
+- [Rare](https://github.com/Rare25)

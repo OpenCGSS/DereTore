@@ -1,32 +1,35 @@
-﻿using CommandLine;
+using CommandLine;
 using DereTore.Common.StarlightStage;
 using DereTore.Exchange.Audio.HCA;
 
 namespace DereTore.Apps.Hca2Wav {
     public sealed class Options {
 
-        [Option('i', "in", Required = true)]
+        [ValueOption(0)]
         public string InputFileName { get; set; } = string.Empty;
 
-        [Option('o', "out", Required = false)]
+        [Option('o', "out", HelpText = "Output file name", Required = false)]
         public string OutputFileName { get; set; } = string.Empty;
 
-        [Option('a', "key1", Required = false)]
+        [Option('a', "key1", HelpText = "Key 1 (8 hex digits)", Required = false, DefaultValue = "f27e3b22")]
         public string Key1 { get; set; } = CgssCipher.Key1.ToString("x8");
 
-        [Option('b', "key2", Required = false)]
+        [Option('b', "key2", HelpText = "Key 2 (8 hex digits)", Required = false, DefaultValue = "00003657")]
         public string Key2 { get; set; } = CgssCipher.Key2.ToString("x8");
 
-        [Option("infinite", Required = false)]
+        [Option("infinite", HelpText = "Enables infinite loop", Required = false, DefaultValue = false)]
         public bool InfiniteLoop { get; set; } = AudioParams.Default.InfiniteLoop;
 
-        [Option('l', "loop", Required = false)]
+        [Option('l', "loop", HelpText = "Number of simulated loops", Required = false, DefaultValue = 0u)]
         public uint SimulatedLoopCount { get; set; } = AudioParams.Default.SimulatedLoopCount;
 
-        [Option('e', "header", Required = false)]
-        public bool OutputWaveHeader { get; set; } = true;
+        [Option('e', "no-header", HelpText = "Do not emit wave header", Required = false, DefaultValue = false)]
+        public bool NoWaveHeader { get; set; }
 
-        [Option('c', "cipher", Required = false)]
+        [Option("overrides-cipher", HelpText = "Overrides original cipher type", Required = false, DefaultValue = false)]
+        public bool OverridesCipherType { get; set; }
+
+        [Option('c', "cipher", HelpText = "Overridden cipher type", Required = false, DefaultValue = 0u)]
         public uint OverriddenCipherType { get; set; }
 
     }

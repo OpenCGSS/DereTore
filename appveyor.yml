@@ -1,11 +1,11 @@
-﻿# https://www.appveyor.com/docs/appveyor-yml/
+# https://www.appveyor.com/docs/appveyor-yml/
 
 version: 0.7.6.{build}
 branches:
   only:
     - master
 skip_tags: true
-image: Visual Studio 2015
+image: Visual Studio 2017
 platform:
   - x86
   - x64
@@ -19,8 +19,6 @@ environment:
 before_build:
   nuget restore
 after_build:
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.exe
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.exe
@@ -39,9 +37,6 @@ after_build:
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.exe
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/StarlightDirector.exe.config
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.mdb
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/StarlightDirector/StarlightDirector/bin/%PLATFORM%/%CONFIGURATION%/*.wav
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.wav
   - copy deretore-toolkit.zip deretore-toolkit-%PLATFORM%-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
   - copy deretore-toolkit.zip deretore-toolkit-%PLATFORM%.zip

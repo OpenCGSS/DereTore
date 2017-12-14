@@ -256,7 +256,7 @@ namespace pvrtexture
 		*************************************************************************/
 		bool privateSaveLegacyPVRFile(FILE* pTextureFile, ELegacyApi eApi) const;
 	};
-};
+}
 
 #endif //_PVRTEXTURE_H
 

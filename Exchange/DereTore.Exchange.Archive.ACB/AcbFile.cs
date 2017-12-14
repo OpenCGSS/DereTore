@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -83,32 +83,22 @@ namespace DereTore.Exchange.Archive.ACB {
             } catch (InvalidOperationException ex) {
                 throw new InvalidOperationException($"File '{fileName}' is not found or it has multiple entries.", ex);
             }
-            if (!cue.IsWaveformIdentified) {
-                throw new InvalidOperationException($"File '{fileName}' is not identified.");
+            return GetDataStreamFromCueInfo(cue, fileName);
+        }
+
+        public Stream OpenDataStream(uint cueId) {
+            AcbCueRecord cue;
+            var tempFileName = $"cue #{cueId}";
+            try {
+                cue = Cues.Single(c => c.CueId == cueId);
+            } catch (InvalidOperationException ex) {
+                throw new InvalidOperationException($"File '{tempFileName}' is not found or it has multiple entries.", ex);
             }
-            if (cue.IsStreaming) {
-                var externalAwb = ExternalAwb;
-                if (externalAwb == null) {
-                    throw new InvalidOperationException($"External AWB does not exist for streaming file '{fileName}'.");
-                }
-                if (!externalAwb.Files.ContainsKey(cue.WaveformId)) {
-                    throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in AWB file {externalAwb.FileName}.");
-                }
-                var targetExternalFile = externalAwb.Files[cue.WaveformId];
-                using (var fs = File.Open(externalAwb.FileName, FileMode.Open, FileAccess.Read)) {
-                    return AcbHelper.ExtractToNewStream(fs, targetExternalFile.FileOffsetAligned, (int)targetExternalFile.FileLength);
-                }
-            } else {
-                var internalAwb = InternalAwb;
-                if (internalAwb == null) {
-                    throw new InvalidOperationException($"Internal AWB is not found for memory file '{fileName}' in '{AcbFileName}'.");
-                }
-                if (!internalAwb.Files.ContainsKey(cue.WaveformId)) {
-                    throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in internal AWB in {AcbFileName}.");
-                }
-                var targetInternalFile = internalAwb.Files[cue.WaveformId];
-                return AcbHelper.ExtractToNewStream(Stream, targetInternalFile.FileOffsetAligned, (int)targetInternalFile.FileLength);
-            }
+            return GetDataStreamFromCueInfo(cue, tempFileName);
+        }
+
+        public static string GetSymbolicFileNameFromCueId(uint cueId) {
+            return $"dat_{cueId:000000}.bin";
         }
 
     }

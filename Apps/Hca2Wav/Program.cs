@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using DereTore.Common.StarlightStage;
@@ -10,8 +10,21 @@ namespace DereTore.Apps.Hca2Wav {
         private static int Main(string[] args) {
             var options = new Options();
             var succeeded = CommandLine.Parser.Default.ParseArguments(args, options);
+
+            if (string.IsNullOrWhiteSpace(options.InputFileName)) {
+                succeeded = false;
+            }
+
             if (!succeeded) {
-                Console.WriteLine(HelpMessage);
+                var helpText = CommandLine.Text.HelpText.AutoBuild(options);
+                helpText.AddPreOptionsLine(" ");
+                helpText.AddPreOptionsLine("Usage: hca2wav <input HCA> [options]");
+                Console.Error.WriteLine(helpText);
+                return CommandLine.Parser.DefaultExitCodeFail;
+            }
+
+            if (!File.Exists(options.InputFileName)) {
+                Console.Error.WriteLine("File not found: {0}", options.InputFileName);
                 return CommandLine.Parser.DefaultExitCodeFail;
             }
 
@@ -25,7 +38,7 @@ namespace DereTore.Apps.Hca2Wav {
             var formatProvider = new NumberFormatInfo();
             if (!string.IsNullOrWhiteSpace(options.Key1)) {
                 if (!uint.TryParse(options.Key1, NumberStyles.HexNumber, formatProvider, out key1)) {
-                    Console.WriteLine("ERROR: key 1 is of wrong format.");
+                    Console.WriteLine("ERROR: key 1 is of wrong format. It should look like \"a1b2c3d4\".");
                     return CommandLine.Parser.DefaultExitCodeFail;
                 }
             } else {
@@ -33,7 +46,7 @@ namespace DereTore.Apps.Hca2Wav {
             }
             if (!string.IsNullOrWhiteSpace(options.Key2)) {
                 if (!uint.TryParse(options.Key2, NumberStyles.HexNumber, formatProvider, out key2)) {
-                    Console.WriteLine("ERROR: key 2 is of wrong format.");
+                    Console.WriteLine("ERROR: key 2 is of wrong format. It should look like \"a1b2c3d4\".");
                     return CommandLine.Parser.DefaultExitCodeFail;
                 }
             } else {
@@ -45,10 +58,14 @@ namespace DereTore.Apps.Hca2Wav {
                     var decodeParams = DecodeParams.CreateDefault();
                     decodeParams.Key1 = key1;
                     decodeParams.Key2 = key2;
+                    if (options.OverridesCipherType) {
+                        decodeParams.CipherTypeOverrideEnabled = true;
+                        decodeParams.OverriddenCipherType = (CipherType)options.OverriddenCipherType;
+                    }
                     var audioParams = AudioParams.CreateDefault();
                     audioParams.InfiniteLoop = options.InfiniteLoop;
                     audioParams.SimulatedLoopCount = options.SimulatedLoopCount;
-                    audioParams.OutputWaveHeader = options.OutputWaveHeader;
+                    audioParams.OutputWaveHeader = !options.NoWaveHeader;
                     using (var hcaStream = new HcaAudioStream(inputFileStream, decodeParams, audioParams)) {
                         var read = 1;
                         var dataBuffer = new byte[1024];
@@ -64,8 +81,6 @@ namespace DereTore.Apps.Hca2Wav {
 
             return 0;
         }
-
-        private static readonly string HelpMessage = "Usage: hca2wav.exe -i <input HCA> [-o <output WAVE = <input HCA>.wav>] [-a <key 1>] [-b <key 2>] [-l <loop count>] [--infinite] [--header]";
 
     }
 }
