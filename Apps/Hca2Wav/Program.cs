@@ -10,8 +10,21 @@ namespace DereTore.Apps.Hca2Wav {
         private static int Main(string[] args) {
             var options = new Options();
             var succeeded = CommandLine.Parser.Default.ParseArguments(args, options);
+
+            if (string.IsNullOrWhiteSpace(options.InputFileName)) {
+                succeeded = false;
+            }
+
             if (!succeeded) {
-                Console.WriteLine(HelpMessage);
+                var helpText = CommandLine.Text.HelpText.AutoBuild(options);
+                helpText.AddPreOptionsLine(" ");
+                helpText.AddPreOptionsLine("Usage: hca2wav <input HCA> [options]");
+                Console.Error.WriteLine(helpText);
+                return CommandLine.Parser.DefaultExitCodeFail;
+            }
+
+            if (!File.Exists(options.InputFileName)) {
+                Console.Error.WriteLine("File not found: {0}", options.InputFileName);
                 return CommandLine.Parser.DefaultExitCodeFail;
             }
 
@@ -45,10 +58,14 @@ namespace DereTore.Apps.Hca2Wav {
                     var decodeParams = DecodeParams.CreateDefault();
                     decodeParams.Key1 = key1;
                     decodeParams.Key2 = key2;
+                    if (options.OverridesCipherType) {
+                        decodeParams.CipherTypeOverrideEnabled = true;
+                        decodeParams.OverriddenCipherType = (CipherType)options.OverriddenCipherType;
+                    }
                     var audioParams = AudioParams.CreateDefault();
                     audioParams.InfiniteLoop = options.InfiniteLoop;
                     audioParams.SimulatedLoopCount = options.SimulatedLoopCount;
-                    audioParams.OutputWaveHeader = options.OutputWaveHeader;
+                    audioParams.OutputWaveHeader = !options.NoWaveHeader;
                     using (var hcaStream = new HcaAudioStream(inputFileStream, decodeParams, audioParams)) {
                         var read = 1;
                         var dataBuffer = new byte[1024];
@@ -64,8 +81,6 @@ namespace DereTore.Apps.Hca2Wav {
 
             return 0;
         }
-
-        private static readonly string HelpMessage = "Usage: hca2wav.exe <input HCA> [-o <output WAVE = <input HCA>.wav>] [-a <key 1>] [-b <key 2>] [-l <loop count>] [--infinite] [--header]";
 
     }
 }
