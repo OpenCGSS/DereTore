@@ -25,7 +25,7 @@ namespace DereTore.Apps.Hca2Wav {
             var formatProvider = new NumberFormatInfo();
             if (!string.IsNullOrWhiteSpace(options.Key1)) {
                 if (!uint.TryParse(options.Key1, NumberStyles.HexNumber, formatProvider, out key1)) {
-                    Console.WriteLine("ERROR: key 1 is of wrong format.");
+                    Console.WriteLine("ERROR: key 1 is of wrong format. It should look like \"a1b2c3d4\".");
                     return CommandLine.Parser.DefaultExitCodeFail;
                 }
             } else {
@@ -33,7 +33,7 @@ namespace DereTore.Apps.Hca2Wav {
             }
             if (!string.IsNullOrWhiteSpace(options.Key2)) {
                 if (!uint.TryParse(options.Key2, NumberStyles.HexNumber, formatProvider, out key2)) {
-                    Console.WriteLine("ERROR: key 2 is of wrong format.");
+                    Console.WriteLine("ERROR: key 2 is of wrong format. It should look like \"a1b2c3d4\".");
                     return CommandLine.Parser.DefaultExitCodeFail;
                 }
             } else {
