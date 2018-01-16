@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DereTore.Common;
 
 namespace DereTore.Apps.ScoreViewer {
@@ -27,10 +27,10 @@ namespace DereTore.Apps.ScoreViewer {
         }
 
         // Compensates for systematic offset of official scores, which turns out to be very close to zero
-        public static TimeSpan GlobalOffset { get; set; } = TimeSpan.Zero;
+        public static TimeSpan GlobalOffset { get; set; } = TimeSpan.FromSeconds(0.036);
 
         // Compensates for a future ~3ms (128 samples) HCA encoder delay on WAV music files
-        public static TimeSpan MusicFileOffset { get; set; } = TimeSpan.Zero;
+        public static TimeSpan MusicFileOffset { get; set; } = TimeSpan.FromSeconds(0.003);
 
         // Total offset
         public static TimeSpan SfxOffset {

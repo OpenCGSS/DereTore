@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
@@ -90,10 +90,8 @@ namespace DereTore.Apps.ScoreViewer.Forms {
             for (var i = 0; i < sfxTypeCount; ++i) {
                 var sfxDirName = string.Format(SoundEffectAudioDirectoryNameFormat, i.ToString("00"));
                 foreach (var waveAudioName in new[] { TapHcaName, FlickHcaName }) {
-                    var key = $"{sfxDirName}/{waveAudioName}";
-                    using (var dataStream = File.Open(key, FileMode.Open, FileAccess.Read)) {
-                        _sfxManager.PreloadWave(dataStream, key);
-                    }
+                    var fileName = $"{sfxDirName}/{waveAudioName}";
+                    _sfxManager.PreloadWave(fileName);
                 }
             }
         }
@@ -182,6 +180,7 @@ namespace DereTore.Apps.ScoreViewer.Forms {
         private readonly Timer timer = new Timer(5);
         private uint _lastRedrawTime;
 
+        private AudioManager _audioManager;
         private ScorePlayer _scorePlayer;
         private LiveMusicWaveStream _musicWaveStream;
         private SfxManager _sfxManager;

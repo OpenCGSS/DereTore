@@ -1,12 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.8
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{9203B750-3E22-4048-A379-2147B3C9C7BF}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
+		.gitmodules = .gitmodules
 		appveyor.yml = appveyor.yml
 		CONTRIBUTING.md = CONTRIBUTING.md
 		CONTRIBUTORS.md = CONTRIBUTORS.md
@@ -64,6 +65,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{6FE6FC74-E
 		docs\Projects.md = docs\Projects.md
 		docs\TODO.md = docs\TODO.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{F815AF74-5C82-416E-85C5-2C79C01521AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAL", "external\SharpAL\SharpAL\SharpAL.csproj", "{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -255,6 +260,18 @@ Global
 		{31E86FB4-68DE-4DD6-8F03-D8E2DAAE07FA}.Release|x64.Build.0 = Release|x64
 		{31E86FB4-68DE-4DD6-8F03-D8E2DAAE07FA}.Release|x86.ActiveCfg = Release|x86
 		{31E86FB4-68DE-4DD6-8F03-D8E2DAAE07FA}.Release|x86.Build.0 = Release|x86
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Debug|x64.Build.0 = Debug|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Debug|x86.Build.0 = Debug|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Release|x64.ActiveCfg = Release|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Release|x64.Build.0 = Release|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Release|x86.ActiveCfg = Release|Any CPU
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -278,6 +295,7 @@ Global
 		{C6BC3FE0-8333-4DFF-8284-07431E151B44} = {73543281-7546-49F0-AD31-DF837F0FDED5}
 		{1D5FB1F1-D4C9-4B4D-9225-73F4C459B875} = {73543281-7546-49F0-AD31-DF837F0FDED5}
 		{31E86FB4-68DE-4DD6-8F03-D8E2DAAE07FA} = {73543281-7546-49F0-AD31-DF837F0FDED5}
+		{7E5E07E6-4300-438E-BD37-C9F6E5E14A41} = {F815AF74-5C82-416E-85C5-2C79C01521AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2BF04279-EB9E-4F92-99A2-FE29F4D1D9FA}

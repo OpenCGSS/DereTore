@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Windows.Forms;
 using DereTore.Apps.ScoreViewer.Controls;
@@ -165,9 +165,9 @@ namespace DereTore.Apps.ScoreViewer.Forms {
                     foreach (var note in _score.Notes) {
                         if (!(note.HitTiming < prev) && (note.HitTiming < now)) {
                             if (note.IsFlick) {
-                                _sfxManager.PlayWave(_currentFlickHcaFileName, TimeSpan.FromSeconds(note.HitTiming), PlayerSettings.SfxVolume);
+                                _sfxManager.PlayWave(_currentFlickHcaFileName, PlayerSettings.SfxVolume);
                             } else if (note.IsTap || note.IsHold || note.IsSlide) {
-                                _sfxManager.PlayWave(_currentTapHcaFileName, TimeSpan.FromSeconds(note.HitTiming), PlayerSettings.SfxVolume);
+                                _sfxManager.PlayWave(_currentTapHcaFileName, PlayerSettings.SfxVolume);
                             }
                         }
                     }
@@ -220,6 +220,8 @@ namespace DereTore.Apps.ScoreViewer.Forms {
                 _scorePlayer.Dispose();
                 _scorePlayer = null;
             }
+            _audioManager?.Dispose();
+            _audioManager = null;
             _musicWaveStream?.Dispose();
             _musicWaveStream = null;
             if (_audioFileStream != null) {
@@ -256,10 +258,12 @@ namespace DereTore.Apps.ScoreViewer.Forms {
             } else {
                 throw new ArgumentOutOfRangeException(nameof(audioFileExtension), $"Unsupported audio format: '{audioFileExtension}'.");
             }
-            _scorePlayer = new ScorePlayer();
+            _audioManager = new AudioManager();
+            _scorePlayer = new ScorePlayer(_audioManager);
             _scorePlayer.PlaybackStopped += MusicPlayer_PlaybackStopped;
-            _scorePlayer.AddInputStream(_musicWaveStream, PlayerSettings.MusicVolume);
-            _sfxManager = new SfxManager(_scorePlayer);
+            _scorePlayer.LoadStream(_musicWaveStream);
+            //_scorePlayer.AddInputStream(_musicWaveStream, PlayerSettings.MusicVolume);
+            _sfxManager = new SfxManager(_audioManager);
             PreloadNoteSounds();
             _sfxBufferTime = 0d;
             _scorePlayer.PositionChanged += MusicPlayer_PositionChanged;
@@ -283,7 +287,7 @@ namespace DereTore.Apps.ScoreViewer.Forms {
             timer.Start();
         }
 
-        private void MusicPlayer_PlaybackStopped(object sender, NAudio.Wave.StoppedEventArgs e) {
+        private void MusicPlayer_PlaybackStopped(object sender, EventArgs e) {
             BtnStop_Click(this, EventArgs.Empty);
         }
 
