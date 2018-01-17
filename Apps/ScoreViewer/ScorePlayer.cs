@@ -105,15 +105,12 @@ namespace DereTore.Apps.ScoreViewer {
             var allData = transformedStream.ReadToEnd();
             _audioBuffer.BufferData(allData, stream.WaveFormat.SampleRate);
             _audioSource.Bind(_audioBuffer);
-
-            //if (transformedStream != stream) {
-            //    transformedStream.Dispose();
-            //}
         }
 
         protected override void Dispose(bool disposing) {
             PlayerSettings.MusicVolumeChanged -= OnMusicVolumeChanged;
             _timer.Stop();
+            _timer.Dispose();
 
             Stop();
 
