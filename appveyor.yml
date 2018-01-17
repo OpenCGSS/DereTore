@@ -6,17 +6,13 @@ branches:
     - master
 skip_tags: true
 image: Visual Studio 2017
-platform:
-  - x86
-  - x64
-configuration:
-  - Release
-build:
-  parallel: true
-  project: DereTore.sln
+build_script:
+  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform=AnyCPU
+  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform=x86
 environment:
   EnableNuGetPackageRestore: true
 before_build:
+  - nuget update -self
   - git submodule update --init --recursive
   - nuget restore
   - nuget restore external\SharpAL\SharpAL.sln
