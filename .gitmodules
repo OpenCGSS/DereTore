@@ -1,0 +1,3 @@
+[submodule "external/SharpAL"]
+	path = external/SharpAL
+	url = https://github.com/OpenCGSS/SharpAL.git

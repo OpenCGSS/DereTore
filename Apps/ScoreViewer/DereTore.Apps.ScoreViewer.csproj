@@ -60,9 +60,11 @@
     <LangVersion>6</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AudioManager.cs" />
     <Compile Include="Controls\DoubleBufferedPictureBox.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="PlayerSettings.cs" />
     <Compile Include="Controls\RenderHelper.cs" />
     <Compile Include="Controls\RenderParams.cs" />
@@ -159,6 +161,10 @@
     <ProjectReference Include="..\..\Exchange\DereTore.Exchange.Archive.ACB\DereTore.Exchange.Archive.ACB.csproj">
       <Project>{EECF4BAA-9C9E-4687-A616-0F5C65C5F14B}</Project>
       <Name>DereTore.Exchange.Archive.ACB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\external\SharpAL\SharpAL\SharpAL.csproj">
+      <Project>{7e5e07e6-4300-438e-bd37-c9f6e5e14a41}</Project>
+      <Name>SharpAL</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Interop\DereTore.Interop.OS\DereTore.Interop.OS.csproj">
       <Project>{3a0d1281-a503-4e5d-9765-d7bf56f89266}</Project>

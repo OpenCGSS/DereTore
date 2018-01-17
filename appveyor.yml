@@ -1,23 +1,21 @@
 # https://www.appveyor.com/docs/appveyor-yml/
 
-version: 0.7.6.{build}
+version: 0.7.8.{build}
 branches:
   only:
     - master
 skip_tags: true
 image: Visual Studio 2017
-platform:
-  - x86
-  - x64
-configuration:
-  - Release
-build:
-  parallel: true
-  project: DereTore.sln
+build_script:
+  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform="Any CPU"
+  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform=x86
 environment:
   EnableNuGetPackageRestore: true
 before_build:
-  nuget restore
+  - nuget update -self
+  - git submodule update --init --recursive
+  - nuget restore
+  - nuget restore external\SharpAL\SharpAL.sln
 after_build:
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.exe
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.dll
