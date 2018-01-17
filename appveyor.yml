@@ -1,6 +1,6 @@
 # https://www.appveyor.com/docs/appveyor-yml/
 
-version: 0.7.8.{build}
+version: 0.7.9.{build}
 branches:
   only:
     - master
@@ -36,12 +36,12 @@ after_build:
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.exe
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.wav
-  - copy deretore-toolkit.zip deretore-toolkit-%PLATFORM%-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
-  - copy deretore-toolkit.zip deretore-toolkit-%PLATFORM%.zip
+  - copy deretore-toolkit.zip deretore-toolkit-x86-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
+  - copy deretore-toolkit.zip deretore-toolkit-x86.zip
 artifacts:
-  - path: deretore-toolkit-%PLATFORM%-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
+  - path: deretore-toolkit-x86-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
     name: WithVersion
-  - path: deretore-toolkit-%PLATFORM%.zip
+  - path: deretore-toolkit-x86.zip
     name: Static
 assembly_info:
   patch: true
@@ -58,5 +58,4 @@ deploy:
     draft: false
     prerelease: true
     on:
-      branch: master                 # release from master branch only
       appveyor_repo_tag: true        # deploy on tag push only
