@@ -33,8 +33,16 @@ Have a look at the [Wiki Page](https://github.com/OpenCGSS/DereTore/wiki). Pleas
 
 **Basic requirements:**
 
-- Windows 7 or later
-- [.NET Framework 4.5](https://www.microsoft.com/en-us/download/details.aspx?id=42642)
+Windows:
+
+  - Windows 7 or later
+  - [.NET Framework 4.5](https://www.microsoft.com/en-us/download/details.aspx?id=42642)
+  - [OpenAL](https://www.openal.org/downloads/)
+
+macOS/Linux:
+
+  - [Wine](https://www.winehq.org/download) (will install wine-mono when needed)
+  - [OpenAL](https://www.openal.org/downloads/)
 
 **Optional requirements:**
 
