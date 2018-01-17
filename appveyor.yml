@@ -7,7 +7,7 @@ branches:
 skip_tags: true
 image: Visual Studio 2017
 build_script:
-  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform=AnyCPU
+  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform="Any CPU"
   - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform=x86
 environment:
   EnableNuGetPackageRestore: true
