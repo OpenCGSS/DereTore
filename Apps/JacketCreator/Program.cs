@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using CommandLine;
@@ -59,6 +59,7 @@ namespace DereTore.Apps.JacketCreator {
             bundleOptions.DdsImage = dds;
             bundleOptions.PvrPathID = options.PvrPathID;
             bundleOptions.DdsPathID = options.DdsPathID;
+            bundleOptions.SongID = options.SongID;
 
             var fileName = Path.Combine(fullDirectoryName, $"jacket_{options.SongID}_android.unity3d");
             using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {

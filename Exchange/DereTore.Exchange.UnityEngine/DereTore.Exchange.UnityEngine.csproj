@@ -57,6 +57,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MD4.cs" />
     <Compile Include="UnityEndianHelper.cs" />
     <Compile Include="BundleFile.cs" />
     <Compile Include="BundleFile.Initialization.cs" />
