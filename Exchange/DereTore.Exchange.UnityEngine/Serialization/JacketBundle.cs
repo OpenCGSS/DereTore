@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using DereTore.Common;
 using DereTore.Exchange.UnityEngine.Extensions;
@@ -46,8 +47,8 @@ namespace DereTore.Exchange.UnityEngine.Serialization {
                 // Asset file count
                 writer.Write(1);
                 // Asset file name
-                var cabName = GenerateFakeHexHash(32);
-                writer.WriteAsciiStringAndNull("CAB-" + cabName);
+                var cabName = GetJacketBundleCabName(options.SongID);
+                writer.WriteAsciiStringAndNull(cabName);
                 // Asset file offset
                 writer.Write(0x34);
                 // first asset file offset = 0x70 = base offset + asset offset
@@ -224,6 +225,12 @@ namespace DereTore.Exchange.UnityEngine.Serialization {
             }
         }
 
+        private static string GetJacketBundleCabName(int songID) {
+            var bundleFileName = $"jacket_{songID:0000}.unity3d";
+            var cabName = GetStringMd4Hash(bundleFileName);
+            return "CAB-" + cabName;
+        }
+
         private static byte[] GetBundleIndexData(int songID, long pvrID, long ddsID, Endian writerEndian) {
             var bytes = Encoding.ASCII.GetBytes(songID.ToString("0000"));
             var bundleIndexData = (byte[])BundleIndexDataTemplate.Clone();
@@ -256,8 +263,16 @@ namespace DereTore.Exchange.UnityEngine.Serialization {
             return BitConverter.ToString(bytes).Replace("-", string.Empty).ToLowerInvariant();
         }
 
+        private static string GetStringMd4Hash(string str) {
+            var bytes = Encoding.ASCII.GetBytes(str);
+            var hashed = CabNameHash.Value.ComputeHash(bytes);
+            return string.Join(string.Empty, hashed.Select(b => b.ToString("x2")));
+        }
+
         private static readonly string PlayerVersion = "5.x.x";
         private static readonly string EngineVersion = "5.1.2f1";
+
+        private static readonly Lazy<MD4> CabNameHash = new Lazy<MD4>(() => new MD4());
 
         private static readonly byte[] BundleIndexDataTemplate = {
             0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x56, 0x5b, 0x32, 0x3c,

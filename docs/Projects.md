@@ -1,4 +1,4 @@
-﻿# Projects
+# Projects
 
 ## Core Libraries
 
@@ -19,14 +19,15 @@ CRI ACB/AWB package manipulation library. Only necessary parts are implemented. 
 
 Applications can be found in [`Apps`](Apps).
 
-[**Starlight Director**](../StarlightDirector/StarlightDirector)
+**Starlight Director**
 
-The new score composer (still in alpha phase), the successor of ScoreEditor. Detailed readme and user manual will be written
-in the future. Let's celebrate its alpha release!
+Removed for platform compatibility. The new version can be found at [hozuki/StarlightDirector](https://github.com/hozuki/StarlightDirector).
 
 [**Score Viewer**](../Apps/ScoreViewer)
 
 Viewing scores (beatmaps) of live music. Here is its [readme](../Apps/ScoreViewer/README.md).
+
+This utility is somewhat unpolished, but it shows the basic ideas about CGSS beatmaps and how to read and display them.
 
 [**hcacc**](../Apps/Hcacc)
 

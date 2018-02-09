@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using CommandLine;
 using DereTore.Common.StarlightStage;
 using DereTore.Exchange.Audio.HCA;
 
@@ -8,24 +9,36 @@ namespace DereTore.Apps.Hca2Wav {
     internal static class Program {
 
         private static int Main(string[] args) {
-            var options = new Options();
-            var succeeded = CommandLine.Parser.Default.ParseArguments(args, options);
+            const int defaultExitCodeFail = -1;
 
-            if (string.IsNullOrWhiteSpace(options.InputFileName)) {
-                succeeded = false;
+            var parser = new Parser(settings => { settings.IgnoreUnknownArguments = true; });
+            var parsedResult = parser.ParseArguments<Options>(args);
+
+            var succeeded = parsedResult.Tag == ParserResultType.Parsed;
+
+            Options options = null;
+
+            if (succeeded) {
+                options = ((Parsed<Options>)parsedResult).Value;
+            }
+
+            if (succeeded) {
+                if (string.IsNullOrWhiteSpace(options.InputFileName)) {
+                    succeeded = false;
+                }
             }
 
             if (!succeeded) {
-                var helpText = CommandLine.Text.HelpText.AutoBuild(options);
+                var helpText = CommandLine.Text.HelpText.AutoBuild(parsedResult);
                 helpText.AddPreOptionsLine(" ");
                 helpText.AddPreOptionsLine("Usage: hca2wav <input HCA> [options]");
                 Console.Error.WriteLine(helpText);
-                return CommandLine.Parser.DefaultExitCodeFail;
+                return defaultExitCodeFail;
             }
 
             if (!File.Exists(options.InputFileName)) {
                 Console.Error.WriteLine("File not found: {0}", options.InputFileName);
-                return CommandLine.Parser.DefaultExitCodeFail;
+                return defaultExitCodeFail;
             }
 
             if (string.IsNullOrWhiteSpace(options.OutputFileName)) {
@@ -39,7 +52,7 @@ namespace DereTore.Apps.Hca2Wav {
             if (!string.IsNullOrWhiteSpace(options.Key1)) {
                 if (!uint.TryParse(options.Key1, NumberStyles.HexNumber, formatProvider, out key1)) {
                     Console.WriteLine("ERROR: key 1 is of wrong format. It should look like \"a1b2c3d4\".");
-                    return CommandLine.Parser.DefaultExitCodeFail;
+                    return defaultExitCodeFail;
                 }
             } else {
                 key1 = CgssCipher.Key1;
@@ -47,7 +60,7 @@ namespace DereTore.Apps.Hca2Wav {
             if (!string.IsNullOrWhiteSpace(options.Key2)) {
                 if (!uint.TryParse(options.Key2, NumberStyles.HexNumber, formatProvider, out key2)) {
                     Console.WriteLine("ERROR: key 2 is of wrong format. It should look like \"a1b2c3d4\".");
-                    return CommandLine.Parser.DefaultExitCodeFail;
+                    return defaultExitCodeFail;
                 }
             } else {
                 key2 = CgssCipher.Key2;

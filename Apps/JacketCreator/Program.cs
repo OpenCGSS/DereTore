@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 using CommandLine;
@@ -11,20 +11,25 @@ using DereTore.Interop.PVRTexLib;
 namespace DereTore.Apps.JacketCreator {
     internal static class Program {
 
-        private static void Main(string[] args) {
-            var options = new Options();
-            var isOptionsValid = Parser.Default.ParseArguments(args, options);
+        private static int Main(string[] args) {
+            const int defaultReturnCodeFail = -1;
+
+            var parsedResult = Parser.Default.ParseArguments<Options>(args);
+            var isOptionsValid = parsedResult.Tag == ParserResultType.Parsed;
+
             if (!isOptionsValid) {
-                var helpText = HelpText.AutoBuild(options);
-                HelpText.DefaultParsingErrorsHandler(options, helpText);
+                var helpText = HelpText.AutoBuild(parsedResult);
+                HelpText.DefaultParsingErrorsHandler(parsedResult, helpText);
                 Console.WriteLine(helpText);
-                return;
+                return defaultReturnCodeFail;
             }
+
+            var options = ((Parsed<Options>)parsedResult).Value;
 
             options.SongID = Math.Abs(options.SongID) % 10000;
             if (string.IsNullOrEmpty(options.ImageFileName) && !File.Exists(options.ImageFileName)) {
                 Console.WriteLine($"ERROR: image file '{options.ImageFileName}' is not found.");
-                return;
+                return defaultReturnCodeFail;
             }
             var fullDirectoryName = (new DirectoryInfo(options.OutputDirectory)).FullName;
             if (!Directory.Exists(fullDirectoryName)) {
@@ -32,7 +37,7 @@ namespace DereTore.Apps.JacketCreator {
                     Directory.CreateDirectory(fullDirectoryName);
                 } catch (Exception ex) {
                     Console.WriteLine($"ERROR: Tried to create directory '{fullDirectoryName}' but failed.\n{ex.Message}");
-                    return;
+                    return defaultReturnCodeFail;
                 }
             }
 
@@ -41,7 +46,7 @@ namespace DereTore.Apps.JacketCreator {
                 bitmap = (Bitmap)Image.FromFile(options.ImageFileName);
             } catch (Exception ex) {
                 Console.WriteLine($"ERROR: Cannot read image file '{options.ImageFileName}'.\n{ex.Message}");
-                return;
+                return defaultReturnCodeFail;
             }
 
             // Magic begins!
@@ -59,6 +64,7 @@ namespace DereTore.Apps.JacketCreator {
             bundleOptions.DdsImage = dds;
             bundleOptions.PvrPathID = options.PvrPathID;
             bundleOptions.DdsPathID = options.DdsPathID;
+            bundleOptions.SongID = options.SongID;
 
             var fileName = Path.Combine(fullDirectoryName, $"jacket_{options.SongID}_android.unity3d");
             using (var fileStream = File.Open(fileName, FileMode.Create, FileAccess.Write)) {
@@ -71,6 +77,8 @@ namespace DereTore.Apps.JacketCreator {
                 JacketBundle.Serialize(bundleOptions, fileStream);
             }
             Console.WriteLine($"Building complete. Files are written to '{fullDirectoryName}', song ID = {options.SongID}.");
+
+            return 0;
         }
 
     }
