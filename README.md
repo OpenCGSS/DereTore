@@ -1,7 +1,5 @@
 # DereTore
 
-**IMPORTANT: beginning from version 3.0.3, CGSS is compiled by IL2CPP.**
-
 [![AppVeyor](https://img.shields.io/appveyor/ci/hozuki/deretore-avoh8.svg)](https://ci.appveyor.com/project/hozuki/deretore-avoh8)
 [![GitHub contributors](https://img.shields.io/github/contributors/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore/graphs/contributors)
 [![Libraries.io for GitHub](https://img.shields.io/librariesio/github/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore)
@@ -22,9 +20,16 @@ Wonder [how this name comes from](docs/Notes.md#the-name)?
 
 ## What can it do?
 
-Create beatmaps, convert music - which are playable in vanilla CGSS. You can also unpack and decode resources from the game.
+- Extract audio files used by CGSS.
+- Decode those audio files to wave audio.
+- Create songs, and their cover images.
+- Create beatmaps.
+- Preview beatmaps.
 
-There are several [projects](docs/Projects.md) in DereTore. Each of them provides a unique function.
+The greatest thing is that the things you create is fully playable. You just need to
+replace the original files, or use IdolProxy (which is easier).
+
+Check out [projects](docs/Projects.md) for detailed information.
 
 ## Usage
 
@@ -59,16 +64,18 @@ If you want to build custom CD jackets:
 Checked Feb. 09, 2018: Although JacketCreator generates asset bundles for Unity version 5.1.2f1 (original version that CGSS uses),
 CGSS (using Unity 5.4.5p1) is still able to load and display them.
 <del>Cygames also updated the Unity version they used, so maybe the jackets created by Jacket Creator become unrecognizable.</del>
-If you feel like to track the changes, feel free to make a pull request.
 
 ## Building
 
 1. Clone from [GitHub](https://github.com/OpenCGSS/DereTore.git): `git clone https://github.com/OpenCGSS/DereTore.git`;
-2. Install missing NuGet packages: `nuget restore DereTore.sln` (or use NuGet Package Manager in Visual Studio);
+2. Restore NuGet packages: `nuget restore DereTore.sln` (or use NuGet Package Manager in Visual Studio);
 3. Open `DereTore.sln` in Visual Studio (Visual Studio 2015 or later is required for supporting C# 6 syntax);
 4. Build the solution.
 
-## TODO List
+## Contributing
+
+Beginning from version 3.0.3, CGSS is compiled by IL2CPP. This may cause some problems in the future.
+If you feel like to track the latest changes, feel free to make a pull request.
 
 [TODO List](docs/TODO.md)
 
