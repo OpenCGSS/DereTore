@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,11 +7,14 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
 
         private uint GetRowDescriptorSize() {
             uint totalSize = 0;
+
             foreach (var row in Rows) {
                 foreach (var fieldImage in row) {
                     // Storage descriptor (1 byte) + field name offset (4 bytes)
                     totalSize += 5;
+
                     var storage = fieldImage.Storage;
+
                     switch (storage) {
                         case ColumnStorage.Constant:
                         case ColumnStorage.Constant2:
@@ -56,6 +59,7 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
                     }
                 }
             }
+
             return totalSize;
         }
 
@@ -65,12 +69,16 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
         /// <returns></returns>
         private ushort GetSingleRowDataSize() {
             ushort totalSize = 0;
+
             var row = Rows[0];
+
             foreach (var fieldImage in row) {
                 var storage = fieldImage.Storage;
+
                 switch (storage) {
                     case ColumnStorage.PerRow:
                         var type = fieldImage.Type;
+
                         switch (type) {
                             case ColumnType.Byte:
                             case ColumnType.SByte:
@@ -111,15 +119,19 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
                         throw new ArgumentOutOfRangeException(nameof(storage));
                 }
             }
+
             return totalSize;
         }
 
         private uint GetStringTableSize() {
             uint totalSize = 0;
+
             totalSize += (uint)TableNameBytesCache.Length;
             totalSize += Rows[0].Aggregate<UtfFieldImage, uint>(0, (current, fieldImage) => current + (uint)fieldImage.NameBytesCache.Length);
+
             for (var i = 0; i < Rows.Count; ++i) {
                 var row = Rows[i];
+
                 foreach (var fieldImage in row) {
                     switch (fieldImage.Type) {
                         case ColumnType.String:
@@ -133,11 +145,7 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
                                 case ColumnStorage.PerRow:
                                     totalSize += (uint)fieldImage.StringValueBytesCache.Length;
                                     break;
-                                default:
-                                    break;
                             }
-                            break;
-                        default:
                             break;
                     }
                 }
@@ -152,11 +160,13 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
             var fieldImagesInNewOrder = new List<UtfFieldImage>();
             var row0 = Rows[0];
             var firstTableDataFieldIndex = -1;
+
             foreach (var fieldImage in row0) {
                 if (fieldImage.Type == ColumnType.Data && (fieldImage.Storage == ColumnStorage.Constant || fieldImage.Storage == ColumnStorage.Constant2)) {
                     AddToNewOrdererdDataFieldList(fieldImagesInNewOrder, fieldImage, ref firstTableDataFieldIndex);
                 }
             }
+
             foreach (var row in Rows) {
                 foreach (var fieldImage in row) {
                     if (fieldImage.Type == ColumnType.Data && fieldImage.Storage == ColumnStorage.PerRow) {
@@ -170,16 +180,20 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
                 baseOffset = SerializationHelper.RoundUpAsTable(baseOffset, Alignment);
                 header.ExtraDataOffset = baseOffset;
             }
+
             orderedDataFieldImages = fieldImagesInNewOrder.ToArray();
 
             foreach (var fieldImage in orderedDataFieldImages) {
                 var rawOffset = baseOffset;
+
                 if (fieldImage.IsTable && fieldImage.DataValue.Length > 0) {
                     baseOffset = SerializationHelper.RoundUpAsTable(baseOffset, Alignment);
                 }
+
                 baseOffset += (uint)fieldImage.DataValue.Length;
                 totalSize += (baseOffset - rawOffset);
             }
+
             return totalSize;
         }
 
