@@ -1,12 +1,9 @@
-﻿using System;
+using System;
 using System.IO;
 using DereTore.Common;
 
 namespace DereTore.Exchange.Archive.ACB.Serialization {
     internal sealed class UtfFieldImage : IComparable<UtfFieldImage> {
-
-        internal UtfFieldImage() {
-        }
 
         public ColumnStorage Storage { get; set; }
         public ColumnType Type { get; set; }
@@ -139,11 +136,11 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
         }
 
         public int CompareTo(UtfFieldImage other) {
-            return this.Order - other.Order;
+            return Order.CompareTo(other.Order);
         }
 
         public override string ToString() {
-            return $"UtfFieldImage {{{Name}}}";
+            return $"UtfFieldImage {{{Name}}} ({Type})";
         }
     }
 }
