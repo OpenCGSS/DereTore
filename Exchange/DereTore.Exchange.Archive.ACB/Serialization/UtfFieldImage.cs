@@ -26,6 +26,7 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
         public void SetValue(object value) {
             ColumnType type;
             var union = new NumericUnion();
+
             if (value is byte) {
                 type = ColumnType.Byte;
                 union.U8 = (byte)value;
@@ -65,7 +66,9 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
             } else {
                 throw new ArgumentException("Unsupported argument type.", nameof(value));
             }
+
             Type = type;
+
             switch (type) {
                 case ColumnType.String:
                 case ColumnType.Data:
@@ -128,7 +131,13 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
                     break;
                 case ColumnType.Data:
                     stream.WriteUInt32BE(DataOffset);
-                    stream.WriteUInt32BE((uint)DataValue.Length);
+
+                    // Tables ending locations, 4-byte alignment.
+                    if (IsTable) {
+                        stream.WriteUInt32BE(AcbHelper.RoundUpToAlignment((uint)DataValue.Length, 4));
+                    } else {
+                        stream.WriteUInt32BE((uint)DataValue.Length);
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(Type));

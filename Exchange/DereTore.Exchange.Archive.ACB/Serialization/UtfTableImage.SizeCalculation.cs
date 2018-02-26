@@ -8,55 +8,54 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
         private uint GetRowDescriptorSize() {
             uint totalSize = 0;
 
-            foreach (var row in Rows) {
-                foreach (var fieldImage in row) {
-                    // Storage descriptor (1 byte) + field name offset (4 bytes)
-                    totalSize += 5;
+            foreach (var fieldImage in Rows[0]) {
+                // Storage descriptor (1 byte) + field name offset (4 bytes)
+                totalSize += 5;
 
-                    var storage = fieldImage.Storage;
+                var storage = fieldImage.Storage;
 
-                    switch (storage) {
-                        case ColumnStorage.Constant:
-                        case ColumnStorage.Constant2:
-                            var type = fieldImage.Type;
-                            switch (type) {
-                                case ColumnType.Byte:
-                                case ColumnType.SByte:
-                                    totalSize += 1;
-                                    break;
-                                case ColumnType.UInt16:
-                                case ColumnType.Int16:
-                                    totalSize += 2;
-                                    break;
-                                case ColumnType.UInt32:
-                                case ColumnType.Int32:
-                                    totalSize += 4;
-                                    break;
-                                case ColumnType.UInt64:
-                                case ColumnType.Int64:
-                                    totalSize += 8;
-                                    break;
-                                case ColumnType.Single:
-                                    totalSize += 4;
-                                    break;
-                                case ColumnType.Double:
-                                    totalSize += 8;
-                                    break;
-                                case ColumnType.String:
-                                    totalSize += 4;
-                                    break;
-                                case ColumnType.Data:
-                                    totalSize += 4 + 4;
-                                    break;
-                                default:
-                                    throw new ArgumentOutOfRangeException(nameof(type));
-                            }
-                            break;
-                        case ColumnStorage.PerRow:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(storage));
-                    }
+                switch (storage) {
+                    case ColumnStorage.Constant:
+                    case ColumnStorage.Constant2:
+                        var type = fieldImage.Type;
+
+                        switch (type) {
+                            case ColumnType.Byte:
+                            case ColumnType.SByte:
+                                totalSize += 1;
+                                break;
+                            case ColumnType.UInt16:
+                            case ColumnType.Int16:
+                                totalSize += 2;
+                                break;
+                            case ColumnType.UInt32:
+                            case ColumnType.Int32:
+                                totalSize += 4;
+                                break;
+                            case ColumnType.UInt64:
+                            case ColumnType.Int64:
+                                totalSize += 8;
+                                break;
+                            case ColumnType.Single:
+                                totalSize += 4;
+                                break;
+                            case ColumnType.Double:
+                                totalSize += 8;
+                                break;
+                            case ColumnType.String:
+                                totalSize += 4;
+                                break;
+                            case ColumnType.Data:
+                                totalSize += 4 + 4;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(type));
+                        }
+                        break;
+                    case ColumnStorage.PerRow:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(storage));
                 }
             }
 
@@ -186,11 +185,18 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
             foreach (var fieldImage in orderedDataFieldImages) {
                 var rawOffset = baseOffset;
 
+                // Tables' starting locations are rounded by Alignment (usually 0x20).
                 if (fieldImage.IsTable && fieldImage.DataValue.Length > 0) {
                     baseOffset = SerializationHelper.RoundUpAsTable(baseOffset, Alignment);
                 }
 
                 baseOffset += (uint)fieldImage.DataValue.Length;
+
+                // Tables' ending locations are rounded by 4.
+                if (fieldImage.IsTable && fieldImage.DataValue.Length > 0) {
+                    baseOffset = AcbHelper.RoundUpToAlignment(baseOffset, 4);
+                }
+
                 totalSize += (baseOffset - rawOffset);
             }
 
@@ -200,19 +206,22 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
         private static void AddToNewOrdererdDataFieldList(List<UtfFieldImage> fieldImagesInNewOrder, UtfFieldImage fieldImage, ref int firstTableDataFieldIndex) {
             // Tables are always the last fields to store.
             // Priority: [static misc data] > [dynamic static data] > [static table] > [dynamic table]
-            if (fieldImage.IsTable) {
-                fieldImagesInNewOrder.Add(fieldImage);
-                if (firstTableDataFieldIndex < 0) {
-                    firstTableDataFieldIndex = fieldImagesInNewOrder.Count - 1;
-                }
-            } else {
-                if (firstTableDataFieldIndex < 0) {
-                    fieldImagesInNewOrder.Add(fieldImage);
-                } else {
-                    fieldImagesInNewOrder.Insert(firstTableDataFieldIndex, fieldImage);
-                    ++firstTableDataFieldIndex;
-                }
-            }
+            //if (fieldImage.IsTable) {
+            //    fieldImagesInNewOrder.Add(fieldImage);
+            //    if (firstTableDataFieldIndex < 0) {
+            //        firstTableDataFieldIndex = fieldImagesInNewOrder.Count - 1;
+            //    }
+            //} else {
+            //    if (firstTableDataFieldIndex < 0) {
+            //        fieldImagesInNewOrder.Add(fieldImage);
+            //    } else {
+            //        fieldImagesInNewOrder.Insert(firstTableDataFieldIndex, fieldImage);
+            //        ++firstTableDataFieldIndex;
+            //    }
+            //}
+
+            // No sorting.
+            fieldImagesInNewOrder.Add(fieldImage);
         }
 
     }

@@ -12,9 +12,9 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
             // This action seems weird. But it does exist (see Cue table in CGSS song_1001[oneshin]), I don't know why.
             value = AcbHelper.RoundUpToAlignment(value, 4);
 
-            //if (value % alignment == 0) {
-            //    value += alignment;
-            //}
+            if (value % alignment == 0) {
+                value += alignment;
+            }
 
             return AcbHelper.RoundUpToAlignment(value, alignment);
         }

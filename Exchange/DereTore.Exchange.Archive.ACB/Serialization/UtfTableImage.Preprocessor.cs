@@ -23,13 +23,16 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
                 }
             }
 
+            var singleRowDataSize = GetSingleRowDataSize();
+            var rowDescriptorSize = GetRowDescriptorSize();
+
             var header = new UtfHeader {
                 TableName = TableName,
                 RowCount = (uint)Rows.Count,
                 FieldCount = (ushort)fieldCount,
                 Unknown1 = 1,
-                RowSize = GetSingleRowDataSize(),
-                PerRowDataOffset = GetRowDescriptorSize() + SchemaOffset // "per row" data offset, actually
+                RowSize = singleRowDataSize,
+                PerRowDataOffset = rowDescriptorSize + SchemaOffset // "per row" data offset, actually
             };
 
             var perRowDataSize = header.RowCount * header.RowSize;
@@ -44,6 +47,9 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
             var extraDataSize = GetExtraDataSize(header, out orderedDataFieldImages);
 
             header.TableSize = header.ExtraDataOffset + extraDataSize;
+
+            // ???
+            header.TableSize = AcbHelper.RoundUpToAlignment(header.TableSize, 4);
 
             return header;
         }
@@ -120,15 +126,14 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
             // String table
             var currentStringTableOffset = (uint)TableNameBytesCache.Length;
             var row0 = Rows[0];
-            var row = row0;
 
             // Field names and static strings
-            foreach (var fieldImage in row) {
+            foreach (var fieldImage in row0) {
                 fieldImage.NameOffset = currentStringTableOffset;
                 currentStringTableOffset += (uint)fieldImage.NameBytesCache.Length;
             }
 
-            foreach (var fieldImage in row) {
+            foreach (var fieldImage in row0) {
                 switch (fieldImage.Storage) {
                     case ColumnStorage.Constant:
                     case ColumnStorage.Constant2:
@@ -181,7 +186,13 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
                     }
 
                     fieldImage.DataOffset = currentOffset - baseOffset;
+
                     currentOffset += (uint)fieldImage.DataValue.Length;
+
+                    // Extra 4-byte alignment at the end of tables.
+                    if (fieldImage.IsTable) {
+                        currentOffset = AcbHelper.RoundUpToAlignment(currentOffset, Alignment);
+                    }
                 } else {
                     fieldImage.DataOffset = 0;
                 }
