@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -11,9 +11,11 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
         public static uint RoundUpAsTable(uint value, uint alignment) {
             // This action seems weird. But it does exist (see Cue table in CGSS song_1001[oneshin]), I don't know why.
             value = AcbHelper.RoundUpToAlignment(value, 4);
+
             if (value % alignment == 0) {
                 value += alignment;
             }
+
             return AcbHelper.RoundUpToAlignment(value, alignment);
         }
 
@@ -21,17 +23,28 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
             var type = tableObject.GetType();
             var objFields = type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic);
             var validDescriptors = new List<MemberAbstract>();
+            var lastOrder = -1;
+
             foreach (var field in objFields) {
-                var caField = field.GetCustomAttributes(typeof(UtfFieldAttribute), false);
+                var utfFieldAttribute = GetCustomAttribute<UtfFieldAttribute>(field);
+
                 // It is a field that needs serialization.
-                if (caField.Length == 1) {
-                    var caArchive = field.GetCustomAttributes(typeof(Afs2ArchiveAttribute), false);
-                    var ca1 = caField[0] as UtfFieldAttribute;
-                    var ca2 = caArchive.Length == 1 ? caArchive[0] as Afs2ArchiveAttribute : null;
-                    validDescriptors.Add(new MemberAbstract(field, ca1, ca2));
+                if (utfFieldAttribute != null) {
+                    var afs2ArchiveAttribute = GetCustomAttribute<Afs2ArchiveAttribute>(field);
+
+                    if (utfFieldAttribute.Order < 0) {
+                        ++lastOrder;
+                        utfFieldAttribute.Order = lastOrder;
+                    } else {
+                        lastOrder = utfFieldAttribute.Order;
+                    }
+
+                    validDescriptors.Add(new MemberAbstract(field, utfFieldAttribute, afs2ArchiveAttribute));
                 }
             }
-            validDescriptors.Sort((d1, d2) => d1.FieldAttribute.Order - d2.FieldAttribute.Order);
+
+            validDescriptors.Sort((d1, d2) => d1.FieldAttribute.Order.CompareTo(d2.FieldAttribute.Order));
+
             return validDescriptors.ToArray();
         }
 
@@ -39,13 +52,35 @@ namespace DereTore.Exchange.Archive.ACB.Serialization {
             if (files.Count == 0) {
                 return new byte[0];
             }
+
             byte[] buffer;
+
             using (var memory = new MemoryStream()) {
                 WriteAfs2ArchiveToStream(files, memory, alignment);
-                buffer = new byte[memory.Length];
-                Array.Copy(memory.GetBuffer(), buffer, buffer.Length);
+                buffer = memory.ToArray();
             }
+
             return buffer;
+        }
+
+        public static T GetCustomAttribute<T>(Type type, bool inherit = false) where T : Attribute {
+            var attr = type.GetCustomAttributes(typeof(T), inherit);
+
+            if (attr.Length == 0) {
+                return null;
+            } else {
+                return attr[0] as T;
+            }
+        }
+
+        public static T GetCustomAttribute<T>(FieldInfo fieldInfo, bool inherit = false) where T : Attribute {
+            var attr = fieldInfo.GetCustomAttributes(typeof(T), inherit);
+
+            if (attr.Length == 0) {
+                return null;
+            } else {
+                return attr[0] as T;
+            }
         }
 
         private static void WriteAfs2ArchiveToStream(ReadOnlyCollection<byte[]> files, Stream stream, uint alignment) {
