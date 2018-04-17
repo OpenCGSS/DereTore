@@ -1,43 +1,40 @@
 # https://www.appveyor.com/docs/appveyor-yml/
 
-version: 0.7.9.{build}
-branches:
-  only:
-    - master
-skip_tags: true
+version: 0.7.12.{build}
 image: Visual Studio 2017
-build_script:
-  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform="Any CPU"
-  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform=x86
 environment:
-  EnableNuGetPackageRestore: true
+  Configuration: Release
+  Platform: x86
+build_script:
+  - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform="Any CPU"
+  - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
 before_build:
-  - nuget update -self
-  - git submodule update --init --recursive
-  - nuget restore
-  - nuget restore external\SharpAL\SharpAL.sln
+  - cmd: nuget update -self
+  - cmd: git submodule update --init --recursive
+  - ps: scripts\nuget_restore.ps1
 after_build:
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.wav
-  - copy deretore-toolkit.zip deretore-toolkit-x86-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
-  - copy deretore-toolkit.zip deretore-toolkit-x86.zip
+  - ps: .\scripts\extract-openal-soft.ps1 -destination $Env:APPVEYOR_BUILD_FOLDER\Apps\ScoreViewer\bin\$Env:Platform\$Env:Configuration\
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.wav
+  - cmd: copy deretore-toolkit.zip deretore-toolkit-x86-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
+  - cmd: copy deretore-toolkit.zip deretore-toolkit-x86.zip
 artifacts:
   - path: deretore-toolkit-x86-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
     name: WithVersion
