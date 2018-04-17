@@ -3,8 +3,8 @@
 version: 0.7.12.{build}
 image: Visual Studio 2017
 environment:
-  - Configuration: Release
-  - Platform: x86
+  Configuration: Release
+  Platform: x86
 build_script:
   - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform="Any CPU"
   - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
