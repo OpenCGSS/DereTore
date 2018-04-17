@@ -1,20 +1,19 @@
 # https://www.appveyor.com/docs/appveyor-yml/
 
 version: 0.7.12.{build}
-branches:
-  only:
-    - master
-skip_tags: true
 image: Visual Studio 2017
+environment:
+  - Configuration: Release
+  - Platform: x86
 build_script:
-  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform="Any CPU"
-  - cmd: msbuild DereTore.sln /p:Configuration=Release /p:Platform=x86
+  - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform="Any CPU"
+  - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
 before_build:
   - cmd: nuget update -self
   - cmd: git submodule update --init --recursive
   - ps: scripts\nuget_restore.ps1
 after_build:
-  - ps: .\scripts\extract-openal-soft.ps1 -destination $Env:APPVEYOR_BUILD_FOLDER\Apps\ScoreViewer\bin\$Env:Platform\$Env:CONFIGURATION\
+  - ps: .\scripts\extract-openal-soft.ps1 -destination $Env:APPVEYOR_BUILD_FOLDER\Apps\ScoreViewer\bin\$Env:Platform\$Env:Configuration\
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.exe
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.exe
