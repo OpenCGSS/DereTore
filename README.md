@@ -41,12 +41,12 @@ Windows:
 
   - Windows 7 or later
   - [.NET Framework 4.5](https://www.microsoft.com/en-us/download/details.aspx?id=42642)
-  - [OpenAL](https://www.openal.org/downloads/)
+  - OpenAL (bundled [OpenAL-Soft](https://github.com/kcat/openal-soft) Win32 build in newer releases)
 
 macOS/Linux:
 
   - [Wine](https://www.winehq.org/download) (will install wine-mono when needed)
-  - [OpenAL](https://www.openal.org/downloads/)
+  - OpenAL (bundled [OpenAL-Soft](https://github.com/kcat/openal-soft) Win32 build in newer releases)
 
 > For licensing reasons, newer releases do not include an essential library `hcaenc_lite.dll`. However, you can:
 >
@@ -59,7 +59,7 @@ macOS/Linux:
 If you want to build custom CD jackets:
 
 - [Visual C++ Redistributable Packages for Visual Studio 2013](https://www.microsoft.com/en-us/download/details.aspx?id=40784)
-- [DirectX 9.0c](https://www.microsoft.com/en-us/download/details.aspx?id=8109)
+- [DirectX 9.0c Runtime](https://www.microsoft.com/en-us/download/details.aspx?id=8109)
 
 Checked Feb. 09, 2018: Although JacketCreator generates asset bundles for Unity version 5.1.2f1 (original version that CGSS uses),
 CGSS (using Unity 5.4.5p1) is still able to load and display them.
