@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using DereTore.Common;
 
@@ -144,13 +145,14 @@ namespace DereTore.Exchange.Archive.ACB {
         }
 
         private void InitializeAwbArchives() {
-            var internalAwbSize = GetFieldSize(0, "AwbFile");
-            if (internalAwbSize.HasValue && internalAwbSize.Value > 0) {
-                _internalAwb = GetInternalAwbArchive();
-            }
             var externalAwbSize = GetFieldSize(0, "StreamAwbAfs2Header");
             if (externalAwbSize.HasValue && externalAwbSize.Value > 0) {
                 _externalAwb = GetExternalAwbArchive();
+            }
+
+            var internalAwbSize = GetFieldSize(0, "AwbFile");
+            if (internalAwbSize.HasValue && internalAwbSize.Value > 0) {
+                _internalAwb = GetInternalAwbArchive();
             }
         }
 
@@ -158,6 +160,9 @@ namespace DereTore.Exchange.Archive.ACB {
             if (!cue.IsWaveformIdentified) {
                 throw new InvalidOperationException($"File '{fileNameForErrorInfo}' is not identified.");
             }
+
+            Stream result;
+
             if (cue.IsStreaming) {
                 var externalAwb = ExternalAwb;
                 if (externalAwb == null) {
@@ -167,8 +172,8 @@ namespace DereTore.Exchange.Archive.ACB {
                     throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in AWB file {externalAwb.FileName}.");
                 }
                 var targetExternalFile = externalAwb.Files[cue.WaveformId];
-                using (var fs = File.Open(externalAwb.FileName, FileMode.Open, FileAccess.Read)) {
-                    return AcbHelper.ExtractToNewStream(fs, targetExternalFile.FileOffsetAligned, (int)targetExternalFile.FileLength);
+                using (var fs = File.Open(externalAwb.FileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
+                    result = AcbHelper.ExtractToNewStream(fs, targetExternalFile.FileOffsetAligned, (int)targetExternalFile.FileLength);
                 }
             } else {
                 var internalAwb = InternalAwb;
@@ -179,8 +184,10 @@ namespace DereTore.Exchange.Archive.ACB {
                     throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in internal AWB in {AcbFileName}.");
                 }
                 var targetInternalFile = internalAwb.Files[cue.WaveformId];
-                return AcbHelper.ExtractToNewStream(Stream, targetInternalFile.FileOffsetAligned, (int)targetInternalFile.FileLength);
+                result = AcbHelper.ExtractToNewStream(Stream, targetInternalFile.FileOffsetAligned, (int)targetInternalFile.FileLength);
             }
+
+            return result;
         }
 
         private Afs2Archive GetInternalAwbArchive() {
@@ -220,16 +227,16 @@ namespace DereTore.Exchange.Archive.ACB {
             }
 
             var externalAwbHash = GetFieldValueAsData(0, "StreamAwbHash");
-            var fs = File.Open(awbFiles[0], FileMode.Open, FileAccess.Read);
+            var fs = File.Open(awbFiles[0], FileMode.Open, FileAccess.Read, FileShare.Read);
             var awbHash = AcbHelper.GetMd5Checksum(fs);
-            Afs2Archive archive;
-            if (AcbHelper.AreDataIdentical(awbHash, externalAwbHash)) {
-                archive = new Afs2Archive(fs, 0, fs.Name, true);
-                archive.Initialize();
-            } else {
-                fs.Dispose();
-                throw new FormatException($"Checksum of AWB file '{fs.Name}' ({BitConverter.ToString(awbHash)}) does not match MD5 checksum inside ACB file '{acbFileName}' ({BitConverter.ToString(externalAwbHash)}).");
+
+            if (!AcbHelper.AreDataIdentical(awbHash, externalAwbHash)) {
+                Trace.WriteLine($"Checksum of AWB file '{fs.Name}' ({BitConverter.ToString(awbHash)}) does not match MD5 checksum inside ACB file '{acbFileName}' ({BitConverter.ToString(externalAwbHash)}).");
             }
+
+            var archive = new Afs2Archive(fs, 0, fs.Name, true);
+            archive.Initialize();
+
             return archive;
         }
 

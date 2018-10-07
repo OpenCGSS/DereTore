@@ -39,7 +39,7 @@ namespace DereTore.Exchange.Archive.ACB {
         }
 
         public static AcbFile FromFile(string fileName) {
-            var fs = File.Open(fileName, FileMode.Open, FileAccess.Read);
+            var fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
             return FromStream(fs, false);
         }
 

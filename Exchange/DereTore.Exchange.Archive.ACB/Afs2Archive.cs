@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using DereTore.Common;
@@ -35,6 +35,8 @@ namespace DereTore.Exchange.Archive.ACB {
             for (var j = 0; j < offsetFieldSize; j++) {
                 offsetMask |= (uint)(0xff << (j * 8));
             }
+
+            _byteAlignment = _byteAlignment & 0xffff; // Is the mask a constant?
 
             const int invalidCueId = -1;
             var previousCueId = invalidCueId;

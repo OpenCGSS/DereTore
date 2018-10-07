@@ -26,7 +26,7 @@ namespace DereTore.Apps.AcbUnzip {
                     var extractName = Path.Combine(fullDirPath, s);
                     try {
                         using (var source = isCueNonEmpty ? acb.OpenDataStream(s) : acb.OpenDataStream((uint)i)) {
-                            using (var fs = new FileStream(extractName, FileMode.Create, FileAccess.Write)) {
+                            using (var fs = new FileStream(extractName, FileMode.Create, FileAccess.Write, FileShare.Write)) {
                                 WriteFile(source, fs);
                             }
                         }
