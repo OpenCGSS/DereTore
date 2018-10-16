@@ -7,8 +7,8 @@ environment:
   Platform: x86
 build_script:
   - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform="Any CPU"
-  - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
-  - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform=Win32
+  - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform=x86
+  - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform=x64
 before_build:
   - cmd: nuget update -self
   - cmd: git submodule update --init --recursive
