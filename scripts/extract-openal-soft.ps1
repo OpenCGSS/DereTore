@@ -2,10 +2,10 @@ param (
     [Parameter(Mandatory=$true)][string]$destination
 )
 
-$openAlSoftVersion = '1.18.2'
+$openAlSoftVersion = '1.19.1'
 
 echo "Downloading OpenAL-Soft ($openAlSoftVersion/Windows)..."
-(New-Object Net.WebClient).DownloadFile('http://kcat.strangesoft.net/openal-binaries/openal-soft-' + $openAlSoftVersion + '-bin.zip', 'C:\openal-soft.zip')
+(New-Object Net.WebClient).DownloadFile('http://openal-soft.org/openal-binaries/openal-soft-' + $openAlSoftVersion + '-bin.zip', 'C:\openal-soft.zip')
 
 echo "Extracting OpenAL-Soft..."
 
