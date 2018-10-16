@@ -66,10 +66,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="x64\PVRTexLib.dll" />
-    <Content Include="x86\PVRTexLib.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Interop\DereTore.Interop.D3DX9\DereTore.Interop.D3DX9.csproj">
       <Project>{f81398ad-9cf5-43a4-9cd3-dabb50f6ba3b}</Project>
       <Name>DereTore.Interop.D3DX9</Name>
@@ -88,7 +84,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy "$(ProjectDir)$(PlatformName)\PVRTexLib.dll" "$(ProjectDir)$(OutDir)"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
