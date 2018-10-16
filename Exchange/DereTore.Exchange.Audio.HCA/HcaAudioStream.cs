@@ -7,21 +7,21 @@ using DereTore.Common;
 namespace DereTore.Exchange.Audio.HCA {
     public sealed class HcaAudioStream : HcaAudioStreamBase {
 
-        public HcaAudioStream(Stream sourceStream)
-            : this(sourceStream, DecodeParams.Default) {
+        public HcaAudioStream(Stream baseStream)
+            : this(baseStream, DecodeParams.Default) {
         }
 
-        public HcaAudioStream(Stream sourceStream, AudioParams audioParams)
-            : this(sourceStream, DecodeParams.Default, audioParams) {
+        public HcaAudioStream(Stream baseStream, AudioParams audioParams)
+            : this(baseStream, DecodeParams.Default, audioParams) {
         }
 
-        public HcaAudioStream(Stream sourceStream, DecodeParams decodeParams)
-            : this(sourceStream, decodeParams, AudioParams.Default) {
+        public HcaAudioStream(Stream baseStream, DecodeParams decodeParams)
+            : this(baseStream, decodeParams, AudioParams.Default) {
         }
 
-        public HcaAudioStream(Stream sourceStream, DecodeParams decodeParams, AudioParams audioParams)
-            : base(sourceStream, decodeParams) {
-            var decoder = new HcaDecoder(sourceStream, decodeParams);
+        public HcaAudioStream(Stream baseStream, DecodeParams decodeParams, AudioParams audioParams)
+            : base(baseStream, decodeParams) {
+            var decoder = new HcaDecoder(baseStream, decodeParams);
             _decoder = decoder;
             _audioParams = audioParams;
             var buffer = new byte[GetTotalAfterDecodingWaveDataSize()];

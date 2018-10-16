@@ -203,6 +203,11 @@ namespace DereTore.Exchange.Archive.ACB {
         private Afs2Archive GetExternalAwbArchive() {
             var acbFileName = AcbFileName;
             var awbDirPath = Path.GetDirectoryName(acbFileName);
+
+            if (awbDirPath == null) {
+                awbDirPath = string.Empty;
+            }
+
             var awbBaseFileName = Path.GetFileNameWithoutExtension(acbFileName);
             string[] awbFiles = null;
             string awbMask1 = null, awbMask2 = null, awbMask3 = null;
@@ -276,7 +281,7 @@ namespace DereTore.Exchange.Archive.ACB {
                     ext = ".dsp";
                     break;
                 default:
-                    ext = $".et-{encodeType.ToString("D2")}.bin";
+                    ext = $".et-{encodeType:D2}.bin";
                     break;
             }
             return ext;
@@ -290,6 +295,7 @@ namespace DereTore.Exchange.Archive.ACB {
         private Afs2Archive _internalAwb;
         private Afs2Archive _externalAwb;
         private string[] _fileNames;
+        private uint? _formatVersion;
 
     }
 }

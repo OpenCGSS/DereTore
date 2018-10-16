@@ -1,12 +1,15 @@
-﻿using System;
+using System;
 using System.IO;
 
 namespace DereTore.Exchange.Audio.HCA {
     public abstract class HcaAudioStreamBase : Stream {
 
-        protected HcaAudioStreamBase(Stream sourceStream, DecodeParams decodeParams) {
+        protected HcaAudioStreamBase(Stream baseStream, DecodeParams decodeParams) {
+            BaseStream = baseStream;
             _decodeParams = decodeParams;
         }
+
+        public Stream BaseStream { get; }
 
         public sealed override void Flush() {
             throw new NotSupportedException();

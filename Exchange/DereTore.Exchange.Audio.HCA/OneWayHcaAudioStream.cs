@@ -4,21 +4,21 @@ using System.IO;
 namespace DereTore.Exchange.Audio.HCA {
     public sealed class OneWayHcaAudioStream : HcaAudioStreamBase {
 
-        public OneWayHcaAudioStream(Stream sourceStream)
-            : this(sourceStream, DecodeParams.Default) {
+        public OneWayHcaAudioStream(Stream baseStream)
+            : this(baseStream, DecodeParams.Default) {
         }
 
-        public OneWayHcaAudioStream(Stream sourceStream, bool outputWaveHeader)
-            : this(sourceStream, DecodeParams.Default, outputWaveHeader) {
+        public OneWayHcaAudioStream(Stream baseStream, bool outputWaveHeader)
+            : this(baseStream, DecodeParams.Default, outputWaveHeader) {
         }
 
-        public OneWayHcaAudioStream(Stream sourceStream, DecodeParams decodeParams)
-            : this(sourceStream, decodeParams, true) {
+        public OneWayHcaAudioStream(Stream baseStream, DecodeParams decodeParams)
+            : this(baseStream, decodeParams, true) {
         }
 
-        public OneWayHcaAudioStream(Stream sourceStream, DecodeParams decodeParams, bool outputWaveHeader)
-            : base(sourceStream, decodeParams) {
-            _decoder = new OneWayHcaDecoder(sourceStream, decodeParams);
+        public OneWayHcaAudioStream(Stream baseStream, DecodeParams decodeParams, bool outputWaveHeader)
+            : base(baseStream, decodeParams) {
+            _decoder = new OneWayHcaDecoder(baseStream, decodeParams);
             OutputWaveHeader = outputWaveHeader;
             _state = HcaAudioStreamDecodeState.Initialized;
         }

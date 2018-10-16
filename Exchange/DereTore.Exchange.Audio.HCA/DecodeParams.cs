@@ -1,4 +1,4 @@
-﻿namespace DereTore.Exchange.Audio.HCA {
+namespace DereTore.Exchange.Audio.HCA {
     public struct DecodeParams {
 
         public uint Key1 { get; set; }
@@ -7,6 +7,7 @@
         public float Volume { get; set; }
         public bool CipherTypeOverrideEnabled { get; set; }
         public CipherType OverriddenCipherType { get; set; }
+        public ushort KeyModifier { get; set; }
 
         public static DecodeParams CreateDefault() {
             return new DecodeParams {
@@ -15,7 +16,8 @@
                 Mode = SamplingMode.S16,
                 Volume = 1.0f,
                 CipherTypeOverrideEnabled = false,
-                OverriddenCipherType = CipherType.NoChipher
+                OverriddenCipherType = CipherType.NoChipher,
+                KeyModifier = 0
             };
         }
 
@@ -27,6 +29,18 @@
                 Volume = 1.0f,
                 CipherTypeOverrideEnabled = false,
                 OverriddenCipherType = CipherType.NoChipher
+            };
+        }
+
+        public static DecodeParams CreateDefault(uint key1, uint key2, ushort keyMod) {
+            return new DecodeParams {
+                Key1 = key1,
+                Key2 = key2,
+                Mode = SamplingMode.S16,
+                Volume = 1.0f,
+                CipherTypeOverrideEnabled = false,
+                OverriddenCipherType = CipherType.NoChipher,
+                KeyModifier = keyMod
             };
         }
 

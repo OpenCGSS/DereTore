@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using DereTore.Common;
@@ -139,9 +139,9 @@ namespace DereTore.Exchange.Audio.HCA {
 
         private void InitializeCiphers() {
             _cipherFrom = new Cipher();
-            _cipherFrom.Initialize(HcaInfo.CipherType, _ccFrom.Key1, _ccFrom.Key2);
+            _cipherFrom.Initialize(HcaInfo.CipherType, _ccFrom.Key1, _ccFrom.Key2, _ccFrom.KeyModifier);
             _cipherTo = new Cipher();
-            _cipherTo.Initialize(_ccTo.CipherType, _ccTo.Key1, _ccTo.Key2);
+            _cipherTo.Initialize(_ccTo.CipherType, _ccTo.Key1, _ccTo.Key2, _ccTo.KeyModifier);
         }
 
         private bool ConvertBlock(byte[] blockData, Stream outputStream) {
