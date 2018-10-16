@@ -1,6 +1,6 @@
 # https://www.appveyor.com/docs/appveyor-yml/
 
-version: 0.7.12.{build}
+version: 0.8.0.{build}
 image: Visual Studio 2017
 environment:
   Configuration: Release
@@ -20,6 +20,8 @@ after_build:
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.exe
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Acb2Wavs/bin/%PLATFORM%/%CONFIGURATION%/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Acb2Wavs/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.exe

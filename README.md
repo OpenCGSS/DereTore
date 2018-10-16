@@ -20,7 +20,7 @@ Wonder [how this name comes from](docs/Notes.md#the-name)?
 
 ## What can it do?
 
-- Extract audio files used by CGSS.
+- Extract audio files used by CGSS (and some other games using ACB/HCA).
 - Decode those audio files to wave audio.
 - Create songs, and their cover images.
 - Create beatmaps.
