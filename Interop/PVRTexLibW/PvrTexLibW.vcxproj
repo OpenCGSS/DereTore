@@ -23,6 +23,7 @@
     <ProjectGuid>{0C5CC89A-0B30-4846-A37A-90D217D61EF1}</ProjectGuid>
     <RootNamespace>PvrTexLibW</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <ProjectName>PVRTexLibW</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
