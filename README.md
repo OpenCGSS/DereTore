@@ -48,11 +48,7 @@ macOS/Linux:
   - [Wine](https://www.winehq.org/download) (will install wine-mono when needed)
   - OpenAL (bundled [OpenAL-Soft](https://github.com/kcat/openal-soft) Win32 build in newer releases)
 
-> For licensing reasons, newer releases do not include an essential library `hcaenc_lite.dll`. However, you can:
->
-> 1. download `hcaenc_lite.dll` from [here](https://mega.nz/#!QxQjnZRB!85k5O6K5oMMM1W9ux7ZpkzXQFgV4EoYplZsW1ZOWZnM), or
-> 2. download ADX2LE from its [download page](http://www.adx2le.com/download/index.html), and put `tools\hcaenc_lite.dll` to DereTore's application folder.
-> If you encounter regional problems, you know there is a way to solve it.
+In newer releases, HCA encoding is provided by [VGAudio](https://github.com/Thealexbarney/VGAudio) so `hcaenc_lite.dll` is no longer needed.
 
 **Optional requirements:**
 
