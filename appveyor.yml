@@ -4,7 +4,6 @@ version: 0.8.0.{build}
 image: Visual Studio 2017
 environment:
   Configuration: Release
-  Platform: x86
 build_script:
   - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform="Any CPU"
   - cmd: msbuild DereTore.sln /p:Configuration=%CONFIGURATION% /p:Platform=x86
@@ -14,36 +13,36 @@ before_build:
   - cmd: git submodule update --init --recursive
   - ps: scripts\nuget_restore.ps1
 after_build:
-  - ps: .\scripts\extract-openal-soft.ps1 -destination $Env:APPVEYOR_BUILD_FOLDER\Apps\ScoreViewer\bin\$Env:Platform\$Env:Configuration\
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Acb2Wavs/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Acb2Wavs/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: copy %APPVEYOR_BUILD_FOLDER%\Interop\PVRTexLibW\bin\x86\%CONFIGURATION%\*.dll %APPVEYOR_BUILD_FOLDER%\Apps\JacketCreator\bin\%PLATFORM%\%CONFIGURATION%\x86\
-  - cmd: copy %APPVEYOR_BUILD_FOLDER%\Interop\PVRTexLibW\bin\x64\%CONFIGURATION%\*.dll %APPVEYOR_BUILD_FOLDER%\Apps\JacketCreator\bin\%PLATFORM%\%CONFIGURATION%\x64\
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.exe
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.dll
-  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/%PLATFORM%/%CONFIGURATION%/*.wav
+  - ps: .\scripts\extract-openal-soft.ps1 -destination32 $Env:APPVEYOR_BUILD_FOLDER\Apps\ScoreViewer\bin\x86\$Env:Configuration\ -destination64 $Env:APPVEYOR_BUILD_FOLDER\Apps\ScoreViewer\bin\x64\$Env:Configuration\
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbMaker/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/AcbUnzip/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hca2Wav/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Acb2Wavs/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Acb2Wavs/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcacc/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/Hcaenc/bin/*.dll
+  - cmd: copy %APPVEYOR_BUILD_FOLDER%\Interop\PVRTexLibW\bin\x86\%CONFIGURATION%\*.dll %APPVEYOR_BUILD_FOLDER%\Apps\JacketCreator\bin\%CONFIGURATION%\x86\
+  - cmd: copy %APPVEYOR_BUILD_FOLDER%\Interop\PVRTexLibW\bin\x64\%CONFIGURATION%\*.dll %APPVEYOR_BUILD_FOLDER%\Apps\JacketCreator\bin\%CONFIGURATION%\x64\
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/JacketCreator/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/LZ4/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/MusicToolchain/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/*.exe
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/*.dll
+  - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/*.wav
   - cmd: copy deretore-toolkit.zip deretore-toolkit-x86-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
   - cmd: copy deretore-toolkit.zip deretore-toolkit-x86.zip
 artifacts:
-  - path: deretore-toolkit-x86-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
+  - path: deretore-toolkit-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
     name: WithVersion
-  - path: deretore-toolkit-x86.zip
+  - path: deretore-toolkit-latest.zip
     name: Static
 assembly_info:
   patch: true

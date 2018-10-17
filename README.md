@@ -10,7 +10,7 @@ The goal of DereTore is to improve gaming experience in [THE iDOLM@STER Cinderel
 
 **Downloads:**
 
-- [Nightly build](https://ci.appveyor.com/api/projects/hozuki/deretore-avoh8/artifacts/deretore-toolkit-x86.zip) (Windows, x86)
+- [Nightly build](https://ci.appveyor.com/api/projects/hozuki/deretore-avoh8/artifacts/deretore-toolkit-latest.zip) (Windows, x86)
 - [Releases](https://github.com/OpenCGSS/DereTore/releases)
 
 A newer version of Starlight Director (the beatmap editor) can be found at [hozuki/StarlightDirector](https://github.com/hozuki/StarlightDirector). However, if you
