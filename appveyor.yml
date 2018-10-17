@@ -37,8 +37,8 @@ after_build:
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/*.exe
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/*.dll
   - cmd: 7z a deretore-toolkit.zip -r %APPVEYOR_BUILD_FOLDER%/Apps/ScoreViewer/bin/*.wav
-  - cmd: copy deretore-toolkit.zip deretore-toolkit-x86-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
-  - cmd: copy deretore-toolkit.zip deretore-toolkit-x86.zip
+  - cmd: copy deretore-toolkit.zip deretore-toolkit-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
+  - cmd: copy deretore-toolkit.zip deretore-toolkit-latest.zip
 artifacts:
   - path: deretore-toolkit-v%APPVEYOR_BUILD_VERSION%-alpha-b%APPVEYOR_BUILD_NUMBER%.zip
     name: WithVersion
