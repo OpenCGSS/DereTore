@@ -5,7 +5,7 @@ using DereTore.Exchange.Audio.HCA;
 namespace DereTore.Apps.Hca2Wav {
     public sealed class Options {
 
-        [Value(0)]
+        [Value(0, HelpText = "Input file name", Required = true)]
         public string InputFileName { get; set; } = string.Empty;
 
         [Option('o', "out", HelpText = "Output file name", Required = false)]

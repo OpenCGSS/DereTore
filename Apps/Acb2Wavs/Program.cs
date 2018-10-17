@@ -51,7 +51,7 @@ namespace DereTore.Apps.BatchDecodeFromAcb {
             }
 
             if (!succeeded) {
-                var helpText = CommandLine.Text.HelpText.AutoBuild(parsedResult);
+                var helpText = CommandLine.Text.HelpText.AutoBuild(parsedResult, null, null);
 
                 helpText.AddPreOptionsLine(" ");
                 helpText.AddPreOptionsLine("Usage: acb2wavs <input ACB> [options]");

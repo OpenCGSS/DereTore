@@ -4,7 +4,7 @@ using DereTore.Common.StarlightStage;
 namespace DereTore.Apps.BatchDecodeFromAcb {
     public sealed class Options {
 
-        [Value(0)]
+        [Value(0, HelpText = "Input file name", Required = true)]
         public string InputFileName { get; set; } = string.Empty;
 
         [Option('o', "out", HelpText = "Output file name", Required = false)]

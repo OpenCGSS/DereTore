@@ -29,7 +29,7 @@ namespace DereTore.Apps.Hca2Wav {
             }
 
             if (!succeeded) {
-                var helpText = CommandLine.Text.HelpText.AutoBuild(parsedResult);
+                var helpText = CommandLine.Text.HelpText.AutoBuild(parsedResult, null, null);
                 helpText.AddPreOptionsLine(" ");
                 helpText.AddPreOptionsLine("Usage: hca2wav <input HCA> [options]");
                 Console.Error.WriteLine(helpText);

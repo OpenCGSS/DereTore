@@ -14,7 +14,11 @@ namespace DereTore.Apps.JacketCreator {
         private static int Main(string[] args) {
             const int defaultReturnCodeFail = -1;
 
-            var parsedResult = Parser.Default.ParseArguments<Options>(args);
+            var parser = new Parser(settings => {
+                settings.IgnoreUnknownArguments = true;
+            });
+
+            var parsedResult = parser.ParseArguments<Options>(args);
             var isOptionsValid = parsedResult.Tag == ParserResultType.Parsed;
 
             if (!isOptionsValid) {
