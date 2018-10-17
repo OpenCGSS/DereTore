@@ -1,7 +1,5 @@
-﻿using System;
+using System;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DereTore.Exchange.Audio.HCA {
     partial class HcaDecoder {
@@ -18,7 +16,7 @@ namespace DereTore.Exchange.Audio.HCA {
             }
             var decodeParams = _decodeParams;
             var cipherType = decodeParams.CipherTypeOverrideEnabled ? decodeParams.OverriddenCipherType : hcaInfo.CipherType;
-            if (!_cipher.Initialize(cipherType, decodeParams.Key1, decodeParams.Key2)) {
+            if (!_cipher.Initialize(cipherType, decodeParams.Key1, decodeParams.Key2, decodeParams.KeyModifier)) {
                 throw new HcaException(ErrorMessages.GetCiphInitializationFailed(), ActionResult.CiphInitFailed);
             }
             var channels = _channels = new Channel[0x10];
@@ -79,7 +77,7 @@ namespace DereTore.Exchange.Audio.HCA {
             }
         }
 
-        private int DecodeToWaveR32(byte[] blockData) {
+        private int DecodeToWaveR32(byte[] blockData, int blockIndex) {
             var hcaInfo = HcaInfo;
             if (blockData == null) {
                 throw new ArgumentNullException(nameof(blockData));
@@ -100,28 +98,46 @@ namespace DereTore.Exchange.Audio.HCA {
             var a = (d.GetBit(9) << 8) - d.GetBit(7);
             var channels = _channels;
             var ath = _ath;
+            string site = null;
+
             try {
-                for (var i = 0; i < hcaInfo.ChannelCount; ++i) {
+                int i;
+
+                for (i = 0; i < hcaInfo.ChannelCount; ++i) {
+                    site = $"Decode1({i.ToString()})";
                     channels[i].Decode1(d, hcaInfo.CompR09, a, ath.Table);
                 }
-                for (var i = 0; i < 8; ++i) {
-                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
+
+                for (i = 0; i < 8; ++i) {
+                    int j;
+
+                    for (j = 0; j < hcaInfo.ChannelCount; ++j) {
+                        site = $"Decode2({i.ToString()}/{j.ToString()})";
                         channels[j].Decode2(d);
                     }
-                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
+
+                    for (j = 0; j < hcaInfo.ChannelCount; ++j) {
+                        site = $"Decode3({i.ToString()}/{j.ToString()})";
                         channels[j].Decode3(hcaInfo.CompR09, hcaInfo.CompR08, (uint)(hcaInfo.CompR07 + hcaInfo.CompR06), hcaInfo.CompR05);
                     }
-                    for (var j = 0; j < hcaInfo.ChannelCount - 1; ++j) {
+
+                    for (j = 0; j < hcaInfo.ChannelCount - 1; ++j) {
+                        site = $"Decode4({i.ToString()}/{j.ToString()})";
                         Channel.Decode4(ref channels[j], ref channels[j + 1], i, (uint)(hcaInfo.CompR05 - hcaInfo.CompR06), hcaInfo.CompR06, hcaInfo.CompR07);
                     }
-                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
+
+                    for (j = 0; j < hcaInfo.ChannelCount; ++j) {
+                        site = $"Decode5({i.ToString()}/{j.ToString()})";
                         channels[j].Decode5(i);
                     }
                 }
+
                 return blockData.Length;
             } catch (IndexOutOfRangeException ex) {
                 const string message = "Index access exception detected. It is probably because you are using an incorrect HCA key pair while decoding a type 56 HCA file.";
-                throw new HcaException(message, ActionResult.DecodeFailed, ex);
+                var siteInfo = $"Site: {site} @ block {blockIndex.ToString()}";
+                var err = message + Environment.NewLine + siteInfo;
+                throw new HcaException(err, ActionResult.DecodeFailed, ex);
             }
         }
 
@@ -145,19 +161,25 @@ namespace DereTore.Exchange.Audio.HCA {
             var channelCount = (int)hcaInfo.ChannelCount;
             var rvaVolume = hcaInfo.RvaVolume;
             var bytesPerSample = waveWriter.BytesPerSample;
-            foreach (var l in Enumerable.Range(0, (int)blockCount)) {
+
+            for (var l = 0; l < (int)blockCount; ++l) {
                 source.Read(hcaBlockBuffer, 0, hcaBlockBuffer.Length);
-                DecodeToWaveR32(hcaBlockBuffer);
-                Parallel.For(0, 8, i => {
+
+                DecodeToWaveR32(hcaBlockBuffer, l + (int)startBlockIndex);
+
+                for (var i = 0; i < 8; ++i) {
                     for (var j = 0; j < 0x80; ++j) {
                         for (var k = 0; k < channelCount; ++k) {
                             var f = channels[k].Wave[i * 0x80 + j] * decodeParams.Volume * rvaVolume;
+
                             HcaHelper.Clamp(ref f, -1f, 1f);
+
                             var offset = (((l * 8 + i) * 0x80 + j) * channelCount + k) * bytesPerSample;
+
                             waveWriter.DecodeToBuffer(f, destination, (uint)offset);
                         }
                     }
-                });
+                }
             }
         }
 

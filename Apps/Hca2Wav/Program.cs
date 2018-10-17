@@ -29,7 +29,7 @@ namespace DereTore.Apps.Hca2Wav {
             }
 
             if (!succeeded) {
-                var helpText = CommandLine.Text.HelpText.AutoBuild(parsedResult);
+                var helpText = CommandLine.Text.HelpText.AutoBuild(parsedResult, null, null);
                 helpText.AddPreOptionsLine(" ");
                 helpText.AddPreOptionsLine("Usage: hca2wav <input HCA> [options]");
                 Console.Error.WriteLine(helpText);
@@ -48,22 +48,34 @@ namespace DereTore.Apps.Hca2Wav {
             }
 
             uint key1, key2;
+            ushort keyModifier;
             var formatProvider = new NumberFormatInfo();
+
             if (!string.IsNullOrWhiteSpace(options.Key1)) {
                 if (!uint.TryParse(options.Key1, NumberStyles.HexNumber, formatProvider, out key1)) {
-                    Console.WriteLine("ERROR: key 1 is of wrong format. It should look like \"a1b2c3d4\".");
+                    Console.WriteLine("ERROR: key 1 is in wrong format. It should look like \"a1b2c3d4\".");
                     return defaultExitCodeFail;
                 }
             } else {
                 key1 = CgssCipher.Key1;
             }
+
             if (!string.IsNullOrWhiteSpace(options.Key2)) {
                 if (!uint.TryParse(options.Key2, NumberStyles.HexNumber, formatProvider, out key2)) {
-                    Console.WriteLine("ERROR: key 2 is of wrong format. It should look like \"a1b2c3d4\".");
+                    Console.WriteLine("ERROR: key 2 is in wrong format. It should look like \"a1b2c3d4\".");
                     return defaultExitCodeFail;
                 }
             } else {
                 key2 = CgssCipher.Key2;
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.KeyModifier)) {
+                if (!ushort.TryParse(options.KeyModifier, NumberStyles.HexNumber, formatProvider, out keyModifier)) {
+                    Console.WriteLine("ERROR: key modifier is in wrong format. It should look like \"abcd\".");
+                    return defaultExitCodeFail;
+                }
+            } else {
+                keyModifier = 0;
             }
 
             using (var inputFileStream = File.Open(options.InputFileName, FileMode.Open, FileAccess.Read)) {
@@ -71,19 +83,26 @@ namespace DereTore.Apps.Hca2Wav {
                     var decodeParams = DecodeParams.CreateDefault();
                     decodeParams.Key1 = key1;
                     decodeParams.Key2 = key2;
+                    decodeParams.KeyModifier = keyModifier;
+
                     if (options.OverridesCipherType) {
                         decodeParams.CipherTypeOverrideEnabled = true;
                         decodeParams.OverriddenCipherType = (CipherType)options.OverriddenCipherType;
                     }
+
                     var audioParams = AudioParams.CreateDefault();
+
                     audioParams.InfiniteLoop = options.InfiniteLoop;
                     audioParams.SimulatedLoopCount = options.SimulatedLoopCount;
                     audioParams.OutputWaveHeader = !options.NoWaveHeader;
+
                     using (var hcaStream = new HcaAudioStream(inputFileStream, decodeParams, audioParams)) {
                         var read = 1;
                         var dataBuffer = new byte[1024];
+
                         while (read > 0) {
                             read = hcaStream.Read(dataBuffer, 0, dataBuffer.Length);
+
                             if (read > 0) {
                                 outputFileStream.Write(dataBuffer, 0, read);
                             }

@@ -39,7 +39,7 @@ namespace DereTore.Exchange.Archive.ACB {
         }
 
         public static AcbFile FromFile(string fileName) {
-            var fs = File.Open(fileName, FileMode.Open, FileAccess.Read);
+            var fs = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
             return FromStream(fs, false);
         }
 
@@ -50,6 +50,16 @@ namespace DereTore.Exchange.Archive.ACB {
         public Afs2Archive InternalAwb => _internalAwb;
 
         public Afs2Archive ExternalAwb => _externalAwb;
+
+        public uint FormatVersion {
+            get {
+                if (_formatVersion == null) {
+                    _formatVersion = GetFieldValueAsNumber<uint>(0, "Version");
+                }
+
+                return _formatVersion ?? 0;
+            }
+        }
 
         public UtfTable GetTable(string tableName) {
             if (_tables == null) {

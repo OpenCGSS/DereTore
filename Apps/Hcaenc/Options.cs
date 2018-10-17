@@ -3,8 +3,8 @@ using CommandLine;
 namespace DereTore.Apps.Hcaenc {
     public sealed class Options {
 
-        [Option('q', "quality", HelpText = "Audio quality (1 to 5)", Default = 1, Required = false)]
-        public int Quaility { get; set; } = 1;
+        [Option('q', "quality", HelpText = "Audio quality (1 to 5)", Default = 4, Required = false)]
+        public int Quaility { get; set; } = 2;
 
         [Value(0, HelpText = "Input file name", Required = true)]
         public string InputFileName { get; set; }

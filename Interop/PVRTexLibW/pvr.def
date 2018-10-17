@@ -1,0 +1,7 @@
+LIBRARY PVRTexLibW
+
+EXPORTS
+
+MpvrCompressPvrTexture
+MpvrCompressPvrTextureFrom32bppArgb
+MpvrFreeTexture

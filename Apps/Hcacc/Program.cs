@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.IO;
 using DereTore.Exchange.Audio.HCA;
@@ -39,6 +39,11 @@ namespace DereTore.Apps.Hcacc {
                                     ccFrom.Key2 = uint.Parse(args[++i], NumberStyles.HexNumber);
                                 }
                                 break;
+                            case "im":
+                                if (i < args.Length - 1) {
+                                    ccFrom.KeyModifier = ushort.Parse(args[++i], NumberStyles.HexNumber);
+                                }
+                                break;
                             case "o1":
                                 if (i < args.Length - 1) {
                                     ccTo.Key1 = uint.Parse(args[++i], NumberStyles.HexNumber);
@@ -47,6 +52,11 @@ namespace DereTore.Apps.Hcacc {
                             case "o2":
                                 if (i < args.Length - 1) {
                                     ccTo.Key2 = uint.Parse(args[++i], NumberStyles.HexNumber);
+                                }
+                                break;
+                            case "om":
+                                if (i < args.Length - 1) {
+                                    ccTo.KeyModifier = ushort.Parse(args[++i], NumberStyles.HexNumber);
                                 }
                                 break;
                         }
@@ -58,7 +68,7 @@ namespace DereTore.Apps.Hcacc {
             try {
                 using (var inputStream = new FileStream(inputFileName, FileMode.Open, FileAccess.Read)) {
                     using (var outputStream = new FileStream(outputFileName, FileMode.Create, FileAccess.Write)) {
-                        var converter = new Exchange.Audio.HCA.CipherConverter(inputStream, outputStream, ccFrom, ccTo);
+                        var converter = new CipherConverter(inputStream, outputStream, ccFrom, ccTo);
                         converter.Convert();
                     }
                 }
@@ -68,7 +78,16 @@ namespace DereTore.Apps.Hcacc {
             return 0;
         }
 
-        private static readonly string HelpMessage = "Usage: hcacc.exe <input HCA> <output HCA> [-ot <output cipher type>] [-i1 <input key 1>] [-i2 <input key 2>] [-o1 <output key 1>] [-o2 <output key 2>]";
+        private static readonly string HelpMessage = "Usage: hcacc.exe <input HCA> <output HCA> [options]\n" +
+                                                     "\n" +
+                                                     "Options:\n" +
+                                                     "  -ot <output cipher type>\n" +
+                                                     "  -i1 <input key 1>\n" +
+                                                     "  -i2 <input key 2>\n" +
+                                                     "  -im <input key modifier>\n" +
+                                                     "  -o1 <output key 1>\n" +
+                                                     "  -o2 <output key 2>\n" +
+                                                     "  -om <output key modifier>\n";
 
     }
 }

@@ -10,7 +10,7 @@ The goal of DereTore is to improve gaming experience in [THE iDOLM@STER Cinderel
 
 **Downloads:**
 
-- [Nightly build](https://ci.appveyor.com/api/projects/hozuki/deretore-avoh8/artifacts/deretore-toolkit-x86.zip) (Windows, x86)
+- [Nightly build](https://ci.appveyor.com/api/projects/hozuki/deretore-avoh8/artifacts/deretore-toolkit-latest.zip) (Windows)
 - [Releases](https://github.com/OpenCGSS/DereTore/releases)
 
 A newer version of Starlight Director (the beatmap editor) can be found at [hozuki/StarlightDirector](https://github.com/hozuki/StarlightDirector). However, if you
@@ -20,7 +20,7 @@ Wonder [how this name comes from](docs/Notes.md#the-name)?
 
 ## What can it do?
 
-- Extract audio files used by CGSS.
+- Extract audio files used by CGSS (and some other games using ACB/HCA).
 - Decode those audio files to wave audio.
 - Create songs, and their cover images.
 - Create beatmaps.
@@ -41,18 +41,14 @@ Windows:
 
   - Windows 7 or later
   - [.NET Framework 4.5](https://www.microsoft.com/en-us/download/details.aspx?id=42642)
-  - OpenAL (bundled [OpenAL-Soft](https://github.com/kcat/openal-soft) Win32 build in newer releases)
+  - OpenAL (bundled [OpenAL-Soft](https://github.com/kcat/openal-soft) builds in newer releases)
 
 macOS/Linux:
 
   - [Wine](https://www.winehq.org/download) (will install wine-mono when needed)
-  - OpenAL (bundled [OpenAL-Soft](https://github.com/kcat/openal-soft) Win32 build in newer releases)
+  - OpenAL (bundled [OpenAL-Soft](https://github.com/kcat/openal-soft) builds in newer releases)
 
-> For licensing reasons, newer releases do not include an essential library `hcaenc_lite.dll`. However, you can:
->
-> 1. download `hcaenc_lite.dll` from [here](https://mega.nz/#!QxQjnZRB!85k5O6K5oMMM1W9ux7ZpkzXQFgV4EoYplZsW1ZOWZnM), or
-> 2. download ADX2LE from its [download page](http://www.adx2le.com/download/index.html), and put `tools\hcaenc_lite.dll` to DereTore's application folder.
-> If you encounter regional problems, you know there is a way to solve it.
+In newer releases, HCA encoding is provided by [VGAudio](https://github.com/Thealexbarney/VGAudio) so `hcaenc_lite.dll` is no longer needed.
 
 **Optional requirements:**
 
@@ -68,8 +64,8 @@ CGSS (using Unity 5.4.5p1) is still able to load and display them.
 ## Building
 
 1. Clone from [GitHub](https://github.com/OpenCGSS/DereTore.git): `git clone https://github.com/OpenCGSS/DereTore.git`;
-2. Restore NuGet packages: `nuget restore DereTore.sln` (or use NuGet Package Manager in Visual Studio);
-3. Open `DereTore.sln` in Visual Studio (Visual Studio 2015 or later is required for supporting C# 6 syntax);
+2. Restore all NuGet packages;
+3. Open `DereTore.sln` in Visual Studio (Visual Studio 2017 or later is required for supporting C# 7 syntax);
 4. Build the solution.
 
 ## Contributing

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using DereTore.Common;
@@ -27,7 +27,8 @@ namespace DereTore.Exchange.Archive.ACB {
             var files = new Dictionary<int, Afs2FileRecord>(fileCount);
             _files = files;
             var byteAlignment = stream.PeekUInt32LE(offset + 12);
-            _byteAlignment = byteAlignment;
+            _byteAlignment = byteAlignment & 0xffff; // Is the mask a constant?
+            _hcaKeyModifier = (ushort)(byteAlignment >> 16);
             var version = stream.PeekUInt32LE(offset + 4);
             _version = version;
             var offsetFieldSize = (int)(version >> 8) & 0xff; // versionBytes[1], always 4?
@@ -69,6 +70,9 @@ namespace DereTore.Exchange.Archive.ACB {
 
         public uint ByteAlignment => _byteAlignment;
 
+        // Added in the AFS2 in ACB 1.30; not applicable for previous versions.
+        public ushort HcaKeyModifier => _hcaKeyModifier;
+
         public Dictionary<int, Afs2FileRecord> Files => _files;
 
         public uint Version => _version;
@@ -85,6 +89,7 @@ namespace DereTore.Exchange.Archive.ACB {
         public static readonly byte[] Afs2Signature = { 0x41, 0x46, 0x53, 0x32 }; // 'AFS2'
 
         private uint _byteAlignment;
+        private ushort _hcaKeyModifier;
         private Dictionary<int, Afs2FileRecord> _files;
         private uint _version;
         private readonly string _fileName;

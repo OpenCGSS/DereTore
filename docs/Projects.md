@@ -59,6 +59,10 @@ An application for unpacking ACB archives.
 
 A utility for creating CD jackets. Used with score and music makers.
 
+[**acb2wavs**](../Apps/Acb2Wavs)
+
+A console application that converts all HCAs in an ACB to wave audio.
+
 ## Other
 
 **LZ4**

@@ -5,7 +5,7 @@ using DereTore.Exchange.Audio.HCA;
 namespace DereTore.Apps.Hca2Wav {
     public sealed class Options {
 
-        [Value(0)]
+        [Value(0, HelpText = "Input file name", Required = true)]
         public string InputFileName { get; set; } = string.Empty;
 
         [Option('o', "out", HelpText = "Output file name", Required = false)]
@@ -16,6 +16,9 @@ namespace DereTore.Apps.Hca2Wav {
 
         [Option('b', "key2", HelpText = "Key 2 (8 hex digits)", Required = false, Default = "00003657")]
         public string Key2 { get; set; } = CgssCipher.Key2.ToString("x8");
+
+        [Option("key-mod", HelpText = "Key modifier (4 hex digits)", Required = false, Default = "0000")]
+        public string KeyModifier { get; set; } = "0000";
 
         [Option("infinite", HelpText = "Enables infinite loop", Required = false, Default = false)]
         public bool InfiniteLoop { get; set; } = AudioParams.Default.InfiniteLoop;

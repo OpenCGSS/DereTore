@@ -1,11 +1,32 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 
 namespace DereTore.Exchange.Archive.ACB {
-    internal static class AcbHelper {
+    public static class AcbHelper {
 
-        public static bool AreDataIdentical(byte[] array1, long offset1, byte[] array2, long offset2, long length) {
+        public static Stream ExtractToNewStream(Stream stream, long offset, int length) {
+            var originalPosition = stream.Position;
+            stream.Seek(offset, SeekOrigin.Begin);
+            var buffer = new byte[length];
+            var memory = new byte[length];
+            long currentIndex = 0;
+            var bytesLeft = length;
+            do {
+                var read = stream.Read(buffer, 0, bytesLeft);
+                Array.Copy(buffer, 0, memory, currentIndex, read);
+                currentIndex += read;
+                bytesLeft -= read;
+            } while (bytesLeft > 0);
+            stream.Position = originalPosition;
+            var memoryStream = new MemoryStream(memory, false) {
+                Capacity = length
+            };
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream;
+        }
+
+        internal static bool AreDataIdentical(byte[] array1, long offset1, byte[] array2, long offset2, long length) {
             if (length <= 0) {
                 throw new ArgumentOutOfRangeException(nameof(length));
             }
@@ -30,69 +51,48 @@ namespace DereTore.Exchange.Archive.ACB {
             return true;
         }
 
-        public static bool AreDataIdentical(byte[] array1, int offset1, byte[] array2, int offset2, int length) {
+        internal static bool AreDataIdentical(byte[] array1, int offset1, byte[] array2, int offset2, int length) {
             return AreDataIdentical(array1, offset1, array2, offset2, (long)length);
         }
 
-        public static bool AreDataIdentical(byte[] array1, byte[] array2, long length) {
+        internal static bool AreDataIdentical(byte[] array1, byte[] array2, long length) {
             return AreDataIdentical(array1, 0, array2, 0, length);
         }
 
-        public static bool AreDataIdentical(byte[] array1, byte[] array2, int length) {
+        internal static bool AreDataIdentical(byte[] array1, byte[] array2, int length) {
             return AreDataIdentical(array1, 0, array2, 0, (long)length);
         }
 
-        public static bool AreDataIdentical(byte[] array1, byte[] array2) {
+        internal static bool AreDataIdentical(byte[] array1, byte[] array2) {
             return AreDataIdentical(array1, 0, array2, 0, array1.LongLength);
         }
 
-        public static int RoundUpToAlignment(int valueToRound, int byteAlignment) {
+        internal static int RoundUpToAlignment(int valueToRound, int byteAlignment) {
             var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
             return roundedValue;
         }
 
-        public static uint RoundUpToAlignment(uint valueToRound, uint byteAlignment) {
+        internal static uint RoundUpToAlignment(uint valueToRound, uint byteAlignment) {
             var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
             return roundedValue;
         }
 
-        public static long RoundUpToAlignment(long valueToRound, long byteAlignment) {
+        internal static long RoundUpToAlignment(long valueToRound, long byteAlignment) {
             var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
             return roundedValue;
         }
 
-        public static ulong RoundUpToAlignment(ulong valueToRound, ulong byteAlignment) {
+        internal static ulong RoundUpToAlignment(ulong valueToRound, ulong byteAlignment) {
             var roundedValue = (valueToRound + byteAlignment - 1) / byteAlignment * byteAlignment;
             return roundedValue;
         }
 
-        public static byte[] GetMd5Checksum(Stream stream) {
+        internal static byte[] GetMd5Checksum(Stream stream) {
             return Md5.ComputeHash(stream);
         }
 
-        public static byte[] GetMd5Checksum(byte[] data) {
+        internal static byte[] GetMd5Checksum(byte[] data) {
             return Md5.ComputeHash(data);
-        }
-
-        public static Stream ExtractToNewStream(Stream stream, long offset, int length) {
-            var originalPosition = stream.Position;
-            stream.Seek(offset, SeekOrigin.Begin);
-            var buffer = new byte[length];
-            var memory = new byte[length];
-            long currentIndex = 0;
-            var bytesLeft = length;
-            do {
-                var read = stream.Read(buffer, 0, bytesLeft);
-                Array.Copy(buffer, 0, memory, currentIndex, read);
-                currentIndex += read;
-                bytesLeft -= read;
-            } while (bytesLeft > 0);
-            stream.Position = originalPosition;
-            var memoryStream = new MemoryStream(memory, false) {
-                Capacity = length
-            };
-            memoryStream.Seek(0, SeekOrigin.Begin);
-            return memoryStream;
         }
 
         private static readonly MD5 Md5 = new MD5CryptoServiceProvider();

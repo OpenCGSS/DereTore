@@ -1,27 +1,25 @@
-﻿using System;
+using System;
 
 namespace DereTore.Exchange.Audio.HCA {
     internal sealed class Cipher {
 
-        public bool Initialize(CipherType type, uint key1, uint key2) {
-            if (key1 == 0 && key2 == 0 && type == CipherType.CipherWithAKey) {
-                type = CipherType.NoChipher;
+        public bool Initialize(CipherType type, uint key1, uint key2, ushort keyMod) {
+            if (keyMod == 0 || type == CipherType.NoChipher || (key1 == 0 && key2 == 0)) {
+                return Initialize(type, key1, key2);
             }
-            switch (type) {
-                case CipherType.NoChipher:
-                    Init0();
-                    break;
-                case CipherType.CipherWithoutKeys:
-                    Init1();
-                    break;
-                case CipherType.CipherWithAKey:
-                    Init56(key1, key2);
-                    break;
-                default:
-                    return false;
+
+            var fullKey = (ulong)key2 << 32 | key1;
+
+            unchecked {
+                var k2 = ((ulong)keyMod << 16) | (ushort)(~keyMod + 2);
+
+                fullKey = fullKey * k2;
             }
-            InitEncryptTable();
-            return true;
+
+            key1 = (uint)(fullKey & 0xffffffffu);
+            key2 = (uint)((fullKey >> 32) & 0xffffffffu);
+
+            return Initialize(type, key1, key2);
         }
 
         public void Decrypt(byte[] data) {
@@ -44,6 +42,30 @@ namespace DereTore.Exchange.Audio.HCA {
             for (var i = 0; i < length; ++i) {
                 data[i] = _encryptTable[data[i]];
             }
+        }
+
+        private bool Initialize(CipherType type, uint key1, uint key2) {
+            if (key1 == 0 && key2 == 0 && type == CipherType.CipherWithAKey) {
+                type = CipherType.NoChipher;
+            }
+
+            switch (type) {
+                case CipherType.NoChipher:
+                    Init0();
+                    break;
+                case CipherType.CipherWithoutKeys:
+                    Init1();
+                    break;
+                case CipherType.CipherWithAKey:
+                    Init56(key1, key2);
+                    break;
+                default:
+                    return false;
+            }
+
+            InitEncryptTable();
+
+            return true;
         }
 
         private void Init0() {
@@ -123,12 +145,7 @@ namespace DereTore.Exchange.Audio.HCA {
 
         private void InitEncryptTable() {
             for (var i = 0; i < 0x100; ++i) {
-                for (var j = 0; j < 0x100; ++j) {
-                    if (_decryptTable[j] == i) {
-                        _encryptTable[i] = (byte)(j & 0xff);
-                        break;
-                    }
-                }
+                _encryptTable[_decryptTable[i]] = (byte)i;
             }
         }
 
