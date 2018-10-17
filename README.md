@@ -4,6 +4,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore/graphs/contributors)
 [![Libraries.io for GitHub](https://img.shields.io/librariesio/github/OpenCGSS/DereTore.svg)](https://github.com/OpenCGSS/DereTore)
 [![Github All Releases](https://img.shields.io/github/downloads/OpenCGSS/DereTore/total.svg)](https://github.com/OpenCGSS/DereTore/releases)
+![GitHub (pre-)release](https://img.shields.io/github/release/hozuki/MilliSim/all.svg)
 
 The goal of DereTore is to improve gaming experience in [THE iDOLM@STER Cinderella Girls: Starlight Stage](http://www.project-imas.com/wiki/THE_iDOLM@STER_Cinderella_Girls%3A_Starlight_Stage)
 (CGSS/DereSute/デレステ), and even to customize it a little bit.
