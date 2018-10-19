@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2E1C8FF3-0E5E-4963-8DC4-F711F09B9419}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>DereTore.Apps.BatchDecodeFromAcb</RootNamespace>
+    <RootNamespace>DereTore.Apps.Acb2Wavs</RootNamespace>
     <AssemblyName>acb2wavs</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

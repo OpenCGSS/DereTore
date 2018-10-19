@@ -1,7 +1,7 @@
 using CommandLine;
 using DereTore.Common.StarlightStage;
 
-namespace DereTore.Apps.BatchDecodeFromAcb {
+namespace DereTore.Apps.Acb2Wavs {
     public sealed class Options {
 
         [Value(0, HelpText = "Input file name", Required = true)]

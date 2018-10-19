@@ -6,7 +6,7 @@ using DereTore.Common.StarlightStage;
 using DereTore.Exchange.Archive.ACB;
 using DereTore.Exchange.Audio.HCA;
 
-namespace DereTore.Apps.BatchDecodeFromAcb {
+namespace DereTore.Apps.Acb2Wavs {
     internal static class Program {
 
         private static int Main(string[] args) {
