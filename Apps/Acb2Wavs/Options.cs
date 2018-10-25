@@ -7,9 +7,6 @@ namespace DereTore.Apps.Acb2Wavs {
         [Value(0, HelpText = "Input file name", Required = true)]
         public string InputFileName { get; set; } = string.Empty;
 
-        [Option('o', "out", HelpText = "Output file name", Required = false)]
-        public string OutputFileName { get; set; } = string.Empty;
-
         [Option('a', "key1", HelpText = "Key 1 (8 hex digits)", Required = false, Default = "f27e3b22")]
         public string Key1 { get; set; } = CgssCipher.Key1.ToString("x8");
 
