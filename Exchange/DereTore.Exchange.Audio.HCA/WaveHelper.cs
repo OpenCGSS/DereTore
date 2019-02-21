@@ -1,16 +1,19 @@
-﻿using System;
+using System;
 using System.IO;
 using DereTore.Common;
 
 namespace DereTore.Exchange.Audio.HCA {
     public static class WaveHelper {
 
+        static WaveHelper() {
+        }
+
         public static readonly IWaveWriter U8 = new WaveWriterU8();
         public static readonly IWaveWriter S16 = new WaveWriterS16();
         public static readonly IWaveWriter S32 = new WaveWriterS32();
         public static readonly IWaveWriter R32 = new WaveWriterR32();
 
-        private class WaveWriterU8 : IWaveWriter {
+        private sealed class WaveWriterU8 : IWaveWriter {
 
             public uint BytesPerSample => 1;
 
@@ -33,7 +36,7 @@ namespace DereTore.Exchange.Audio.HCA {
 
         }
 
-        private class WaveWriterS16 : IWaveWriter {
+        private sealed class WaveWriterS16 : IWaveWriter {
 
             public uint BytesPerSample => 2;
 
@@ -64,7 +67,7 @@ namespace DereTore.Exchange.Audio.HCA {
             }
         }
 
-        private class WaveWriterS32 : IWaveWriter {
+        private sealed class WaveWriterS32 : IWaveWriter {
 
             public uint BytesPerSample => 4;
 
@@ -95,7 +98,7 @@ namespace DereTore.Exchange.Audio.HCA {
             }
         }
 
-        private class WaveWriterR32 : IWaveWriter {
+        private sealed class WaveWriterR32 : IWaveWriter {
 
             public uint BytesPerSample => 4;
 

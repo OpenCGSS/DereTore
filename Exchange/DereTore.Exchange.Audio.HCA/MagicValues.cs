@@ -1,5 +1,8 @@
-﻿namespace DereTore.Exchange.Audio.HCA {
+namespace DereTore.Exchange.Audio.HCA {
     public static class MagicValues {
+
+        static MagicValues() {
+        }
 
         public static readonly uint HCA = 0x00414348;
 

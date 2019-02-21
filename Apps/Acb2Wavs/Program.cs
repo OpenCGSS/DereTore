@@ -6,7 +6,7 @@ using DereTore.Common.StarlightStage;
 using DereTore.Exchange.Archive.ACB;
 using DereTore.Exchange.Audio.HCA;
 
-namespace DereTore.Apps.BatchDecodeFromAcb {
+namespace DereTore.Apps.Acb2Wavs {
     internal static class Program {
 
         private static int Main(string[] args) {
@@ -162,7 +162,12 @@ namespace DereTore.Apps.BatchDecodeFromAcb {
                                 File.Delete(extractFilePath);
                             }
 
-                            Console.WriteLine(ex.Message);
+                            Console.WriteLine(ex.ToString());
+
+                            if (ex.InnerException != null) {
+                                Console.WriteLine("Details:");
+                                Console.WriteLine(ex.InnerException.ToString());
+                            }
                         }
                     } else {
                         Console.WriteLine("skipped (not HCA)");

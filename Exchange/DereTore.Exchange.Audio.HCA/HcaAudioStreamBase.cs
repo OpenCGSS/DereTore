@@ -54,7 +54,12 @@ namespace DereTore.Exchange.Audio.HCA {
         }
 
         protected override void Dispose(bool disposing) {
+            if (!IsDisposed) {
+                _decoder?.Dispose();
+            }
+
             _isDisposed = true;
+
             base.Dispose(disposing);
         }
 

@@ -66,7 +66,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "external", "external", "{F8
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpAL", "external\SharpAL\SharpAL\SharpAL.csproj", "{7E5E07E6-4300-438E-BD37-C9F6E5E14A41}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Apps.BatchDecodeFromAcb", "Apps\Acb2Wavs\DereTore.Apps.BatchDecodeFromAcb.csproj", "{2E1C8FF3-0E5E-4963-8DC4-F711F09B9419}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Apps.Acb2Wavs", "Apps\Acb2Wavs\DereTore.Apps.Acb2Wavs.csproj", "{2E1C8FF3-0E5E-4963-8DC4-F711F09B9419}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DereTore.Interop.D3DX9", "Interop\DereTore.Interop.D3DX9\DereTore.Interop.D3DX9.csproj", "{F81398AD-9CF5-43A4-9CD3-DABB50F6BA3B}"
 EndProject

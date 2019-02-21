@@ -1,5 +1,8 @@
-﻿namespace DereTore.Exchange.Audio.HCA {
+namespace DereTore.Exchange.Audio.HCA {
     internal static class ChannelTables {
+
+        static ChannelTables() {
+        }
 
         public static void TranslateTables() {
             _decode1ValueSingle = new float[_decode1ValueUInt.Length];

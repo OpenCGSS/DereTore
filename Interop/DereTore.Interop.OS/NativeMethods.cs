@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace DereTore.Interop.OS {
@@ -37,6 +37,12 @@ namespace DereTore.Interop.OS {
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool EnumDisplaySettings([MarshalAs(UnmanagedType.LPTStr)]string lpszDeviceName, int iModeNum, out NativeStructures.DEVMODE lpDevMode);
+
+        [DllImport("kernel32.dll")]
+        public static extern void RtlZeroMemory(IntPtr ptr, int length);
+
+        [DllImport("kernel32.dll")]
+        public static extern unsafe void RtlZeroMemory(void* ptr, int length);
 
     }
 }

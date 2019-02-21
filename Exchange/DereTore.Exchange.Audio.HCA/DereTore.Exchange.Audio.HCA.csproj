@@ -22,6 +22,7 @@
     <LangVersion>6</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -32,6 +33,7 @@
     <LangVersion>6</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -41,6 +43,7 @@
     <Compile Include="ActionResult.cs" />
     <Compile Include="Ath.cs" />
     <Compile Include="AudioParams.cs" />
+    <Compile Include="ChannelArray.cs" />
     <Compile Include="HcaAudioStream.cs" />
     <Compile Include="HcaAudioStreamBase.cs" />
     <Compile Include="HcaAudioStreamDecodeState.cs" />
@@ -94,6 +97,10 @@
     <ProjectReference Include="..\..\Common\DereTore.Common\DereTore.Common.csproj">
       <Project>{dbd0da4a-0057-4d04-ad69-0e7267d72793}</Project>
       <Name>DereTore.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Interop\DereTore.Interop.OS\DereTore.Interop.OS.csproj">
+      <Project>{3a0d1281-a503-4e5d-9765-d7bf56f89266}</Project>
+      <Name>DereTore.Interop.OS</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
