@@ -1,6 +1,6 @@
 # https://www.appveyor.com/docs/appveyor-yml/
 
-version: 0.8.0.{build}
+version: 0.8.1.{build}
 image: Visual Studio 2017
 environment:
   Configuration: Release
