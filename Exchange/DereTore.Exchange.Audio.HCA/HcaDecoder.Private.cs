@@ -19,12 +19,11 @@ namespace DereTore.Exchange.Audio.HCA {
             if (!_cipher.Initialize(cipherType, decodeParams.Key1, decodeParams.Key2, decodeParams.KeyModifier)) {
                 throw new HcaException(ErrorMessages.GetCiphInitializationFailed(), ActionResult.CiphInitFailed);
             }
-            var channels = _channels = new Channel[0x10];
-            for (var i = 0; i < channels.Length; ++i) {
-                channels[i] = Channel.CreateDefault();
-            }
+
+            var channels = _channels = new ChannelArray(0x10);
             var r = new byte[10];
             uint b = hcaInfo.ChannelCount / hcaInfo.CompR03;
+
             if (hcaInfo.CompR07 != 0 && b > 1) {
                 uint rIndex = 0;
                 for (uint i = 0; i < hcaInfo.CompR03; ++i, rIndex += b) {
@@ -70,10 +69,18 @@ namespace DereTore.Exchange.Audio.HCA {
                     }
                 }
             }
-            for (uint i = 0; i < hcaInfo.ChannelCount; ++i) {
-                channels[i].Type = r[i];
-                channels[i].Value3 = (uint)(hcaInfo.CompR06 + hcaInfo.CompR07);
-                channels[i].Count = (uint)(hcaInfo.CompR06 + (r[i] != 2 ? hcaInfo.CompR07 : 0));
+
+            unsafe {
+                for (var i = 0; i < hcaInfo.ChannelCount; ++i) {
+                    var pType = channels.GetPtrOfType(i);
+                    var pValue = channels.GetPtrOfValue(i);
+                    var ppValue3 = channels.GetPtrOfValue3(i);
+                    var pCount = channels.GetPtrOfCount(i);
+
+                    *pType = r[i];
+                    *ppValue3 = &pValue[hcaInfo.CompR06 + hcaInfo.CompR07];
+                    *pCount = (uint)(hcaInfo.CompR06 + (r[i] != 2 ? hcaInfo.CompR07 : 0));
+                }
             }
         }
 
@@ -83,7 +90,7 @@ namespace DereTore.Exchange.Audio.HCA {
                 throw new ArgumentNullException(nameof(blockData));
             }
             if (blockData.Length < hcaInfo.BlockSize) {
-                throw new HcaException(ErrorMessages.GetInvalidParameter("blockData.Length"), ActionResult.InvalidParameter);
+                throw new HcaException(ErrorMessages.GetInvalidParameter(nameof(blockData) + "." + nameof(blockData.Length)), ActionResult.InvalidParameter);
             }
             var checksum = HcaHelper.Checksum(blockData, 0);
             if (checksum != 0) {
@@ -105,30 +112,28 @@ namespace DereTore.Exchange.Audio.HCA {
 
                 for (i = 0; i < hcaInfo.ChannelCount; ++i) {
                     site = $"Decode1({i.ToString()})";
-                    channels[i].Decode1(d, hcaInfo.CompR09, a, ath.Table);
+                    channels.Decode1(i, d, hcaInfo.CompR09, a, ath.Table);
                 }
 
                 for (i = 0; i < 8; ++i) {
-                    int j;
-
-                    for (j = 0; j < hcaInfo.ChannelCount; ++j) {
+                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
                         site = $"Decode2({i.ToString()}/{j.ToString()})";
-                        channels[j].Decode2(d);
+                        channels.Decode2(j, d);
                     }
 
-                    for (j = 0; j < hcaInfo.ChannelCount; ++j) {
+                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
                         site = $"Decode3({i.ToString()}/{j.ToString()})";
-                        channels[j].Decode3(hcaInfo.CompR09, hcaInfo.CompR08, (uint)(hcaInfo.CompR07 + hcaInfo.CompR06), hcaInfo.CompR05);
+                        channels.Decode3(j, hcaInfo.CompR09, hcaInfo.CompR08, (uint)(hcaInfo.CompR07 + hcaInfo.CompR06), hcaInfo.CompR05);
                     }
 
-                    for (j = 0; j < hcaInfo.ChannelCount - 1; ++j) {
+                    for (var j = 0; j < hcaInfo.ChannelCount - 1; ++j) {
                         site = $"Decode4({i.ToString()}/{j.ToString()})";
-                        Channel.Decode4(ref channels[j], ref channels[j + 1], i, (uint)(hcaInfo.CompR05 - hcaInfo.CompR06), hcaInfo.CompR06, hcaInfo.CompR07);
+                        channels.Decode4(j, j + 1, i, (uint)(hcaInfo.CompR05 - hcaInfo.CompR06), hcaInfo.CompR06, hcaInfo.CompR07);
                     }
 
-                    for (j = 0; j < hcaInfo.ChannelCount; ++j) {
+                    for (var j = 0; j < hcaInfo.ChannelCount; ++j) {
                         site = $"Decode5({i.ToString()}/{j.ToString()})";
-                        channels[j].Decode5(i);
+                        channels.Decode5(j, i);
                     }
                 }
 
@@ -158,9 +163,10 @@ namespace DereTore.Exchange.Audio.HCA {
             var decodeParams = _decodeParams;
             var hcaBlockBuffer = GetHcaBlockBuffer();
 
-            var channelCount = (int)hcaInfo.ChannelCount;
+            var channelCount = hcaInfo.ChannelCount;
             var rvaVolume = hcaInfo.RvaVolume;
             var bytesPerSample = waveWriter.BytesPerSample;
+            var volume = decodeParams.Volume;
 
             for (var l = 0; l < (int)blockCount; ++l) {
                 source.Read(hcaBlockBuffer, 0, hcaBlockBuffer.Length);
@@ -170,7 +176,14 @@ namespace DereTore.Exchange.Audio.HCA {
                 for (var i = 0; i < 8; ++i) {
                     for (var j = 0; j < 0x80; ++j) {
                         for (var k = 0; k < channelCount; ++k) {
-                            var f = channels[k].Wave[i * 0x80 + j] * decodeParams.Volume * rvaVolume;
+                            float f;
+
+                            unsafe {
+                                var pWave = channels.GetPtrOfWave(k);
+
+                                f = pWave[i * 0x80 + j];
+                                f = f * volume * rvaVolume;
+                            }
 
                             HcaHelper.Clamp(ref f, -1f, 1f);
 
@@ -226,7 +239,7 @@ namespace DereTore.Exchange.Audio.HCA {
         private byte[] _hcaBlockBuffer;
         private readonly Ath _ath;
         private readonly Cipher _cipher;
-        private Channel[] _channels;
+        private ChannelArray _channels;
         private readonly DecodeParams _decodeParams;
         private int? _minWaveHeaderBufferSize;
         private int? _minWaveDataBufferSize;

@@ -162,7 +162,12 @@ namespace DereTore.Apps.Acb2Wavs {
                                 File.Delete(extractFilePath);
                             }
 
-                            Console.WriteLine(ex.Message);
+                            Console.WriteLine(ex.ToString());
+
+                            if (ex.InnerException != null) {
+                                Console.WriteLine("Details:");
+                                Console.WriteLine(ex.InnerException.ToString());
+                            }
                         }
                     } else {
                         Console.WriteLine("skipped (not HCA)");

@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using DereTore.Common;
 using DereTore.Exchange.Audio.HCA.Native;
 
 namespace DereTore.Exchange.Audio.HCA {
-    public partial class HcaDecoder : HcaReader {
+    public partial class HcaDecoder : HcaReader, IDisposable {
 
         public HcaDecoder(Stream sourceStream)
           : this(sourceStream, DecodeParams.Default) {
@@ -103,6 +103,10 @@ namespace DereTore.Exchange.Audio.HCA {
             }
             bytesWritten += stream.Write(wavData, bytesWritten);
             return bytesWritten;
+        }
+
+        public void Dispose() {
+            _channels?.Dispose();
         }
 
     }
