@@ -11,8 +11,8 @@ The goal of DereTore is to improve gaming experience in [THE iDOLM@STER Cinderel
 
 **Downloads:**
 
-- [Nightly build](https://ci.appveyor.com/api/projects/hozuki/deretore-avoh8/artifacts/deretore-toolkit-latest.zip) (Windows)
 - [Releases](https://github.com/OpenCGSS/DereTore/releases)
+- [CI auto build](https://ci.appveyor.com/api/projects/hozuki/deretore-avoh8/artifacts/deretore-toolkit-latest.zip) (Windows, unstable)
 
 A newer version of Starlight Director (the beatmap editor) can be found at [hozuki/StarlightDirector](https://github.com/hozuki/StarlightDirector). However, if you
 want to build ACB music, currently you are still advised to use Music Toolchain in this repository.

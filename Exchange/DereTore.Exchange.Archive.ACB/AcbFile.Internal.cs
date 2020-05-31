@@ -6,7 +6,6 @@ using DereTore.Common;
 
 namespace DereTore.Exchange.Archive.ACB {
     public partial class AcbFile {
-
         internal override void Initialize() {
             base.Initialize();
             InitializeAcbTables();
@@ -21,7 +20,7 @@ namespace DereTore.Exchange.Archive.ACB {
         }
 
         private AcbFile(Stream stream, long offset, long size, string acbFileName, bool disposeStream)
-           : this(stream, offset, size, acbFileName, false, disposeStream) {
+            : this(stream, offset, size, acbFileName, false, disposeStream) {
         }
 
         private AcbFile(Stream stream, long offset, long size, string acbFileName, bool includeCueIdInFileName, bool disposeStream)
@@ -52,29 +51,34 @@ namespace DereTore.Exchange.Archive.ACB {
                 cues[i] = cue;
 
                 switch (cue.ReferenceType) {
-                    case 2:
+                    case 2: {
                         refItemOffset = synthTable.GetFieldOffset(cue.ReferenceIndex, "ReferenceItems").Value;
                         refItemSize = synthTable.GetFieldSize(cue.ReferenceIndex, "ReferenceItems").Value;
                         refCorrection = refItemSize + 2;
                         break;
+                    }
                     case 3:
-                    case 8:
+                    case 8: {
                         if (i == 0) {
                             var refItemOffsetNullable = synthTable.GetFieldOffset(0, "ReferenceItems");
                             if (refItemOffsetNullable == null) {
                                 throw new AcbFieldMissingException("ReferenceItems");
                             }
+
                             refItemOffset = refItemOffsetNullable.Value;
                             var refItemSizeNullable = synthTable.GetFieldSize(0, "ReferenceItems");
                             if (refItemSizeNullable == null) {
                                 throw new AcbFieldMissingException("ReferenceItems");
                             }
+
                             refItemSize = refItemSizeNullable.Value;
                             refCorrection = refItemSize - 2;
                         } else {
                             refCorrection += 4;
                         }
+
                         break;
+                    }
                     default:
                         throw new FormatException($"Unexpected ReferenceType '{cues[i].ReferenceType}' for CueIndex: '{i}.'");
                 }
@@ -93,6 +97,7 @@ namespace DereTore.Exchange.Archive.ACB {
                             if (waveformIdNullable == null) {
                                 throw new AcbFieldMissingException("StreamAwbId");
                             }
+
                             cue.WaveformId = waveformIdNullable.Value;
                         } else {
                             // MemoryAwbId is for ADX2LE encoder.
@@ -100,6 +105,7 @@ namespace DereTore.Exchange.Archive.ACB {
                             if (waveformIdNullable == null) {
                                 throw new AcbFieldMissingException("MemoryAwbId");
                             }
+
                             cue.WaveformId = waveformIdNullable.Value;
                         }
 
@@ -107,6 +113,7 @@ namespace DereTore.Exchange.Archive.ACB {
                         if (encTypeNullable == null) {
                             throw new AcbFieldMissingException("EncodeType");
                         }
+
                         cue.EncodeType = encTypeNullable.Value;
 
                         cue.IsWaveformIdentified = true;
@@ -127,6 +134,7 @@ namespace DereTore.Exchange.Archive.ACB {
                 if (cueIndexNullable == null) {
                     throw new AcbFieldMissingException("CueIndex");
                 }
+
                 var cueIndex = cueIndexNullable.Value;
                 var cue = cues[cueIndex];
                 if (cue.IsWaveformIdentified) {
@@ -134,10 +142,12 @@ namespace DereTore.Exchange.Archive.ACB {
                     if (cueName == null) {
                         throw new AcbFieldMissingException("CueName");
                     }
+
                     cueName += GetExtensionForEncodeType(cue.EncodeType);
                     if (includeCueIdInFileName) {
                         cueName = cue.CueId.ToString("D5") + "_" + cueName;
                     }
+
                     cue.CueName = cueName;
                     cueNameToWaveform.Add(cueName, cue.WaveformId);
                 }
@@ -168,22 +178,29 @@ namespace DereTore.Exchange.Archive.ACB {
                 if (externalAwb == null) {
                     throw new InvalidOperationException($"External AWB does not exist for streaming file '{fileNameForErrorInfo}'.");
                 }
+
                 if (!externalAwb.Files.ContainsKey(cue.WaveformId)) {
                     throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in AWB file {externalAwb.FileName}.");
                 }
+
                 var targetExternalFile = externalAwb.Files[cue.WaveformId];
+
                 using (var fs = File.Open(externalAwb.FileName, FileMode.Open, FileAccess.Read, FileShare.Read)) {
                     result = AcbHelper.ExtractToNewStream(fs, targetExternalFile.FileOffsetAligned, (int)targetExternalFile.FileLength);
                 }
             } else {
                 var internalAwb = InternalAwb;
+
                 if (internalAwb == null) {
                     throw new InvalidOperationException($"Internal AWB is not found for memory file '{fileNameForErrorInfo}' in '{AcbFileName}'.");
                 }
+
                 if (!internalAwb.Files.ContainsKey(cue.WaveformId)) {
                     throw new InvalidOperationException($"Waveform ID {cue.WaveformId} is not found in internal AWB in {AcbFileName}.");
                 }
+
                 var targetInternalFile = internalAwb.Files[cue.WaveformId];
+
                 result = AcbHelper.ExtractToNewStream(Stream, targetInternalFile.FileOffsetAligned, (int)targetInternalFile.FileLength);
             }
 
@@ -195,6 +212,7 @@ namespace DereTore.Exchange.Archive.ACB {
             if (internalAwbOffset == null) {
                 throw new AcbFieldMissingException("AwbFile");
             }
+
             var internalAwb = new Afs2Archive(Stream, internalAwbOffset.Value, AcbFileName, false);
             internalAwb.Initialize();
             return internalAwb;
@@ -216,17 +234,21 @@ namespace DereTore.Exchange.Archive.ACB {
                 awbMask1 = string.Format(AwbFileNameFormats.Format1, awbBaseFileName);
                 awbFiles = Directory.GetFiles(awbDirPath, awbMask1, SearchOption.TopDirectoryOnly);
             }
+
             if (awbFiles == null || awbFiles.Length < 1) {
                 awbMask2 = string.Format(AwbFileNameFormats.Format2, awbBaseFileName);
                 awbFiles = Directory.GetFiles(awbDirPath, awbMask2, SearchOption.TopDirectoryOnly);
             }
+
             if (awbFiles == null || awbFiles.Length < 1) {
                 awbMask3 = string.Format(AwbFileNameFormats.Format3, awbBaseFileName);
                 awbFiles = Directory.GetFiles(awbDirPath, awbMask3, SearchOption.TopDirectoryOnly);
             }
+
             if (awbFiles.Length < 1) {
                 throw new FileNotFoundException($"Cannot find AWB file. Please verify corresponding AWB file is named '{awbMask1}', '{awbMask2}', or '{awbMask3}'.");
             }
+
             if (awbFiles.Length > 1) {
                 throw new FileNotFoundException($"More than one matching AWB file for this ACB. Please verify only one AWB file is named '{awbMask1}', '{awbMask2}' or '{awbMask3}'.");
             }
@@ -250,10 +272,12 @@ namespace DereTore.Exchange.Archive.ACB {
             if (!tableOffset.HasValue) {
                 return null;
             }
+
             var tableSize = GetFieldSize(0, tableName);
             if (!tableSize.HasValue) {
                 return null;
             }
+
             var table = new UtfTable(Stream, tableOffset.Value, tableSize.Value, AcbFileName, false);
             table.Initialize();
             return table;
@@ -261,11 +285,13 @@ namespace DereTore.Exchange.Archive.ACB {
 
         private static string GetExtensionForEncodeType(byte encodeType) {
             string ext;
-            switch ((WaveformEncodeType)encodeType) {
+            var et = (WaveformEncodeType)encodeType;
+            switch (et) {
                 case WaveformEncodeType.Adx:
                     ext = ".adx";
                     break;
                 case WaveformEncodeType.Hca:
+                case WaveformEncodeType.HcaAlt:
                     ext = ".hca";
                     break;
                 case WaveformEncodeType.Atrac3:
@@ -284,6 +310,7 @@ namespace DereTore.Exchange.Archive.ACB {
                     ext = $".et-{encodeType:D2}.bin";
                     break;
             }
+
             return ext;
         }
 
@@ -296,6 +323,5 @@ namespace DereTore.Exchange.Archive.ACB {
         private Afs2Archive _externalAwb;
         private string[] _fileNames;
         private uint? _formatVersion;
-
     }
 }

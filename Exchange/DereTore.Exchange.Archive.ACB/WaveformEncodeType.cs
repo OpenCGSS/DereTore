@@ -3,6 +3,7 @@
 
         Adx = 0,
         Hca = 2,
+        HcaAlt = 6,
         Vag = 7,
         Atrac3 = 8,
         BcWav = 9,
