@@ -2,7 +2,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using DereTore.Common;
-using DereTore.Interop.OS;
 
 namespace DereTore.Exchange.Audio.HCA {
     internal sealed unsafe class ChannelArray : DisposableBase {
@@ -17,7 +16,7 @@ namespace DereTore.Exchange.Audio.HCA {
 
             _basePtr = Marshal.AllocHGlobal(totalSize);
 
-            NativeMethods.RtlZeroMemory(_basePtr, totalSize);
+            ZeroMemory(_basePtr.ToPointer(), totalSize);
         }
 
         public int ChannelCount { get; }
@@ -50,7 +49,7 @@ namespace DereTore.Exchange.Audio.HCA {
                     pValue[i] = (sbyte)v1;
                 }
             } else {
-                NativeMethods.RtlZeroMemory(pValue, 0x80);
+                ZeroMemory(pValue, 0x80);
             }
 
             var pType = GetPtrOfType(channelIndex);
@@ -92,7 +91,7 @@ namespace DereTore.Exchange.Audio.HCA {
                 pScale[i] = (sbyte)v;
             }
 
-            NativeMethods.RtlZeroMemory(&pScale[*pCount], (int)(0x80 - *pCount));
+            ZeroMemory(&pScale[*pCount], (int)(0x80 - *pCount));
 
             var pBase = GetPtrOfBase(channelIndex);
 
@@ -130,7 +129,7 @@ namespace DereTore.Exchange.Audio.HCA {
                 pBlock[i] = pBase[i] * f;
             }
 
-            NativeMethods.RtlZeroMemory(&pBlock[*pCount], sizeof(float) * (int)(0x80 - *pCount));
+            ZeroMemory(&pBlock[*pCount], sizeof(float) * (int)(0x80 - *pCount));
         }
 
         public void Decode3(int channelIndex, uint a, uint b, uint c, uint d) {
@@ -362,18 +361,42 @@ namespace DereTore.Exchange.Audio.HCA {
             return _basePtr + ChannelSize * channelIndex + fieldOffset.ToInt32();
         }
 
+        private static void ZeroMemory(void* ptr, int byteCount) {
+            if (ptr == null || byteCount <= 0) {
+                return;
+            }
+
+            var p = (byte*)ptr;
+
+            for (var i = 0; i < byteCount; ++i) {
+                p[i] = 0;
+            }
+        }
+
         private static readonly int ChannelSize = Marshal.SizeOf(typeof(Channel));
+
         private static readonly IntPtr OffsetOfBlock = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Block));
+
         private static readonly IntPtr OffsetOfBase = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Base));
+
         private static readonly IntPtr OffsetOfValue = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Value));
+
         private static readonly IntPtr OffsetOfScale = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Scale));
+
         private static readonly IntPtr OffsetOfValue2 = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Value2));
+
         private static readonly IntPtr OffsetOfType = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Type));
+
         private static readonly IntPtr OffsetOfValue3 = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Value3));
+
         private static readonly IntPtr OffsetOfCount = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Count));
+
         private static readonly IntPtr OffsetOfWav1 = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Wav1));
+
         private static readonly IntPtr OffsetOfWav2 = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Wav2));
+
         private static readonly IntPtr OffsetOfWav3 = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Wav3));
+
         private static readonly IntPtr OffsetOfWave = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Wave));
 
         private IntPtr _basePtr;
