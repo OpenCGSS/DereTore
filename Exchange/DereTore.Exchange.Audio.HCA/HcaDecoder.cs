@@ -88,7 +88,7 @@ namespace DereTore.Exchange.Audio.HCA {
 
             var totalBlockCount = hcaInfo.BlockCount;
             if (hcaInfo.LoopFlag) {
-                totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart + 1) * audioParams.SimulatedLoopCount;
+                totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart) * audioParams.SimulatedLoopCount;
             }
             wavData.DataSize = totalBlockCount * 0x80 * 8 * wavRiff.FmtSamplingSize;
             wavRiff.RiffSize = (uint)(0x1c + (hcaInfo.Comment != null ? wavNote.NoteSize : 0) + Marshal.SizeOf(wavData) + wavData.DataSize);

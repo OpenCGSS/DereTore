@@ -91,7 +91,7 @@ namespace DereTore.Exchange.Audio.HCA {
                 return uint.MaxValue;
             }
             var totalBlockCount = hcaInfo.BlockCount;
-            totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart + 1) * loopCount;
+            totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart) * loopCount;
             return totalBlockCount * hcaInfo.ChannelCount * 0x80 * 8;
         }
 
@@ -104,7 +104,7 @@ namespace DereTore.Exchange.Audio.HCA {
                 return float.MaxValue;
             }
             var totalBlockCount = hcaInfo.BlockCount;
-            totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart + 1) * loopCount;
+            totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart) * loopCount;
             return totalBlockCount * 0x80 * 8 / (float)hcaInfo.SamplingRate;
         }
 

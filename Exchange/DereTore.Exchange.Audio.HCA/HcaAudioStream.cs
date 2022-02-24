@@ -143,7 +143,7 @@ namespace DereTore.Exchange.Audio.HCA {
                 var waveDataBlockSize = _decoder.GetMinWaveDataBufferSize();
                 totalLength += waveDataBlockSize * hcaInfo.BlockCount;
                 if (HasLoop && audioParams.SimulatedLoopCount > 0) {
-                    var loopedBlockCount = hcaInfo.LoopEnd - hcaInfo.LoopStart + 1;
+                    var loopedBlockCount = hcaInfo.LoopEnd - hcaInfo.LoopStart;
                     totalLength += waveDataBlockSize * loopedBlockCount * audioParams.SimulatedLoopCount;
                 }
                 _length = totalLength;
@@ -201,7 +201,7 @@ namespace DereTore.Exchange.Audio.HCA {
             var audioParams = _audioParams;
             var decodedSize = (waveDataOffset - headerSize) / waveBlockSize * waveBlockSize;
             // For those before or in the loop range...
-            if (audioParams.InfiniteLoop || startBlockIndex <= hcaInfo.LoopEnd + (hcaInfo.LoopEnd - hcaInfo.LoopStart + 1) * audioParams.SimulatedLoopCount) {
+            if (audioParams.InfiniteLoop || startBlockIndex <= hcaInfo.LoopEnd - 1 + (hcaInfo.LoopEnd - hcaInfo.LoopStart) * audioParams.SimulatedLoopCount) {
                 var blockIndex = startBlockIndex;
                 var executed = false;
                 while (true) {
@@ -218,7 +218,7 @@ namespace DereTore.Exchange.Audio.HCA {
                     EnsureDecodeOneBlock(blockIndex);
                     decodedSize += waveBlockSize;
                     ++blockIndex;
-                    if (blockIndex > hcaInfo.LoopEnd) {
+                    if (blockIndex > hcaInfo.LoopEnd - 1) {
                         blockIndex = hcaInfo.LoopStart;
                     }
                     executed = true;
@@ -228,10 +228,10 @@ namespace DereTore.Exchange.Audio.HCA {
             if (audioParams.InfiniteLoop) {
                 return;
             }
-            var endBlockIndex = hcaInfo.LoopEnd + (hcaInfo.LoopEnd - hcaInfo.LoopStart + 1) * audioParams.SimulatedLoopCount;
+            var endBlockIndex = hcaInfo.LoopEnd - 1 + (hcaInfo.LoopEnd - hcaInfo.LoopStart) * audioParams.SimulatedLoopCount;
             var startOfAfterLoopRegion = endBlockIndex * waveBlockSize;
             if (waveDataEnd >= startOfAfterLoopRegion) {
-                for (var blockIndex = hcaInfo.LoopEnd + 1; blockIndex < hcaInfo.BlockCount && decodedSize < waveDataEnd; ++blockIndex) {
+                for (var blockIndex = hcaInfo.LoopEnd; blockIndex < hcaInfo.BlockCount && decodedSize < waveDataEnd; ++blockIndex) {
                     EnsureDecodeOneBlock(blockIndex);
                     decodedSize += waveBlockSize;
                 }
@@ -261,7 +261,7 @@ namespace DereTore.Exchange.Audio.HCA {
             var waveBlockSize = _decoder.GetMinWaveDataBufferSize();
             var headerSize = _headerSize;
             var relativeDataPosition = requestedPosition - headerSize;
-            var endLoopDataPosition = (hcaInfo.LoopEnd + 1) * waveBlockSize;
+            var endLoopDataPosition = (hcaInfo.LoopEnd) * waveBlockSize;
             if (relativeDataPosition < endLoopDataPosition) {
                 return requestedPosition;
             }
