@@ -34,6 +34,8 @@ namespace DereTore.Exchange.Audio.HCA {
             }
             var sizeNeeded = Marshal.SizeOf(typeof(WaveRiffSection));
             if (hcaInfo.LoopFlag) {
+                // FIXME currently it's unknown what wavSmpl section means and how its values should be set.
+                // Maybe it's just ignored by common media players.
                 sizeNeeded += Marshal.SizeOf(typeof(WaveSampleSection));
             }
             if (hcaInfo.Comment != null && hcaInfo.Comment.Length > 0) {
@@ -72,6 +74,7 @@ namespace DereTore.Exchange.Audio.HCA {
             var sampleBits = GetSampleBitsFromParams();
             var wavRiff = WaveRiffSection.CreateDefault();
             var wavNote = WaveNoteSection.CreateDefault();
+            var wavSmpl = WaveSampleSection.CreateDefault();
             var wavData = WaveDataSection.CreateDefault();
             wavRiff.FmtType = (ushort)(_decodeParams.Mode != SamplingMode.R32 ? 1 : 3);
             wavRiff.FmtChannels = (ushort)hcaInfo.ChannelCount;
@@ -85,13 +88,30 @@ namespace DereTore.Exchange.Audio.HCA {
                     wavNote.NoteSize += 4 - (wavNote.NoteSize & 3);
                 }
             }
+            if (hcaInfo.LoopFlag)
+            {
+                // FIXME I see "※計算方法不明" here:
+                // https://github.com/Nyagamon/HCADecoder/blob/e26b4d3a8bb450224ede3527d522c0330f7bf02b/clHCA.cpp#L556
+                // so ... I don't know how to handle this either.
+                // However this "smpl" header section seems to be unrecognized so it shouldn't matter.
+                wavSmpl.SamplePeriod = (1 / hcaInfo.SamplingRate * 1000000000);
+                wavSmpl.LoopStart = hcaInfo.LoopStart * 0x80 * 8 + hcaInfo.FmtR01;
+                wavSmpl.LoopEnd = (hcaInfo.LoopEnd + 1) * 0x80 * 8 - 1;
+                // LoopR01 should be "loop count", when it equals to 0x80 it means infinite loop
+                wavSmpl.LoopPlayCount = (hcaInfo.LoopR01 == 0x80) ? (ushort) 0 : hcaInfo.LoopR01;
+            }
 
             var totalBlockCount = hcaInfo.BlockCount;
             if (hcaInfo.LoopFlag) {
                 totalBlockCount += (hcaInfo.LoopEnd - hcaInfo.LoopStart) * audioParams.SimulatedLoopCount;
             }
             wavData.DataSize = totalBlockCount * 0x80 * 8 * wavRiff.FmtSamplingSize;
-            wavRiff.RiffSize = (uint)(0x1c + (hcaInfo.Comment != null ? wavNote.NoteSize : 0) + Marshal.SizeOf(wavData) + wavData.DataSize);
+            wavRiff.RiffSize = (uint)(
+                0x1c
+                + (hcaInfo.Comment != null ? wavNote.NoteSize : 0)
+                + (hcaInfo.LoopFlag ? Marshal.SizeOf(typeof(WaveSampleSection)) : 0)
+                + Marshal.SizeOf(wavData) + wavData.DataSize
+            );
 
             var bytesWritten = stream.Write(wavRiff, 0);
             if (hcaInfo.Comment != null) {
@@ -100,6 +120,10 @@ namespace DereTore.Exchange.Audio.HCA {
                 stream.Write(hcaInfo.Comment, bytesWritten);
                 bytesWritten = address + 8 + (int)wavNote.NoteSize;
                 bytesWritten += 8 + (int)wavNote.NoteSize;
+            }
+            if (hcaInfo.LoopFlag)
+            {
+                bytesWritten += stream.Write(wavSmpl, bytesWritten);
             }
             bytesWritten += stream.Write(wavData, bytesWritten);
             return bytesWritten;
