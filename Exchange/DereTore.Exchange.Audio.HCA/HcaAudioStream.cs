@@ -24,11 +24,16 @@ namespace DereTore.Exchange.Audio.HCA {
             var decoder = new HcaDecoder(baseStream, decodeParams);
             _decoder = decoder;
             _audioParams = audioParams;
-            var buffer = new byte[GetTotalAfterDecodingWaveDataSize()];
-            _memoryCache = new MemoryStream(buffer, true);
             _decodedBlocks = new Dictionary<long, long>();
+            _decodedSeamBlocks = new Dictionary<long, long>();
             _decodeBuffer = new byte[decoder.GetMinWaveDataBufferSize()];
             _hasLoop = decoder.HcaInfo.LoopFlag;
+            var bufferSize = GetTotalAfterDecodingWaveDataSize();
+            if (_hasLoop && (audioParams.InfiniteLoop || audioParams.SimulatedLoopCount > 0)) {
+                bufferSize += _decoder.GetMinWaveDataBufferSize() * seamBlockCount;
+            }
+            var buffer = new byte[bufferSize];
+            _memoryCache = new MemoryStream(buffer, true);
 
             PrepareDecoding();
         }
@@ -93,7 +98,7 @@ namespace DereTore.Exchange.Audio.HCA {
             var audioParams = _audioParams;
             var length = Length;
             count = HasLoop && audioParams.InfiniteLoop ? Math.Min(count, buffer.Length - offset) : Math.Min((int)(length - position), count);
-            if (_decodedBlocks.Count < hcaInfo.BlockCount) {
+            if (_decodedBlocks.Count + _decodedSeamBlocks.Count < hcaInfo.BlockCount + seamBlockCount) {
                 if (HasLoop && audioParams.SimulatedLoopCount > 0) {
                     EnsureSoundDataDecodedWithLoops(position, count);
                 } else {
@@ -103,9 +108,10 @@ namespace DereTore.Exchange.Audio.HCA {
             var headerSize = _headerSize;
             var waveBlockSize = _decoder.GetMinWaveDataBufferSize();
             while (count > 0) {
-                var positionNonLooped = MapPosToNonLoopedWaveStreamPos(position);
+                var positionNonLooped = MapPosToNonLoopedWaveStreamPos(position, true);
                 memoryCache.Seek(positionNonLooped, SeekOrigin.Begin);
-                var shouldRead = Math.Min(count, waveBlockSize - ((int)(positionNonLooped - headerSize) % waveBlockSize));
+                var shouldRead = waveBlockSize - ((int)(positionNonLooped - headerSize) % waveBlockSize);
+                shouldRead = Math.Min(count, shouldRead);
                 if (shouldRead == 0) {
                     break;
                 }
@@ -191,7 +197,7 @@ namespace DereTore.Exchange.Audio.HCA {
         }
 
         private void EnsureSoundDataDecodedWithLoops(long waveDataOffset, int byteCount) {
-            waveDataOffset = MapPosToNonLoopedWaveStreamPos(waveDataOffset);
+            waveDataOffset = MapPosToNonLoopedWaveStreamPos(waveDataOffset, false);
             var decoder = _decoder;
             var headerSize = _headerSize;
             var waveBlockSize = decoder.GetMinWaveDataBufferSize();
@@ -204,6 +210,7 @@ namespace DereTore.Exchange.Audio.HCA {
             if (audioParams.InfiniteLoop || startBlockIndex <= hcaInfo.LoopEnd - 1 + (hcaInfo.LoopEnd - hcaInfo.LoopStart) * audioParams.SimulatedLoopCount) {
                 var blockIndex = startBlockIndex;
                 var executed = false;
+                var rewound = false;
                 while (true) {
                     if (executed && blockIndex == startBlockIndex) {
                         if (audioParams.InfiniteLoop) {
@@ -215,11 +222,12 @@ namespace DereTore.Exchange.Audio.HCA {
                     if (!audioParams.InfiniteLoop && decodedSize >= waveDataEnd) {
                         break;
                     }
-                    EnsureDecodeOneBlock(blockIndex);
+                    EnsureDecodeOneBlock(blockIndex, rewound);
                     decodedSize += waveBlockSize;
                     ++blockIndex;
                     if (blockIndex > hcaInfo.LoopEnd - 1) {
                         blockIndex = hcaInfo.LoopStart;
+                        rewound = true;
                     }
                     executed = true;
                 }
@@ -239,21 +247,45 @@ namespace DereTore.Exchange.Audio.HCA {
         }
 
         private void EnsureDecodeOneBlock(uint blockIndex) {
-            var decodedBlocks = _decodedBlocks;
+            EnsureDecodeOneBlock(blockIndex, false);
+        }
+
+        private void EnsureDecodeOneBlock(uint blockIndex, bool isSeam) {
+            var hcaInfo = HcaInfo;
+            isSeam = isSeam && hcaInfo.LoopFlag && (_audioParams.InfiniteLoop || _audioParams.SimulatedLoopCount > 0);
+            var decodedBlocks = isSeam ? _decodedSeamBlocks : _decodedBlocks;
             if (decodedBlocks.ContainsKey(blockIndex)) {
                 return;
             }
             var decodeBuffer = _decodeBuffer;
             var decoder = _decoder;
+            const string seamSnapshotName = "loop_end";
+            if (isSeam && blockIndex == hcaInfo.LoopStart) {
+                _decoder.RewindToSnapshot(seamSnapshotName);
+            }
             decoder.DecodeBlock(decodeBuffer, blockIndex);
-            var positionInOutputStream = _headerSize + decoder.GetMinWaveDataBufferSize() * blockIndex;
+            if (isSeam) {
+                if (blockIndex - hcaInfo.LoopStart + 1 >= seamBlockCount || blockIndex >= hcaInfo.LoopEnd - 1) {
+                    _decoder.DeleteSnapshot(seamSnapshotName);
+                }
+            } else {
+                if (blockIndex == hcaInfo.LoopEnd - 1) {
+                    _decoder.TakeSnapshot(seamSnapshotName);
+                }
+            }
+            var waveBlockSize = decoder.GetMinWaveDataBufferSize();
+            var positionInOutputStream = _headerSize + waveBlockSize * blockIndex;
+            if (isSeam) {
+                // Append seam block(s) to the end
+                positionInOutputStream += (hcaInfo.BlockCount - hcaInfo.LoopStart) * waveBlockSize;
+            }
             var memoryCache = _memoryCache;
             memoryCache.Seek(positionInOutputStream, SeekOrigin.Begin);
             memoryCache.WriteBytes(decodeBuffer);
             decodedBlocks.Add(blockIndex, positionInOutputStream);
         }
 
-        private long MapPosToNonLoopedWaveStreamPos(long requestedPosition) {
+        private long MapPosToNonLoopedWaveStreamPos(long requestedPosition, bool isReadingMemoryCache) {
             if (!HasLoop) {
                 return requestedPosition;
             }
@@ -262,18 +294,27 @@ namespace DereTore.Exchange.Audio.HCA {
             var headerSize = _headerSize;
             var relativeDataPosition = requestedPosition - headerSize;
             var endLoopDataPosition = (hcaInfo.LoopEnd) * waveBlockSize;
-            if (relativeDataPosition < endLoopDataPosition) {
+            var isWithinFirstLoopEnd = relativeDataPosition < endLoopDataPosition;
+            if (isWithinFirstLoopEnd) {
                 return requestedPosition;
             }
             var startLoopDataPosition = hcaInfo.LoopStart * waveBlockSize;
             var loopLength = endLoopDataPosition - startLoopDataPosition;
             var audioParams = _audioParams;
-            if (audioParams.InfiniteLoop) {
-                return headerSize + startLoopDataPosition + (relativeDataPosition - startLoopDataPosition) % loopLength;
-            }
             var extendedLength = endLoopDataPosition + loopLength * audioParams.SimulatedLoopCount;
-            if (relativeDataPosition < extendedLength) {
-                return headerSize + startLoopDataPosition + (relativeDataPosition - startLoopDataPosition) % loopLength;
+            var isWithinExtdLoopEnd = relativeDataPosition < extendedLength;
+            var isSeam = !isWithinFirstLoopEnd && isWithinExtdLoopEnd
+                && (relativeDataPosition - startLoopDataPosition) % loopLength < seamBlockCount * waveBlockSize;
+            var mappedPos = headerSize + startLoopDataPosition + (relativeDataPosition - startLoopDataPosition) % loopLength;
+            if (isReadingMemoryCache && isSeam) {
+                // Seam block(s) should be appended to the end
+                mappedPos += (hcaInfo.BlockCount - hcaInfo.LoopStart) * waveBlockSize;
+            }
+            if (audioParams.InfiniteLoop) {
+                return mappedPos;
+            }
+            if (isWithinExtdLoopEnd) {
+                return mappedPos;
             } else {
                 return headerSize + endLoopDataPosition + (relativeDataPosition - extendedLength);
             }
@@ -310,6 +351,8 @@ namespace DereTore.Exchange.Audio.HCA {
         private int _headerSize;
         private readonly MemoryStream _memoryCache;
         private readonly Dictionary<long, long> _decodedBlocks;
+        private readonly int seamBlockCount = 1; // FIXME still yield incorrect output when set to larger value
+        private readonly Dictionary<long, long> _decodedSeamBlocks;
         private long? _length;
         private long _position;
         private readonly byte[] _decodeBuffer;

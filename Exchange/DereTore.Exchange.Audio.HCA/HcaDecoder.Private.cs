@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace DereTore.Exchange.Audio.HCA {
@@ -21,6 +22,7 @@ namespace DereTore.Exchange.Audio.HCA {
             }
 
             var channels = _channels = new ChannelArray(0x10);
+            this.snapshots = new Dictionary<string, ChannelArray>();
             var r = new byte[10];
             uint b = hcaInfo.ChannelCount / hcaInfo.CompR03;
 
@@ -240,6 +242,7 @@ namespace DereTore.Exchange.Audio.HCA {
         private readonly Ath _ath;
         private readonly Cipher _cipher;
         private ChannelArray _channels;
+        private Dictionary<String, ChannelArray> snapshots;
         private readonly DecodeParams _decodeParams;
         private int? _minWaveHeaderBufferSize;
         private int? _minWaveDataBufferSize;

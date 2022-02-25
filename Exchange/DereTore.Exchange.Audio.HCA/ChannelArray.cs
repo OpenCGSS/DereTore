@@ -12,11 +12,23 @@ namespace DereTore.Exchange.Audio.HCA {
         public ChannelArray(int channelCount) {
             ChannelCount = channelCount;
 
-            var totalSize = channelCount * ChannelSize;
+            var totalSize = this.totalSize = channelCount * ChannelSize;
 
             _basePtr = Marshal.AllocHGlobal(totalSize);
 
             ZeroMemory(_basePtr.ToPointer(), totalSize);
+        }
+
+        // ref: https://stackoverflow.com/questions/15975972/copy-data-from-from-intptr-to-intptr
+        [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+        private static extern void CopyMemory(IntPtr dest, IntPtr src, uint count);
+        private ChannelArray(IntPtr ptr, int totalSize)
+        {
+            if (totalSize <= 0) throw new ArgumentOutOfRangeException(nameof(totalSize));
+            // Clone internal states
+            _basePtr = Marshal.AllocHGlobal(totalSize);
+            CopyMemory(_basePtr, ptr, (uint)totalSize);
+            this.totalSize = totalSize;
         }
 
         public int ChannelCount { get; }
@@ -373,6 +385,11 @@ namespace DereTore.Exchange.Audio.HCA {
             }
         }
 
+        public ChannelArray clone()
+        {
+            return new ChannelArray(_basePtr, totalSize);
+        }
+
         private static readonly int ChannelSize = Marshal.SizeOf(typeof(Channel));
 
         private static readonly IntPtr OffsetOfBlock = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Block));
@@ -400,6 +417,7 @@ namespace DereTore.Exchange.Audio.HCA {
         private static readonly IntPtr OffsetOfWave = Marshal.OffsetOf(typeof(Channel), nameof(Channel.Wave));
 
         private IntPtr _basePtr;
+        private int totalSize;
 
     }
 }

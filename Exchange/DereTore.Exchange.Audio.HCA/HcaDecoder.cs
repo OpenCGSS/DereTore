@@ -130,7 +130,27 @@ namespace DereTore.Exchange.Audio.HCA {
         }
 
         public void Dispose() {
+            foreach (var c in snapshots) c.Value.Dispose();
+            snapshots.Clear();
             _channels?.Dispose();
+        }
+
+        public void TakeSnapshot(string name) {
+            if (snapshots.ContainsKey(name)) throw new ArgumentOutOfRangeException(nameof(name));
+            var cloned = _channels.clone();
+            snapshots.Add(name, cloned);
+        }
+
+        public void RewindToSnapshot(string name) {
+            if (!snapshots.ContainsKey(name)) throw new ArgumentOutOfRangeException(nameof(name));
+            if (_channels != null) _channels.Dispose();
+            _channels = snapshots[name].clone();
+        }
+
+        public void DeleteSnapshot(string name) {
+            if (!snapshots.ContainsKey(name)) throw new ArgumentOutOfRangeException(nameof(name));
+            snapshots[name].Dispose();
+            snapshots.Remove(name);
         }
 
     }
