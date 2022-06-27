@@ -247,7 +247,7 @@ namespace DereTore.Apps.MusicToolchain {
             _logDelegate = Log;
             _enableControlsDelegate = EnableControls;
             _disableControlsDelegate = DisableControls;
-            var criticalFiles = new[] { "hcaenc.exe", "hcacc.exe", "AcbMaker.exe", "LZ4.exe", "hcaenc_lite.dll" };
+            var criticalFiles = new[] { "hcaenc.exe", "hcacc.exe", "AcbMaker.exe", "LZ4.exe" };
             var missingFiles = criticalFiles.Where(s => !File.Exists(s)).ToList();
             if (missingFiles.Count > 0) {
                 DisableControls();
