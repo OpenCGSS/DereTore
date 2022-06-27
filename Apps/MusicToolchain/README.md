@@ -4,9 +4,7 @@ This project is meant for integrating the 3 tools: **AcbMaker**, **CipherConvert
 It provides an automatic streamline to create CGSS-compatible live music ACB files.
 
 In order to run the application, the executables of those tools must be placed under the directory
-containing the executable of this project. Additionally, the `hcaenc_lite.dll` must also be placed
-there, as it is a prerequisite for **Encoder**. Go to the [download page](http://adx2le.com/download/index.html)
-for it. Remember, it is only for domestic use in Japan, but it is not so difficult to get a copy.
+containing the executable of this project.
 
 ## How to use the utility
 

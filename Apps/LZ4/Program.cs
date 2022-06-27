@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using DereTore.Common;
 using DereTore.Compression.LZ4;
@@ -7,9 +7,9 @@ namespace DereTore.Apps.LZ4 {
     internal static class Program {
 
         private static int Main(string[] args) {
-            if (args.Length < 1 && args.Length > 2) {
+            if (args.Length < 1 || args.Length > 2) {
                 Console.WriteLine(HelpMessage);
-                return 0;
+                return -1;
             }
             var inputFileName = args[0];
             string outputFileName;
